@@ -1,6 +1,6 @@
-import { mkdir, writeFile } from 'fs/promises'
-import { createRequire } from 'module'
-import path from 'path'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
+import path from 'node:path'
 
 import { memoize } from '@netlify/dev-utils'
 import { zipFunction, listFunction, ArchiveFormat, Config as FunctionsConfig } from '@netlify/zip-it-and-ship-it'

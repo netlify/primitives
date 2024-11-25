@@ -1,11 +1,12 @@
-import { join } from 'node:path'
+import { lstatSync, readlinkSync } from 'node:fs'
+import { join, sep } from 'node:path'
 
 import { EventInspector, Fixture } from '@netlify/dev-utils'
 import { describe, expect, test } from 'vitest'
 
 import { FunctionsRegistry } from './registry.js'
 import { withFunctions } from './middleware.js'
-import { FunctionReloadedEvent } from './events.js'
+import { FunctionReloadedEvent, FunctionRemovedEvent } from './events.js'
 
 describe('`withFunctions` middleware', () => {
   test('Invokes a function and watches for changes', async () => {
@@ -53,6 +54,14 @@ describe('`withFunctions` middleware', () => {
     const res3 = await middleware(req3, {}, next)
     expect(res3?.status).toBe(200)
     expect(await res3?.text()).toBe('Goodbye world')
+
+    await fixture.deleteFile('netlify/functions/hello.mjs')
+    await events.waitFor((event) => event instanceof FunctionRemovedEvent)
+
+    const req4 = new Request('https://site.netlify/.netlify/functions/hello')
+    const res4 = await middleware(req4, {}, next)
+    expect(res4?.status).toBe(418)
+    expect(await res4?.text()).toBe('Fallback')
 
     await fixture.destroy()
   })

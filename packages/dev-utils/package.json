@@ -35,7 +35,8 @@
     "prepack": "npm run build",
     "test": "vitest run",
     "test:dev": "vitest",
-    "test:ci": "npm run build && vitest run"
+    "test:ci": "npm run build && vitest run",
+    "dev": "tsc --watch"
   },
   "keywords": [],
   "license": "MIT",
