@@ -96,7 +96,7 @@ jobs:
         run: npm ci
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
       - name: Build
-        run: npx nx affected --target=build
+        run: npm run build -ws
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
       - name: Tests
         uses: nick-fields/retry@v3
@@ -105,7 +105,7 @@ jobs:
           timeout_minutes: 30
           max_attempts: 3
           retry_on: error
-          command: npx nx affected --target=test:ci --exclude=@netlify/build --parallel=3
+          command: npm run test -ws
 
   test-build:
     runs-on: ${{ matrix.os }}
