@@ -35,7 +35,7 @@ jobs:
         run: npm run format:ci
         if: "${{ matrix.node-version == '*' }}"
       - name: Tests
-        run: npm run test:ci
+        run: npm run test
       - name: Get test coverage flags
         id: test-coverage-flags
         run: |-
