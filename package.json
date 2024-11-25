@@ -1,0 +1,41 @@
+{
+  "name": "netlify-primitives-monorepo",
+  "workspaces": [
+    "packages/blobs",
+    "packages/dev-utils",
+    "packages/functions"
+  ],
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "eslint --cache --report-unused-disable-directives --ignore-path .gitignore --max-warnings=0 . --fix",
+    "lint:ci": "eslint --cache --report-unused-disable-directives --ignore-path .gitignore --max-warnings=0 .",
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "test:ci": "lerna run test:ci",
+    "format": "prettier --write .",
+    "format:ci": "prettier --check ."
+  },
+  "keywords": [],
+  "license": "ISC",
+  "packageManager": "pnpm@9.14.2+sha512.6e2baf77d06b9362294152c851c4f278ede37ab1eba3a55fda317a4a17b209f4dbb973fb250a77abc463a341fcb1f17f17cfa24091c4eb319cda0d9b84278387",
+  "devDependencies": {
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "ci-info": "^3.3.0",
+    "eslint": "^8.24.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.8.4"
+  },
+  "lint-staged": {
+    "!(packages/*/tests/**/fixtures/**/*)*.+(j|t)s": "eslint --ignore-path .gitignore --cache --fix",
+    "*": "prettier --write --ignore-unknown"
+  }
+}

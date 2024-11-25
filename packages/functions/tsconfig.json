@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "esnext",
+    "rootDir": "./",
+    "outDir": "./dist",
+    "allowJs": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "sourceMap": false,
+    "removeComments": false,
+    "strict": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"]
+}

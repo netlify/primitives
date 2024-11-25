@@ -1,0 +1,94 @@
+{
+  "name": "@netlify/functions",
+  "main": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      },
+      "import": {
+        "types": "./dist/main.d.mts",
+        "default": "./dist/main.mjs"
+      }
+    },
+    "./internal": {
+      "require": {
+        "types": "./dist/internal.d.ts",
+        "default": "./dist/internal.js"
+      },
+      "import": {
+        "types": "./dist/internal.d.mts",
+        "default": "./dist/internal.mjs"
+      }
+    }
+  },
+  "version": "2.8.2",
+  "description": "JavaScript utilities for Netlify Functions",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.mjs",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.mts",
+    "internal.d.ts"
+  ],
+  "scripts": {
+    "build": "tsup src --format esm --dts --clean --no-splitting",
+    "prepack": "npm run build",
+    "test": "run-s test:dev",
+    "test:dev": "run-s build test:dev:*",
+    "test:dev:tsd": "tsd",
+    "test:dev:vitest": "vitest",
+    "test:ci": "run-s test:ci:*",
+    "test:ci:vitest": "npm run build && vitest run"
+  },
+  "ava": {
+    "files": [
+      "test/unit/*.js"
+    ],
+    "verbose": true
+  },
+  "tsd": {
+    "directory": "test/types/"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "repository": "https://github.com/netlify/functions",
+  "bugs": {
+    "url": "https://github.com/netlify/functions/issues"
+  },
+  "author": "Netlify Inc.",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "@netlify/dev-utils": "1.0.0",
+    "@netlify/serverless-functions-api": "1.30.1",
+    "@netlify/zip-it-and-ship-it": "^9.41.1",
+    "cron-parser": "^4.9.0",
+    "decache": "^4.6.2",
+    "extract-zip": "^2.0.1",
+    "is-stream": "^4.0.1",
+    "jwt-decode": "^4.0.0",
+    "lambda-local": "^2.2.0",
+    "read-package-up": "^11.0.0",
+    "source-map-support": "^0.5.21"
+  },
+  "devDependencies": {
+    "@netlify/eslint-config-node": "^7.0.1",
+    "@types/semver": "^7.5.8",
+    "@types/source-map-support": "^0.5.10",
+    "npm-run-all2": "^5.0.0",
+    "semver": "^7.6.3",
+    "tsd": "^0.31.0",
+    "tsup": "^8.0.2",
+    "typescript": "^4.4.4",
+    "vitest": "^2.1.5"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

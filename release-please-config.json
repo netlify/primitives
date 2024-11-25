@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "include-component-in-tag": true,
+  "include-v-in-tag": true,
+  "tag-separator": "@",
+  "release-type": "node",
+  "plugins": ["node-workspace"],
+  "packages": {
+    "packages/e2e-tests": {},
+    "packages/e2e-tests-orb": {
+      "release-type": "simple"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "NodeNext",
+    "target": "esnext",
+    "module": "NodeNext",
+    "importHelpers": false,
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* JavaScript Support */
+    "allowJs": true /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */,
+    // "checkJs": true,                                  /* Enable error reporting in type-checked JavaScript files. */
+    "maxNodeModuleJsDepth": 5 /* Specify the maximum folder depth used for checking JavaScript files from 'node_modules'. Only applicable with 'allowJs'. */,
+
+    "strict": true
+  },
+  "exclude": ["node_modules"]
+}
