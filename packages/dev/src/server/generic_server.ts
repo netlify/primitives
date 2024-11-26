@@ -1,5 +1,3 @@
-import { createServerAdapter } from '@whatwg-node/server'
-
 import { Middleware ,MiddlewareContext, MiddlewareNextFunction} from '../lib/middleware.js'
 
 export class NotFoundResponse extends Response {
@@ -8,18 +6,17 @@ export class NotFoundResponse extends Response {
   }
 }
 
-export class Server {
+/**
+ * A basic generic/cross-runtime HTTP server with support for middleware.
+ */
+export class GenericServer {
   middlewares: Middleware[]
 
   constructor() {
     this.middlewares = []
   }
 
-  getServerAdapter() {
-    return createServerAdapter((request: Request) => this.handleRequest(request))
-  }
-
-  async handleRequestWithMiddleware(request: Request, context: MiddlewareContext, middlewareIndex: number) {
+  private async handleRequestWithMiddleware(request: Request, context: MiddlewareContext, middlewareIndex: number) {
     if (middlewareIndex >= this.middlewares.length) {
       return new NotFoundResponse()
     }

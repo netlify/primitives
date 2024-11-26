@@ -1,12 +1,17 @@
 import http from "node:http"
 
-import { Server } from "./adapter.js"
+import { createServerAdapter } from '@whatwg-node/server'
 
-export class NodeServer extends Server {
+import { GenericServer } from "./generic_server.js"
+
+/**
+ * A Node.js HTTP server with support for middleware.
+ */
+export class Server extends GenericServer {
   nodeServer?: http.Server
 
   async start(port = 0) {
-    const adapter = this.getServerAdapter()
+    const adapter = createServerAdapter((request: Request) => this.handleRequest(request))
     const server = http.createServer(adapter)
 
     this.nodeServer = server
@@ -25,12 +30,14 @@ export class NodeServer extends Server {
   }
 
   async stop() {
-    if (!this.nodeServer) {
+    const server = this.nodeServer
+
+    if (!server) {
       return
     }
 
     await new Promise((resolve, reject) => {
-      this.nodeServer?.close((error?: NodeJS.ErrnoException) => {
+      server.close((error?: NodeJS.ErrnoException) => {
         if (error) {
           return reject(error)
         }

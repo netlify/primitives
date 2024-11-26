@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { NodeServer } from './nodejs.js'
+import { Server } from './server.js'
 import { Middleware } from '../lib/middleware.js'
 
 describe('Node.js HTTP server', () => {
@@ -34,7 +34,7 @@ describe('Node.js HTTP server', () => {
     const with404: Middleware = async () => {
       return new Response("Oops, nothing here", { status: 404 })
     }
-    const server = new NodeServer()
+    const server = new Server()
       .use(withTeapot)
       .use(withYeller)
       .use(with404)
