@@ -65,4 +65,66 @@ describe('`withFunctions` middleware', () => {
 
     await fixture.destroy()
   })
+
+  test('Invokes a function and streams the response', async () => {
+    const source = `
+      export default async () =>
+        new Response(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue('first chunk')
+              setTimeout(() => {
+                controller.enqueue('second chunk')
+                controller.close()
+              }, 200)
+            },
+          }),
+          {
+            status: 200,
+          },
+        )
+
+      export const config = { path: '/streamer' }
+    `
+    const fixture = new Fixture().withFile('netlify/functions/streamer.mjs', source)
+
+    const directory = await fixture.create()
+    const events = new EventInspector()
+    const functionsRegistry = new FunctionsRegistry({
+      config: {},
+      destPath: join(directory, 'functions-serve'),
+      eventHandler: (event) => Promise.resolve(events.handleEvent(event)),
+      projectRoot: directory,
+      settings: {},
+      timeouts: {},
+    })
+    const middleware = withFunctions({
+      accountId: 'account-123',
+      config: {},
+      functionsRegistry,
+      siteUrl: 'https://site.netlify',
+      state: {},
+    })
+
+    await functionsRegistry.scan(['netlify/functions'])
+
+    const next = async () => new Response('Fallback', { status: 418 })
+
+    const req = new Request('https://site.netlify/streamer')
+    const res = await middleware(req, {}, next)
+    expect(res!.status).toBe(200)
+
+    const reader = res!.body!.getReader()
+
+    const firstChunk = await reader.read()
+    expect(new TextDecoder().decode(firstChunk.value)).toBe('first chunk')
+    expect(firstChunk.done).toBeFalsy()
+
+    const secondChunk = await reader.read()
+    expect(new TextDecoder().decode(secondChunk.value)).toBe('second chunk')
+    expect(secondChunk.done).toBeFalsy()
+
+    const thirdChunk = await reader.read()
+    expect(thirdChunk.done).toBeTruthy()
+  })
 })

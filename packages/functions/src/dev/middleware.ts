@@ -20,7 +20,7 @@ const mockLocation = {
   timezone: 'UTC',
 }
 
-export const withFunctions = (options: GetFunctionsServerOptions): Middleware => {
+export const withFunctions = (options: WithFunctionsOptions): Middleware => {
   const { functionsRegistry } = options
 
   return async (request, context, next) => {
@@ -98,7 +98,7 @@ export const withFunctions = (options: GetFunctionsServerOptions): Middleware =>
   }
 }
 
-interface GetFunctionsServerOptions {
+interface WithFunctionsOptions {
   accountId: string
   config: any
   // geoCountry: string
