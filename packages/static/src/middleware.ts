@@ -2,10 +2,11 @@ import { createReadStream, promises as fs } from 'node:fs'
 import path from "node:path"
 import { Readable } from 'node:stream'
 
-import { Middleware } from '@netlify/dev-utils'
+import { Middleware } from '@netlify/dev'
 import mime from "mime-types"
 
-import { getFilePathsForURL } from './paths.js'
+import { fileExists, getReadableStreamFromFile } from './lib/fs.js'
+import { getFilePathsForURL } from './lib/paths.js'
 
 interface WithStaticOptions {
   directory: string
@@ -14,20 +15,6 @@ interface WithStaticOptions {
 const staticHeaders = {
   age: "0",
   "cache-control": 'public, max-age=0, must-revalidate'
-}
-
-const fileExists = async (path: string) => {
-  try {
-    const stat = await fs.stat(path)
-
-    if (stat.isFile()) {
-      return true
-    }
-  } catch {
-    // no-op
-  }
-
-  return false
 }
 
 export const withStatic = (options: WithStaticOptions): Middleware => {
@@ -49,10 +36,8 @@ export const withStatic = (options: WithStaticOptions): Middleware => {
         headers.set("content-type", contentType)
       }
 
-      const stream = Readable.toWeb(createReadStream(possiblePath))
+      const stream = getReadableStreamFromFile(possiblePath)
 
-      // @ts-expect-error TODO: Figure out why TS is complaining about a type
-      // mismatch.
       return new Response(stream, { headers, status: 200 })
     }
 

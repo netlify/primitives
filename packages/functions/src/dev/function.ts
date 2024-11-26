@@ -2,7 +2,7 @@ import { basename, extname } from 'node:path'
 import { version as nodeVersion } from 'node:process'
 
 import { EnvironmentContext } from '@netlify/blobs'
-import { headers as netlifyHeaders, MemoizeCache } from '@netlify/dev-utils'
+import { headers as netlifyHeaders, MemoizeCache } from '@netlify/dev'
 import type { ExtendedRoute, FunctionResult, Route } from '@netlify/zip-it-and-ship-it'
 import CronParser from 'cron-parser'
 import semver from 'semver'

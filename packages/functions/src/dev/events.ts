@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import { DevEvent } from '@netlify/dev-utils'
+import { DevEvent } from '@netlify/dev'
 
 import type { NetlifyFunction } from './function.js'
 

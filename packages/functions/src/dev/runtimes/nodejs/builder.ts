@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 
-import { memoize } from '@netlify/dev-utils'
+import { memoize } from '@netlify/dev'
 import { zipFunction, listFunction, ArchiveFormat, Config as FunctionsConfig } from '@netlify/zip-it-and-ship-it'
 import { FeatureFlags } from '@netlify/zip-it-and-ship-it/dist/feature_flags.js'
 import decache from 'decache'

@@ -1,1 +1,1 @@
-export { withStatic } from './lib/middleware.js'
+export { withStatic } from './middleware.js'

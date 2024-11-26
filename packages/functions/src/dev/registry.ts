@@ -4,7 +4,7 @@ import { basename, extname, isAbsolute, join, resolve } from 'node:path'
 import { env } from 'node:process'
 
 import type { EnvironmentContext as BlobsContext } from '@netlify/blobs'
-import { DevEventHandler, watchDebounced } from '@netlify/dev-utils'
+import { DevEventHandler, watchDebounced } from '@netlify/dev'
 import { ListedFunction, listFunctions, Manifest } from '@netlify/zip-it-and-ship-it'
 import extractZip from 'extract-zip'
 

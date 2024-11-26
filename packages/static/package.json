@@ -49,7 +49,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "1.0.0",
+    "@netlify/dev": "1.0.0",
     "@types/mime-types": "^2.1.4"
   },
   "dependencies": {

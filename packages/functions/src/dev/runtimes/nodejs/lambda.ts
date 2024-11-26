@@ -1,4 +1,4 @@
-import { shouldBase64Encode } from '@netlify/dev-utils'
+import { shouldBase64Encode } from '@netlify/dev'
 import { HandlerEvent } from '../../../function/handler_event.js'
 import { HandlerResponse } from '../../../function/handler_response.js'
 

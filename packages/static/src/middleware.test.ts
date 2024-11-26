@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 
-import { Fixture } from '@netlify/dev-utils'
+import { Fixture } from '@netlify/dev'
 import { describe, expect, test } from 'vitest'
 
 import { withStatic } from './middleware.js'

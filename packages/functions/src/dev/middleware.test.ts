@@ -1,7 +1,7 @@
 import { lstatSync, readlinkSync } from 'node:fs'
 import { join, sep } from 'node:path'
 
-import { EventInspector, Fixture } from '@netlify/dev-utils'
+import { EventInspector, Fixture } from '@netlify/dev'
 import { describe, expect, test } from 'vitest'
 
 import { FunctionsRegistry } from './registry.js'

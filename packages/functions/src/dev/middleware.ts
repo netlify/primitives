@@ -1,11 +1,10 @@
 import { Buffer } from 'node:buffer'
 
-import { Middleware } from '@netlify/dev-utils'
+import { Middleware } from '@netlify/dev'
 
 import { FunctionsRegistry } from './registry.js'
-
-import { buildClientContext } from './server/client-context.js'
 import { headersObjectFromWebHeaders } from './runtimes/nodejs/lambda.js'
+import { buildClientContext } from './server/client-context.js'
 
 const CLOCKWORK_USERAGENT = 'Netlify Clockwork'
 const UNLINKED_SITE_MOCK_ID = 'unlinked'

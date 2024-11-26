@@ -1,5 +1,5 @@
 {
-  "name": "@netlify/dev-utils",
+  "name": "@netlify/dev",
   "version": "1.0.0",
   "description": "JavaScript utilities for local development",
   "type": "module",
@@ -40,9 +40,9 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "netlify/dev-utils",
+  "repository": "netlify/dev",
   "bugs": {
-    "url": "https://github.com/netlify/dev-utils/issues"
+    "url": "https://github.com/netlify/dev/issues"
   },
   "author": "Netlify Inc.",
   "devDependencies": {

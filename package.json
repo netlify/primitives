@@ -2,7 +2,7 @@
   "name": "netlify-primitives-monorepo",
   "workspaces": [
     "packages/blobs",
-    "packages/dev-utils",
+    "packages/dev",
     "packages/functions",
     "packages/static"
   ],

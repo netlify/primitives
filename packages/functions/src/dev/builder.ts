@@ -1,4 +1,4 @@
-import { MemoizeCache } from '@netlify/dev-utils'
+import { MemoizeCache } from '@netlify/dev'
 import { ExtendedRoute, FunctionResult, ModuleFormat } from '@netlify/zip-it-and-ship-it'
 
 export interface FunctionBuilder {

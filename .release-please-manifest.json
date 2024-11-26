@@ -1,5 +1,5 @@
 {
   "packages/blobs": "8.1.0",
-  "packages/dev-utils": "1.0.0",
+  "packages/dev": "1.0.0",
   "packages/functions": "2.8.2"
 }
