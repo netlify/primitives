@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events'
 
-import type { DevEvent } from '../../../static/src/main.js'
+import type { DevEvent } from '../lib/event.js'
 
 const DEFAULT_TIMEOUT = 5000
 
