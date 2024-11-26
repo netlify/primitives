@@ -6,9 +6,9 @@
   "release-type": "node",
   "plugins": ["node-workspace"],
   "packages": {
-    "packages/e2e-tests": {},
-    "packages/e2e-tests-orb": {
-      "release-type": "simple"
-    }
+    "packages/blobs": {},
+    "packages/dev": {},
+    "packages/functions": {},
+    "packages/static": {}
   }
 }
