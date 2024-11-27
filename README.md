@@ -1,7 +1,8 @@
 # Netlify Primitives
 
 > [!IMPORTANT]  
-> This is a proof-of-concept, not yet ready for production. Read below for more information.
+> This is a proof-of-concept. Don't use in production!
+> For more background, see [this Notion document](https://www.notion.so/netlify/Imagining-a-new-Netlify-CLI-0d1e8a0e5a3f4b579e2df1d59cb20376).
 
 A monorepo containing the runtime and local development components of different Netlify platform primitives.
 
