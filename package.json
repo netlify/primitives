@@ -4,6 +4,7 @@
     "packages/blobs",
     "packages/dev",
     "packages/functions",
+    "packages/redirects",
     "packages/static"
   ],
   "version": "0.0.0",

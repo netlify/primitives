@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'vitest'
 
-import { Server } from './server.js'
-import { Middleware } from '../lib/middleware.js'
+import { HTTPServer } from './http_server.js'
+import { MiddlewareHandler } from '../lib/middleware.js'
 
-describe('Node.js HTTP server', () => {
+describe('HTTP server', () => {
   test('Runs middleware', async () => {
-    const withTeapot: Middleware = async (request, context, next) => {
+    const withTeapot: MiddlewareHandler = async (request, context, next) => {
       const url = new URL(request.url)
 
       if (url.pathname !== "/teapot") {
@@ -14,7 +14,7 @@ describe('Node.js HTTP server', () => {
 
       return new Response("I'm a teapot", { status: 418 })
     }
-    const withYeller: Middleware = async (request, context, next) => {
+    const withYeller: MiddlewareHandler = async (request, context, next) => {
       const url = new URL(request.url)
 
       if (url.searchParams.has("quiet")) {
@@ -31,10 +31,10 @@ describe('Node.js HTTP server', () => {
       
       return new Response(text.toUpperCase(), response)
     }
-    const with404: Middleware = async () => {
+    const with404: MiddlewareHandler = async () => {
       return new Response("Oops, nothing here", { status: 404 })
     }
-    const server = new Server()
+    const server = new HTTPServer()
       .use(withTeapot)
       .use(withYeller)
       .use(with404)

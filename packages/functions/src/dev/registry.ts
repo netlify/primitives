@@ -8,14 +8,13 @@ import { DevEventHandler, watchDebounced } from '@netlify/dev'
 import { ListedFunction, listFunctions, Manifest } from '@netlify/zip-it-and-ship-it'
 import extractZip from 'extract-zip'
 
-import {
+import type {
   FunctionBuildErrorEvent,
   FunctionExtractedEvent,
   FunctionLoadedEvent,
   FunctionMissingTypesPackageEvent,
   FunctionNotInvokableOnPathEvent,
   FunctionRegisteredEvent,
-  FunctionReloadedEvent,
   FunctionReloadingEvent,
   FunctionRemovedEvent,
 } from './events.js'
@@ -82,7 +81,7 @@ export class FunctionsRegistry {
     config,
     debug = false,
     destPath,
-    eventHandler: eventListener,
+    eventHandler,
     frameworksAPIFunctionsPath,
     internalFunctionsPath,
     manifest,
@@ -95,7 +94,7 @@ export class FunctionsRegistry {
     this.debug = debug
     this.destPath = destPath
     this.frameworksAPIFunctionsPath = frameworksAPIFunctionsPath
-    this.handleEvent = eventListener ?? (async () => {})
+    this.handleEvent = eventHandler ?? (() => {})
     this.internalFunctionsPath = internalFunctionsPath
     this.projectRoot = projectRoot
     this.timeouts = timeouts
@@ -135,7 +134,7 @@ export class FunctionsRegistry {
       require.resolve(TYPES_PACKAGE, { paths: [this.projectRoot] })
     } catch (error) {
       if ((error as NodeJS.ErrnoException)?.code === 'MODULE_NOT_FOUND') {
-        await this.handleEvent(new FunctionMissingTypesPackageEvent())
+        this.handleEvent({ name: 'FunctionMissingTypesPackageEvent' } as FunctionMissingTypesPackageEvent)
       }
     }
   }
@@ -146,17 +145,15 @@ export class FunctionsRegistry {
    */
   async buildFunctionAndWatchFiles(func: NetlifyFunction, firstLoad = false) {
     if (!firstLoad) {
-      await this.handleEvent(new FunctionReloadingEvent(func))
+      this.handleEvent({ function: func, name: 'FunctionReloadingEvent' } as FunctionReloadingEvent)
     }
 
     const { error: buildError, includedFiles, srcFilesDiff } = await func.build({ cache: this.buildCache })
 
     if (buildError) {
-      await this.handleEvent(new FunctionBuildErrorEvent(func))
+      this.handleEvent({ function: func, name: 'FunctionBuildErrorEvent' } as FunctionBuildErrorEvent)
     } else {
-      const Event = firstLoad ? FunctionLoadedEvent : FunctionReloadedEvent
-
-      await this.handleEvent(new Event(func))
+      this.handleEvent({ firstLoad, function: func, name: 'FunctionLoadedEvent' } as FunctionLoadedEvent)
     }
 
     if (func.isTypeScript()) {
@@ -199,6 +196,10 @@ export class FunctionsRegistry {
     }
   }
 
+  set eventHandler(handler: DevEventHandler) {
+    this.handleEvent = handler
+  }
+
   /**
    * Returns a function by name.
    */
@@ -230,7 +231,11 @@ export class FunctionsRegistry {
       const { routes = [] } = (await func.getBuildData()) ?? {}
 
       if (routes.length !== 0) {
-        await this.handleEvent(new FunctionNotInvokableOnPathEvent(func, url.pathname))
+        this.handleEvent({
+          function: func,
+          name: 'FunctionNotInvokableOnPathEvent',
+          urlPath,
+        } as FunctionNotInvokableOnPathEvent)
 
         return
       }
@@ -263,7 +268,7 @@ export class FunctionsRegistry {
    * Adds a function to the registry
    */
   async registerFunction(name: string, func: NetlifyFunction, isReload = false) {
-    await this.handleEvent(new FunctionRegisteredEvent(func))
+    this.handleEvent({ function: func, name: 'FunctionRegisteredEvent' } as FunctionRegisteredEvent)
 
     // If the function file is a ZIP, we extract it and rewire its main file to
     // the new location.
@@ -282,7 +287,7 @@ export class FunctionsRegistry {
       }
 
       if (this.debug) {
-        await this.handleEvent(new FunctionExtractedEvent(func))
+        this.handleEvent({ function: func, name: 'FunctionExtractedEvent' } as FunctionExtractedEvent)
       }
 
       func.setRoutes(manifestEntry?.routes)
@@ -429,7 +434,7 @@ export class FunctionsRegistry {
         return
       }
 
-      await this.handleEvent(new FunctionRemovedEvent(func))
+      this.handleEvent({ function: func, name: 'FunctionRemovedEvent' } as FunctionRemovedEvent)
     })
 
     await Promise.all(directories.map((path) => this.setupDirectoryWatcher(path)))

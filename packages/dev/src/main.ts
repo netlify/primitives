@@ -1,8 +1,9 @@
 export { shouldBase64Encode } from './lib/base64.js'
 export { DevEvent, DevEventHandler } from './lib/event.js'
 export { headers } from './lib/headers.js'
-export { Middleware, MiddlewareContext } from './lib/middleware.js'
+export { Middleware, MiddlewareContext, MiddlewareHandler, MiddlewareNextFunction } from './lib/middleware.js'
 export { memoize, MemoizeCache } from './lib/memoize.js'
+export { HTTPServer } from './server/http_server.js'
 export { Server } from './server/server.js'
 export { watchDebounced } from './lib/watch-debounced.js'
 

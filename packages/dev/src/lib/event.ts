@@ -1,3 +1,5 @@
-export class DevEvent {}
+export interface DevEvent {
+  name: string
+}
 
-export type DevEventHandler = (event: DevEvent) => Promise<void>
+export type DevEventHandler = (event: DevEvent) => void
