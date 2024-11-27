@@ -79,11 +79,15 @@ import { withFunctions } from "@netlify/functions/dev"
 import { withRedirects } from "@netlify/redirects/dev"
 import { withStatic } from "@netlify/static/dev"
 
-const server = new Server()
+// Creating a middleware that will run last and catch any requests that have
+// not been handled by any other middleware.
+const with404: Middleware = () => new Response("Nothing here!", { status: 404 })
+
+const server = new HTTPServer()
   .use(withRedirects())
   .use(withFunctions())
   .use(withStatic())
-  .use(() => new Response("Nothing here!", { status: 404 }))
+  .use(with404)
 
 const response = await server.handleRequest(new Request("http://localhost/hello"))
 console.log(await response.text())
@@ -101,15 +105,11 @@ import { withFunctions } from "@netlify/functions/dev"
 import { withRedirects } from "@netlify/redirects/dev"
 import { withStatic } from "@netlify/static/dev"
 
-// Creating a middleware that will run last and catch any requests that have
-// not been handled by any other middleware.
-const with404: Middleware = () => new Response("Nothing here!", { status: 404 })
-
-const server = new HTTPServer()
+const server = new Server()
   .use(withRedirects())
   .use(withFunctions())
   .use(withStatic())
-  .use(with404)
+  .use(() => new Response("Nothing here!", { status: 404 }))
 
 const address = await server.start()
 
