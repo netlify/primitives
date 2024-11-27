@@ -44,15 +44,15 @@ Middleware should be runtime-agnostic and therefore HTTP requests and responses 
 ```ts
 import type { Middleware } from "@netlify/dev"
 
-interface CoolPrimitiveOptions {
+interface EmojifyOptions {
   emoji: string
 }
 
-export const withCoolPrimitive = ({ emoji }: CoolPrimitiveOptions): Middleware => {
+export const withEmojify = ({ emoji }: EmojifyOptions): Middleware => {
   return (request, next) => {
     // The middleware can take over the request and serve the response for it.
     if (request.headers.has("x-some-header")) {
-      return new Response(`Hello from the coolest primitive: ${emoji}`)
+      return new Response(`This request has been emojified: ${emoji}`)
     }
 
     return next(request)
@@ -126,19 +126,19 @@ If a middleware wants to use this event bus, the return value from its factory s
 
 ```ts
 import { readFileSync } from "node:fs"
-import { type Middleware, watchDebounced } from "@netlify/dev"
+import { type DevEventHandler, type Middleware, watchDebounced } from "@netlify/dev"
 import type { UpdatedConfigEvent } from "@netlify/config/dev"
 
 const emojiConfigPath = "/path/to/emojiconfig"
 const readEmojiConfig = () => readFileSync(emojiConfigPath, "utf8")
 
-export const withCoolPrimitive = (): Middleware => {
+export const withEmojify = (): Middleware => {
+  let broadcastEmojiUpdate: DevEventHandler | undefined
   let emoji = readEmojiConfig()
-  let onEmojiConfigUpdate = () => { /* no-op */ }
 
   watchDebounced(emojiConfigPath, {
     onChange: () => {
-      onEmojiConfigUpdate(readEmojiConfig())
+      broadcastEmojiUpdate?.(readEmojiConfig())
     }
   })
 
@@ -160,8 +160,28 @@ export const withCoolPrimitive = (): Middleware => {
       // Updating the callback that is fired when there's a change in the
       // middleware configuration, such that it's broadcasted across the
       // entire server.
-      onEmojiConfigUpdate = broadcast
+      broadcastEmojiUpdate = broadcast
     }
   }
 }
+```
+
+## Shared utilities
+
+There's a set of common tasks required by mulitple primitive packages, such as watching for file changes or memoizing expensive tasks. To avoid having to duplicate this logic across multiple packages, the `dev` package provides some of these methods that other packages can leverage.
+
+```ts
+import { watchDebounced } from "@netlify/dev"
+
+watchDebounced("/some/directory", {
+  onAdd: (paths: string[]) => {
+    console.log("Some files have been added:", paths)
+  },
+  onChange: (paths: string[]) => {
+    console.log("Some files have been changed:", paths)
+  },
+  onUnlinked: (paths: string[]) => {
+    console.log("Some files have been deleted:", paths)
+  }
+})
 ```
