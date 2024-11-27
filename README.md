@@ -83,7 +83,7 @@ import { withStatic } from "@netlify/static/dev"
 // not been handled by any other middleware.
 const with404: Middleware = () => new Response("Nothing here!", { status: 404 })
 
-const server = new HTTPServer()
+const server = new Server()
   .use(withRedirects())
   .use(withFunctions())
   .use(withStatic())
@@ -105,7 +105,7 @@ import { withFunctions } from "@netlify/functions/dev"
 import { withRedirects } from "@netlify/redirects/dev"
 import { withStatic } from "@netlify/static/dev"
 
-const server = new Server()
+const server = new HTTPServer()
   .use(withRedirects())
   .use(withFunctions())
   .use(withStatic())
