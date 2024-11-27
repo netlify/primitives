@@ -9,21 +9,15 @@ A monorepo containing the runtime and local development components of different 
 
 An HTTP request processed by Netlify will go through a series of hops before it reaches its final destionation and a response is returned. These hops represent the different platform primitives that can augment, transform and make decisions based on the request, depending on the specific configuration of your site.
 
-For example, a given request can flow through an edge function, a redirect rule and a serverless function, whereas a different request for the same site can skip all of those and hit our origin.
+For example, a given request can flow through an edge function, a redirect rule and a serverless function, whereas a different request for the same site can skip all of those and hit our origin. So it's reasonable to think of Netlify as a series of HTTP handlers (or middleware) that can be composed in different ways to provide different sets of functionality.
 
-So it's reasonable to think of Netlify as a series of HTTP handlers (or middleware) that can be composed in different ways to provide different sets of functionality.
-
-In order to provide a good development experience, we need to offer a local development setup that can recreate this setup as accurately as possible, so that people can develop their site on their local machine and be confident that it will behave the same way once deployed to production.
-
-Historically, this has been offered by the Netlify CLI with a feature called Netlify Dev. This lets users start an HTTP server that behaves like Netlify by running a single command.
+In order to provide a good development experience, we need to offer a local development setup that can recreate this setup as accurately as possible, so that people can develop their site on their local machine and be confident that it will behave the same way once deployed to production. Historically, this has been offered by the Netlify CLI with a feature called Netlify Dev. This lets users start an HTTP server that behaves like Netlify by running a single command.
 
 However, a lot has changed in the ecosystem since we first launched this feature. Most notably, the proliferation of build tools like Vite or Nitro (as direct dependencies of different full-stack web frameworks) have fundamentally changed the local development story for a lot of developers. These build tools became the default entry point for developing locally, bringing their own HTTP server, file watching logic, etc.
 
 This puts into question the role of the Netlify CLI in this new world. Rather than trying to offer a competing solution for local development (which is inevitably a losing game, since it means competing with the frameworks themselves), Netlify should try to seamless integrate with and augment those solutions.
 
-To do that, we must start by breaking apart the Netlify Dev monolith and decoupling the primitives logic from each other and from the series of HTTP servers that make up the original implementation.
-
-That is the role of this monorepo.
+To do that, we must start by breaking apart the Netlify Dev monolith and decoupling the primitives logic from each other and from the series of HTTP servers that make up the original implementation. That is the role of this monorepo.
 
 # Architecture
 
@@ -66,9 +60,9 @@ With this middleware, you can easily integrate this primitive with any build too
 
 ## HTTP server
 
-You can also choose to compose the different middleware pieces and run your server. This is the case with Netlify Dev, for example.
+You can also choose to compose the different middleware pieces and run them on an HTTP server. This is the case with Netlify Dev, for example.
 
-To make this easier, the `dev` package (published as `@netlify/dev`) offers an `HTTPServer` class that makes this simple.
+The `dev` package (published as `@netlify/dev`) offers an `HTTPServer` class that makes this simple.
 
 ```ts
 import { HTTPServer, Middleware } from "@netlify/dev"
@@ -94,9 +88,9 @@ console.log(await response.text())
 
 ## Base server
 
-You might want to compose the different middleware pieces together and transform a request without actually starting an HTTP server. This can be useful when integrating multiple primitives with a build tool that has its own server, or when writing tests.
+You might want to compose the different middleware pieces together and transform a request without actually starting an HTTP server. This can be useful when integrating multiple primitives with a build tool that has its own server or when interacting with the primitives in your test suite.
 
-To do this, you can use the `Server` class, which `HTTPServer` is built on top of.
+The `Server` class, which `HTTPServer` is built on top of, is a great fit for this.
 
 ```ts
 import { Middleware, Server } from "@netlify/dev"
@@ -116,13 +110,13 @@ console.log(await response.text())
 
 ## Event bus
 
-While primitives are decoupled, self-contained packages, there's still value in them being able to talk to other primitives.
+While primitives are decoupled, self-contained packages, there's still value in them being able to talk to each other.
 
 For example, imagine we have a primitive that represents the Netlify configuration surfaces, which includes the logic for watching the configuration files and compiling the resulting configuration object. The functions primitive might be interested in knowing whenever this happens, so that it can adjust itself to new directories it should look for functions in, apply new bundling configuration options, etc.
 
-To facilitate this, the `Server` class has a built-in event bus that allows any middleware to broadcast its own events with any payload it wants. Equally, a middleware can subscribe to any events emitted elsewhere in the middleware chain. This pattern enables middleware to communicate with each while keeping them decoupled from each other, as no assumptions are ever made about whether a specific middleware exists and where in the chain it lives.
+To facilitate this, the `Server` class has a built-in event bus that allows any middleware to broadcast its own events with any payload it wants. Equally, a middleware can subscribe to any events emitted elsewhere in the middleware chain. This pattern enables primitives to receive and send messages while keeping them decoupled from each other, making no assumptions about whether a specific middleware exists and where in the chain it lives.
 
-If a middleware wants to use this event bus, the return value from its factory should be an object with a `handle` and `init` properties. The former contains the handler function that processes each request, while the latter receives a reference to a `broadcast` and `subscribe` methods.
+If a middleware wants to use this event bus, the return value from its factory should be an object with a `handle` and `init` properties. The `handle` property should contain the handler function that processes each request, while `init` is a bootstrap method that receives a reference to a `broadcast` and `subscribe` methods, which let the primitive emit events to the outside world and subscribe to any events it's interested in, respectively.
 
 ```ts
 import { readFileSync } from "node:fs"
