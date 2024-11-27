@@ -59,11 +59,41 @@ As a convention, the name of factory method should be in the format `with<Name o
 
 With this middleware, you can easily integrate this primitive with any build tool by attaching it to its integrated HTTP server.
 
+```ts
+import { withEmojify } from "@netlify/emojify/dev"
+
+const middleware = withEmojify({ emoji: "🚀" })
+const response = await middleware(new Request("http://localhost/hello"), () => {})
+console.log(await response.text())
+```
+
+## Server
+
+Rather than interacting with a single primitive, you might want to compose multiple ones together and run a request through that chain. This can be useful when integrating multiple primitives with a build tool that has its own HTTP server or when asserting the functionality of primitives in a test suite.
+
+The `dev` package exposes a `Server` class that makes this extremely convenient. You construct a server, attach the middleware and run your request through the `handleRequest` method.
+
+```ts
+import { Middleware, Server } from "@netlify/dev"
+import { withFunctions } from "@netlify/functions/dev"
+import { withRedirects } from "@netlify/redirects/dev"
+import { withStatic } from "@netlify/static/dev"
+
+const server = new Server()
+  .use(withRedirects())
+  .use(withFunctions())
+  .use(withStatic())
+  .use(() => new Response("Nothing here!", { status: 404 }))
+
+const response = await server.handleRequest(new Request("http://localhost/hello"))
+console.log(await response.text())
+```
+
 ## HTTP server
 
-You can also choose to compose the different middleware pieces and run them on an HTTP server. This is the case with Netlify Dev, for example.
+If you want to serve the middleware chain over HTTP and you don't already have an HTTP server, the `HTTPServer` class in the `dev` package can handle that for you.
 
-The `dev` package (published as `@netlify/dev`) offers an `HTTPServer` class that makes this simple.
+It lets you attach middleware in the exact same way as `Server` (which `HTTPServer` is built on top of), but you now have a `start()` method that actually spins up an HTTP listener and returns the resulting address.
 
 ```ts
 import { HTTPServer, Middleware } from "@netlify/dev"
@@ -84,28 +114,6 @@ const server = new HTTPServer()
 const address = await server.start()
 
 const response = await fetch(address)
-console.log(await response.text())
-```
-
-## Base server
-
-You might want to compose the different middleware pieces together and transform a request without actually starting an HTTP server. This can be useful when integrating multiple primitives with a build tool that has its own server or when interacting with the primitives in your test suite.
-
-The `Server` class, which `HTTPServer` is built on top of, is a great fit for this.
-
-```ts
-import { Middleware, Server } from "@netlify/dev"
-import { withFunctions } from "@netlify/functions/dev"
-import { withRedirects } from "@netlify/redirects/dev"
-import { withStatic } from "@netlify/static/dev"
-
-const server = new Server()
-  .use(withRedirects())
-  .use(withFunctions())
-  .use(withStatic())
-  .use(() => new Response("Nothing here!", { status: 404 }))
-
-const response = await server.handleRequest(new Request("http://localhost/hello"))
 console.log(await response.text())
 ```
 
