@@ -129,6 +129,7 @@ If a middleware wants to use this event bus, the return value from its factory s
 
 ```ts
 import { readFileSync } from "node:fs"
+
 import { type DevEventHandler, type Middleware, watchDebounced } from "@netlify/dev"
 import type { UpdatedConfigEvent } from "@netlify/config/dev"
 
