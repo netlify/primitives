@@ -52,6 +52,6 @@
     "@netlify/dev": "1.0.0"
   },
   "dependencies": {
-    "netlify-redirect-parser": "^14.3.0"
+    "netlify-redirect-parser": "^14.4.0"
   }
 }
