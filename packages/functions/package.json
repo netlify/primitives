@@ -67,7 +67,7 @@
     "@netlify/blobs": "^8.1.0",
     "@netlify/dev": "1.0.0",
     "@netlify/serverless-functions-api": "1.32.0",
-    "@netlify/zip-it-and-ship-it": "^9.42.3",
+    "@netlify/zip-it-and-ship-it": "^9.42.4",
     "cron-parser": "^4.9.0",
     "decache": "^4.6.2",
     "extract-zip": "^2.0.1",
