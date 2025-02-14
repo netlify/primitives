@@ -6,9 +6,6 @@
   "release-type": "node",
   "plugins": ["node-workspace"],
   "packages": {
-    "packages/blobs": {},
-    "packages/dev": {},
-    "packages/functions": {},
-    "packages/static": {}
+    "packages/cache": {}
   }
 }
