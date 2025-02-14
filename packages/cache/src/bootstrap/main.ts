@@ -1,4 +1,4 @@
-import { Factory } from './environment.ts'
+import { Factory } from './util.ts'
 
 export type TokenFactory = Factory<string>
 export type URLFactory = Factory<string>
