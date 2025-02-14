@@ -1,27 +1,27 @@
 import { NetlifyCache } from './cache.js'
-import type { TokenFactory } from './environment.js'
+import type { Factory } from './util.js'
 
 interface NetlifyCacheStorageOptions {
-  getToken: TokenFactory
-  url: string
+  getToken: Factory<string>
+  getURL: Factory<string>
 }
 
 export class NetlifyCacheStorage {
-  #getToken: TokenFactory
+  #getToken: Factory<string>
+  #getURL: Factory<string>
   #stores: Map<string, NetlifyCache>
-  #url: string
 
-  constructor({ getToken, url }: NetlifyCacheStorageOptions) {
+  constructor({ getToken, getURL }: NetlifyCacheStorageOptions) {
     this.#getToken = getToken
+    this.#getURL = getURL
     this.#stores = new Map()
-    this.#url = url
   }
 
   open(name: string): Promise<Cache> {
     let store = this.#stores.get(name)
 
     if (!store) {
-      store = new NetlifyCache({ getToken: this.#getToken, name, url: this.#url })
+      store = new NetlifyCache({ getToken: this.#getToken, getURL: this.#getURL, name })
 
       this.#stores.set(name, store)
     }

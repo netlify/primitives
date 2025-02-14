@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import type { TokenFactory } from './environment.js'
+import type { Factory } from './util.js'
 
 const HEADERS_HEADER = 'Netlify-Programmable-Headers'
 const STATUS_HEADER = 'Netlify-Programmable-Status'
@@ -13,20 +13,20 @@ const allowedProtocols = new Set(['http:', 'https:'])
 const discardedHeaders = new Set(['cookie', 'content-encoding', 'content-length'])
 
 interface NetlifyCacheOptions {
-  getToken: TokenFactory
+  getToken: Factory<string>
+  getURL: Factory<string>
   name: string
-  url: string
 }
 
 export class NetlifyCache implements Cache {
-  #getToken: TokenFactory
+  #getToken: Factory<string>
+  #getURL: Factory<string>
   #name: string
-  #url: string
 
-  constructor({ getToken, name, url }: NetlifyCacheOptions) {
+  constructor({ getToken, getURL, name }: NetlifyCacheOptions) {
     this.#getToken = getToken
+    this.#getURL = getURL
     this.#name = name
-    this.#url = url
   }
 
   async add(request: RequestInfo): Promise<void> {
@@ -67,7 +67,7 @@ export class NetlifyCache implements Cache {
 
     const resourceURL = extractAndValidateURL(request)
 
-    await fetch(`${this.#url}/${toCacheKey(resourceURL)}`, {
+    await fetch(`${this.#getURL()}/${toCacheKey(resourceURL)}`, {
       body: response.body,
       headers: {
         Authorization: `Bearer ${this.#getToken()}`,
@@ -84,7 +84,7 @@ export class NetlifyCache implements Cache {
   async match(request: RequestInfo) {
     try {
       const resourceURL = extractAndValidateURL(request)
-      const cacheURL = `${this.#url}/${toCacheKey(resourceURL)}`
+      const cacheURL = `${this.#getURL()}/${toCacheKey(resourceURL)}`
       const response = await fetch(cacheURL, {
         headers: {
           Authorization: `Bearer ${this.#getToken()}`,
@@ -106,7 +106,7 @@ export class NetlifyCache implements Cache {
   async delete(request: RequestInfo) {
     const resourceURL = extractAndValidateURL(request)
 
-    await fetch(`${this.#url}/${toCacheKey(resourceURL)}`, {
+    await fetch(`${this.#getURL()}/${toCacheKey(resourceURL)}`, {
       headers: {
         Authorization: `Bearer ${this.#getToken()}`,
         [STORE_HEADER]: this.#name,

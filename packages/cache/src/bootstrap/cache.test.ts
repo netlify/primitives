@@ -22,7 +22,7 @@ describe('Cache API', () => {
           'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [new Response(null, { status: 201 })],
         },
       })
-      const cache = new NetlifyCache({ getToken: () => token, name: 'my-cache', url })
+      const cache = new NetlifyCache({ getToken: () => token, getURL: () => url, name: 'my-cache' })
 
       await cache.add('https://netlify.com')
 
@@ -55,7 +55,7 @@ describe('Cache API', () => {
           'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [new Response(null, { status: 202 })],
         },
       })
-      const cache = new NetlifyCache({ getToken: () => token, name: 'my-cache', url })
+      const cache = new NetlifyCache({ getToken: () => token, getURL: () => url, name: 'my-cache' })
 
       expect(await cache.delete(new Request('https://netlify.com'))).toBe(true)
 
@@ -80,7 +80,7 @@ describe('Cache API', () => {
           ],
         },
       })
-      const cache = new NetlifyCache({ getToken: () => token, name: 'my-cache', url })
+      const cache = new NetlifyCache({ getToken: () => token, getURL: () => url, name: 'my-cache' })
 
       const hitResponse = await cache.match(new Request('https://netlify.com'))
       const missResponse = await cache.match(new Request('https://netlify.com/some-path'))
@@ -107,7 +107,7 @@ describe('Cache API', () => {
           'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [new Response(null, { status: 201 })],
         },
       })
-      const cache = new NetlifyCache({ getToken: () => token, name: 'my-cache', url })
+      const cache = new NetlifyCache({ getToken: () => token, getURL: () => url, name: 'my-cache' })
 
       const headers = new Headers()
       headers.set('content-type', 'text/html')
