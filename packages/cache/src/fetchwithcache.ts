@@ -1,6 +1,6 @@
 import type { NetlifyCache } from './bootstrap/cache.js'
-import type { CacheHeadersOptions } from './cache-headers/cache-headers.js'
 import { setCacheHeaders } from './cache-headers/cache-headers.js'
+import type { CacheHeadersOptions } from './cache-headers/options.js'
 
 const requestInitOptions = [
   'method',
@@ -20,7 +20,20 @@ const requestInitOptions = [
 ]
 
 type CacheOptions = CacheHeadersOptions & {
+  /**
+   * A `Cache` instance or the name of the cache that should be used. If not
+   * set, a cache without a name (i.e. `""`) will be used.
+   */
   cache?: NetlifyCache | string
+
+  /**
+   * When `fetchWithCache` fetches a new response and adds it to the cache, the
+   * `Promise` it returns waits for both the network call to finish and for the
+   * response to be cached. Customize this behavior by setting a `onCachePut`
+   * handler that receives the cache write `Promise`, giving you the option to
+   * handle it as you like. This lets you remove the cache write from the "hot
+   * path" and run it in the background.
+   */
   onCachePut?: (cachePut: Promise<void>) => void | Promise<void>
 }
 
@@ -44,6 +57,15 @@ type FetchWithCache = {
   (request: string | URL | Request, init: RequestInit, cacheOptions?: CacheOptions): Promise<Response>
 }
 
+/**
+ * Serves a resource from the Cache API if available, otherwise it's fetched
+ * from the network and added to the cache. It's a drop-in replacement for
+ * `fetch`, supporting the same arguments and return value. A third (optional)
+ * argument makes it possible to set the caching configuration of the response
+ * as it's added to the cache, overridding any cache control settings it sets.
+ * It returns a `Promise` that resolves with the resulting `Response` object,
+ * whether it comes from the cache or from the network.
+ */
 export const fetchWithCache: FetchWithCache = async (
   request: string | URL | Request,
   initOrCacheOptions?: RequestInit | CacheOptions,
