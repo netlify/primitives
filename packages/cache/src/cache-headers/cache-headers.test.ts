@@ -11,7 +11,7 @@ describe('`cacheHaders`', () => {
       })
     })
 
-    test('With `id`', () => {
+    test('With `overrideDeployRevalidation`', () => {
       expect(cacheHeaders({ overrideDeployRevalidation: 'tag3', tags: ['tag1', 'tag2'] })).toStrictEqual({
         'netlify-cache-id': 'tag3',
         'netlify-cache-tag': 'tag1,tag2',
