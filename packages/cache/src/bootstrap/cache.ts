@@ -2,9 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import type { Factory } from './util.js'
 
-const HEADERS_HEADER = 'Netlify-Programmable-Headers'
-const STATUS_HEADER = 'Netlify-Programmable-Status'
-const STORE_HEADER = 'Netlify-Programmable-Store'
+import * as HEADERS from '../headers.js'
 
 const allowedProtocols = new Set(['http:', 'https:'])
 
@@ -13,20 +11,46 @@ const allowedProtocols = new Set(['http:', 'https:'])
 const discardedHeaders = new Set(['cookie', 'content-encoding', 'content-length'])
 
 interface NetlifyCacheOptions {
+  getHost: Factory<string>
   getToken: Factory<string>
   getURL: Factory<string>
   name: string
+  userAgent?: string
 }
 
+const getInternalHeaders = Symbol('getInternalHeaders')
+
 export class NetlifyCache implements Cache {
+  #getHost?: Factory<string>
   #getToken: Factory<string>
   #getURL: Factory<string>
   #name: string
+  #userAgent?: string
 
-  constructor({ getToken, getURL, name }: NetlifyCacheOptions) {
+  constructor({ getHost, getToken, getURL, name, userAgent }: NetlifyCacheOptions) {
+    this.#getHost = getHost
     this.#getToken = getToken
     this.#getURL = getURL
     this.#name = name
+    this.#userAgent = userAgent
+  }
+
+  private [getInternalHeaders]() {
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${this.#getToken()}`,
+      [HEADERS.ResourceStore]: this.#name,
+    }
+
+    const host = this.#getHost?.()
+    if (host) {
+      headers[HEADERS.NetlifyForwardedHost] = host
+    }
+
+    if (this.#userAgent) {
+      headers[HEADERS.UserAgent] = this.#userAgent
+    }
+
+    return headers
   }
 
   async add(request: RequestInfo): Promise<void> {
@@ -35,6 +59,43 @@ export class NetlifyCache implements Cache {
 
   async addAll(requests: RequestInfo[]): Promise<void> {
     await Promise.allSettled(requests.map((request) => this.add(request)))
+  }
+
+  // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
+  async delete(request: RequestInfo) {
+    const resourceURL = extractAndValidateURL(request)
+
+    await fetch(`${this.#getURL()}/${toCacheKey(resourceURL)}`, {
+      headers: this[getInternalHeaders](),
+      method: 'DELETE',
+    })
+
+    return true
+  }
+
+  // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
+  async keys(_request?: Request) {
+    // Not implemented.
+    return []
+  }
+
+  async match(request: RequestInfo) {
+    try {
+      const resourceURL = extractAndValidateURL(request)
+      const cacheURL = `${this.#getURL()}/${toCacheKey(resourceURL)}`
+      const response = await fetch(cacheURL, {
+        headers: this[getInternalHeaders](),
+        method: 'GET',
+      })
+
+      if (!response.ok) {
+        return
+      }
+
+      return response
+    } catch {
+      // no-op
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -70,57 +131,14 @@ export class NetlifyCache implements Cache {
     await fetch(`${this.#getURL()}/${toCacheKey(resourceURL)}`, {
       body: response.body,
       headers: {
-        Authorization: `Bearer ${this.#getToken()}`,
-        [HEADERS_HEADER]: getEncodedHeaders(response.headers),
-        [STATUS_HEADER]: response.status.toString(),
-        [STORE_HEADER]: this.#name,
+        ...this[getInternalHeaders](),
+        [HEADERS.ResourceHeaders]: getEncodedHeaders(response.headers),
+        [HEADERS.ResourceStatus]: response.status.toString(),
       },
       // @ts-expect-error https://github.com/whatwg/fetch/pull/1457
       duplex: 'half',
       method: 'POST',
     })
-  }
-
-  async match(request: RequestInfo) {
-    try {
-      const resourceURL = extractAndValidateURL(request)
-      const cacheURL = `${this.#getURL()}/${toCacheKey(resourceURL)}`
-      const response = await fetch(cacheURL, {
-        headers: {
-          Authorization: `Bearer ${this.#getToken()}`,
-        },
-        method: 'GET',
-      })
-
-      if (!response.ok) {
-        return
-      }
-
-      return response
-    } catch {
-      // no-op
-    }
-  }
-
-  // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
-  async delete(request: RequestInfo) {
-    const resourceURL = extractAndValidateURL(request)
-
-    await fetch(`${this.#getURL()}/${toCacheKey(resourceURL)}`, {
-      headers: {
-        Authorization: `Bearer ${this.#getToken()}`,
-        [STORE_HEADER]: this.#name,
-      },
-      method: 'DELETE',
-    })
-
-    return true
-  }
-
-  // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
-  async keys(_request?: Request) {
-    // Not implemented.
-    return []
   }
 }
 

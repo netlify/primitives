@@ -1,5 +1,8 @@
 interface GetMockFetchOptions {
-  responses?: Record<string, ((() => Response | Error | Promise<Response>) | Response | Error)[]>
+  responses?: Record<
+    string,
+    (((input: string | URL | Request, init?: RequestInit) => Response | Error | Promise<Response>) | Response | Error)[]
+  >
 }
 
 const originalFetch = globalThis.fetch
@@ -25,7 +28,7 @@ export const getMockFetch = ({ responses = {} }: GetMockFetchOptions = {}) => {
       throw new Error(`Unexpected fetch call to '${url.href}'`)
     }
 
-    const response = typeof mockResponse === 'function' ? await mockResponse() : mockResponse
+    const response = typeof mockResponse === 'function' ? await mockResponse(input, init) : mockResponse
 
     if (response instanceof Error) {
       throw response

@@ -4,9 +4,12 @@ import { describe, test, expect } from 'vitest'
 
 import { NetlifyCache } from './cache.js'
 import { getMockFetch } from '../test/fetch.js'
+import { decodeHeaders } from '../test/headers.js'
 
+const host = 'my-site.netlify'
 const url = 'https://example.netlify/.netlify/cache'
 const token = 'mock-token'
+const userAgent = 'netlify-functions@1.0.0'
 
 describe('Cache API', () => {
   describe('add', () => {
@@ -19,10 +22,25 @@ describe('Cache API', () => {
       const mockFetch = getMockFetch({
         responses: {
           'https://netlify.com/': [response],
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [new Response(null, { status: 201 })],
+          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
+            (_, init) => {
+              const headers = init?.headers as Record<string, string>
+
+              expect(headers.Authorization).toBe(`Bearer ${token}`)
+              expect(headers['Netlify-Forwarded-Host']).toBe(host)
+
+              return new Response(null, { status: 201 })
+            },
+          ],
         },
       })
-      const cache = new NetlifyCache({ getToken: () => token, getURL: () => url, name: 'my-cache' })
+      const cache = new NetlifyCache({
+        getHost: () => host,
+        getToken: () => token,
+        getURL: () => url,
+        name: 'my-cache',
+        userAgent,
+      })
 
       await cache.add('https://netlify.com')
 
@@ -52,10 +70,25 @@ describe('Cache API', () => {
     test('returns a response if there is a matching entry in the cache, otherwise returns undefined', async () => {
       const mockFetch = getMockFetch({
         responses: {
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [new Response(null, { status: 202 })],
+          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
+            (_, init) => {
+              const headers = init?.headers as Record<string, string>
+
+              expect(headers.Authorization).toBe(`Bearer ${token}`)
+              expect(headers['Netlify-Forwarded-Host']).toBe(host)
+
+              return new Response(null, { status: 202 })
+            },
+          ],
         },
       })
-      const cache = new NetlifyCache({ getToken: () => token, getURL: () => url, name: 'my-cache' })
+      const cache = new NetlifyCache({
+        getHost: () => host,
+        getToken: () => token,
+        getURL: () => url,
+        name: 'my-cache',
+        userAgent,
+      })
 
       expect(await cache.delete(new Request('https://netlify.com'))).toBe(true)
 
@@ -74,13 +107,30 @@ describe('Cache API', () => {
       const response = new Response('<h1>Hello world</h1>', { headers })
       const mockFetch = getMockFetch({
         responses: {
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [response],
+          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
+            (_, init) => {
+              const headers = init?.headers as Record<string, string>
+
+              expect(headers.Authorization).toBe(`Bearer ${token}`)
+              expect(headers['Netlify-Forwarded-Host']).toBe(host)
+
+              return response
+            },
+          ],
           'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2Fsome-path': [
-            new Response(null, { status: 404 }),
+            (_, init) => {
+              return new Response(null, { status: 404 })
+            },
           ],
         },
       })
-      const cache = new NetlifyCache({ getToken: () => token, getURL: () => url, name: 'my-cache' })
+      const cache = new NetlifyCache({
+        getHost: () => host,
+        getToken: () => token,
+        getURL: () => url,
+        name: 'my-cache',
+        userAgent,
+      })
 
       const hitResponse = await cache.match(new Request('https://netlify.com'))
       const missResponse = await cache.match(new Request('https://netlify.com/some-path'))
@@ -104,10 +154,25 @@ describe('Cache API', () => {
     test('adds a response to the cache', async () => {
       const mockFetch = getMockFetch({
         responses: {
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [new Response(null, { status: 201 })],
+          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
+            (_, init) => {
+              const headers = init?.headers as Record<string, string>
+
+              expect(headers.Authorization).toBe(`Bearer ${token}`)
+              expect(headers['Netlify-Forwarded-Host']).toBe(host)
+
+              return new Response(null, { status: 201 })
+            },
+          ],
         },
       })
-      const cache = new NetlifyCache({ getToken: () => token, getURL: () => url, name: 'my-cache' })
+      const cache = new NetlifyCache({
+        getHost: () => host,
+        getToken: () => token,
+        getURL: () => url,
+        name: 'my-cache',
+        userAgent,
+      })
 
       const headers = new Headers()
       headers.set('content-type', 'text/html')
@@ -136,22 +201,3 @@ describe('Cache API', () => {
     })
   })
 })
-
-const decodeHeaders = (encodedHeader: string | null) => {
-  const headers = new Headers()
-
-  if (!encodedHeader) {
-    return headers
-  }
-
-  const decoded = Buffer.from(encodedHeader, 'base64').toString('utf8')
-  const parsed = JSON.parse(decoded) as Record<string, string[]>
-
-  for (const key in parsed) {
-    for (const value of parsed[key]) {
-      headers.append(key, value)
-    }
-  }
-
-  return headers
-}
