@@ -1,5 +1,5 @@
 import * as HEADERS from '../headers.js'
-import { CacheHeadersOptions, VaryOptions } from './options.js'
+import { CacheSettings, VaryOptions } from './options.js'
 import {
   ensureArray,
   requireArrayOfStrings,
@@ -9,8 +9,8 @@ import {
 
 export const ONE_YEAR = 60 * 24 * 365
 
-export const cacheHeaders = (options: CacheHeadersOptions) => {
-  const { durable, overrideDeployRevalidation: id, tags, ttl, swr, vary } = options
+export const cacheHeaders = (cacheSettings: CacheSettings) => {
+  const { durable, overrideDeployRevalidation: id, tags, ttl, swr, vary } = cacheSettings
   const headers: Record<string, string> = {}
   const cacheControlDirectives: string[] = []
 
@@ -105,14 +105,14 @@ const applyHeaders = (subject: Headers, headersObject: Record<string, string>) =
   }
 }
 
-export const setCacheHeaders = (response: Response, options: CacheHeadersOptions): Response => {
+export const setCacheHeaders = (response: Response, cacheSettings: CacheSettings): Response => {
   if (!(response instanceof Response)) {
     throw new TypeError('Input must be a Response object.')
   }
 
   const newResponse = new Response(response.body, response)
 
-  applyHeaders(newResponse.headers, cacheHeaders(options))
+  applyHeaders(newResponse.headers, cacheHeaders(cacheSettings))
 
   return newResponse
 }

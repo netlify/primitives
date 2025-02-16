@@ -1,4 +1,4 @@
-export interface CacheHeadersOptions {
+export interface CacheSettings {
   /**
    * Persist the response in the durable cache, shared across all CDN nodes.
    *

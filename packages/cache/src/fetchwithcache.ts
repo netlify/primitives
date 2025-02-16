@@ -1,6 +1,6 @@
 import type { NetlifyCache } from './bootstrap/cache.js'
 import { setCacheHeaders } from './cache-headers/cache-headers.js'
-import type { CacheHeadersOptions } from './cache-headers/options.js'
+import type { CacheSettings } from './cache-headers/options.js'
 
 const requestInitOptions = [
   'method',
@@ -19,7 +19,7 @@ const requestInitOptions = [
   'duplex',
 ]
 
-type CacheOptions = CacheHeadersOptions & {
+type CacheOptions = CacheSettings & {
   /**
    * A `Cache` instance or the name of the cache that should be used. If not
    * set, a cache without a name (i.e. `""`) will be used.
@@ -53,8 +53,8 @@ const isRequestInit = (input: any): input is RequestInit => {
 
 type FetchWithCache = {
   (request: string | URL | Request, init?: RequestInit): Promise<Response>
-  (request: string | URL | Request, cacheOptions?: CacheOptions): Promise<Response>
-  (request: string | URL | Request, init: RequestInit, cacheOptions?: CacheOptions): Promise<Response>
+  (request: string | URL | Request, cacheSettings?: CacheOptions): Promise<Response>
+  (request: string | URL | Request, init: RequestInit, cacheSettings?: CacheOptions): Promise<Response>
 }
 
 /**
@@ -68,23 +68,23 @@ type FetchWithCache = {
  */
 export const fetchWithCache: FetchWithCache = async (
   request: string | URL | Request,
-  initOrCacheOptions?: RequestInit | CacheOptions,
-  maybeCacheOptions?: CacheOptions,
+  optionsOrCacheSettings?: RequestInit | CacheSettings,
+  cacheOptionsParam?: CacheOptions,
 ) => {
   let cacheOptions: CacheOptions
   let requestInit: RequestInit
 
-  if (isRequestInit(initOrCacheOptions)) {
-    cacheOptions = maybeCacheOptions || {}
-    requestInit = initOrCacheOptions
+  if (isRequestInit(optionsOrCacheSettings)) {
+    cacheOptions = cacheOptionsParam || {}
+    requestInit = optionsOrCacheSettings
   } else {
-    cacheOptions = initOrCacheOptions || {}
+    cacheOptions = optionsOrCacheSettings || {}
     requestInit = {}
   }
 
   let cache: Cache
 
-  const { cache: cacheParam, onCachePut, ...cacheHeadersOptions } = cacheOptions
+  const { cache: cacheParam, onCachePut, ...cacheSettings } = cacheOptions
 
   if (cacheParam) {
     if (typeof cacheParam === 'string') {
@@ -105,7 +105,7 @@ export const fetchWithCache: FetchWithCache = async (
   }
 
   const fresh = await fetch(request, requestInit)
-  const responseForCache = setCacheHeaders(fresh.clone(), cacheHeadersOptions)
+  const responseForCache = setCacheHeaders(fresh.clone(), cacheSettings)
   const cachePut = cache.put(request, responseForCache)
 
   if (onCachePut) {
