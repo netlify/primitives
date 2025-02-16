@@ -6,6 +6,7 @@ import { NetlifyCache } from './cache.js'
 import { getMockFetch } from '../test/fetch.js'
 import { decodeHeaders } from '../test/headers.js'
 
+const base64Encode = (input: string) => Buffer.from(input, 'utf8').toString('base64')
 const host = 'my-site.netlify'
 const url = 'https://example.netlify/.netlify/cache'
 const token = 'mock-token'
@@ -35,6 +36,7 @@ describe('Cache API', () => {
         },
       })
       const cache = new NetlifyCache({
+        base64Encode,
         getHost: () => host,
         getToken: () => token,
         getURL: () => url,
@@ -83,6 +85,7 @@ describe('Cache API', () => {
         },
       })
       const cache = new NetlifyCache({
+        base64Encode,
         getHost: () => host,
         getToken: () => token,
         getURL: () => url,
@@ -125,6 +128,7 @@ describe('Cache API', () => {
         },
       })
       const cache = new NetlifyCache({
+        base64Encode,
         getHost: () => host,
         getToken: () => token,
         getURL: () => url,
@@ -167,6 +171,7 @@ describe('Cache API', () => {
         },
       })
       const cache = new NetlifyCache({
+        base64Encode,
         getHost: () => host,
         getToken: () => token,
         getURL: () => url,

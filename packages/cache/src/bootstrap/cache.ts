@@ -1,6 +1,4 @@
-import { Buffer } from 'node:buffer'
-
-import type { Factory } from './util.js'
+import type { Base64Encoder, EnvironmentOptions, Factory } from './environment.js'
 
 import * as HEADERS from '../headers.js'
 
@@ -10,24 +8,23 @@ const allowedProtocols = new Set(['http:', 'https:'])
 // sent to the API.
 const discardedHeaders = new Set(['cookie', 'content-encoding', 'content-length'])
 
-interface NetlifyCacheOptions {
-  getHost: Factory<string>
-  getToken: Factory<string>
-  getURL: Factory<string>
+type NetlifyCacheOptions = EnvironmentOptions & {
   name: string
-  userAgent?: string
 }
 
 const getInternalHeaders = Symbol('getInternalHeaders')
+const serializeResourceHeaders = Symbol('serializeResourceHeaders')
 
 export class NetlifyCache implements Cache {
+  #base64Encode: Base64Encoder
   #getHost?: Factory<string>
   #getToken: Factory<string>
   #getURL: Factory<string>
   #name: string
   #userAgent?: string
 
-  constructor({ getHost, getToken, getURL, name, userAgent }: NetlifyCacheOptions) {
+  constructor({ base64Encode, getHost, getToken, getURL, name, userAgent }: NetlifyCacheOptions) {
+    this.#base64Encode = base64Encode
     this.#getHost = getHost
     this.#getToken = getToken
     this.#getURL = getURL
@@ -51,6 +48,28 @@ export class NetlifyCache implements Cache {
     }
 
     return headers
+  }
+
+  private [serializeResourceHeaders](headers: Headers) {
+    const headersMap: Record<string, string[]> = {}
+
+    headers.forEach((value, key) => {
+      if (discardedHeaders.has(key)) {
+        return
+      }
+
+      // When there are multiple values for the same header, the `value` argument
+      // will have them as a comma-separated list. The exception is `set-cookie`,
+      // where the callback fires multiple times, each with a different `value`.
+      if (key === 'set-cookie') {
+        headersMap[key] = headersMap[key] || []
+        headersMap[key].push(value)
+      } else {
+        headersMap[key] = value.split(',')
+      }
+    })
+
+    return this.#base64Encode(JSON.stringify(headersMap))
   }
 
   async add(request: RequestInfo): Promise<void> {
@@ -132,7 +151,7 @@ export class NetlifyCache implements Cache {
       body: response.body,
       headers: {
         ...this[getInternalHeaders](),
-        [HEADERS.ResourceHeaders]: getEncodedHeaders(response.headers),
+        [HEADERS.ResourceHeaders]: this[serializeResourceHeaders](response.headers),
         [HEADERS.ResourceStatus]: response.status.toString(),
       },
       // @ts-expect-error https://github.com/whatwg/fetch/pull/1457
@@ -140,28 +159,6 @@ export class NetlifyCache implements Cache {
       method: 'POST',
     })
   }
-}
-
-const getEncodedHeaders = (headers: Headers) => {
-  const headersMap: Record<string, string[]> = {}
-
-  headers.forEach((value, key) => {
-    if (discardedHeaders.has(key)) {
-      return
-    }
-
-    // When there are multiple values for the same header, the `value` argument
-    // will have them as a comma-separated list. The exception is `set-cookie`,
-    // where the callback fires multiple times, each with a different `value`.
-    if (key === 'set-cookie') {
-      headersMap[key] = headersMap[key] || []
-      headersMap[key].push(value)
-    } else {
-      headersMap[key] = value.split(',')
-    }
-  })
-
-  return Buffer.from(JSON.stringify(headersMap), 'utf8').toString('base64')
 }
 
 const extractAndValidateURL = (input: RequestInfo | URL): URL => {

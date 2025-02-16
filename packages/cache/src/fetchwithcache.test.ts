@@ -1,7 +1,8 @@
+import { Buffer } from 'node:buffer'
 import { Readable } from 'node:stream'
 import type { ReadableStream } from 'node:stream/web'
 
-import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest'
+import { describe, test, expect, beforeAll, afterAll } from 'vitest'
 
 import { NetlifyCacheStorage } from './bootstrap/cachestorage.js'
 import { fetchWithCache } from './fetchwithcache.js'
@@ -9,6 +10,7 @@ import { getMockFetch } from './test/fetch.js'
 import { readAsBuffer, sleep } from './test/util.js'
 import { decodeHeaders } from './test/headers.js'
 
+const base64Encode = (input: string) => Buffer.from(input, 'utf8').toString('base64')
 const host = 'host.netlify'
 const url = 'https://example.netlify/.netlify/cache'
 const token = 'mock-token'
@@ -16,7 +18,12 @@ const token = 'mock-token'
 let originalCaches = globalThis.caches
 
 beforeAll(() => {
-  globalThis.caches = new NetlifyCacheStorage({ getHost: () => host, getToken: () => token, getURL: () => url })
+  globalThis.caches = new NetlifyCacheStorage({
+    base64Encode,
+    getHost: () => host,
+    getToken: () => token,
+    getURL: () => url,
+  })
 })
 
 afterAll(() => {

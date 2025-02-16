@@ -1,21 +1,16 @@
 import { NetlifyCache } from './cache.js'
-import type { Factory } from './util.js'
-
-interface NetlifyCacheStorageOptions {
-  getHost: Factory<string>
-  getToken: Factory<string>
-  getURL: Factory<string>
-  userAgent?: string
-}
+import type { Base64Encoder, EnvironmentOptions, Factory } from './environment.js'
 
 export class NetlifyCacheStorage {
+  #base64Encode: Base64Encoder
   #getHost: Factory<string>
   #getToken: Factory<string>
   #getURL: Factory<string>
   #stores: Map<string, NetlifyCache>
   #userAgent?: string
 
-  constructor({ getHost, getToken, getURL, userAgent }: NetlifyCacheStorageOptions) {
+  constructor({ base64Encode, getHost, getToken, getURL, userAgent }: EnvironmentOptions) {
+    this.#base64Encode = base64Encode
     this.#getHost = getHost
     this.#getToken = getToken
     this.#getURL = getURL
@@ -28,6 +23,7 @@ export class NetlifyCacheStorage {
 
     if (!store) {
       store = new NetlifyCache({
+        base64Encode: this.#base64Encode,
         getHost: this.#getHost,
         getToken: this.#getToken,
         getURL: this.#getURL,
