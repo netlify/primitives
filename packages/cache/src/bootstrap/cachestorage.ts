@@ -1,21 +1,13 @@
 import { NetlifyCache } from './cache.js'
-import type { Base64Encoder, EnvironmentOptions, Factory } from './environment.js'
+import type { EnvironmentOptions } from './environment.js'
 
 export class NetlifyCacheStorage {
-  #base64Encode: Base64Encoder
-  #getHost: Factory<string>
-  #getToken: Factory<string>
-  #getURL: Factory<string>
+  #environmentOptions: EnvironmentOptions
   #stores: Map<string, NetlifyCache>
-  #userAgent?: string
 
-  constructor({ base64Encode, getHost, getToken, getURL, userAgent }: EnvironmentOptions) {
-    this.#base64Encode = base64Encode
-    this.#getHost = getHost
-    this.#getToken = getToken
-    this.#getURL = getURL
+  constructor(environmentOptions: EnvironmentOptions) {
+    this.#environmentOptions = environmentOptions
     this.#stores = new Map()
-    this.#userAgent = userAgent
   }
 
   open(name: string): Promise<Cache> {
@@ -23,12 +15,8 @@ export class NetlifyCacheStorage {
 
     if (!store) {
       store = new NetlifyCache({
-        base64Encode: this.#base64Encode,
-        getHost: this.#getHost,
-        getToken: this.#getToken,
-        getURL: this.#getURL,
+        ...this.#environmentOptions,
         name,
-        userAgent: this.#userAgent,
       })
 
       this.#stores.set(name, store)
