@@ -65,7 +65,7 @@ describe('`cacheHaders`', () => {
       })
     })
 
-    test('With `ttl`` and `durable`', () => {
+    test('With `ttl` and `durable`', () => {
       expect(cacheHeaders({ durable: true, ttl: 10, swr: 50 })).toStrictEqual({
         'netlify-cdn-cache-control': 's-maxage=10,stale-while-revalidate=50,durable',
       })
