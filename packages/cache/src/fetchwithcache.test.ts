@@ -75,7 +75,7 @@ describe('`fetchWithCache`', () => {
           'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
             new Response(null, { status: 404 }),
             async (_, init) => {
-              const headers = decodeHeaders((init?.headers as Record<string, string>)['Netlify-Programmable-Headers'])
+              const headers = decodeHeaders((init?.headers as Record<string, string>)['netlify-programmable-headers'])
 
               expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
               expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
@@ -122,7 +122,7 @@ describe('`fetchWithCache`', () => {
           'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
             new Response(null, { status: 404 }),
             async (_, init) => {
-              const headers = decodeHeaders((init?.headers as Record<string, string>)['Netlify-Programmable-Headers'])
+              const headers = decodeHeaders((init?.headers as Record<string, string>)['netlify-programmable-headers'])
 
               expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
               expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
