@@ -43,7 +43,7 @@ const isRequestInit = (input: any): input is RequestInit => {
   }
 
   for (const property of requestInitOptions) {
-    if (Object.hasOwn(input, property)) {
+    if (property in input) {
       return true
     }
   }
