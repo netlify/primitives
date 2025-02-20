@@ -59,6 +59,20 @@ describe('`fetchWithCache`', () => {
     expect(mockFetch.requests.length).toBe(2)
   })
 
+  test('Throws when used with a method other than GET', async () => {
+    const mockFetch = getMockFetch()
+    const resourceURL = 'https://netlify.com'
+
+    expect(() => fetchWithCache(resourceURL, { method: 'POST' })).rejects.toThrowError()
+    expect(() => fetchWithCache(resourceURL, { method: 'PUT' })).rejects.toThrowError()
+    expect(() => fetchWithCache(new Request(resourceURL, { method: 'POST' }))).rejects.toThrowError()
+    expect(() => fetchWithCache(new Request(resourceURL, { method: 'PUT' }))).rejects.toThrowError()
+
+    mockFetch.restore()
+
+    expect(mockFetch.requests.length).toBe(0)
+  })
+
   describe('When not in the cache, fetches the resource and adds it to the cache', () => {
     test('Without a `onCachePut` handler', async () => {
       const headers = new Headers()

@@ -82,6 +82,18 @@ export const fetchWithCache: FetchWithCache = async (
     requestInit = {}
   }
 
+  let method: string | undefined
+
+  if (request instanceof Request) {
+    method = request.method
+  } else {
+    method = requestInit?.method
+  }
+
+  if (method && method?.toLowerCase() !== 'get') {
+    throw new TypeError('`fetchWithCache` only supports GET requests.')
+  }
+
   let cache: Cache
 
   const { cache: cacheParam, onCachePut, ...cacheSettings } = cacheOptions
