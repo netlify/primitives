@@ -2,7 +2,7 @@ export const ensureArray = (value: any): string[] => (Array.isArray(value) ? val
 
 export const requireArrayOfStrings = (name: string, value: any): string[] => {
   if (!Array.isArray(value) || value.some((part) => typeof part !== 'string' || part.length === 0)) {
-    throw new TypeError(`'${name}' must be an array of strings.`)
+    throw new TypeError(`'${name}' must be an array of non-empty strings.`)
   }
 
   return value
