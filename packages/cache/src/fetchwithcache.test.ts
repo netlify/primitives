@@ -7,7 +7,7 @@ import { describe, test, expect, beforeAll, afterAll } from 'vitest'
 import { NetlifyCacheStorage } from './bootstrap/cachestorage.js'
 import { fetchWithCache } from './fetchwithcache.js'
 import { getMockFetch } from './test/fetch.js'
-import { readAsBuffer, sleep } from './test/util.js'
+import { readAsString, sleep } from './test/util.js'
 import { decodeHeaders } from './test/headers.js'
 
 const base64Encode = (input: string) => Buffer.from(input, 'utf8').toString('base64')
@@ -79,7 +79,7 @@ describe('`fetchWithCache`', () => {
 
               expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
               expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
-              expect(await readAsBuffer(Readable.fromWeb(init?.body as ReadableStream<any>))).toBe(
+              expect(await readAsString(Readable.fromWeb(init?.body as ReadableStream<any>))).toBe(
                 '<h1>Hello world</h1>',
               )
 
@@ -126,7 +126,7 @@ describe('`fetchWithCache`', () => {
 
               expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
               expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
-              expect(await readAsBuffer(Readable.fromWeb(init?.body as ReadableStream<any>))).toBe(
+              expect(await readAsString(Readable.fromWeb(init?.body as ReadableStream<any>))).toBe(
                 '<h1>Hello world</h1>',
               )
 
