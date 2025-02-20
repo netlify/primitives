@@ -28,7 +28,7 @@ describe('Cache API', () => {
               const headers = init?.headers as Record<string, string>
 
               expect(headers.Authorization).toBe(`Bearer ${token}`)
-              expect(headers['Netlify-Forwarded-Host']).toBe(host)
+              expect(headers['netlify-forwarded-host']).toBe(host)
 
               return new Response(null, { status: 201 })
             },
@@ -115,7 +115,7 @@ describe('Cache API', () => {
               const headers = init?.headers as Record<string, string>
 
               expect(headers.Authorization).toBe(`Bearer ${token}`)
-              expect(headers['Netlify-Forwarded-Host']).toBe(host)
+              expect(headers['netlify-forwarded-host']).toBe(host)
 
               return response
             },
