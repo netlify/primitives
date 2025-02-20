@@ -47,6 +47,9 @@ describe('`cacheHaders`', () => {
 
     test('Throws when number is not integer', () => {
       expect(() => cacheHeaders({ ttl: 31.5 })).toThrow()
+
+      // @ts-expect-error Wrong type
+      expect(() => cacheHeaders({ ttl: '31.5' })).toThrow()
     })
 
     test('Throws when number is negative', () => {
