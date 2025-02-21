@@ -136,5 +136,5 @@ export const getCacheStatus: ParseCacheStatus = (input: string | Headers | Respo
     return parseCacheStatusValues(input.headers.get(HEADERS.CacheStatus) ?? '')
   }
 
-  throw new TypeError('`parseCacheStatus` expects a string, a `Headers` object or a `Response` object.')
+  throw new TypeError('`getCacheStatus` expects a string, a `Headers` object or a `Response` object.')
 }
