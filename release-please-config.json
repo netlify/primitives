@@ -1,5 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "6fc119838885b0cb831e78ddd23ac01cb819e585",
+  "include-component-in-tag": true,
+  "include-v-in-tag": true,
+  "tag-separator": "@",
+  "release-type": "node",
   "plugins": ["node-workspace"],
   "packages": {
     "packages/cache": {}
