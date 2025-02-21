@@ -1,3 +1,4 @@
+export const CacheStatus = 'cache-status'
 export const NetlifyCacheId = 'netlify-cache-id'
 export const NetlifyCacheTag = 'netlify-cache-tag'
 export const NetlifyCdnCacheControl = 'netlify-cdn-cache-control'
