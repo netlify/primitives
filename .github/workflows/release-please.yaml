@@ -1,20 +1,36 @@
+name: release-please
 on:
   push:
     branches:
       - main
-
-permissions:
-  contents: write
-  pull-requests: write
-
-name: Run Release Please
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: navikt/github-app-token-generator@a8ae52448279d468cfbca5cd899f2457f0b1f643
+        id: get-token
+        with:
+          private-key: ${{ secrets.TOKENS_PRIVATE_KEY }}
+          app-id: ${{ secrets.TOKENS_APP_ID }}
+      - uses: google-github-actions/release-please-action@v4
         id: release
         with:
-          command: manifest
-          token: ${{secrets.GITHUB_TOKEN}}
-          default-branch: main
+          token: ${{ steps.get-token.outputs.token }}
+          release-type: node
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.release_created }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '*'
+          cache: 'npm'
+          check-latest: true
+          registry-url: 'https://registry.npmjs.org'
+        if: ${{ steps.release.outputs.release_created }}
+      - run: npm publish --access=public --workspaces
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
