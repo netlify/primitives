@@ -1,10 +1,10 @@
 {
   "name": "netlify-primitives-monorepo",
+  "private": true,
   "workspaces": [
-    "packages/cache"
+    "packages/*"
   ],
   "version": "0.0.0",
-  "private": true,
   "description": "",
   "main": "index.js",
   "scripts": {
