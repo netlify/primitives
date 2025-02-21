@@ -30,7 +30,7 @@ jobs:
           check-latest: true
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.release_created }}
-      - run: npm publish --access=public --workspaces
-        if: ${{ steps.release.outputs.release_created }}
+      - run: npm publish packages/cache/ --access=public
+        if: ${{ steps.release.outputs['packages/cache--version'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
