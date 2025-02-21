@@ -1,7 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "bootstrap-sha": "9ae97887beb38dd7eea0f3f90111b9a73e984592",
-  "release-type": "node",
   "plugins": ["node-workspace"],
   "packages": {
     "packages/cache": {}
