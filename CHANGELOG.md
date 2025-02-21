@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/netlify/primitives/compare/v1.0.0...v1.1.0) (2025-02-21)
+
+
+### Features
+
+* update package.json ([6f59f75](https://github.com/netlify/primitives/commit/6f59f75851edf9ef76c254b9b3ddd33d4f1e56a3))
+
 ## 1.0.0 (2025-02-21)
 
 
