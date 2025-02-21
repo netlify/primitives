@@ -1,8 +1,9 @@
 import { Buffer } from 'node:buffer'
 
-import { describe, test, expect } from 'vitest'
+import { describe, test, expect, vi } from 'vitest'
 
 import { NetlifyCache } from './cache.js'
+import { ERROR_CODES } from './errors.js'
 import { getMockFetch } from '../test/fetch.js'
 import { decodeHeaders } from '../test/headers.js'
 
@@ -203,6 +204,47 @@ describe('Cache API', () => {
       const resourceHeaders = decodeHeaders(cacheRequest.headers.get('netlify-programmable-headers'))
 
       expect([...resourceHeaders]).toStrictEqual([...headers])
+    })
+
+    test('logs a message when the response is not added to the cache', async () => {
+      const consoleWarn = vi.spyOn(globalThis.console, 'warn')
+      const mockFetch = getMockFetch({
+        responses: {
+          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
+            (_, init) => {
+              const headers = init?.headers as Record<string, string>
+
+              expect(headers.Authorization).toBe(`Bearer ${token}`)
+              expect(headers['netlify-forwarded-host']).toBe(host)
+
+              return new Response(null, { headers: { 'netlify-programmable-error': 'no_ttl' }, status: 400 })
+            },
+          ],
+        },
+      })
+      const cache = new NetlifyCache({
+        base64Encode,
+        getHost: () => host,
+        getToken: () => token,
+        getURL: () => url,
+        name: 'my-cache',
+        userAgent,
+      })
+
+      const headers = new Headers()
+      headers.set('content-type', 'text/html')
+      headers.set('x-custom-header', 'foobar')
+
+      const response = new Response('<h1>Hello world</h1>', { headers })
+
+      await cache.put(new Request('https://netlify.com'), response)
+
+      mockFetch.restore()
+
+      expect(consoleWarn).toHaveBeenCalledWith(`Failed to write to the cache: ${ERROR_CODES.no_ttl}`)
+      consoleWarn.mockRestore()
+
+      expect(mockFetch.requests.length).toBe(1)
     })
   })
 })
