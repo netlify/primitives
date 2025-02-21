@@ -7,7 +7,7 @@ import { describe, test, expect, beforeAll, afterAll } from 'vitest'
 import { NetlifyCacheStorage } from './bootstrap/cachestorage.js'
 import { fetchWithCache } from './fetchwithcache.js'
 import { getMockFetch } from './test/fetch.js'
-import { readAsBuffer, sleep } from './test/util.js'
+import { readAsString, sleep } from './test/util.js'
 import { decodeHeaders } from './test/headers.js'
 
 const base64Encode = (input: string) => Buffer.from(input, 'utf8').toString('base64')
@@ -59,6 +59,20 @@ describe('`fetchWithCache`', () => {
     expect(mockFetch.requests.length).toBe(2)
   })
 
+  test('Throws when used with a method other than GET', async () => {
+    const mockFetch = getMockFetch()
+    const resourceURL = 'https://netlify.com'
+
+    expect(() => fetchWithCache(resourceURL, { method: 'POST' })).rejects.toThrowError()
+    expect(() => fetchWithCache(resourceURL, { method: 'PUT' })).rejects.toThrowError()
+    expect(() => fetchWithCache(new Request(resourceURL, { method: 'POST' }))).rejects.toThrowError()
+    expect(() => fetchWithCache(new Request(resourceURL, { method: 'PUT' }))).rejects.toThrowError()
+
+    mockFetch.restore()
+
+    expect(mockFetch.requests.length).toBe(0)
+  })
+
   describe('When not in the cache, fetches the resource and adds it to the cache', () => {
     test('Without a `onCachePut` handler', async () => {
       const headers = new Headers()
@@ -75,11 +89,11 @@ describe('`fetchWithCache`', () => {
           'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
             new Response(null, { status: 404 }),
             async (_, init) => {
-              const headers = decodeHeaders((init?.headers as Record<string, string>)['Netlify-Programmable-Headers'])
+              const headers = decodeHeaders((init?.headers as Record<string, string>)['netlify-programmable-headers'])
 
               expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
               expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
-              expect(await readAsBuffer(Readable.fromWeb(init?.body as ReadableStream<any>))).toBe(
+              expect(await readAsString(Readable.fromWeb(init?.body as ReadableStream<any>))).toBe(
                 '<h1>Hello world</h1>',
               )
 
@@ -122,11 +136,11 @@ describe('`fetchWithCache`', () => {
           'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
             new Response(null, { status: 404 }),
             async (_, init) => {
-              const headers = decodeHeaders((init?.headers as Record<string, string>)['Netlify-Programmable-Headers'])
+              const headers = decodeHeaders((init?.headers as Record<string, string>)['netlify-programmable-headers'])
 
               expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
               expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
-              expect(await readAsBuffer(Readable.fromWeb(init?.body as ReadableStream<any>))).toBe(
+              expect(await readAsString(Readable.fromWeb(init?.body as ReadableStream<any>))).toBe(
                 '<h1>Hello world</h1>',
               )
 

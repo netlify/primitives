@@ -2,7 +2,7 @@ export const ensureArray = (value: any): string[] => (Array.isArray(value) ? val
 
 export const requireArrayOfStrings = (name: string, value: any): string[] => {
   if (!Array.isArray(value) || value.some((part) => typeof part !== 'string' || part.length === 0)) {
-    throw new TypeError(`'${name}' must be an array of strings.`)
+    throw new TypeError(`'${name}' must be an array of non-empty strings.`)
   }
 
   return value
@@ -23,9 +23,9 @@ export const requireArrayOfStringsWithNesting = (name: string, value: any, joine
 }
 
 export const requirePositiveInteger = (name: string, value: any) => {
-  const number = typeof value === 'number' ? value : Number.parseInt(value)
+  const number = Number.parseFloat(value)
 
-  if (Number.isNaN(number) || !Number.isInteger(number) || number < 0) {
+  if (Number.isNaN(number) || !Number.isInteger(number) || number < 0 || number === Number.POSITIVE_INFINITY) {
     throw new TypeError(`'${name}' must be a positive integer number.`)
   }
 

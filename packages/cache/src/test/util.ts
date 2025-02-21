@@ -1,4 +1,4 @@
-export const readAsBuffer = (input: NodeJS.ReadableStream) =>
+export const readAsString = (input: NodeJS.ReadableStream) =>
   new Promise((resolve, reject) => {
     let buffer = ''
 
