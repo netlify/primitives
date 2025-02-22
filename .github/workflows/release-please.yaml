@@ -29,6 +29,8 @@ jobs:
           check-latest: true
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.releases_created }}
+      - run: npm ci
+        if: ${{ steps.release.outputs.releases_created }}        
       - run: npm publish packages/cache/ --access=public
         if: ${{ steps.release.outputs['packages/cache--release_created'] }}
         env:
