@@ -3,8 +3,7 @@
   "bootstrap-sha": "9ae97887beb38dd7eea0f3f90111b9a73e984592",
   "plugins": ["node-workspace"],
   "packages": {
-    "cache": {
-      "path": "packages/cache",
+    "package/cache": {
       "release-type": "node"
     }
   }
