@@ -20,7 +20,6 @@ jobs:
         id: release
         with:
           token: ${{ steps.get-token.outputs.token }}
-          release-type: node
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
       - uses: actions/setup-node@v4
