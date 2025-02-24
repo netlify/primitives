@@ -1,4 +1,4 @@
-import type { Base64Encoder, EnvironmentOptions, Factory } from './environment.js'
+import type { Base64Encoder, EnvironmentOptions, RequestContext, RequestContextFactory } from './environment.js'
 
 import * as HEADERS from '../headers.js'
 
@@ -17,28 +17,24 @@ const serializeResourceHeaders = Symbol('serializeResourceHeaders')
 
 export class NetlifyCache implements Cache {
   #base64Encode: Base64Encoder
-  #getHost?: Factory<string>
-  #getToken: Factory<string>
-  #getURL: Factory<string>
+  #getContext: RequestContextFactory
   #name: string
   #userAgent?: string
 
-  constructor({ base64Encode, getHost, getToken, getURL, name, userAgent }: NetlifyCacheOptions) {
+  constructor({ base64Encode, getContext, name, userAgent }: NetlifyCacheOptions) {
     this.#base64Encode = base64Encode
-    this.#getHost = getHost
-    this.#getToken = getToken
-    this.#getURL = getURL
+    this.#getContext = getContext
     this.#name = name
     this.#userAgent = userAgent
   }
 
-  private [getInternalHeaders]() {
+  private [getInternalHeaders](requestContext: RequestContext) {
+    const { host, token } = requestContext
     const headers: Record<string, string> = {
-      Authorization: `Bearer ${this.#getToken()}`,
+      Authorization: `Bearer ${token}`,
       [HEADERS.ResourceStore]: this.#name,
     }
 
-    const host = this.#getHost?.()
     if (host) {
       headers[HEADERS.NetlifyForwardedHost] = host
     }
@@ -82,10 +78,11 @@ export class NetlifyCache implements Cache {
 
   // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
   async delete(request: RequestInfo) {
+    const context = this.#getContext()
     const resourceURL = extractAndValidateURL(request)
 
-    await fetch(`${this.#getURL()}/${toCacheKey(resourceURL)}`, {
-      headers: this[getInternalHeaders](),
+    await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
+      headers: this[getInternalHeaders](context),
       method: 'DELETE',
     })
 
@@ -100,10 +97,11 @@ export class NetlifyCache implements Cache {
 
   async match(request: RequestInfo) {
     try {
+      const context = this.#getContext()
       const resourceURL = extractAndValidateURL(request)
-      const cacheURL = `${this.#getURL()}/${toCacheKey(resourceURL)}`
+      const cacheURL = `${context.url}/${toCacheKey(resourceURL)}`
       const response = await fetch(cacheURL, {
-        headers: this[getInternalHeaders](),
+        headers: this[getInternalHeaders](context),
         method: 'GET',
       })
 
@@ -145,12 +143,13 @@ export class NetlifyCache implements Cache {
       throw new TypeError("Cannot cache response with 'Vary: *' header.")
     }
 
+    const context = this.#getContext()
     const resourceURL = extractAndValidateURL(request)
 
-    await fetch(`${this.#getURL()}/${toCacheKey(resourceURL)}`, {
+    await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
       body: response.body,
       headers: {
-        ...this[getInternalHeaders](),
+        ...this[getInternalHeaders](context),
         [HEADERS.ResourceHeaders]: this[serializeResourceHeaders](response.headers),
         [HEADERS.ResourceStatus]: response.status.toString(),
       },
