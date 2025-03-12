@@ -38,9 +38,7 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getHost: () => host,
-        getToken: () => token,
-        getURL: () => url,
+        getContext: () => ({ host, token, url }),
         name: 'my-cache',
         userAgent,
       })
@@ -87,9 +85,7 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getHost: () => host,
-        getToken: () => token,
-        getURL: () => url,
+        getContext: () => ({ host, token, url }),
         name: 'my-cache',
         userAgent,
       })
@@ -130,9 +126,7 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getHost: () => host,
-        getToken: () => token,
-        getURL: () => url,
+        getContext: () => ({ host, token, url }),
         name: 'my-cache',
         userAgent,
       })
@@ -173,9 +167,7 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getHost: () => host,
-        getToken: () => token,
-        getURL: () => url,
+        getContext: () => ({ host, token, url }),
         name: 'my-cache',
         userAgent,
       })
