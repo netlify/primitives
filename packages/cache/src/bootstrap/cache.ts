@@ -1,5 +1,6 @@
 import type { Base64Encoder, EnvironmentOptions, RequestContext, RequestContextFactory } from './environment.js'
 
+import { ERROR_CODES, GENERIC_ERROR } from './errors.js'
 import * as HEADERS from '../headers.js'
 
 const allowedProtocols = new Set(['http:', 'https:'])
@@ -146,7 +147,7 @@ export class NetlifyCache implements Cache {
     const context = this.#getContext()
     const resourceURL = extractAndValidateURL(request)
 
-    await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
+    const cacheResponse = await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
       body: response.body,
       headers: {
         ...this[getInternalHeaders](context),
@@ -157,6 +158,13 @@ export class NetlifyCache implements Cache {
       duplex: 'half',
       method: 'POST',
     })
+
+    if (!cacheResponse.ok) {
+      const errorDetail = cacheResponse.headers.get(HEADERS.ErrorDetail) ?? ''
+      const errorMessage = ERROR_CODES[errorDetail as keyof typeof ERROR_CODES] || GENERIC_ERROR
+
+      console.warn(`Failed to write to the cache: ${errorMessage}`)
+    }
   }
 }
 
