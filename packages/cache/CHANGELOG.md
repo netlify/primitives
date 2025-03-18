@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.5.0](https://github.com/netlify/primitives/compare/cache-v1.1.0...cache-v1.5.0) (2025-03-18)
+
+
+### Features
+
+* log failures in `cache.put` ([#38](https://github.com/netlify/primitives/issues/38)) ([b9f356a](https://github.com/netlify/primitives/commit/b9f356a2bd1b604f3fa66c032eefa099138c317b))
+
+
+### Bug Fixes
+
+* disable code-splitting to workaround an issue in deno 2.x's `deno cache` functionality ([#85](https://github.com/netlify/primitives/issues/85)) ([557a0c1](https://github.com/netlify/primitives/commit/557a0c10f9aad4d4ab4a4c49c31cf13b65bc554a))
+
+
+### Miscellaneous Chores
+
+* release 1.5.0 ([1224f51](https://github.com/netlify/primitives/commit/1224f5193c51d6a26be02962f46b4957fa595794))
+
 ## [1.4.0](https://github.com/netlify/primitives/compare/cache-v1.1.0...cache-v1.4.0) (2025-03-12)
 
 
