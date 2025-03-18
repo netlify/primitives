@@ -38,7 +38,11 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: () => ({ host, token, url }),
+        getContext: ({ method }) => {
+          expect(method).toBe('post')
+
+          return { host, token, url }
+        },
         name: 'my-cache',
         userAgent,
       })
@@ -85,7 +89,11 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: () => ({ host, token, url }),
+        getContext: ({ method }) => {
+          expect(method).toBe('delete')
+
+          return { host, token, url }
+        },
         name: 'my-cache',
         userAgent,
       })
@@ -95,6 +103,26 @@ describe('Cache API', () => {
       mockFetch.restore()
 
       expect(mockFetch.requests.length).toBe(1)
+    })
+
+    test('is a no-op when the `getContext` callback returns `null`', async () => {
+      const mockFetch = getMockFetch()
+      const cache = new NetlifyCache({
+        base64Encode,
+        getContext: ({ method }) => {
+          expect(method).toBe('delete')
+
+          return null
+        },
+        name: 'my-cache',
+        userAgent,
+      })
+
+      expect(await cache.delete(new Request('https://netlify.com'))).toBe(true)
+
+      mockFetch.restore()
+
+      expect(mockFetch.requests.length).toBe(0)
     })
   })
 
@@ -126,7 +154,11 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: () => ({ host, token, url }),
+        getContext: ({ method }) => {
+          expect(method).toBe('get')
+
+          return { host, token, url }
+        },
         name: 'my-cache',
         userAgent,
       })
@@ -146,6 +178,26 @@ describe('Cache API', () => {
       expect([...(hitResponse as Response).headers]).toStrictEqual([...headers])
 
       expect(missResponse).toBeUndefined()
+    })
+
+    test('is a no-op when the `getContext` callback returns `null`', async () => {
+      const mockFetch = getMockFetch()
+      const cache = new NetlifyCache({
+        base64Encode,
+        getContext: ({ method }) => {
+          expect(method).toBe('get')
+
+          return null
+        },
+        name: 'my-cache',
+        userAgent,
+      })
+
+      expect(await cache.match(new Request('https://netlify.com'))).toBe(undefined)
+
+      mockFetch.restore()
+
+      expect(mockFetch.requests.length).toBe(0)
     })
   })
 
@@ -167,7 +219,11 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: () => ({ host, token, url }),
+        getContext: ({ method }) => {
+          expect(method).toBe('post')
+
+          return { host, token, url }
+        },
         name: 'my-cache',
         userAgent,
       })
@@ -235,6 +291,26 @@ describe('Cache API', () => {
       consoleWarn.mockRestore()
 
       expect(mockFetch.requests.length).toBe(1)
+    })
+
+    test('is a no-op when the `getContext` callback returns `null`', async () => {
+      const mockFetch = getMockFetch()
+      const cache = new NetlifyCache({
+        base64Encode,
+        getContext: ({ method }) => {
+          expect(method).toBe('post')
+
+          return null
+        },
+        name: 'my-cache',
+        userAgent,
+      })
+
+      expect(await cache.put(new Request('https://netlify.com'), new Response('Hello world'))).toBe(undefined)
+
+      mockFetch.restore()
+
+      expect(mockFetch.requests.length).toBe(0)
     })
   })
 })

@@ -6,7 +6,9 @@ export interface EnvironmentOptions {
   userAgent?: string
 }
 
-export type RequestContextFactory = () => RequestContext
+type Method = 'delete' | 'get' | 'post'
+
+export type RequestContextFactory = (opts: { method: Method }) => RequestContext | null
 
 export interface RequestContext {
   host: string
