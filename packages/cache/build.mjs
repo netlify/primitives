@@ -12,6 +12,7 @@ await rm(dist, { recursive: true, force: true })
 const options = {
   entry: ['src/bootstrap/main.ts', 'src/main.ts'],
   tsconfig: 'tsconfig.json',
+  splitting: false,
   bundle: true,
   dts: true,
   outDir: dist,
