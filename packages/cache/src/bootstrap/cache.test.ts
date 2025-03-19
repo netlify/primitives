@@ -256,7 +256,7 @@ describe('Cache API', () => {
     })
 
     test('logs a message when the response is not added to the cache', async () => {
-      const consoleWarn = vi.spyOn(globalThis.console, 'warn')
+      const logger = vi.fn()
       const mockFetch = getMockFetch({
         responses: {
           'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
@@ -274,6 +274,7 @@ describe('Cache API', () => {
       const cache = new NetlifyCache({
         base64Encode,
         getContext: () => ({ host, token, url }),
+        logger,
         name: 'my-cache',
         userAgent,
       })
@@ -288,8 +289,7 @@ describe('Cache API', () => {
 
       mockFetch.restore()
 
-      expect(consoleWarn).toHaveBeenCalledWith(`Failed to write to the cache: ${ERROR_CODES.no_ttl}`)
-      consoleWarn.mockRestore()
+      expect(logger).toHaveBeenCalledWith(`Failed to write to the cache: ${ERROR_CODES.no_ttl}`)
 
       expect(mockFetch.requests.length).toBe(1)
     })
