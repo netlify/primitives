@@ -6,7 +6,7 @@ export interface EnvironmentOptions {
   userAgent?: string
 }
 
-export const enum Operation {
+export enum Operation {
   Delete = 'delete',
   Read = 'read',
   Write = 'write',
