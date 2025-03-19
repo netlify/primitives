@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.7.0](https://github.com/netlify/primitives/compare/cache-v1.5.0...cache-v1.7.0) (2025-03-19)
+
+
+### Features
+
+* add `logger` option ([#96](https://github.com/netlify/primitives/issues/96)) ([4017d6e](https://github.com/netlify/primitives/commit/4017d6e05ed92b95dc151411cb304f6fb3b1e5e3))
+* make Cache API operations no-ops when context is null ([#90](https://github.com/netlify/primitives/issues/90)) ([240871d](https://github.com/netlify/primitives/commit/240871d1d20f99b0dbe48eeae14980d4d6b9ba1e))
+
+
+### Bug Fixes
+
+* emit `Operation` enum ([#94](https://github.com/netlify/primitives/issues/94)) ([eed9bd5](https://github.com/netlify/primitives/commit/eed9bd5cc04f567c4baa07cc0904291a2b94f90c))
+
+
+### Miscellaneous Chores
+
+* release 1.6.1 ([7010f09](https://github.com/netlify/primitives/commit/7010f09dc3d8640a983c14cf9a325ee7615c5c77))
+
 ## [1.6.1](https://github.com/netlify/primitives/compare/cache-v1.5.0...cache-v1.6.1) (2025-03-19)
 
 
