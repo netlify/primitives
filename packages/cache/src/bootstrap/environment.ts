@@ -1,8 +1,11 @@
 export type Base64Encoder = (input: string) => string
 
+export type Logger = (...args: any[]) => void
+
 export interface EnvironmentOptions {
   base64Encode: Base64Encoder
   getContext: RequestContextFactory
+  logger?: Logger
   userAgent?: string
 }
 

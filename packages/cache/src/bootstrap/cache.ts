@@ -1,4 +1,11 @@
-import { Base64Encoder, EnvironmentOptions, RequestContext, Operation, RequestContextFactory } from './environment.js'
+import {
+  Base64Encoder,
+  EnvironmentOptions,
+  Logger,
+  RequestContext,
+  Operation,
+  RequestContextFactory,
+} from './environment.js'
 
 import { ERROR_CODES, GENERIC_ERROR } from './errors.js'
 import * as HEADERS from '../headers.js'
@@ -19,12 +26,14 @@ const serializeResourceHeaders = Symbol('serializeResourceHeaders')
 export class NetlifyCache implements Cache {
   #base64Encode: Base64Encoder
   #getContext: RequestContextFactory
+  #logger?: Logger
   #name: string
   #userAgent?: string
 
-  constructor({ base64Encode, getContext, name, userAgent }: NetlifyCacheOptions) {
+  constructor({ base64Encode, getContext, logger, name, userAgent }: NetlifyCacheOptions) {
     this.#base64Encode = base64Encode
     this.#getContext = getContext
+    this.#logger = logger
     this.#name = name
     this.#userAgent = userAgent
   }
@@ -176,7 +185,7 @@ export class NetlifyCache implements Cache {
       const errorDetail = cacheResponse.headers.get(HEADERS.ErrorDetail) ?? ''
       const errorMessage = ERROR_CODES[errorDetail as keyof typeof ERROR_CODES] || GENERIC_ERROR
 
-      console.warn(`Failed to write to the cache: ${errorMessage}`)
+      this.#logger?.(`Failed to write to the cache: ${errorMessage}`)
     }
   }
 }
