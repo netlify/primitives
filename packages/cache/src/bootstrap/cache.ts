@@ -1,4 +1,4 @@
-import type { Base64Encoder, EnvironmentOptions, RequestContext, RequestContextFactory } from './environment.js'
+import { Base64Encoder, EnvironmentOptions, RequestContext, Operation, RequestContextFactory } from './environment.js'
 
 import { ERROR_CODES, GENERIC_ERROR } from './errors.js'
 import * as HEADERS from '../headers.js'
@@ -79,7 +79,7 @@ export class NetlifyCache implements Cache {
 
   // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
   async delete(request: RequestInfo) {
-    const context = this.#getContext({ method: 'delete' })
+    const context = this.#getContext({ operation: Operation.Delete })
 
     if (context) {
       const resourceURL = extractAndValidateURL(request)
@@ -101,7 +101,7 @@ export class NetlifyCache implements Cache {
 
   async match(request: RequestInfo) {
     try {
-      const context = this.#getContext({ method: 'get' })
+      const context = this.#getContext({ operation: Operation.Read })
 
       if (!context) {
         return
@@ -152,7 +152,7 @@ export class NetlifyCache implements Cache {
       throw new TypeError("Cannot cache response with 'Vary: *' header.")
     }
 
-    const context = this.#getContext({ method: 'post' })
+    const context = this.#getContext({ operation: Operation.Write })
 
     if (!context) {
       return

@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer'
 import { describe, test, expect, vi } from 'vitest'
 
 import { NetlifyCache } from './cache.js'
+import { Operation } from './environment.js'
 import { ERROR_CODES } from './errors.js'
 import { getMockFetch } from '../test/fetch.js'
 import { decodeHeaders } from '../test/headers.js'
@@ -38,8 +39,8 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: ({ method }) => {
-          expect(method).toBe('post')
+        getContext: ({ operation }) => {
+          expect(operation).toBe(Operation.Write)
 
           return { host, token, url }
         },
@@ -89,8 +90,8 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: ({ method }) => {
-          expect(method).toBe('delete')
+        getContext: ({ operation }) => {
+          expect(operation).toBe(Operation.Delete)
 
           return { host, token, url }
         },
@@ -109,8 +110,8 @@ describe('Cache API', () => {
       const mockFetch = getMockFetch()
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: ({ method }) => {
-          expect(method).toBe('delete')
+        getContext: ({ operation }) => {
+          expect(operation).toBe(Operation.Delete)
 
           return null
         },
@@ -154,8 +155,8 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: ({ method }) => {
-          expect(method).toBe('get')
+        getContext: ({ operation }) => {
+          expect(operation).toBe(Operation.Read)
 
           return { host, token, url }
         },
@@ -184,8 +185,8 @@ describe('Cache API', () => {
       const mockFetch = getMockFetch()
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: ({ method }) => {
-          expect(method).toBe('get')
+        getContext: ({ operation }) => {
+          expect(operation).toBe(Operation.Read)
 
           return null
         },
@@ -219,8 +220,8 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: ({ method }) => {
-          expect(method).toBe('post')
+        getContext: ({ operation }) => {
+          expect(operation).toBe(Operation.Write)
 
           return { host, token, url }
         },
@@ -297,8 +298,8 @@ describe('Cache API', () => {
       const mockFetch = getMockFetch()
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: ({ method }) => {
-          expect(method).toBe('post')
+        getContext: ({ operation }) => {
+          expect(operation).toBe(Operation.Write)
 
           return null
         },
