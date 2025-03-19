@@ -26,14 +26,12 @@ const serializeResourceHeaders = Symbol('serializeResourceHeaders')
 export class NetlifyCache implements Cache {
   #base64Encode: Base64Encoder
   #getContext: RequestContextFactory
-  #logger?: Logger
   #name: string
   #userAgent?: string
 
-  constructor({ base64Encode, getContext, logger, name, userAgent }: NetlifyCacheOptions) {
+  constructor({ base64Encode, getContext, name, userAgent }: NetlifyCacheOptions) {
     this.#base64Encode = base64Encode
     this.#getContext = getContext
-    this.#logger = logger
     this.#name = name
     this.#userAgent = userAgent
   }
@@ -185,7 +183,7 @@ export class NetlifyCache implements Cache {
       const errorDetail = cacheResponse.headers.get(HEADERS.ErrorDetail) ?? ''
       const errorMessage = ERROR_CODES[errorDetail as keyof typeof ERROR_CODES] || GENERIC_ERROR
 
-      this.#logger?.(`Failed to write to the cache: ${errorMessage}`)
+      context.logger?.(`Failed to write to the cache: ${errorMessage}`)
     }
   }
 }

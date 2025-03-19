@@ -5,7 +5,6 @@ export type Logger = (...args: any[]) => void
 export interface EnvironmentOptions {
   base64Encode: Base64Encoder
   getContext: RequestContextFactory
-  logger?: Logger
   userAgent?: string
 }
 
@@ -19,6 +18,7 @@ export type RequestContextFactory = (options: { operation: Operation }) => Reque
 
 export interface RequestContext {
   host: string
+  logger?: Logger
   token: string
   url: string
 }
