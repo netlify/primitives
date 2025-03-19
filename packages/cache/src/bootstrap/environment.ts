@@ -17,8 +17,8 @@ export enum Operation {
 export type RequestContextFactory = (options: { operation: Operation }) => RequestContext | null
 
 export interface RequestContext {
-  logger?: Logger
   host: string
+  logger?: Logger
   token: string
   url: string
 }

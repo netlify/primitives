@@ -273,7 +273,7 @@ describe('Cache API', () => {
       })
       const cache = new NetlifyCache({
         base64Encode,
-        getContext: () => ({ logger, host, token, url }),
+        getContext: () => ({ host, logger, token, url }),
         name: 'my-cache',
         userAgent,
       })
