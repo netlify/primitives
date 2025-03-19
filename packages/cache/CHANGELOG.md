@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/netlify/primitives/compare/cache-v1.5.0...cache-v1.6.0) (2025-03-19)
+
+
+### Features
+
+* make Cache API operations no-ops when context is null ([#90](https://github.com/netlify/primitives/issues/90)) ([240871d](https://github.com/netlify/primitives/commit/240871d1d20f99b0dbe48eeae14980d4d6b9ba1e))
+
 ## [1.5.0](https://github.com/netlify/primitives/compare/cache-v1.1.0...cache-v1.5.0) (2025-03-18)
 
 
