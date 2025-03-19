@@ -1,4 +1,4 @@
-import type { Base64Encoder, EnvironmentOptions, RequestContext, RequestContextFactory } from './environment.js'
+import { Base64Encoder, EnvironmentOptions, RequestContext, Operation, RequestContextFactory } from './environment.js'
 
 import { ERROR_CODES, GENERIC_ERROR } from './errors.js'
 import * as HEADERS from '../headers.js'
@@ -79,13 +79,16 @@ export class NetlifyCache implements Cache {
 
   // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
   async delete(request: RequestInfo) {
-    const context = this.#getContext()
-    const resourceURL = extractAndValidateURL(request)
+    const context = this.#getContext({ operation: Operation.Delete })
 
-    await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
-      headers: this[getInternalHeaders](context),
-      method: 'DELETE',
-    })
+    if (context) {
+      const resourceURL = extractAndValidateURL(request)
+
+      await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
+        headers: this[getInternalHeaders](context),
+        method: 'DELETE',
+      })
+    }
 
     return true
   }
@@ -98,7 +101,12 @@ export class NetlifyCache implements Cache {
 
   async match(request: RequestInfo) {
     try {
-      const context = this.#getContext()
+      const context = this.#getContext({ operation: Operation.Read })
+
+      if (!context) {
+        return
+      }
+
       const resourceURL = extractAndValidateURL(request)
       const cacheURL = `${context.url}/${toCacheKey(resourceURL)}`
       const response = await fetch(cacheURL, {
@@ -144,7 +152,12 @@ export class NetlifyCache implements Cache {
       throw new TypeError("Cannot cache response with 'Vary: *' header.")
     }
 
-    const context = this.#getContext()
+    const context = this.#getContext({ operation: Operation.Write })
+
+    if (!context) {
+      return
+    }
+
     const resourceURL = extractAndValidateURL(request)
 
     const cacheResponse = await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {

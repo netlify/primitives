@@ -6,7 +6,13 @@ export interface EnvironmentOptions {
   userAgent?: string
 }
 
-export type RequestContextFactory = () => RequestContext
+export const enum Operation {
+  Delete = 'delete',
+  Read = 'read',
+  Write = 'write',
+}
+
+export type RequestContextFactory = (options: { operation: Operation }) => RequestContext | null
 
 export interface RequestContext {
   host: string
