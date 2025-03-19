@@ -69,11 +69,11 @@ export class NetlifyCache implements Cache {
     return this.#base64Encode(JSON.stringify(headersMap))
   }
 
-  async add(request: RequestInfo): Promise<void> {
+  async add(request: RequestInfo) {
     await this.put(new Request(request), await fetch(request))
   }
 
-  async addAll(requests: RequestInfo[]): Promise<void> {
+  async addAll(requests: RequestInfo[]) {
     await Promise.allSettled(requests.map((request) => this.add(request)))
   }
 
@@ -117,7 +117,7 @@ export class NetlifyCache implements Cache {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async matchAll(request?: RequestInfo, _options?: CacheQueryOptions): Promise<readonly Response[]> {
+  async matchAll(request?: RequestInfo, _options?: CacheQueryOptions) {
     if (!request) {
       return []
     }
