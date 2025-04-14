@@ -1,9 +1,9 @@
 {
-  "packages/blobs": "1.0.0",
+  "packages/blobs": "8.1.2",
   "packages/cache": "1.5.0",
   "packages/dev": "1.0.0",
   "packages/dev-utils": "1.0.0",
-  "packages/functions": "1.0.0",
+  "packages/functions": "3.0.4",
   "packages/redirects": "1.0.0",
   "packages/static": "1.0.0"
 }
