@@ -227,7 +227,7 @@ describe('Handling rules', () => {
     expect(match).not.toBeUndefined()
 
     const res = await redirects.handle(req, match!, async () => undefined)
-    expect(res).toBe(null)
+    expect(res).toBeUndefined()
 
     await fixture.destroy()
   })
