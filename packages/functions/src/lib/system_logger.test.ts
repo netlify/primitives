@@ -1,10 +1,10 @@
-import process from "node:process"
+import process from 'node:process'
 
-import { beforeEach, afterEach, expect, test } from 'vitest'
+import { expect, test } from 'vitest'
 
-import { LogLevel, systemLogger } from "../internal.js"
+import { LogLevel, systemLogger } from '../internal.js'
 
-test('Log Level', (t) => {
+test('Log Level', () => {
   const originalDebug = console.debug
 
   const debugLogs = []
@@ -22,9 +22,9 @@ test('Log Level', (t) => {
   console.debug = originalDebug
 })
 
-test('Fields', (t) => {
+test('Fields', () => {
   const originalLog = console.log
-  const logs: any = []
+  const logs: string[][] = []
   console.log = (...message) => logs.push(message)
   systemLogger.withError(new Error('boom')).withFields({ foo: 'bar' }).log('hello!')
   expect(logs.length).toBe(1)
@@ -38,18 +38,18 @@ test('Fields', (t) => {
   console.log = originalLog
 })
 
-test('Local Dev', (t) => {
+test('Local Dev', () => {
   const originalLog = console.log
   const logs = []
   console.log = (...message) => logs.push(message)
   systemLogger.log('hello!')
   expect(logs.length).toBe(1)
 
-  process.env.NETLIFY_DEV= "true"
+  process.env.NETLIFY_DEV = 'true'
   systemLogger.log('hello!')
   expect(logs.length).toBe(1)
 
-  process.env.NETLIFY_ENABLE_SYSTEM_LOGGING= "true"
+  process.env.NETLIFY_ENABLE_SYSTEM_LOGGING = 'true'
   systemLogger.log('hello!')
   expect(logs.length).toBe(2)
 

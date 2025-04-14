@@ -1,17 +1,19 @@
 import { expect, test } from 'vitest'
 
-import { builder } from './builder.js'
-import {invokeLambda} from "../../test/helpers/main.mjs"
-import { HandlerEvent } from '../main.js'
+import { invokeLambda } from '../../test/helpers/main.mjs'
 import { BaseHandler } from '../function/handler.js'
+import { HandlerEvent } from '../main.js'
+
+import { builder } from './builder.js'
 
 const METADATA_OBJECT = { metadata: { version: 1, builder_function: true, ttl: 0 } }
 
-test('Injects the metadata object into an asynchronous handler', async (t) => {
+test('Injects the metadata object into an asynchronous handler', async () => {
+  const ttl = 3600
   const originalResponse = {
     body: ':thumbsup:',
     statusCode: 200,
-    ttl: 3600,
+    ttl,
   }
   const myHandler = async () => {
     const asyncTask = new Promise((resolve) => {
@@ -24,15 +26,17 @@ test('Injects the metadata object into an asynchronous handler', async (t) => {
   }
   const response = await invokeLambda(builder(myHandler))
 
-  expect(response).toStrictEqual({ ...originalResponse, metadata: { version: 1, builder_function: true, ttl: 3600 } })
+  expect(response).toStrictEqual({ ...originalResponse, metadata: { version: 1, builder_function: true, ttl } })
 })
 
-test('Injects the metadata object into a synchronous handler', async (t) => {
+test('Injects the metadata object into a synchronous handler', async () => {
   const originalResponse = {
     body: ':thumbsup:',
     statusCode: 200,
   }
+  // eslint-disable-next-line promise/prefer-await-to-callbacks
   const myHandler: BaseHandler = (event, context, callback) => {
+    // eslint-disable-next-line n/callback-return, promise/prefer-await-to-callbacks
     callback?.(null, originalResponse)
   }
   const response = await invokeLambda(builder(myHandler))
@@ -40,7 +44,7 @@ test('Injects the metadata object into a synchronous handler', async (t) => {
   expect(response).toStrictEqual({ ...originalResponse, ...METADATA_OBJECT })
 })
 
-test('Injects the metadata object for non-200 responses', async (t) => {
+test('Injects the metadata object for non-200 responses', async () => {
   const originalResponse = {
     body: ':thumbsdown:',
     statusCode: 404,
@@ -59,7 +63,7 @@ test('Injects the metadata object for non-200 responses', async (t) => {
   expect(response).toStrictEqual({ ...originalResponse, ...METADATA_OBJECT })
 })
 
-test('Returns a 405 error for requests using the POST method', async (t) => {
+test('Returns a 405 error for requests using the POST method', async () => {
   const originalResponse = {
     body: ':thumbsup:',
     statusCode: 200,
@@ -78,7 +82,7 @@ test('Returns a 405 error for requests using the POST method', async (t) => {
   expect(response).toStrictEqual({ body: 'Method Not Allowed', statusCode: 405 })
 })
 
-test('Returns a 405 error for requests using the PUT method', async (t) => {
+test('Returns a 405 error for requests using the PUT method', async () => {
   const originalResponse = {
     body: ':thumbsup:',
     statusCode: 200,
@@ -97,7 +101,7 @@ test('Returns a 405 error for requests using the PUT method', async (t) => {
   expect(response).toStrictEqual({ body: 'Method Not Allowed', statusCode: 405 })
 })
 
-test('Returns a 405 error for requests using the DELETE method', async (t) => {
+test('Returns a 405 error for requests using the DELETE method', async () => {
   const originalResponse = {
     body: ':thumbsup:',
     statusCode: 200,
@@ -116,7 +120,7 @@ test('Returns a 405 error for requests using the DELETE method', async (t) => {
   expect(response).toStrictEqual({ body: 'Method Not Allowed', statusCode: 405 })
 })
 
-test('Returns a 405 error for requests using the PATCH method', async (t) => {
+test('Returns a 405 error for requests using the PATCH method', async () => {
   const originalResponse = {
     body: ':thumbsup:',
     statusCode: 200,
@@ -138,7 +142,7 @@ test('Returns a 405 error for requests using the PATCH method', async (t) => {
 test('Preserves errors thrown inside the wrapped handler', async () => {
   const error = new Error('Uh-oh!')
 
-  // @ts-expect-error
+  // @ts-expect-error There's no type for this custom property.
   error.someProperty = ':thumbsdown:'
 
   const myHandler = async () => {
@@ -154,11 +158,11 @@ test('Preserves errors thrown inside the wrapped handler', async () => {
   try {
     await invokeLambda(builder(myHandler))
 
-    throw new Error("Invocation should have failed")
+    throw new Error('Invocation should have failed')
   } catch {}
 })
 
-test('Does not pass query parameters to the wrapped handler', async (t) => {
+test('Does not pass query parameters to the wrapped handler', async () => {
   const originalResponse = {
     body: ':thumbsup:',
     statusCode: 200,

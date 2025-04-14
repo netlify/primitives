@@ -15,7 +15,6 @@ interface EventMultiValueQueryStringParameters {
 }
 
 export interface HandlerEvent {
-  blobs: string
   rawUrl: string
   rawQuery: string
   path: string
