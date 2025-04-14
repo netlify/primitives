@@ -68,6 +68,19 @@ export const getStore: {
     return new Store({ client, name: input })
   }
 
+  if (typeof input?.name === 'string' && typeof input?.siteID === 'string' && typeof input?.token === 'string') {
+    const { name, siteID, token } = input
+    const clientOptions = getClientOptions(input, { siteID, token })
+
+    if (!name || !siteID || !token) {
+      throw new MissingBlobsEnvironmentError(['name', 'siteID', 'token'])
+    }
+
+    const client = new Client(clientOptions)
+
+    return new Store({ client, name })
+  }
+
   if (typeof input?.name === 'string') {
     const { name } = input
     const clientOptions = getClientOptions(input)

@@ -3,6 +3,9 @@ export const REGION_AUTO = 'auto'
 const regions = {
   'us-east-1': true,
   'us-east-2': true,
+  'eu-central-1': true,
+  'ap-southeast-1': true,
+  'ap-southeast-2': true,
 }
 
 export type Region = keyof typeof regions
