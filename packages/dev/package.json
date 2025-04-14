@@ -30,12 +30,12 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsup-node",
     "prepack": "npm run build",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:ci": "npm run build && vitest run",
-    "dev": "tsc --watch"
+    "dev": "tsup-node --watch"
   },
   "keywords": [],
   "license": "MIT",
@@ -47,7 +47,6 @@
   "devDependencies": {
     "tmp-promise": "^3.0.3",
     "tsup": "^7.2.0",
-    "typescript": "^5.0.0",
     "vitest": "^0.34.0"
   },
   "dependencies": {

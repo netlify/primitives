@@ -44,10 +44,8 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "run-s build:*",
-    "build:check": "tsc",
-    "build:transpile": "node build.mjs",
-    "dev": "node build.mjs --watch",
+    "build": "tsup-node",
+    "dev": "tsup-node --watch",
     "prepack": "npm run build",
     "test": "run-s build test:dev",
     "test:dev": "run-s build test:dev:*",
@@ -73,7 +71,6 @@
     "semver": "^7.5.3",
     "tmp-promise": "^3.0.3",
     "tsup": "^7.2.0",
-    "typescript": "^5.0.0",
     "vitest": "^0.34.0"
   }
 }
