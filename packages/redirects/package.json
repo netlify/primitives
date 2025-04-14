@@ -1,0 +1,62 @@
+{
+  "name": "@netlify/redirects",
+  "version": "1.0.0",
+  "description": "JavaScript implementtion of Netlify's static file serving logic",
+  "type": "module",
+  "engines": {
+    "node": "^14.16.0 || >=16.0.0"
+  },
+  "main": "./dist/main.cjs",
+  "module": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/main.d.cts",
+        "default": "./dist/main.cjs"
+      },
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      },
+      "default": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/**/*",
+    "server.d.ts"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "test:ci": "npm run build && vitest run",
+    "dev": "tsc --watch"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "repository": "netlify/redirects",
+  "bugs": {
+    "url": "https://github.com/netlify/redirects/issues"
+  },
+  "author": "Netlify Inc.",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "@netlify/dev-utils": "1.0.0",
+    "@types/http-proxy": "^1.17.16",
+    "@types/jsonwebtoken": "9.0.9"
+  },
+  "dependencies": {
+    "cookie": "^1.0.2",
+    "jsonwebtoken": "9.0.2",
+    "netlify-redirect-parser": "^14.4.0",
+    "netlify-redirector": "^0.5.0"
+  }
+}

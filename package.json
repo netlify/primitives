@@ -2,7 +2,13 @@
   "name": "netlify-primitives-monorepo",
   "private": true,
   "workspaces": [
-    "packages/cache"
+    "packages/blobs",
+    "packages/cache",
+    "packages/dev",
+    "packages/dev-utils",
+    "packages/functions",
+    "packages/redirects",
+    "packages/static"
   ],
   "version": "0.0.0",
   "scripts": {

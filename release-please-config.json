@@ -3,7 +3,25 @@
   "bootstrap-sha": "6f042af0f154fe99d0239c51aa4072cf9fcfb124",
   "plugins": ["node-workspace"],
   "packages": {
+    "packages/blobs": {
+      "release-type": "node"
+    },
     "packages/cache": {
+      "release-type": "node"
+    },
+    "packages/dev": {
+      "release-type": "node"
+    },
+    "packages/dev-utils": {
+      "release-type": "node"
+    },
+    "packages/functions": {
+      "release-type": "node"
+    },
+    "packages/redirects": {
+      "release-type": "node"
+    },
+    "packages/static": {
       "release-type": "node"
     }
   }
