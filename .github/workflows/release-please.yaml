@@ -24,6 +24,9 @@ jobs:
         if: ${{ steps.release.outputs.releases_created }}
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.prs_created }}
+      # Generates the release-please manifest file with the version of each page.
+      # For some reason, release-please is failing to handle this automatically, so
+      # we need to do it ourselves.
       - run: npm version --workspaces --json | jq 'with_entries(select(.key | startswith("@netlify/")) | .key |= sub("^@netlify"; "packages"))' > .release-please-manifest.json
         if: ${{ steps.release.outputs.prs_created }}
       - uses: gr2m/create-or-update-pull-request-action@v1
