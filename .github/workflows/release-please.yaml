@@ -24,11 +24,10 @@ jobs:
         id: get-pr-branch
         run: |
           if [ -n "${{ steps.release.outputs.pr }}" ]; then
-            echo '${{ steps.release.outputs.pr }}' | jq -r '.headBranchName' > branch_name.txt
+            echo "branch=$(echo -n '${{ steps.release.outputs.pr }}' | jq -r '.headBranchName')"  >> "$GITHUB_OUTPUT"
           else
-            echo '' > branch_name.txt
+            echo 'branch=' >> "$GITHUB_OUTPUT"
           fi
-          echo "branch=$(cat branch_name.txt)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.releases_created || steps.release.outputs.prs_created }}
         with:
