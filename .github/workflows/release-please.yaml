@@ -22,6 +22,16 @@ jobs:
           token: ${{ steps.get-token.outputs.token }}
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.releases_created }}
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.prs_created }}
+      - run: npm version --workspaces --json | jq 'with_entries(select(.key | startswith("@netlify/")) | .key |= sub("^@netlify"; "packages"))' > .release-please-manifest.json
+        if: ${{ steps.release.outputs.prs_created }}
+      - uses: gr2m/create-or-update-pull-request-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: ${{ fromJSON(steps.release.outputs.pr).baseBranchName }}
+        if: ${{ steps.release.outputs.prs_created }}
       - uses: actions/setup-node@v4
         with:
           node-version: '*'
