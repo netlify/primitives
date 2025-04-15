@@ -39,11 +39,11 @@ class NetlifyCacheStorageProxy implements CacheStorage {
       return globalThis.caches.open(cacheName)
     }
 
-    return new NetlifyCacheProxy()
+    return new NetlifyNoopCache()
   }
 }
 
-class NetlifyCacheProxy implements Cache {
+class NetlifyNoopCache implements Cache {
   async add(_: RequestInfo): Promise<void> {}
 
   async addAll(_: RequestInfo[]): Promise<void> {}
