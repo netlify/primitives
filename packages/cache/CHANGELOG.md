@@ -7,6 +7,13 @@
 
 * use a proxy for the `caches` export ([#105](https://github.com/netlify/primitives/issues/105)) ([c4c11ce](https://github.com/netlify/primitives/commit/c4c11ce426dc9b9323d223e9b820f5dc11a3e1ee))
 
+## [1.8.1](https://github.com/netlify/primitives/compare/cache-v1.8.0...cache-v1.8.1) (2025-04-15)
+
+
+### Bug Fixes
+
+* use a proxy for the `caches` export ([#105](https://github.com/netlify/primitives/issues/105)) ([c4c11ce](https://github.com/netlify/primitives/commit/c4c11ce426dc9b9323d223e9b820f5dc11a3e1ee))
+
 ## [1.8.0](https://github.com/netlify/primitives/compare/cache-v1.5.0...cache-v1.8.0) (2025-04-15)
 
 
