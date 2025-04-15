@@ -20,6 +20,14 @@ jobs:
         id: release
         with:
           token: ${{ steps.get-token.outputs.token }}
+      - name: Get PR branch name
+        id: get-pr-branch
+        run: |
+          if [ -n "${{ steps.release.outputs.pr }}" ]; then
+            echo "branch=$(echo -n '${{ steps.release.outputs.pr }}' | jq -r '.headBranchName')"  >> "$GITHUB_OUTPUT"
+          else
+            echo 'branch=' >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.releases_created }}
         with:
