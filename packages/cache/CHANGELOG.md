@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/netlify/primitives/compare/cache-v1.8.1...cache-v1.8.2) (2025-04-15)
+
+
+### Bug Fixes
+
+* simplify build command ([#118](https://github.com/netlify/primitives/issues/118)) ([bd744d5](https://github.com/netlify/primitives/commit/bd744d5cce2f46d895bc063325a9d89bb769df99))
+
 ## [1.8.1](https://github.com/netlify/primitives/compare/cache-v1.8.0...cache-v1.8.1) (2025-04-15)
 
 
