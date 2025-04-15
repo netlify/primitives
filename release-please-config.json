@@ -4,6 +4,7 @@
   "last-release-sha": "1e628be35d2ae079b63ec8e98ca0c6831237b677",
   "plugins": ["node-workspace"],
   "release-type": "node",
+  "separate-pull-requests": false,
   "packages": {
     "packages/cache": {}
   }
