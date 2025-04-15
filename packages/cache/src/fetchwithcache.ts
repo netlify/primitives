@@ -1,6 +1,7 @@
 import type { NetlifyCache } from './bootstrap/cache.js'
 import { setCacheHeaders } from './cache-headers/cache-headers.js'
 import type { CacheSettings } from './cache-headers/options.js'
+import { caches } from './polyfill.js'
 
 const requestInitOptions = [
   'method',
@@ -51,7 +52,7 @@ const isRequestInit = (input: any): input is RequestInit => {
   return false
 }
 
-type FetchWithCache = {
+export type FetchWithCache = {
   (request: string | URL | Request, init?: RequestInit): Promise<Response>
   (request: string | URL | Request, cacheSettings?: CacheOptions): Promise<Response>
   (request: string | URL | Request, init: RequestInit, cacheSettings?: CacheOptions): Promise<Response>

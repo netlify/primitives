@@ -5,7 +5,7 @@ import type { ReadableStream } from 'node:stream/web'
 import { describe, test, expect, beforeAll, afterAll } from 'vitest'
 
 import { NetlifyCacheStorage } from './bootstrap/cachestorage.js'
-import { fetchWithCache } from './fetchwithcache.js'
+import type { FetchWithCache } from './fetchwithcache.js'
 import { getMockFetch } from './test/fetch.js'
 import { readAsString, sleep } from './test/util.js'
 import { decodeHeaders } from './test/headers.js'
@@ -17,11 +17,17 @@ const token = 'mock-token'
 
 let originalCaches = globalThis.caches
 
-beforeAll(() => {
+let fetchWithCache: FetchWithCache
+
+beforeAll(async () => {
   globalThis.caches = new NetlifyCacheStorage({
     base64Encode,
     getContext: () => ({ host, token, url }),
   })
+
+  // Using a dynamic import so that `globalThis.caches` is populated by the
+  // time the polyfill is loaded.
+  fetchWithCache = (await import('./fetchwithcache.js')).fetchWithCache
 })
 
 afterAll(() => {
