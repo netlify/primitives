@@ -52,7 +52,7 @@ const isRequestInit = (input: any): input is RequestInit => {
   return false
 }
 
-export type FetchWithCache = {
+type FetchWithCache = {
   (request: string | URL | Request, init?: RequestInit): Promise<Response>
   (request: string | URL | Request, cacheSettings?: CacheOptions): Promise<Response>
   (request: string | URL | Request, init: RequestInit, cacheSettings?: CacheOptions): Promise<Response>
