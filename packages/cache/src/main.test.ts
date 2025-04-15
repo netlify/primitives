@@ -28,7 +28,7 @@ describe('`caches` export', () => {
       getContext: () => ({ host, token, url }),
     })
 
-    const cache2 = await globalThis.caches.open('cache2')
+    const cache2 = await caches.open('cache2')
     const res2 = await cache2.match('https://netlify.com')
     expect(res2?.status).toBe(200)
     expect(await res2?.text()).toBe(html)
