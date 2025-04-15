@@ -28,7 +28,7 @@ jobs:
         if: ${{ steps.release.outputs.prs_created }}
       - uses: gr2m/create-or-update-pull-request-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
         with:
           branch: ${{ fromJSON(steps.release.outputs.pr).baseBranchName }}
         if: ${{ steps.release.outputs.prs_created }}
