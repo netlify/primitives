@@ -21,7 +21,18 @@ jobs:
         with:
           token: ${{ steps.get-token.outputs.token }}
       - uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.releases_created || steps.release.outputs.prs_created }}
+      # Generates the release-please manifest file with the version of each package.
+      # For some reason, release-please is failing to handle this automatically, so
+      # we need to do it ourselves.
+      - run: npm version --workspaces --json | jq 'with_entries(select(.key | startswith("@netlify/")) | .key |= sub("^@netlify"; "packages"))' > .release-please-manifest.json
+        if: ${{ steps.release.outputs.prs_created }}
+      - uses: gr2m/create-or-update-pull-request-action@v1
+        env:
+          GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+        with:
+          branch: ${{ fromJSON(steps.release.outputs.pr).baseBranchName }}
+        if: ${{ steps.release.outputs.prs_created }}
       - uses: actions/setup-node@v4
         with:
           node-version: '*'
