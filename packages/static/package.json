@@ -42,7 +42,7 @@
   "license": "MIT",
   "repository": "netlify/primitives",
   "bugs": {
-    "url": "https://github.com/netlify/static/issues"
+    "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "directories": {
