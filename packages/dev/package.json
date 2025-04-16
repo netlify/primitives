@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Local development emulation for Netlify",
   "type": "module",
   "engines": {
@@ -51,9 +51,9 @@
   },
   "dependencies": {
     "@netlify/config": "^22.0.0",
-    "@netlify/dev-utils": "1.0.0",
-    "@netlify/functions": "2.8.2",
-    "@netlify/redirects": "1.0.0",
-    "@netlify/static": "1.0.0"
+    "@netlify/dev-utils": "1.1.0",
+    "@netlify/functions": "3.1.0",
+    "@netlify/redirects": "1.1.0",
+    "@netlify/static": "1.1.0"
   }
 }
