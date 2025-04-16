@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.2](https://github.com/netlify/primitives/compare/functions-v3.1.1...functions-v3.1.2) (2025-04-16)
+
+
+### Bug Fixes
+
+* **functions:** included published .cjs files ([#142](https://github.com/netlify/primitives/issues/142)) ([74fe165](https://github.com/netlify/primitives/commit/74fe16560e1474e1ba39a55765b41ebb704f8303))
+
 ## [3.1.1](https://github.com/netlify/primitives/compare/functions-v3.1.0...functions-v3.1.1) (2025-04-16)
 
 
