@@ -35,8 +35,10 @@
   "description": "JavaScript utilities for Netlify Functions",
   "files": [
     "dist/**/*.js",
+    "dist/**/*.cjs",
     "dist/**/*.mjs",
     "dist/**/*.d.ts",
+    "dist/**/*.d.cts",
     "dist/**/*.d.mts",
     "internal.d.ts"
   ],
