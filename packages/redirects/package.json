@@ -40,9 +40,9 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "netlify/redirects",
+  "repository": "netlify/primitives",
   "bugs": {
-    "url": "https://github.com/netlify/redirects/issues"
+    "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "directories": {
