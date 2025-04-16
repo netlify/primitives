@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { Readable } from 'node:stream'
 import type { ReadableStream } from 'node:stream/web'
 
-import { describe, test, expect, beforeAll, afterAll } from 'vitest'
+import { describe, test, expect, beforeEach, afterAll } from 'vitest'
 
 import { NetlifyCacheStorage } from './bootstrap/cachestorage.js'
 import { fetchWithCache } from './fetchwithcache.js'
@@ -17,7 +17,7 @@ const token = 'mock-token'
 
 let originalCaches = globalThis.caches
 
-beforeAll(() => {
+beforeEach(async () => {
   globalThis.caches = new NetlifyCacheStorage({
     base64Encode,
     getContext: () => ({ host, token, url }),
@@ -176,5 +176,28 @@ describe('`fetchWithCache`', () => {
 
       expect(mockFetch.requests.length).toBe(4)
     })
+  })
+
+  test('Uses the exported `caches` proxy', async () => {
+    const html = '<h1>Hello world</h1>'
+    const mockFetch = getMockFetch({
+      responses: {
+        'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [new Response(html)],
+        'https://netlify.com/': [new Response(html)],
+      },
+    })
+    const resourceURL = 'https://netlify.com'
+    const responseWithCache = await fetchWithCache(resourceURL)
+    expect(await responseWithCache.text()).toBe('<h1>Hello world</h1>')
+
+    // @ts-expect-error
+    delete globalThis.caches
+
+    const responseWithProxy = await fetchWithCache(resourceURL)
+    expect(await responseWithProxy.text()).toBe('<h1>Hello world</h1>')
+
+    mockFetch.restore()
+
+    expect(mockFetch.requests.length).toBe(2)
   })
 })

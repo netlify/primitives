@@ -1,6 +1,7 @@
 import type { NetlifyCache } from './bootstrap/cache.js'
 import { setCacheHeaders } from './cache-headers/cache-headers.js'
 import type { CacheSettings } from './cache-headers/options.js'
+import { caches } from './polyfill.js'
 
 const requestInitOptions = [
   'method',
