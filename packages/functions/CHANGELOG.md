@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/netlify/primitives/compare/functions-v3.1.0...functions-v3.1.1) (2025-04-16)
+
+
+### Bug Fixes
+
+* use right exports in `functions` package ([#140](https://github.com/netlify/primitives/issues/140)) ([10c61ac](https://github.com/netlify/primitives/commit/10c61ac0ad388ae6320a99d2ff191a7306830e36))
+
 ## [3.1.0](https://github.com/netlify/primitives/compare/functions-v3.0.4...functions-v3.1.0) (2025-04-16)
 
 
