@@ -33,7 +33,13 @@ jobs:
         if: ${{ steps.release.outputs.releases_created }}
       - run: npm ci
         if: ${{ steps.release.outputs.releases_created }}        
-      - run: npm publish packages/cache/ --access=public
-        if: ${{ steps.release.outputs['packages/cache--release_created'] }}
+      - name: Publish packages
+        run: |
+          # Extract package names from manifest and remove 'packages/' prefix
+          for pkg in $(jq -r '.workspaces[]' package.json | sed 's|^packages/||'); do
+            if [[ "${{ steps.release.outputs['packages/'$pkg'--release_created'] }}" == 'true' ]]; then
+              npm publish packages/$pkg/ --access=public
+            fi
+          done
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

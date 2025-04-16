@@ -6,6 +6,12 @@
   "release-type": "node",
   "separate-pull-requests": false,
   "packages": {
-    "packages/cache": {}
+    "packages/blobs": {},
+    "packages/cache": {},
+    "packages/dev": {},
+    "packages/dev-utils": {},
+    "packages/functions": {},
+    "packages/redirects": {},
+    "packages/static": {}
   }
 }
