@@ -57,9 +57,9 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "netlify/blobs",
+  "repository": "netlify/primitives",
   "bugs": {
-    "url": "https://github.com/netlify/blobs/issues"
+    "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "directories": {

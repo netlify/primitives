@@ -66,9 +66,9 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "https://github.com/netlify/functions",
+  "repository": "https://github.com/netlify/primitives",
   "bugs": {
-    "url": "https://github.com/netlify/functions/issues"
+    "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "directories": {

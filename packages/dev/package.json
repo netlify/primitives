@@ -39,9 +39,9 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "netlify/dev",
+  "repository": "netlify/primitives",
   "bugs": {
-    "url": "https://github.com/netlify/dev/issues"
+    "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "devDependencies": {
