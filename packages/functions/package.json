@@ -6,19 +6,15 @@
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/main.d.ts",
-        "default": "./dist/main.js"
+        "types": "./dist/main.d.cts",
+        "default": "./dist/main.cjs"
       },
       "import": {
-        "types": "./dist/main.d.mts",
-        "default": "./dist/main.mjs"
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
       }
     },
     "./dev": {
-      "require": {
-        "types": "./dist-dev/main.d.ts",
-        "default": "./dist-dev/main.js"
-      },
       "import": {
         "types": "./dist-dev/main.d.ts",
         "default": "./dist-dev/main.js"
@@ -26,12 +22,12 @@
     },
     "./internal": {
       "require": {
-        "types": "./dist/internal.d.ts",
-        "default": "./dist/internal.js"
+        "types": "./dist/internal.d.cts",
+        "default": "./dist/internal.cjs"
       },
       "import": {
         "types": "./dist/internal.d.ts",
-        "default": "./dist/internal.mjs"
+        "default": "./dist/internal.js"
       }
     }
   },
