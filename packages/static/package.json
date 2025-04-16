@@ -40,7 +40,7 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "netlify/static",
+  "repository": "netlify/primitives",
   "bugs": {
     "url": "https://github.com/netlify/static/issues"
   },
