@@ -32,7 +32,10 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.releases_created }}
       - run: npm ci
-        if: ${{ steps.release.outputs.releases_created }}        
+        if: ${{ steps.release.outputs.releases_created }}
+      - name: Build packages
+        if: ${{ steps.release.outputs.releases_created }}
+        run: npm run build -ws              
       
       # Publishing packages in topological order, as defined in `package.json`.
       - run: npm publish packages/dev-utils/ --access=public
