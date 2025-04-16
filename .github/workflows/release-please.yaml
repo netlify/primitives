@@ -33,13 +33,33 @@ jobs:
         if: ${{ steps.release.outputs.releases_created }}
       - run: npm ci
         if: ${{ steps.release.outputs.releases_created }}        
-      - name: Publish packages
-        run: |
-          # Extract package names from manifest and remove 'packages/' prefix
-          for pkg in $(jq -r '.workspaces[]' package.json | sed 's|^packages/||'); do
-            if [[ "${{ steps.release.outputs['packages/'$pkg'--release_created'] }}" == 'true' ]]; then
-              npm publish packages/$pkg/ --access=public
-            fi
-          done
+      
+      # Publishing packages in topological order, as defined in `package.json`.
+      - run: npm publish packages/dev-utils/ --access=public
+        if: ${{ steps.release.outputs['packages/dev-utils--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish packages/blobs/ --access=public
+        if: ${{ steps.release.outputs['packages/blobs--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish packages/cache/ --access=public
+        if: ${{ steps.release.outputs['packages/cache--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish packages/functions/ --access=public
+        if: ${{ steps.release.outputs['packages/functions--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish packages/redirects/ --access=public
+        if: ${{ steps.release.outputs['packages/redirects--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish packages/static/ --access=public
+        if: ${{ steps.release.outputs['packages/static--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish packages/dev/ --access=public
+        if: ${{ steps.release.outputs['packages/dev--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
