@@ -19,7 +19,6 @@ let originalCaches = globalThis.caches
 
 beforeEach(async () => {
   globalThis.caches = new NetlifyCacheStorage({
-    base64Encode,
     getContext: () => ({ host, token, url }),
   })
 })

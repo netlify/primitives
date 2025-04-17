@@ -1,10 +1,9 @@
 import { Buffer } from 'node:buffer'
 import { env, version as nodeVersion } from 'node:process'
 
+import { MockFetch } from '@netlify/dev-utils'
 import semver from 'semver'
 import { describe, test, expect, beforeAll, afterEach } from 'vitest'
-
-import { MockFetch } from '../test/mock_fetch.js'
 
 import type { ListStoresResponse } from './backend/list_stores.js'
 import { listStores } from './main.js'
@@ -37,13 +36,13 @@ const edgeURL = 'https://edge.netlify'
 describe('listStores', () => {
   describe('With API credentials', () => {
     test('Lists site stores', async () => {
-      const mockStore = new MockFetch().get({
-        headers: { authorization: `Bearer ${apiToken}` },
-        response: new Response(JSON.stringify({ stores: ['site:store1', 'site:store2', 'deploy:deploy1'] })),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}?prefix=site%3A`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ stores: ['site:store1', 'site:store2', 'deploy:deploy1'] })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}?prefix=site%3A`,
+        })
+        .inject()
 
       const { stores } = await listStores({
         token: apiToken,
@@ -81,8 +80,7 @@ describe('listStores', () => {
           response: new Response(JSON.stringify({ stores: ['site:store5', 'deploy:6527dfab35be400008332a1c'] })),
           url: `https://api.netlify.com/api/v1/blobs/${siteID}?prefix=site%3A&cursor=cursor_2`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const { stores } = await listStores({
         token: apiToken,
@@ -120,8 +118,7 @@ describe('listStores', () => {
           response: new Response(JSON.stringify({ stores: ['site:store5', 'deploy:6527dfab35be400008332a1c'] })),
           url: `https://api.netlify.com/api/v1/blobs/${siteID}?prefix=site%3A&cursor=cursor_2`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const result: ListStoresResponse = {
         stores: [],
@@ -137,13 +134,13 @@ describe('listStores', () => {
   })
 
   test('Handles missing content for auto pagination', async () => {
-    const mockStore = new MockFetch().get({
-      headers: { authorization: `Bearer ${apiToken}` },
-      response: new Response('<not found>', { status: 404 }),
-      url: `https://api.netlify.com/api/v1/blobs/${siteID}?prefix=site%3A`,
-    })
-
-    globalThis.fetch = mockStore.fetch
+    const mockStore = new MockFetch()
+      .get({
+        headers: { authorization: `Bearer ${apiToken}` },
+        response: new Response('<not found>', { status: 404 }),
+        url: `https://api.netlify.com/api/v1/blobs/${siteID}?prefix=site%3A`,
+      })
+      .inject()
 
     const { stores } = await listStores({
       token: apiToken,
@@ -155,13 +152,13 @@ describe('listStores', () => {
   })
 
   test('Handles missing content with manual pagination', async () => {
-    const mockStore = new MockFetch().get({
-      headers: { authorization: `Bearer ${apiToken}` },
-      response: new Response('<not found>', { status: 404 }),
-      url: `https://api.netlify.com/api/v1/blobs/${siteID}?prefix=site%3A`,
-    })
-
-    globalThis.fetch = mockStore.fetch
+    const mockStore = new MockFetch()
+      .get({
+        headers: { authorization: `Bearer ${apiToken}` },
+        response: new Response('<not found>', { status: 404 }),
+        url: `https://api.netlify.com/api/v1/blobs/${siteID}?prefix=site%3A`,
+      })
+      .inject()
 
     const result: ListStoresResponse = {
       stores: [],
@@ -177,13 +174,13 @@ describe('listStores', () => {
 
   describe('With edge credentials', () => {
     test('Lists site stores', async () => {
-      const mockStore = new MockFetch().get({
-        headers: { authorization: `Bearer ${edgeToken}` },
-        response: new Response(JSON.stringify({ stores: ['site:store1', 'site:store2', 'deploy:deploy1'] })),
-        url: `https://edge.netlify/${siteID}?prefix=site%3A`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(JSON.stringify({ stores: ['site:store1', 'site:store2', 'deploy:deploy1'] })),
+          url: `https://edge.netlify/${siteID}?prefix=site%3A`,
+        })
+        .inject()
 
       const { stores } = await listStores({
         edgeURL,
@@ -196,13 +193,13 @@ describe('listStores', () => {
     })
 
     test('Loads credentials from the environment', async () => {
-      const mockStore = new MockFetch().get({
-        headers: { authorization: `Bearer ${edgeToken}` },
-        response: new Response(JSON.stringify({ stores: ['site:store1', 'site:store2', 'deploy:deploy1'] })),
-        url: `https://edge.netlify/${siteID}?prefix=site%3A`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(JSON.stringify({ stores: ['site:store1', 'site:store2', 'deploy:deploy1'] })),
+          url: `https://edge.netlify/${siteID}?prefix=site%3A`,
+        })
+        .inject()
 
       const context = {
         edgeURL,
@@ -245,8 +242,7 @@ describe('listStores', () => {
           response: new Response(JSON.stringify({ stores: ['site:store5', 'deploy:6527dfab35be400008332a1c'] })),
           url: `https://edge.netlify/${siteID}?prefix=site%3A&cursor=cursor_2`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const context = {
         edgeURL,
@@ -289,8 +285,7 @@ describe('listStores', () => {
           response: new Response(JSON.stringify({ stores: ['site:store5', 'deploy:6527dfab35be400008332a1c'] })),
           url: `https://edge.netlify/${siteID}?prefix=site%3A&cursor=cursor_2`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const context = {
         edgeURL,

@@ -1,11 +1,6 @@
-import {
-  Base64Encoder,
-  EnvironmentOptions,
-  Logger,
-  RequestContext,
-  Operation,
-  RequestContextFactory,
-} from './environment.js'
+import { base64Encode } from '@netlify/runtime-utils'
+
+import { EnvironmentOptions, RequestContext, Operation, RequestContextFactory } from './environment.js'
 
 import { ERROR_CODES, GENERIC_ERROR } from './errors.js'
 import * as HEADERS from '../headers.js'
@@ -24,13 +19,11 @@ const getInternalHeaders = Symbol('getInternalHeaders')
 const serializeResourceHeaders = Symbol('serializeResourceHeaders')
 
 export class NetlifyCache implements Cache {
-  #base64Encode: Base64Encoder
   #getContext: RequestContextFactory
   #name: string
   #userAgent?: string
 
-  constructor({ base64Encode, getContext, name, userAgent }: NetlifyCacheOptions) {
-    this.#base64Encode = base64Encode
+  constructor({ getContext, name, userAgent }: NetlifyCacheOptions) {
     this.#getContext = getContext
     this.#name = name
     this.#userAgent = userAgent
@@ -73,7 +66,7 @@ export class NetlifyCache implements Cache {
       }
     })
 
-    return this.#base64Encode(JSON.stringify(headersMap))
+    return base64Encode(JSON.stringify(headersMap))
   }
 
   async add(request: RequestInfo): Promise<void> {

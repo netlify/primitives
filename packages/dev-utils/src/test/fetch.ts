@@ -67,7 +67,7 @@ export class MockFetch {
       const method = options?.method ?? 'get'
       const headers = options?.headers as Record<string, string>
       const match = this.requests.find(
-        (request) => request.method === method && request.url === url && !request.fulfilled,
+        (request) => request.method.toLowerCase() === method.toLowerCase() && request.url === url && !request.fulfilled,
       )
 
       if (!match) {
@@ -100,6 +100,12 @@ export class MockFetch {
 
   get fulfilled() {
     return this.requests.every((request) => request.fulfilled)
+  }
+
+  inject() {
+    globalThis.fetch = this.fetch
+
+    return this
   }
 
   restore() {

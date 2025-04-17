@@ -72,5 +72,8 @@
     "tmp-promise": "^3.0.3",
     "tsup": "^7.2.0",
     "vitest": "^0.34.0"
+  },
+  "dependencies": {
+    "@netlify/runtime-utils": "1.0.0"
   }
 }

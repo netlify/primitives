@@ -1,9 +1,9 @@
 import { env, version as nodeVersion } from 'node:process'
 
+import { MockFetch } from '@netlify/dev-utils'
 import semver from 'semver'
 import { describe, test, expect, beforeAll, afterEach } from 'vitest'
 
-import { MockFetch } from '../test/mock_fetch.js'
 import { base64Encode, streamToString } from '../test/util.js'
 
 import { connectLambda } from './lambda_compat.js'
@@ -55,8 +55,7 @@ describe('With edge credentials', () => {
         response: new Response(value),
         url: `${edgeURL}/${siteID}/site:production/${key}`,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     connectLambda(mockLambdaEvent)
 

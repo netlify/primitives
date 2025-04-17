@@ -1,16 +1,16 @@
 import { Buffer } from 'node:buffer'
 import { env, version as nodeVersion } from 'node:process'
 
+import { MockFetch } from '@netlify/dev-utils'
+import { base64Decode } from '@netlify/runtime-utils'
 import semver from 'semver'
 import { describe, test, expect, beforeAll, afterEach } from 'vitest'
 
-import { MockFetch } from '../test/mock_fetch.js'
 import { base64Encode, streamToString } from '../test/util.js'
 
 import { MissingBlobsEnvironmentError } from './environment.js'
 import { NF_ERROR, NF_REQUEST_ID } from './headers.js'
 import { getDeployStore, getStore, setEnvironmentContext } from './main.js'
-import { base64Decode } from './util.js'
 
 beforeAll(async () => {
   if (semver.lt(nodeVersion, '18.0.0')) {
@@ -73,8 +73,7 @@ describe('get', () => {
           response: new Response(value),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -105,8 +104,7 @@ describe('get', () => {
           response: new Response('Something went wrong', { status: 404 }),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -120,13 +118,13 @@ describe('get', () => {
 
     test('Throws when the API returns a non-200 status code', async () => {
       const mockRequestID = '123456789'
-      const mockStore = new MockFetch().get({
-        headers: { accept: 'application/json;type=signed-url', authorization: `Bearer ${apiToken}` },
-        response: new Response(null, { headers: { [NF_REQUEST_ID]: mockRequestID }, status: 401 }),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .get({
+          headers: { accept: 'application/json;type=signed-url', authorization: `Bearer ${apiToken}` },
+          response: new Response(null, { headers: { [NF_REQUEST_ID]: mockRequestID }, status: 401 }),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -151,8 +149,7 @@ describe('get', () => {
           response: new Response('Something went wrong', { status: 401 }),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -196,8 +193,7 @@ describe('get', () => {
           response: new Response(value),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'netlify-internal/legacy-namespace/oldie',
@@ -231,8 +227,7 @@ describe('get', () => {
           response: new Response(value),
           url: `${edgeURL}/${siteID}/site:production/${key}`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -251,13 +246,13 @@ describe('get', () => {
     })
 
     test('Returns `null` when the edge URL returns a 404', async () => {
-      const mockStore = new MockFetch().get({
-        headers: { authorization: `Bearer ${edgeToken}` },
-        response: new Response(null, { status: 404 }),
-        url: `${edgeURL}/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(null, { status: 404 }),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -272,13 +267,13 @@ describe('get', () => {
 
     test('Throws when an edge URL returns a non-200 status code', async () => {
       const errorDetails = 'Failed to decode token: Token expired'
-      const mockStore = new MockFetch().get({
-        headers: { authorization: `Bearer ${edgeToken}` },
-        response: new Response(null, { headers: { [NF_ERROR]: errorDetails }, status: 401 }),
-        url: `${edgeURL}/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(null, { headers: { [NF_ERROR]: errorDetails }, status: 401 }),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -318,8 +313,7 @@ describe('get', () => {
             response: new Response(value),
             url: `${edgeURL}/${siteID}/site:images/${key}`,
           })
-
-        globalThis.fetch = mockStore.fetch
+          .inject()
 
         for (let index = 0; index <= 1; index++) {
           const context = {
@@ -365,8 +359,7 @@ describe('get', () => {
             response: new Response(value),
             url: `${edgeURL}/${siteID}/site:images/${key}`,
           })
-
-        globalThis.fetch = mockStore.fetch
+          .inject()
 
         for (let index = 0; index <= 1; index++) {
           const context1 = {
@@ -412,13 +405,13 @@ describe('getMetadata', () => {
         etag: '123456789',
         'x-amz-meta-user': `b64;${base64Encode(mockMetadata)}`,
       }
-      const mockStore = new MockFetch().head({
-        headers: { authorization: `Bearer ${apiToken}` },
-        response: new Response(null, { headers }),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .head({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(null, { headers }),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -434,13 +427,13 @@ describe('getMetadata', () => {
     })
 
     test('Returns `null` when the API returns a 404', async () => {
-      const mockStore = new MockFetch().head({
-        headers: { authorization: `Bearer ${apiToken}` },
-        response: new Response(null, { status: 404 }),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .head({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(null, { status: 404 }),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -457,13 +450,13 @@ describe('getMetadata', () => {
         etag: '123456789',
         'x-amz-meta-user': `b64;${base64Encode(`{"name": "Netlify", "cool`)}`,
       }
-      const mockStore = new MockFetch().head({
-        headers: { authorization: `Bearer ${apiToken}` },
-        response: new Response(null, { headers }),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .head({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(null, { headers }),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -490,13 +483,13 @@ describe('getMetadata', () => {
         etag: '123456789',
         'x-amz-meta-user': `b64;${base64Encode(mockMetadata)}`,
       }
-      const mockStore = new MockFetch().head({
-        headers: { authorization: `Bearer ${edgeToken}` },
-        response: new Response(null, { headers }),
-        url: `${edgeURL}/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .head({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(null, { headers }),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -545,8 +538,7 @@ describe('getWithMetadata', () => {
           response: new Response(value, { headers: responseHeaders }),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -578,8 +570,7 @@ describe('getWithMetadata', () => {
           response: new Response('Something went wrong', { status: 404 }),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -606,8 +597,7 @@ describe('getWithMetadata', () => {
           response: new Response(value, { headers: responseHeaders }),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -656,8 +646,7 @@ describe('getWithMetadata', () => {
           response: new Response(null, { headers: { ...metadataHeaders, etag: etags.right }, status: 304 }),
           url: `${signedURL}a`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -701,8 +690,7 @@ describe('getWithMetadata', () => {
           response: new Response(value, { headers: responseHeaders }),
           url: `${edgeURL}/${siteID}/site:production/${key}`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -752,8 +740,7 @@ describe('set', () => {
           response: new Response(null),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -789,8 +776,7 @@ describe('set', () => {
           response: new Response(null),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -804,13 +790,13 @@ describe('set', () => {
     })
 
     test('Throws when the API returns a non-200 status code', async () => {
-      const mockStore = new MockFetch().put({
-        headers: { authorization: `Bearer ${apiToken}` },
-        response: new Response(null, { status: 401 }),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .put({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(null, { status: 401 }),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -825,9 +811,7 @@ describe('set', () => {
     })
 
     test('Throws when the key fails validation', async () => {
-      const mockStore = new MockFetch()
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch().inject()
 
       const blobs = getStore({
         name: 'production',
@@ -883,8 +867,7 @@ describe('set', () => {
           response: new Response(null),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -913,8 +896,7 @@ describe('set', () => {
           response: new Response(null),
           url: `${edgeURL}/${siteID}/site:production/${complexKey}`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -930,14 +912,14 @@ describe('set', () => {
     })
 
     test('Throws when the edge URL returns a non-200 status code', async () => {
-      const mockStore = new MockFetch().put({
-        body: value,
-        headers: { authorization: `Bearer ${edgeToken}`, 'cache-control': 'max-age=0, stale-while-revalidate=60' },
-        response: new Response(null, { status: 401 }),
-        url: `${edgeURL}/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .put({
+          body: value,
+          headers: { authorization: `Bearer ${edgeToken}`, 'cache-control': 'max-age=0, stale-while-revalidate=60' },
+          response: new Response(null, { status: 401 }),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -979,8 +961,7 @@ describe('set', () => {
           response: new Response(null),
           url: `${edgeURL}/${siteID}/site:production/${key}`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -1013,8 +994,7 @@ describe('setJSON', () => {
           response: new Response(null),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -1030,14 +1010,14 @@ describe('setJSON', () => {
 
   describe('With edge credentials', () => {
     test('Writes to the blob store', async () => {
-      const mockStore = new MockFetch().put({
-        body: JSON.stringify({ value }),
-        headers: { authorization: `Bearer ${edgeToken}`, 'cache-control': 'max-age=0, stale-while-revalidate=60' },
-        response: new Response(null),
-        url: `${edgeURL}/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .put({
+          body: JSON.stringify({ value }),
+          headers: { authorization: `Bearer ${edgeToken}`, 'cache-control': 'max-age=0, stale-while-revalidate=60' },
+          response: new Response(null),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -1058,18 +1038,18 @@ describe('setJSON', () => {
         functions: ['edge', 'serverless'],
       }
       const encodedMetadata = `b64;${Buffer.from(JSON.stringify(metadata)).toString('base64')}`
-      const mockStore = new MockFetch().put({
-        body: JSON.stringify({ value }),
-        headers: {
-          authorization: `Bearer ${edgeToken}`,
-          'cache-control': 'max-age=0, stale-while-revalidate=60',
-          'x-amz-meta-user': encodedMetadata,
-        },
-        response: new Response(null),
-        url: `${edgeURL}/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .put({
+          body: JSON.stringify({ value }),
+          headers: {
+            authorization: `Bearer ${edgeToken}`,
+            'cache-control': 'max-age=0, stale-while-revalidate=60',
+            'x-amz-meta-user': encodedMetadata,
+          },
+          response: new Response(null),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -1087,9 +1067,7 @@ describe('setJSON', () => {
       const metadata = {
         name: 'Netlify'.repeat(1000),
       }
-      const mockStore = new MockFetch()
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch().inject()
 
       const blobs = getStore({
         edgeURL,
@@ -1119,8 +1097,7 @@ describe('delete', () => {
           response: new Response(null, { status: 204 }),
           url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${complexKey}`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -1135,13 +1112,13 @@ describe('delete', () => {
     })
 
     test('Does not throw when the blob does not exist', async () => {
-      const mockStore = new MockFetch().delete({
-        headers: { authorization: `Bearer ${apiToken}` },
-        response: new Response(null, { status: 404 }),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(null, { status: 404 }),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -1155,13 +1132,13 @@ describe('delete', () => {
     })
 
     test('Throws when the API returns a non-200 status code', async () => {
-      const mockStore = new MockFetch().delete({
-        headers: { authorization: `Bearer ${apiToken}` },
-        response: new Response(null, { status: 401 }),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(null, { status: 401 }),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         name: 'production',
@@ -1178,13 +1155,13 @@ describe('delete', () => {
 
   describe('With edge credentials', () => {
     test('Deletes from the blob store', async () => {
-      const mockStore = new MockFetch().delete({
-        headers: { authorization: `Bearer ${edgeToken}` },
-        response: new Response(null, { status: 204 }),
-        url: `${edgeURL}/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(null, { status: 204 }),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -1199,13 +1176,13 @@ describe('delete', () => {
     })
 
     test('Does not throw when the blob does not exist', async () => {
-      const mockStore = new MockFetch().delete({
-        headers: { authorization: `Bearer ${edgeToken}` },
-        response: new Response(null, { status: 404 }),
-        url: `${edgeURL}/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(null, { status: 404 }),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -1220,13 +1197,13 @@ describe('delete', () => {
     })
 
     test('Throws when the edge URL returns a non-200 status code', async () => {
-      const mockStore = new MockFetch().delete({
-        headers: { authorization: `Bearer ${edgeToken}` },
-        response: new Response(null, { status: 401 }),
-        url: `${edgeURL}/${siteID}/site:production/${key}`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(null, { status: 401 }),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
 
       const blobs = getStore({
         edgeURL,
@@ -1258,8 +1235,7 @@ describe('Deploy scope', () => {
         response: new Response(value),
         url: `${edgeURL}/${siteID}/deploy:${deployID}/${key}`,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     const context = {
       edgeURL,
@@ -1300,8 +1276,7 @@ describe('Deploy scope', () => {
         response: new Response(value),
         url: signedURL,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     const deployStore = getStore({ deployID, siteID, token: apiToken })
 
@@ -1328,8 +1303,7 @@ describe('Deploy scope', () => {
         response: new Response(value),
         url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     const context = {
       deployID,
@@ -1372,8 +1346,7 @@ describe('Deploy scope', () => {
         response: new Response(value),
         url: signedURL,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     const deployStore = getDeployStore({ deployID, siteID, token: apiToken })
 
@@ -1401,8 +1374,7 @@ describe('Deploy scope', () => {
         response: new Response(value),
         url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}:${mockStoreName}/${key}`,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     const context = {
       deployID,
@@ -1440,8 +1412,7 @@ describe('Deploy scope', () => {
         response: new Response(value),
         url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}:${mockStoreName}/${key}`,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     const context = {
       deployID,
@@ -1467,10 +1438,8 @@ describe('Deploy scope', () => {
   test('Throws if the deploy ID fails validation', async () => {
     const mockRegion = 'us-east-2'
     const mockToken = 'some-token'
-    const mockStore = new MockFetch()
+    const mockStore = new MockFetch().inject()
     const longDeployID = 'd'.repeat(80)
-
-    globalThis.fetch = mockStore.fetch
 
     expect(() => getDeployStore({ deployID: 'deploy/ID', siteID, region: mockRegion, token: apiToken })).toThrowError(
       `'deploy/ID' is not a valid Netlify deploy ID`,
@@ -1631,8 +1600,7 @@ describe('Region configuration in deploy-scoped stores', () => {
           response: new Response(value),
           url: signedURL,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const deployStore = getDeployStore({ deployID, siteID, token: apiToken })
 
@@ -1659,6 +1627,7 @@ describe('Region configuration in deploy-scoped stores', () => {
           response: new Response(value),
           url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
         })
+        .inject()
 
       const context = {
         edgeURL,
@@ -1669,8 +1638,6 @@ describe('Region configuration in deploy-scoped stores', () => {
       }
 
       env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
-
-      globalThis.fetch = mockStore.fetch
 
       const deployStore = getDeployStore()
 
@@ -1697,8 +1664,7 @@ describe('Region configuration in deploy-scoped stores', () => {
           response: new Response(value),
           url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       expect(() => getDeployStore({ deployID, edgeURL, siteID, token: mockToken })).toThrowError()
       expect(mockStore.fulfilled).toBeFalsy()
@@ -1727,6 +1693,7 @@ describe('Region configuration in deploy-scoped stores', () => {
           response: new Response(value),
           url: signedURL,
         })
+        .inject()
 
       const context = {
         deployID,
@@ -1735,8 +1702,6 @@ describe('Region configuration in deploy-scoped stores', () => {
       }
 
       env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
-
-      globalThis.fetch = mockStore.fetch
 
       const deployStore = getDeployStore({ region: mockRegion })
 
@@ -1770,6 +1735,7 @@ describe('Region configuration in deploy-scoped stores', () => {
           response: new Response(value),
           url: signedURL,
         })
+        .inject()
 
       const context = {
         deployID,
@@ -1779,8 +1745,6 @@ describe('Region configuration in deploy-scoped stores', () => {
       }
 
       env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
-
-      globalThis.fetch = mockStore.fetch
 
       const deployStore = getDeployStore({ region: mockRegion })
 
@@ -1814,6 +1778,7 @@ describe('Region configuration in deploy-scoped stores', () => {
           response: new Response(value),
           url: signedURL,
         })
+        .inject()
 
       const context = {
         deployID,
@@ -1823,8 +1788,6 @@ describe('Region configuration in deploy-scoped stores', () => {
       }
 
       env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
-
-      globalThis.fetch = mockStore.fetch
 
       // @ts-expect-error Knowingly supplying an invalid value to `region`.
       expect(() => getDeployStore({ deployID, edgeURL, siteID, region: 'eu-west-1' })).toThrowError()
@@ -1845,8 +1808,7 @@ describe('Region configuration in deploy-scoped stores', () => {
           response: new Response(value),
           url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const context = {
         deployID,
@@ -1856,8 +1818,6 @@ describe('Region configuration in deploy-scoped stores', () => {
       }
 
       env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
-
-      globalThis.fetch = mockStore.fetch
 
       const deployStore = getDeployStore({ region: mockRegion })
 
@@ -1884,8 +1844,7 @@ describe('Region configuration in deploy-scoped stores', () => {
           response: new Response(value),
           url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const context = {
         deployID,
@@ -1896,8 +1855,6 @@ describe('Region configuration in deploy-scoped stores', () => {
       }
 
       env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
-
-      globalThis.fetch = mockStore.fetch
 
       const deployStore = getDeployStore({ region: mockRegion })
 

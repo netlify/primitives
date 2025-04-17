@@ -6,7 +6,6 @@ import { NetlifyCacheStorage } from './bootstrap/cachestorage.js'
 import { caches } from './main.js'
 import { getMockFetch } from './test/fetch.js'
 
-const base64Encode = (input: string) => Buffer.from(input, 'utf8').toString('base64')
 const host = 'host.netlify'
 const url = 'https://example.netlify/.netlify/cache'
 const token = 'mock-token'
@@ -24,7 +23,6 @@ describe('`caches` export', () => {
     expect(res1).toBeUndefined()
 
     globalThis.caches = new NetlifyCacheStorage({
-      base64Encode,
       getContext: () => ({ host, token, url }),
     })
 
