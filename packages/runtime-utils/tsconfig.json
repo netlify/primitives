@@ -12,10 +12,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": [
-    "src",
-    "../test-utils/src/fetch.ts",
-    "../test-utils/src/fixture.ts",
-    "../test-utils/src/event_inspector.ts"
-  ]
+  "include": ["src"]
 }
