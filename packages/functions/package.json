@@ -75,7 +75,7 @@
   "dependencies": {
     "@netlify/blobs": "^8.2.0",
     "@netlify/dev-utils": "1.1.0",
-    "@netlify/serverless-functions-api": "1.33.0",
+    "@netlify/serverless-functions-api": "1.37.0",
     "@netlify/zip-it-and-ship-it": "^9.42.5",
     "cron-parser": "^4.9.0",
     "decache": "^4.6.2",
