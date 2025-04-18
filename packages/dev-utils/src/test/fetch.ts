@@ -86,24 +86,26 @@ export class MockFetch {
         }
       }
 
-      let requestBody: string | null = null
+      if (match.body !== undefined) {
+        let requestBody: string | null = null
 
-      if (options?.body) {
-        if (typeof options.body === 'string') {
-          requestBody = options.body
-        } else {
-          requestBody = await readAsString(Readable.fromWeb(options.body as ReadableStream<any>))
+        if (options?.body) {
+          if (typeof options.body === 'string') {
+            requestBody = options.body
+          } else {
+            requestBody = await readAsString(Readable.fromWeb(options.body as ReadableStream<any>))
+          }
         }
-      }
 
-      if (typeof match.body === 'string') {
-        assert.equal(requestBody, match.body)
-      } else if (typeof match.body === 'function') {
-        const bodyFn = match.body
+        if (typeof match.body === 'string') {
+          assert.equal(requestBody, match.body)
+        } else if (typeof match.body === 'function') {
+          const bodyFn = match.body
 
-        assert.doesNotThrow(() => bodyFn(requestBody))
-      } else if (match.body === null) {
-        assert.equal(options?.body, undefined)
+          assert.doesNotThrow(() => bodyFn(requestBody))
+        } else if (match.body === null) {
+          assert.equal(options?.body, undefined)
+        }
       }
 
       match.fulfilled = true

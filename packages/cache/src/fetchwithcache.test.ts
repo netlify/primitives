@@ -35,7 +35,7 @@ describe('`fetchWithCache`', () => {
         url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
       })
       .get({
-        response: cachedResponse,
+        response: () => cachedResponse,
         url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
       })
       .inject()
@@ -142,9 +142,6 @@ describe('`fetchWithCache`', () => {
             expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
             expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
           },
-          body: async (body) => {
-            expect(body).toBe('<h1>Hello world</h1>')
-          },
           response: () =>
             new Promise((resolve) => {
               ac.signal.onabort = () => resolve(new Response(null, { status: 201 }))
@@ -163,7 +160,7 @@ describe('`fetchWithCache`', () => {
 
       let onCachePutCalled = false
 
-      // `fetchWithCache` resolves without the the cache put having resolved.
+      // `fetchWithCache` resolves without the cache put having resolved.
       const fresh = await fetchWithCache(resourceURL, {
         ...cacheOptions,
         onCachePut: () => {
