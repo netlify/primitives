@@ -173,7 +173,7 @@ export class NetlifyCache implements Cache {
     })
 
     if (!cacheResponse.ok) {
-      const errorDetail = cacheResponse.headers.get(HEADERS.ErrorDetail) ?? ''
+      const errorDetail = cacheResponse.headers?.get(HEADERS.ErrorDetail) ?? ''
       const errorMessage = ERROR_CODES[errorDetail as keyof typeof ERROR_CODES] || GENERIC_ERROR
 
       context.logger?.(`Failed to write to the cache: ${errorMessage}`)

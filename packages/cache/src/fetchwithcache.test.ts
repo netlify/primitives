@@ -2,11 +2,11 @@ import { Buffer } from 'node:buffer'
 import { Readable } from 'node:stream'
 import type { ReadableStream } from 'node:stream/web'
 
+import { MockFetch } from '@netlify/dev-utils'
 import { describe, test, expect, beforeEach, afterAll } from 'vitest'
 
 import { NetlifyCacheStorage } from './bootstrap/cachestorage.js'
 import { fetchWithCache } from './fetchwithcache.js'
-import { getMockFetch } from './test/fetch.js'
 import { readAsString, sleep } from './test/util.js'
 import { decodeHeaders } from './test/headers.js'
 
@@ -34,14 +34,16 @@ describe('`fetchWithCache`', () => {
     headers.set('x-custom-header', 'foobar')
 
     const cachedResponse = new Response('<h1>Hello world</h1>', { headers })
-    const mockFetch = getMockFetch({
-      responses: {
-        'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
-          new Response(null, { status: 201 }),
-          cachedResponse,
-        ],
-      },
-    })
+    const mockFetch = new MockFetch()
+      .post({
+        response: new Response(null, { status: 201 }),
+        url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+      })
+      .get({
+        response: cachedResponse,
+        url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+      })
+      .inject()
     const resourceURL = 'https://netlify.com'
 
     const cache = await caches.open('')
@@ -57,7 +59,7 @@ describe('`fetchWithCache`', () => {
   })
 
   test('Throws when used with a method other than GET', async () => {
-    const mockFetch = getMockFetch()
+    const mockFetch = new MockFetch().inject()
     const resourceURL = 'https://netlify.com'
 
     expect(() => fetchWithCache(resourceURL, { method: 'POST' })).rejects.toThrowError()
@@ -81,28 +83,33 @@ describe('`fetchWithCache`', () => {
         ttl: 30,
       }
       const ac = new AbortController()
-      const mockFetch = getMockFetch({
-        responses: {
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
-            new Response(null, { status: 404 }),
-            async (_, init) => {
-              const headers = decodeHeaders((init?.headers as Record<string, string>)['netlify-programmable-headers'])
+      const mockFetch = new MockFetch()
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response(null, { status: 404 }),
+        })
+        .post({
+          body: async (body) => {
+            expect(await readAsString(Readable.fromWeb(body as ReadableStream<any>))).toBe('<h1>Hello world</h1>')
+          },
+          headers: async (reqHeaders) => {
+            const headers = decodeHeaders((reqHeaders as Record<string, string>)['netlify-programmable-headers'])
 
-              expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
-              expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
-              expect(await readAsString(Readable.fromWeb(init?.body as ReadableStream<any>))).toBe(
-                '<h1>Hello world</h1>',
-              )
-
-              return new Promise((resolve) => {
-                ac.signal.onabort = () => resolve(new Response(null, { status: 201 }))
-              })
-            },
-            () => new Response('<h1>Hello world</h1>', { headers }),
-          ],
-          'https://netlify.com/': [() => new Response('<h1>Hello world</h1>', { headers })],
-        },
-      })
+            expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
+            expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
+          },
+          response: () =>
+            new Promise<Response>((resolve) => {
+              ac.signal.onabort = () => resolve(new Response(null, { status: 201 }))
+            }),
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+        })
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: () => new Response('<h1>Hello world</h1>', { headers }),
+        })
+        .get({ url: 'https://netlify.com', response: new Response('<h1>Hello world</h1>', { headers }) })
+        .inject()
       const resourceURL = 'https://netlify.com'
 
       // `fetchWithCache` doesn't resolve until the cache put resolves.
@@ -114,8 +121,7 @@ describe('`fetchWithCache`', () => {
       expect(await cached.text()).toBe('<h1>Hello world</h1>')
 
       mockFetch.restore()
-
-      expect(mockFetch.requests.length).toBe(4)
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('With a `onCachePut` handler', async () => {
@@ -128,28 +134,36 @@ describe('`fetchWithCache`', () => {
         ttl: 30,
       }
       const ac = new AbortController()
-      const mockFetch = getMockFetch({
-        responses: {
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
-            new Response(null, { status: 404 }),
-            async (_, init) => {
-              const headers = decodeHeaders((init?.headers as Record<string, string>)['netlify-programmable-headers'])
+      const mockFetch = new MockFetch()
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response(null, { status: 404 }),
+        })
+        .post({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          headers: (reqHeaders) => {
+            const headers = decodeHeaders(reqHeaders['netlify-programmable-headers'])
 
-              expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
-              expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
-              expect(await readAsString(Readable.fromWeb(init?.body as ReadableStream<any>))).toBe(
-                '<h1>Hello world</h1>',
-              )
-
-              return new Promise((resolve) => {
-                ac.signal.onabort = () => resolve(new Response(null, { status: 201 }))
-              })
-            },
-            () => new Response('<h1>Hello world</h1>', { headers }),
-          ],
-          'https://netlify.com/': [() => new Response('<h1>Hello world</h1>', { headers })],
-        },
-      })
+            expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
+            expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
+          },
+          body: async (body) => {
+            expect(await readAsString(Readable.fromWeb(body as ReadableStream<any>))).toBe('<h1>Hello world</h1>')
+          },
+          response: () =>
+            new Promise((resolve) => {
+              ac.signal.onabort = () => resolve(new Response(null, { status: 201 }))
+            }),
+        })
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response('<h1>Hello world</h1>', { headers }),
+        })
+        .get({
+          url: 'https://netlify.com',
+          response: new Response('<h1>Hello world</h1>', { headers }),
+        })
+        .inject()
       const resourceURL = 'https://netlify.com'
 
       let onCachePutCalled = false
@@ -172,19 +186,22 @@ describe('`fetchWithCache`', () => {
       expect(await cached.text()).toBe('<h1>Hello world</h1>')
 
       mockFetch.restore()
-
-      expect(mockFetch.requests.length).toBe(4)
+      expect(mockFetch.fulfilled).toBe(true)
     })
   })
 
   test('Uses the exported `caches` proxy', async () => {
     const html = '<h1>Hello world</h1>'
-    const mockFetch = getMockFetch({
-      responses: {
-        'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [new Response(html)],
-        'https://netlify.com/': [new Response(html)],
-      },
-    })
+    const mockFetch = new MockFetch()
+      .get({
+        url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+        response: new Response(html),
+      })
+      .get({
+        url: 'https://netlify.com',
+        response: new Response(html),
+      })
+      .inject()
     const resourceURL = 'https://netlify.com'
     const responseWithCache = await fetchWithCache(resourceURL)
     expect(await responseWithCache.text()).toBe('<h1>Hello world</h1>')
@@ -196,7 +213,6 @@ describe('`fetchWithCache`', () => {
     expect(await responseWithProxy.text()).toBe('<h1>Hello world</h1>')
 
     mockFetch.restore()
-
-    expect(mockFetch.requests.length).toBe(2)
+    expect(mockFetch.fulfilled).toBe(true)
   })
 })

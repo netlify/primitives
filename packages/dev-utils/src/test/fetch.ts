@@ -1,20 +1,22 @@
 import assert from 'node:assert'
 
-type BodyFunction = (req: BodyInit | null | undefined) => void
+type BodyFunction = (req: BodyInit | null | undefined) => Promise<void> | void
+type HeadersFunction = (headers: Record<string, string>) => Promise<void> | void
+type ResponseFunction = () => Promise<Response> | Response
 
 interface ExpectedRequest {
   body?: string | BodyFunction
   fulfilled: boolean
-  headers: Record<string, string>
+  headers: Record<string, string> | HeadersFunction
   method: string
-  response: Response | Error
+  response: Response | ResponseFunction | Error
   url: string
 }
 
 interface ExpectedRequestOptions {
   body?: string | BodyFunction
-  headers?: Record<string, string>
-  response: Response | Error
+  headers?: Record<string, string> | HeadersFunction
+  response: Response | ResponseFunction | Error
   url: string
 }
 
@@ -74,8 +76,12 @@ export class MockFetch {
         throw new Error(`Unexpected fetch call: ${method} ${url}`)
       }
 
-      for (const key in match.headers) {
-        assert.equal(headers[key], match.headers[key])
+      if (typeof match.headers === 'function') {
+        assert.doesNotThrow(() => (match.headers as HeadersFunction)(headers))
+      } else {
+        for (const key in match.headers) {
+          assert.equal(headers[key], match.headers[key])
+        }
       }
 
       if (typeof match.body === 'string') {
@@ -84,7 +90,7 @@ export class MockFetch {
         const bodyFn = match.body
 
         assert.doesNotThrow(() => bodyFn(options?.body))
-      } else {
+      } else if (match.body === null) {
         assert.equal(options?.body, undefined)
       }
 
@@ -92,6 +98,10 @@ export class MockFetch {
 
       if (match.response instanceof Error) {
         throw match.response
+      }
+
+      if (typeof match.response === 'function') {
+        return match.response()
       }
 
       return match.response
