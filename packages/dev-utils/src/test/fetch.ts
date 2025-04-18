@@ -1,6 +1,8 @@
 import assert from 'node:assert'
+import { Readable } from 'node:stream'
+import { ReadableStream } from 'node:stream/web'
 
-type BodyFunction = (req: BodyInit | null | undefined) => Promise<void> | void
+type BodyFunction = (bufferedBody: string | null) => Promise<void> | void
 type HeadersFunction = (headers: Record<string, string>) => Promise<void> | void
 type ResponseFunction = () => Promise<Response> | Response
 
@@ -84,12 +86,22 @@ export class MockFetch {
         }
       }
 
+      let requestBody: string | null = null
+
+      if (options?.body) {
+        if (typeof options.body === 'string') {
+          requestBody = options.body
+        } else {
+          requestBody = await readAsString(Readable.fromWeb(options.body as ReadableStream<any>))
+        }
+      }
+
       if (typeof match.body === 'string') {
-        assert.equal(options?.body, match.body)
+        assert.equal(requestBody, match.body)
       } else if (typeof match.body === 'function') {
         const bodyFn = match.body
 
-        assert.doesNotThrow(() => bodyFn(options?.body))
+        assert.doesNotThrow(() => bodyFn(requestBody))
       } else if (match.body === null) {
         assert.equal(options?.body, undefined)
       }
@@ -122,3 +134,20 @@ export class MockFetch {
     globalThis.fetch = this.originalFetch
   }
 }
+
+export const readAsString = (input: NodeJS.ReadableStream): Promise<string> =>
+  new Promise((resolve, reject) => {
+    let buffer = ''
+
+    input.on('data', (chunk) => {
+      buffer += chunk
+    })
+
+    input.on('error', (error) => {
+      reject(error)
+    })
+
+    input.on('end', () => {
+      resolve(buffer)
+    })
+  })

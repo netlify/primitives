@@ -1,16 +1,11 @@
-import { Buffer } from 'node:buffer'
-import { Readable } from 'node:stream'
-import type { ReadableStream } from 'node:stream/web'
-
 import { MockFetch } from '@netlify/dev-utils'
 import { describe, test, expect, beforeEach, afterAll } from 'vitest'
 
 import { NetlifyCacheStorage } from './bootstrap/cachestorage.js'
 import { fetchWithCache } from './fetchwithcache.js'
-import { readAsString, sleep } from './test/util.js'
+import { sleep } from './test/util.js'
 import { decodeHeaders } from './test/headers.js'
 
-const base64Encode = (input: string) => Buffer.from(input, 'utf8').toString('base64')
 const host = 'host.netlify'
 const url = 'https://example.netlify/.netlify/cache'
 const token = 'mock-token'
@@ -90,7 +85,7 @@ describe('`fetchWithCache`', () => {
         })
         .post({
           body: async (body) => {
-            expect(await readAsString(Readable.fromWeb(body as ReadableStream<any>))).toBe('<h1>Hello world</h1>')
+            expect(body).toBe('<h1>Hello world</h1>')
           },
           headers: async (reqHeaders) => {
             const headers = decodeHeaders((reqHeaders as Record<string, string>)['netlify-programmable-headers'])
@@ -148,7 +143,7 @@ describe('`fetchWithCache`', () => {
             expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
           },
           body: async (body) => {
-            expect(await readAsString(Readable.fromWeb(body as ReadableStream<any>))).toBe('<h1>Hello world</h1>')
+            expect(body).toBe('<h1>Hello world</h1>')
           },
           response: () =>
             new Promise((resolve) => {
