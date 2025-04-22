@@ -28,7 +28,7 @@
   "author": "Netlify Inc.",
   "devDependencies": {
     "@types/node": "^22.14.1",
-    "tsup": "^7.2.0",
+    "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   }
 }

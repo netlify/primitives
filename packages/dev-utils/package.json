@@ -50,7 +50,7 @@
     "@types/node": "^22.14.1",
     "@types/write-file-atomic": "^4.0.3",
     "tmp-promise": "^3.0.3",
-    "tsup": "^7.2.0",
+    "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   },
   "dependencies": {
