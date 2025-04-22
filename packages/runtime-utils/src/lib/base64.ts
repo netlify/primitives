@@ -1,21 +1,6 @@
-export const base64Decode = (input: string) => {
-  // eslint-disable-next-line n/prefer-global/buffer
-  const { Buffer } = globalThis
 
-  if (Buffer) {
-    return Buffer.from(input, 'base64').toString()
-  }
+// eslint-disable-next-line n/prefer-global/buffer
+export const base64Decode =  globalThis.Buffer ? (input: string) => Buffer.from(input, 'base64').toString() : (input: string) => atob(input)
 
-  return atob(input)
-}
-
-export const base64Encode = (input: string) => {
-  // eslint-disable-next-line n/prefer-global/buffer
-  const { Buffer } = globalThis
-
-  if (Buffer) {
-    return Buffer.from(input).toString('base64')
-  }
-
-  return btoa(input)
-}
+// eslint-disable-next-line n/prefer-global/buffer
+export const base64Encode = globalThis.Buffer ? (input: string) => Buffer.from(input).toString() : (input: string) => btoa(input)
