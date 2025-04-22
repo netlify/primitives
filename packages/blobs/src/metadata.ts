@@ -1,4 +1,4 @@
-import { base64Decode, base64Encode } from './util.ts'
+import { base64Decode, base64Encode } from '@netlify/runtime-utils'
 
 export type Metadata = Record<string, unknown>
 

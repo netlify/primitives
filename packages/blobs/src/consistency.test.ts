@@ -1,10 +1,10 @@
 import { Buffer } from 'node:buffer'
 import { env, version as nodeVersion } from 'node:process'
 
+import { MockFetch } from '@netlify/dev-utils'
 import semver from 'semver'
 import { describe, test, expect, beforeAll, afterEach } from 'vitest'
 
-import { MockFetch } from '../test/mock_fetch.js'
 import { base64Encode } from '../test/util.js'
 
 import { getDeployStore, getStore } from './main.js'
@@ -64,8 +64,7 @@ describe('Consistency configuration', () => {
         response: new Response(value, { headers }),
         url: `${uncachedEdgeURL}/${siteID}/site:production/${key}`,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     const context = {
       edgeURL,
@@ -119,8 +118,7 @@ describe('Consistency configuration', () => {
         response: new Response(value, { headers }),
         url: `${uncachedEdgeURL}/${siteID}/site:production/${key}`,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     const blobs = getStore({
       consistency: 'strong',
@@ -173,8 +171,7 @@ describe('Consistency configuration', () => {
         response: new Response(value, { headers }),
         url: `${uncachedEdgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     const blobs = getDeployStore({
       consistency: 'strong',
@@ -227,8 +224,7 @@ describe('Consistency configuration', () => {
         response: new Response(value, { headers }),
         url: `${edgeURL}/${siteID}/site:production/${key}`,
       })
-
-    globalThis.fetch = mockStore.fetch
+      .inject()
 
     const blobs = getStore({
       consistency: 'strong',

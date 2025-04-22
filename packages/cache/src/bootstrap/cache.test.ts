@@ -1,14 +1,11 @@
-import { Buffer } from 'node:buffer'
-
+import { MockFetch } from '@netlify/dev-utils'
 import { describe, test, expect, vi } from 'vitest'
 
 import { NetlifyCache } from './cache.js'
 import { Operation } from './environment.js'
 import { ERROR_CODES } from './errors.js'
-import { getMockFetch } from '../test/fetch.js'
 import { decodeHeaders } from '../test/headers.js'
 
-const base64Encode = (input: string) => Buffer.from(input, 'utf8').toString('base64')
 const host = 'my-site.netlify'
 const url = 'https://example.netlify/.netlify/cache'
 const token = 'mock-token'
@@ -22,23 +19,27 @@ describe('Cache API', () => {
       headers.set('x-custom-header', 'foobar')
 
       const response = new Response('<h1>Hello world</h1>', { headers })
-      const mockFetch = getMockFetch({
-        responses: {
-          'https://netlify.com/': [response],
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
-            (_, init) => {
-              const headers = init?.headers as Record<string, string>
+      const mockFetch = new MockFetch()
+        .get({
+          url: 'https://netlify.com',
+          response,
+        })
+        .post({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          headers: (headers) => {
+            expect(headers.Authorization).toBe(`Bearer ${token}`)
+            expect(headers['netlify-forwarded-host']).toBe(host)
+            expect(headers['netlify-programmable-status']).toBe('200')
+            expect(headers['netlify-programmable-store']).toBe('my-cache')
 
-              expect(headers.Authorization).toBe(`Bearer ${token}`)
-              expect(headers['netlify-forwarded-host']).toBe(host)
+            const decodedHeaders = decodeHeaders(headers['netlify-programmable-headers'])
 
-              return new Response(null, { status: 201 })
-            },
-          ],
-        },
-      })
+            expect(decodedHeaders.get('content-type')).toBe('text/html')
+          },
+          response: new Response(null, { status: 201 }),
+        })
+        .inject()
       const cache = new NetlifyCache({
-        base64Encode,
         getContext: ({ operation }) => {
           expect(operation).toBe(Operation.Write)
 
@@ -51,45 +52,23 @@ describe('Cache API', () => {
       await cache.add('https://netlify.com')
 
       mockFetch.restore()
-
-      expect(mockFetch.requests.length).toBe(2)
-
-      const [resourceRequest, cacheRequest] = mockFetch.requests
-
-      expect(resourceRequest.url).toBe('https://netlify.com/')
-      expect(resourceRequest.method).toBe('GET')
-
-      expect(cacheRequest.url).toBe(`${url}/${encodeURIComponent('https://netlify.com/')}`)
-      expect(cacheRequest.method).toBe('POST')
-      expect(await cacheRequest.text()).toBe('<h1>Hello world</h1>')
-      expect(cacheRequest.headers.get('authorization')).toBe(`Bearer ${token}`)
-      expect(cacheRequest.headers.get('netlify-programmable-status')).toBe('200')
-      expect(cacheRequest.headers.get('netlify-programmable-store')).toBe('my-cache')
-
-      const resourceHeaders = decodeHeaders(cacheRequest.headers.get('netlify-programmable-headers'))
-
-      expect(resourceHeaders.get('content-type')).toBe('text/html')
+      expect(mockFetch.fulfilled).toBe(true)
     })
   })
 
   describe('delete', () => {
     test('returns a response if there is a matching entry in the cache, otherwise returns undefined', async () => {
-      const mockFetch = getMockFetch({
-        responses: {
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
-            (_, init) => {
-              const headers = init?.headers as Record<string, string>
-
-              expect(headers.Authorization).toBe(`Bearer ${token}`)
-              expect(headers['netlify-forwarded-host']).toBe(host)
-
-              return new Response(null, { status: 202 })
-            },
-          ],
-        },
-      })
+      const mockFetch = new MockFetch()
+        .delete({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          headers: (headers) => {
+            expect(headers.Authorization).toBe(`Bearer ${token}`)
+            expect(headers['netlify-forwarded-host']).toBe(host)
+          },
+          response: new Response(null, { status: 202 }),
+        })
+        .inject()
       const cache = new NetlifyCache({
-        base64Encode,
         getContext: ({ operation }) => {
           expect(operation).toBe(Operation.Delete)
 
@@ -102,14 +81,12 @@ describe('Cache API', () => {
       expect(await cache.delete(new Request('https://netlify.com'))).toBe(true)
 
       mockFetch.restore()
-
-      expect(mockFetch.requests.length).toBe(1)
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('is a no-op when the `getContext` callback returns `null`', async () => {
-      const mockFetch = getMockFetch()
+      const mockFetch = new MockFetch().inject()
       const cache = new NetlifyCache({
-        base64Encode,
         getContext: ({ operation }) => {
           expect(operation).toBe(Operation.Delete)
 
@@ -122,8 +99,7 @@ describe('Cache API', () => {
       expect(await cache.delete(new Request('https://netlify.com'))).toBe(true)
 
       mockFetch.restore()
-
-      expect(mockFetch.requests.length).toBe(0)
+      expect(mockFetch.fulfilled).toBe(true)
     })
   })
 
@@ -134,27 +110,21 @@ describe('Cache API', () => {
       headers.set('x-custom-header', 'foobar')
 
       const response = new Response('<h1>Hello world</h1>', { headers })
-      const mockFetch = getMockFetch({
-        responses: {
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
-            (_, init) => {
-              const headers = init?.headers as Record<string, string>
-
-              expect(headers.Authorization).toBe(`Bearer ${token}`)
-              expect(headers['netlify-forwarded-host']).toBe(host)
-
-              return response
-            },
-          ],
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2Fsome-path': [
-            (_, init) => {
-              return new Response(null, { status: 404 })
-            },
-          ],
-        },
-      })
+      const mockFetch = new MockFetch()
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          headers: (headers) => {
+            expect(headers.Authorization).toBe(`Bearer ${token}`)
+            expect(headers['netlify-forwarded-host']).toBe(host)
+          },
+          response,
+        })
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2Fsome-path',
+          response: new Response(null, { status: 404 }),
+        })
+        .inject()
       const cache = new NetlifyCache({
-        base64Encode,
         getContext: ({ operation }) => {
           expect(operation).toBe(Operation.Read)
 
@@ -182,9 +152,8 @@ describe('Cache API', () => {
     })
 
     test('is a no-op when the `getContext` callback returns `null`', async () => {
-      const mockFetch = getMockFetch()
+      const mockFetch = new MockFetch().inject()
       const cache = new NetlifyCache({
-        base64Encode,
         getContext: ({ operation }) => {
           expect(operation).toBe(Operation.Read)
 
@@ -197,29 +166,35 @@ describe('Cache API', () => {
       expect(await cache.match(new Request('https://netlify.com'))).toBe(undefined)
 
       mockFetch.restore()
-
-      expect(mockFetch.requests.length).toBe(0)
+      expect(mockFetch.fulfilled).toBe(true)
     })
   })
 
   describe('put', () => {
     test('adds a response to the cache', async () => {
-      const mockFetch = getMockFetch({
-        responses: {
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
-            (_, init) => {
-              const headers = init?.headers as Record<string, string>
+      const resourceHeaders = new Headers()
+      resourceHeaders.set('content-type', 'text/html')
+      resourceHeaders.set('x-custom-header', 'foobar')
 
-              expect(headers.Authorization).toBe(`Bearer ${token}`)
-              expect(headers['netlify-forwarded-host']).toBe(host)
+      const mockFetch = new MockFetch()
+        .post({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          body: async (body) => {
+            expect(body).toBe('<h1>Hello world</h1>')
+          },
+          headers: (headers) => {
+            expect(headers.Authorization).toBe(`Bearer ${token}`)
+            expect(headers['netlify-forwarded-host']).toBe(host)
+            expect(headers['netlify-programmable-status']).toBe('200')
+            expect(headers['netlify-programmable-store']).toBe('my-cache')
 
-              return new Response(null, { status: 201 })
-            },
-          ],
-        },
-      })
+            const decodedHeaders = decodeHeaders(headers['netlify-programmable-headers'])
+            expect([...decodedHeaders]).toStrictEqual([...resourceHeaders])
+          },
+          response: new Response(null, { status: 201 }),
+        })
+        .inject()
       const cache = new NetlifyCache({
-        base64Encode,
         getContext: ({ operation }) => {
           expect(operation).toBe(Operation.Write)
 
@@ -229,50 +204,27 @@ describe('Cache API', () => {
         userAgent,
       })
 
-      const headers = new Headers()
-      headers.set('content-type', 'text/html')
-      headers.set('x-custom-header', 'foobar')
-
-      const response = new Response('<h1>Hello world</h1>', { headers })
+      const response = new Response('<h1>Hello world</h1>', { headers: resourceHeaders })
 
       await cache.put(new Request('https://netlify.com'), response)
 
       mockFetch.restore()
-
-      expect(mockFetch.requests.length).toBe(1)
-
-      const [cacheRequest] = mockFetch.requests
-
-      expect(cacheRequest.url).toBe(`${url}/${encodeURIComponent('https://netlify.com/')}`)
-      expect(cacheRequest.method).toBe('POST')
-      expect(await cacheRequest.text()).toBe('<h1>Hello world</h1>')
-      expect(cacheRequest.headers.get('authorization')).toBe(`Bearer ${token}`)
-      expect(cacheRequest.headers.get('netlify-programmable-status')).toBe('200')
-      expect(cacheRequest.headers.get('netlify-programmable-store')).toBe('my-cache')
-
-      const resourceHeaders = decodeHeaders(cacheRequest.headers.get('netlify-programmable-headers'))
-
-      expect([...resourceHeaders]).toStrictEqual([...headers])
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('logs a message when the response is not added to the cache', async () => {
       const logger = vi.fn()
-      const mockFetch = getMockFetch({
-        responses: {
-          'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F': [
-            (_, init) => {
-              const headers = init?.headers as Record<string, string>
-
-              expect(headers.Authorization).toBe(`Bearer ${token}`)
-              expect(headers['netlify-forwarded-host']).toBe(host)
-
-              return new Response(null, { headers: { 'netlify-programmable-error': 'no_ttl' }, status: 400 })
-            },
-          ],
-        },
-      })
+      const mockFetch = new MockFetch()
+        .post({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          headers: (headers) => {
+            expect(headers.Authorization).toBe(`Bearer ${token}`)
+            expect(headers['netlify-forwarded-host']).toBe(host)
+          },
+          response: new Response(null, { headers: { 'netlify-programmable-error': 'no_ttl' }, status: 400 }),
+        })
+        .inject()
       const cache = new NetlifyCache({
-        base64Encode,
         getContext: () => ({ host, logger, token, url }),
         name: 'my-cache',
         userAgent,
@@ -287,16 +239,14 @@ describe('Cache API', () => {
       await cache.put(new Request('https://netlify.com'), response)
 
       mockFetch.restore()
+      expect(mockFetch.fulfilled).toBe(true)
 
       expect(logger).toHaveBeenCalledWith(`Failed to write to the cache: ${ERROR_CODES.no_ttl}`)
-
-      expect(mockFetch.requests.length).toBe(1)
     })
 
     test('is a no-op when the `getContext` callback returns `null`', async () => {
-      const mockFetch = getMockFetch()
+      const mockFetch = new MockFetch().inject()
       const cache = new NetlifyCache({
-        base64Encode,
         getContext: ({ operation }) => {
           expect(operation).toBe(Operation.Write)
 
@@ -309,8 +259,7 @@ describe('Cache API', () => {
       expect(await cache.put(new Request('https://netlify.com'), new Response('Hello world'))).toBe(undefined)
 
       mockFetch.restore()
-
-      expect(mockFetch.requests.length).toBe(0)
+      expect(mockFetch.fulfilled).toBe(true)
     })
   })
 })

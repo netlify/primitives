@@ -1,9 +1,8 @@
 import { env, version as nodeVersion } from 'node:process'
 
+import { MockFetch } from '@netlify/dev-utils'
 import semver from 'semver'
 import { describe, test, expect, beforeAll, afterEach } from 'vitest'
-
-import { MockFetch } from '../test/mock_fetch.js'
 
 import { getStore } from './main.js'
 import type { ListResult } from './store.js'
@@ -102,8 +101,7 @@ describe('list', () => {
           ),
           url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:${storeName}?cursor=cursor_2`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const store = getStore({
         name: 'mystore',
@@ -208,8 +206,7 @@ describe('list', () => {
           ),
           url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:${storeName}?prefix=dir2%2F&directories=true`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const store = getStore({
         name: 'mystore',
@@ -238,30 +235,30 @@ describe('list', () => {
     })
 
     test('Accepts a `prefix` property', async () => {
-      const mockStore = new MockFetch().get({
-        headers: { authorization: `Bearer ${apiToken}` },
-        response: new Response(
-          JSON.stringify({
-            blobs: [
-              {
-                etag: 'etag1',
-                key: 'group/key1',
-                size: 1,
-                last_modified: '2023-07-18T12:59:06Z',
-              },
-              {
-                etag: 'etag2',
-                key: 'group/key2',
-                size: 2,
-                last_modified: '2023-07-18T12:59:06Z',
-              },
-            ],
-          }),
-        ),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:${storeName}?prefix=group%2F`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(
+            JSON.stringify({
+              blobs: [
+                {
+                  etag: 'etag1',
+                  key: 'group/key1',
+                  size: 1,
+                  last_modified: '2023-07-18T12:59:06Z',
+                },
+                {
+                  etag: 'etag2',
+                  key: 'group/key2',
+                  size: 2,
+                  last_modified: '2023-07-18T12:59:06Z',
+                },
+              ],
+            }),
+          ),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:${storeName}?prefix=group%2F`,
+        })
+        .inject()
 
       const store = getStore({
         name: 'mystore',
@@ -321,8 +318,7 @@ describe('list', () => {
           ),
           url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:${storeName}?cursor=cursor_2`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const store = getStore({
         name: 'mystore',
@@ -433,8 +429,7 @@ describe('list', () => {
           ),
           url: `${edgeURL}/${siteID}/site:${storeName}?prefix=dir2%2F`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const store = getStore({
         edgeURL,
@@ -547,8 +542,7 @@ describe('list', () => {
           ),
           url: `${edgeURL}/${siteID}/site:${storeName}?prefix=dir2%2F&directories=true`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const store = getStore({
         edgeURL,
@@ -578,30 +572,30 @@ describe('list', () => {
     })
 
     test('Accepts a `prefix` property', async () => {
-      const mockStore = new MockFetch().get({
-        headers: { authorization: `Bearer ${edgeToken}` },
-        response: new Response(
-          JSON.stringify({
-            blobs: [
-              {
-                etag: 'etag1',
-                key: 'group/key1',
-                size: 1,
-                last_modified: '2023-07-18T12:59:06Z',
-              },
-              {
-                etag: 'etag2',
-                key: 'group/key2',
-                size: 2,
-                last_modified: '2023-07-18T12:59:06Z',
-              },
-            ],
-          }),
-        ),
-        url: `${edgeURL}/${siteID}/site:${storeName}?prefix=group%2F`,
-      })
-
-      globalThis.fetch = mockStore.fetch
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(
+            JSON.stringify({
+              blobs: [
+                {
+                  etag: 'etag1',
+                  key: 'group/key1',
+                  size: 1,
+                  last_modified: '2023-07-18T12:59:06Z',
+                },
+                {
+                  etag: 'etag2',
+                  key: 'group/key2',
+                  size: 2,
+                  last_modified: '2023-07-18T12:59:06Z',
+                },
+              ],
+            }),
+          ),
+          url: `${edgeURL}/${siteID}/site:${storeName}?prefix=group%2F`,
+        })
+        .inject()
 
       const store = getStore({
         edgeURL,
@@ -685,8 +679,7 @@ describe('list', () => {
           ),
           url: `${edgeURL}/${siteID}/site:${storeName}?cursor=cursor_3`,
         })
-
-      globalThis.fetch = mockStore.fetch
+        .inject()
 
       const store = getStore({
         edgeURL,
@@ -718,31 +711,31 @@ describe('list', () => {
 
   test('Uses the uncached edge URL if `consistency: "strong"`', async () => {
     const uncachedEdgeURL = 'https://uncached-edge.netlify'
-    const mockStore = new MockFetch().get({
-      headers: { authorization: `Bearer ${edgeToken}` },
-      response: new Response(
-        JSON.stringify({
-          blobs: [
-            {
-              etag: 'etag1',
-              key: 'key1',
-              size: 1,
-              last_modified: '2023-07-18T12:59:06Z',
-            },
-            {
-              etag: 'etag2',
-              key: 'key2',
-              size: 2,
-              last_modified: '2023-07-18T12:59:06Z',
-            },
-          ],
-          directories: [],
-        }),
-      ),
-      url: `${uncachedEdgeURL}/${siteID}/site:${storeName}`,
-    })
-
-    globalThis.fetch = mockStore.fetch
+    const mockStore = new MockFetch()
+      .get({
+        headers: { authorization: `Bearer ${edgeToken}` },
+        response: new Response(
+          JSON.stringify({
+            blobs: [
+              {
+                etag: 'etag1',
+                key: 'key1',
+                size: 1,
+                last_modified: '2023-07-18T12:59:06Z',
+              },
+              {
+                etag: 'etag2',
+                key: 'key2',
+                size: 2,
+                last_modified: '2023-07-18T12:59:06Z',
+              },
+            ],
+            directories: [],
+          }),
+        ),
+        url: `${uncachedEdgeURL}/${siteID}/site:${storeName}`,
+      })
+      .inject()
 
     const store = getStore({
       consistency: 'strong',
@@ -764,13 +757,13 @@ describe('list', () => {
   })
 
   test('Handles missing content automatic pagination', async () => {
-    const mockStore = new MockFetch().get({
-      headers: { authorization: `Bearer ${edgeToken}` },
-      response: new Response('<not_found>', { status: 404 }),
-      url: `${edgeURL}/${siteID}/site:${storeName}?prefix=group%2F`,
-    })
-
-    globalThis.fetch = mockStore.fetch
+    const mockStore = new MockFetch()
+      .get({
+        headers: { authorization: `Bearer ${edgeToken}` },
+        response: new Response('<not_found>', { status: 404 }),
+        url: `${edgeURL}/${siteID}/site:${storeName}?prefix=group%2F`,
+      })
+      .inject()
 
     const store = getStore({
       edgeURL,
@@ -788,13 +781,13 @@ describe('list', () => {
   })
 
   test('Handles missing content manual pagination', async () => {
-    const mockStore = new MockFetch().get({
-      headers: { authorization: `Bearer ${edgeToken}` },
-      response: new Response('<not_found>', { status: 404 }),
-      url: `${edgeURL}/${siteID}/site:${storeName}`,
-    })
-
-    globalThis.fetch = mockStore.fetch
+    const mockStore = new MockFetch()
+      .get({
+        headers: { authorization: `Bearer ${edgeToken}` },
+        response: new Response('<not_found>', { status: 404 }),
+        url: `${edgeURL}/${siteID}/site:${storeName}`,
+      })
+      .inject()
 
     const store = getStore({
       edgeURL,

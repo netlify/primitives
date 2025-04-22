@@ -1,0 +1,36 @@
+{
+  "name": "@netlify/runtime",
+  "version": "1.0.0",
+  "description": "Netlify compute runtime",
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "main": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsup-node",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "test:ci": "npm run build && vitest run",
+    "dev": "tsup-node --watch"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "repository": "netlify/primitives",
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  },
+  "author": "Netlify Inc.",
+  "devDependencies": {
+    "@netlify/cache": "1.8.2",
+    "@netlify/runtime-utils": "1.0.0",
+    "@types/node": "^22.14.1",
+    "tsup": "^7.2.0",
+    "vitest": "^0.34.0"
+  }
+}

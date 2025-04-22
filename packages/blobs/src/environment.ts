@@ -1,4 +1,4 @@
-import { base64Decode, base64Encode } from './util.ts'
+import { base64Decode, base64Encode } from '@netlify/runtime-utils'
 
 interface EnvironmentVariables {
   delete: (key: string) => void

@@ -3,10 +3,12 @@
   "private": true,
   "workspaces": [
     "packages/dev-utils",
+    "packages/runtime-utils",
     "packages/blobs",
     "packages/cache",
     "packages/functions",
     "packages/redirects",
+    "packages/runtime",
     "packages/static",
     "packages/dev"
   ],

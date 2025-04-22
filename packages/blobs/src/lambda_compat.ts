@@ -1,6 +1,7 @@
+import { base64Decode } from '@netlify/runtime-utils'
+
 import { EnvironmentContext, setEnvironmentContext } from './environment.ts'
 import type { LambdaEvent } from './types.ts'
-import { base64Decode } from './util.ts'
 
 interface BlobsEventData {
   token: string

@@ -12,6 +12,8 @@
     "packages/dev-utils": {},
     "packages/functions": {},
     "packages/redirects": {},
+    "packages/runtime": {},
+    "packages/runtime-utils": {},
     "packages/static": {}
   }
 }
