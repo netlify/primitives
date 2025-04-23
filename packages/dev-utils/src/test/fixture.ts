@@ -1,14 +1,39 @@
+import { exec } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import { dirname, join } from 'node:path'
+import { promisify } from 'node:util'
 
 import tmp from 'tmp-promise'
 
+const run = promisify(exec)
 export class Fixture {
   directory?: tmp.DirectoryResult
   files: { contents: string; path: string }[]
+  npmDependencies: Record<string, string>
 
   constructor() {
     this.files = []
+    this.npmDependencies = {}
+  }
+
+  private async installNpmDependencies() {
+    if (Object.keys(this.npmDependencies).length === 0) {
+      return
+    }
+
+    if (!this.directory) {
+      throw new Error("Fixture hasn't been initialized. Did you call `create()`?")
+    }
+
+    const packageJSON = {
+      name: 'fixture',
+      version: '0.0.0',
+      dependencies: this.npmDependencies,
+    }
+    const packageJSONPath = join(this.directory.path, 'package.json')
+
+    await fs.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2))
+    await run('npm install', { cwd: this.directory.path })
   }
 
   async create() {
@@ -28,6 +53,8 @@ export class Fixture {
       await fs.mkdir(dirname(filePath), { recursive: true })
       await fs.writeFile(filePath, file.contents)
     }
+
+    await this.installNpmDependencies()
 
     return this.directory.path
   }
@@ -66,5 +93,11 @@ export class Fixture {
     const filePath = join(this.directory.path, path)
 
     await fs.writeFile(filePath, contents)
+  }
+
+  withPackages(packages: Record<string, string>) {
+    this.npmDependencies = { ...this.npmDependencies, ...packages }
+
+    return this
   }
 }
