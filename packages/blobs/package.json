@@ -66,7 +66,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "1.1.0",
+    "@types/node": "^22.14.1",
     "node-fetch": "^3.3.1",
     "semver": "^7.5.3",
     "tmp-promise": "^3.0.3",
@@ -74,6 +74,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
+    "@netlify/dev-utils": "1.1.0",
     "@netlify/runtime-utils": "1.0.0"
   }
 }

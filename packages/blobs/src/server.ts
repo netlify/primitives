@@ -1,11 +1,12 @@
 import { createHmac } from 'node:crypto'
-import { createReadStream, createWriteStream, promises as fs } from 'node:fs'
-import http from 'node:http'
+import { createReadStream, promises as fs } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import { platform } from 'node:process'
 import stream from 'node:stream'
 import { promisify } from 'node:util'
+
+import { HTTPServer } from '@netlify/dev-utils'
 
 import { ListResponse } from './backend/list.ts'
 import { SIGNED_URL_ACCEPT_HEADER } from './client.ts'
@@ -73,7 +74,7 @@ export class BlobsServer {
   private logger: Logger
   private onRequest?: OnRequestCallback
   private port: number
-  private server?: http.Server
+  private server?: HTTPServer
   private token?: string
   private tokenHash: string
 
@@ -90,14 +91,14 @@ export class BlobsServer {
       .digest('hex')
   }
 
-  private dispatchOnRequestEvent(type: Operation, url: string | URL) {
+  private dispatchOnRequestEvent(type: Operation, input: string | URL) {
     if (!this.onRequest) {
       return
     }
 
-    const urlPath = url instanceof URL ? url.pathname + url.search : url
+    const url = new URL(input)
 
-    this.onRequest({ type, url: urlPath })
+    this.onRequest({ type, url: url.pathname + url.search })
   }
 
   logDebug(...message: unknown[]) {
@@ -108,18 +109,18 @@ export class BlobsServer {
     this.logger('[Netlify Blobs server]', ...message)
   }
 
-  async delete(req: http.IncomingMessage, res: http.ServerResponse) {
+  async delete(req: Request): Promise<Response> {
     const apiMatch = this.parseAPIRequest(req)
 
     if (apiMatch?.useSignedURL) {
-      return this.sendResponse(req, res, 200, JSON.stringify({ url: apiMatch.url.toString() }))
+      return Response.json({ url: apiMatch.url.toString() })
     }
 
     const url = new URL(apiMatch?.url ?? req.url ?? '', this.address)
     const { dataPath, key, metadataPath } = this.getLocalPaths(url)
 
     if (!dataPath || !key) {
-      return this.sendResponse(req, res, 400)
+      return new Response(null, { status: 400 })
     }
 
     // Try to delete the metadata file, if one exists.
@@ -136,36 +137,36 @@ export class BlobsServer {
       // An `ENOENT` error means we have tried to delete a key that doesn't
       // exist, which shouldn't be treated as an error.
       if (!isNodeError(error) || error.code !== 'ENOENT') {
-        return this.sendResponse(req, res, 500)
+        return new Response(null, { status: 500 })
       }
     }
 
-    return this.sendResponse(req, res, 204)
+    return new Response(null, { status: 204 })
   }
 
-  async get(req: http.IncomingMessage, res: http.ServerResponse) {
+  async get(req: Request): Promise<Response> {
     const apiMatch = this.parseAPIRequest(req)
     const url = apiMatch?.url ?? new URL(req.url ?? '', this.address)
 
     if (apiMatch?.key && apiMatch?.useSignedURL) {
-      return this.sendResponse(req, res, 200, JSON.stringify({ url: apiMatch.url.toString() }))
+      return Response.json({ url: apiMatch.url.toString() })
     }
 
     const { dataPath, key, metadataPath, rootPath } = this.getLocalPaths(apiMatch?.url ?? url)
 
     // If there's no root path, the request is invalid.
     if (!rootPath) {
-      return this.sendResponse(req, res, 400)
+      return new Response(null, { status: 400 })
     }
 
     // If there's no data or metadata paths, it means we're listing stores.
     if (!dataPath || !metadataPath) {
-      return this.listStores(req, res, rootPath, url.searchParams.get('prefix') ?? '')
+      return this.listStores(rootPath, url.searchParams.get('prefix') ?? '')
     }
 
     // If there is no key in the URL, it means we're listing blobs.
     if (!key) {
-      return this.listBlobs({ dataPath, metadataPath, rootPath, req, res, url })
+      return this.listBlobs({ dataPath, metadataPath, rootPath, req, url })
     }
 
     this.dispatchOnRequestEvent(Operation.GET, url)
@@ -186,28 +187,32 @@ export class BlobsServer {
       }
     }
 
-    for (const name in headers) {
-      res.setHeader(name, headers[name])
-    }
+    try {
+      const fileStream = createReadStream(dataPath)
+      const chunks: Buffer[] = []
 
-    const stream = createReadStream(dataPath)
-
-    stream.on('error', (error: NodeJS.ErrnoException) => {
-      if (error.code === 'EISDIR' || error.code === 'ENOENT') {
-        return this.sendResponse(req, res, 404)
+      for await (const chunk of fileStream) {
+        chunks.push(Buffer.from(chunk))
       }
 
-      return this.sendResponse(req, res, 500)
-    })
-    stream.pipe(res)
+      const buffer = Buffer.concat(chunks)
+
+      return new Response(buffer, { headers })
+    } catch (error) {
+      if (isNodeError(error) && (error.code === 'EISDIR' || error.code === 'ENOENT')) {
+        return new Response(null, { status: 404 })
+      }
+
+      return new Response(null, { status: 500 })
+    }
   }
 
-  async head(req: http.IncomingMessage, res: http.ServerResponse) {
+  async head(req: Request): Promise<Response> {
     const url = this.parseAPIRequest(req)?.url ?? new URL(req.url ?? '', this.address)
     const { dataPath, key, metadataPath } = this.getLocalPaths(url)
 
     if (!dataPath || !metadataPath || !key) {
-      return this.sendResponse(req, res, 400)
+      return new Response(null, { status: 400 })
     }
 
     try {
@@ -215,31 +220,30 @@ export class BlobsServer {
       const metadata = JSON.parse(rawData)
       const encodedMetadata = encodeMetadata(metadata)
 
-      if (encodedMetadata) {
-        res.setHeader(METADATA_HEADER_INTERNAL, encodedMetadata)
-      }
+      return new Response(null, {
+        headers: {
+          [METADATA_HEADER_INTERNAL]: encodedMetadata ?? '',
+        },
+      })
     } catch (error) {
       if (isNodeError(error) && (error.code === 'ENOENT' || error.code === 'ISDIR')) {
-        return this.sendResponse(req, res, 404)
+        return new Response(null, { status: 404 })
       }
 
       this.logDebug('Could not read metadata file:', error)
 
-      return this.sendResponse(req, res, 500)
+      return new Response(null, { status: 500 })
     }
-
-    res.end()
   }
 
   async listBlobs(options: {
     dataPath: string
     metadataPath: string
     rootPath: string
-    req: http.IncomingMessage
-    res: http.ServerResponse
+    req: Request
     url: URL
-  }) {
-    const { dataPath, rootPath, req, res, url } = options
+  }): Promise<Response> {
+    const { dataPath, rootPath, req, url } = options
     const directories = url.searchParams.get('directories') === 'true'
     const prefix = url.searchParams.get('prefix') ?? ''
     const result: ListResponse = {
@@ -257,16 +261,14 @@ export class BlobsServer {
       if (!isNodeError(error) || error.code !== 'ENOENT') {
         this.logDebug('Could not perform list:', error)
 
-        return this.sendResponse(req, res, 500)
+        return new Response(null, { status: 500 })
       }
     }
 
-    res.setHeader('content-type', 'application/json')
-
-    return this.sendResponse(req, res, 200, JSON.stringify(result))
+    return Response.json(result)
   }
 
-  async listStores(req: http.IncomingMessage, res: http.ServerResponse, rootPath: string, prefix: string) {
+  async listStores(rootPath: string, prefix: string): Promise<Response> {
     try {
       const allStores = await fs.readdir(rootPath)
       const filteredStores = allStores
@@ -274,57 +276,53 @@ export class BlobsServer {
         .map((store) => (platform === 'win32' ? decodeURIComponent(store) : store))
         .filter((store) => store.startsWith(prefix))
 
-      return this.sendResponse(req, res, 200, JSON.stringify({ stores: filteredStores }))
+      return Response.json({ stores: filteredStores })
     } catch (error) {
       this.logDebug('Could not list stores:', error)
 
-      return this.sendResponse(req, res, 500)
+      return new Response(null, { status: 500 })
     }
   }
 
-  async put(req: http.IncomingMessage, res: http.ServerResponse) {
+  async put(req: Request): Promise<Response> {
     const apiMatch = this.parseAPIRequest(req)
-
     if (apiMatch) {
-      return this.sendResponse(req, res, 200, JSON.stringify({ url: apiMatch.url.toString() }))
+      return Response.json({ url: apiMatch.url.toString() })
     }
 
     const url = new URL(req.url ?? '', this.address)
     const { dataPath, key, metadataPath } = this.getLocalPaths(url)
 
     if (!dataPath || !key || !metadataPath) {
-      return this.sendResponse(req, res, 400)
+      return new Response(null, { status: 400 })
     }
 
-    const metadataHeader = req.headers[METADATA_HEADER_INTERNAL]
-    const metadata = decodeMetadata(Array.isArray(metadataHeader) ? metadataHeader[0] : metadataHeader ?? null)
+    const metadataHeader = req.headers.get(METADATA_HEADER_INTERNAL)
+    const metadata = decodeMetadata(metadataHeader)
 
     try {
       // We can't have multiple requests writing to the same file, which could
-      // lead to corrupted data. Ideally we'd have a mechanism where the last
-      // request wins, but that requires a more advanced state manager. For
-      // now, we address this by writing data to a temporary file and then
-      // moving it to the right path after the write has succeeded.
-      const tempDirectory = await fs.mkdtemp(join(tmpdir(), 'netlify-blobs'))
-      const relativeDataPath = relative(this.directory, dataPath)
-      const tempDataPath = join(tempDirectory, relativeDataPath)
+      // happen if multiple clients try to write to the same key at the same
+      // time. To prevent this, we write to a temporary file first and then
+      // atomically move it to its final destination.
+      const tempPath = join(tmpdir(), Math.random().toString())
 
-      await fs.mkdir(dirname(tempDataPath), { recursive: true })
-      await pipeline(req, createWriteStream(tempDataPath))
-
+      const body = await req.arrayBuffer()
+      await fs.writeFile(tempPath, Buffer.from(body))
       await fs.mkdir(dirname(dataPath), { recursive: true })
-      await fs.copyFile(tempDataPath, dataPath)
-      await fs.rm(tempDirectory, { force: true, recursive: true })
+      await fs.rename(tempPath, dataPath)
 
-      await fs.mkdir(dirname(metadataPath), { recursive: true })
-      await fs.writeFile(metadataPath, JSON.stringify(metadata))
+      if (metadata) {
+        await fs.mkdir(dirname(metadataPath), { recursive: true })
+        await fs.writeFile(metadataPath, JSON.stringify(metadata))
+      }
+
+      return new Response(null, { status: 200 })
     } catch (error) {
       this.logDebug('Error when writing data:', error)
 
-      return this.sendResponse(req, res, 500)
+      return new Response(null, { status: 500 })
     }
-
-    return this.sendResponse(req, res, 200)
   }
 
   /**
@@ -364,36 +362,36 @@ export class BlobsServer {
     return { dataPath, key: key.join('/'), metadataPath, rootPath: storePath }
   }
 
-  handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
+  async handleRequest(req: Request): Promise<Response> {
     if (!req.url || !this.validateAccess(req)) {
-      return this.sendResponse(req, res, 403)
+      return new Response(null, { status: 403 })
     }
 
     switch (req.method?.toLowerCase()) {
       case HTTPMethod.DELETE: {
         this.dispatchOnRequestEvent(Operation.DELETE, req.url)
 
-        return this.delete(req, res)
+        return this.delete(req)
       }
 
       case HTTPMethod.GET: {
-        return this.get(req, res)
+        return this.get(req)
       }
 
       case HTTPMethod.PUT: {
         this.dispatchOnRequestEvent(Operation.SET, req.url)
 
-        return this.put(req, res)
+        return this.put(req)
       }
 
       case HTTPMethod.HEAD: {
         this.dispatchOnRequestEvent(Operation.GET_METADATA, req.url)
 
-        return this.head(req, res)
+        return this.head(req)
       }
 
       default:
-        return this.sendResponse(req, res, 405)
+        return new Response(null, { status: 405 })
     }
   }
 
@@ -401,7 +399,7 @@ export class BlobsServer {
    * Tries to parse a URL as being an API request and returns the different
    * components, such as the store name, site ID, key, and signed URL.
    */
-  parseAPIRequest(req: http.IncomingMessage) {
+  parseAPIRequest(req: Request) {
     if (!req.url) {
       return null
     }
@@ -420,7 +418,7 @@ export class BlobsServer {
         siteID,
         storeName,
         url,
-        useSignedURL: req.headers.accept === SIGNED_URL_ACCEPT_HEADER,
+        useSignedURL: req.headers.get('accept') === SIGNED_URL_ACCEPT_HEADER,
       }
     }
 
@@ -446,57 +444,33 @@ export class BlobsServer {
     return null
   }
 
-  sendResponse(req: http.IncomingMessage, res: http.ServerResponse, status: number, body?: string) {
-    this.logDebug(`${req.method} ${req.url} ${status}`)
-
-    res.writeHead(status)
-    res.end(body)
-  }
-
   async start(): Promise<{ address: string; family: string; port: number }> {
     await fs.mkdir(this.directory, { recursive: true })
 
-    const server = http.createServer((req, res) => this.handleRequest(req, res))
+    const server = new HTTPServer((req) => this.handleRequest(req))
+    const address = await server.start()
+    const port = Number.parseInt(new URL(address).port)
 
+    this.address = address
     this.server = server
 
-    return new Promise((resolve, reject) => {
-      server.listen(this.port, () => {
-        const address = server.address()
-
-        if (!address || typeof address === 'string') {
-          return reject(new Error('Server cannot be started on a pipe or Unix socket'))
-        }
-
-        this.address = `http://localhost:${address.port}`
-
-        resolve(address)
-      })
-    })
+    return {
+      address,
+      family: 'ipv4',
+      port,
+    }
   }
 
   async stop() {
-    if (!this.server) {
-      return
-    }
-
-    await new Promise((resolve, reject) => {
-      this.server?.close((error?: NodeJS.ErrnoException) => {
-        if (error) {
-          return reject(error)
-        }
-
-        resolve(null)
-      })
-    })
+    return this.server?.stop()
   }
 
-  validateAccess(req: http.IncomingMessage) {
+  validateAccess(req: Request) {
     if (!this.token) {
       return true
     }
 
-    const { authorization = '' } = req.headers
+    const authorization = req.headers.get('authorization') || ''
 
     if (authorization.toLowerCase().startsWith('bearer ') && authorization.slice('bearer '.length) === this.token) {
       return true
