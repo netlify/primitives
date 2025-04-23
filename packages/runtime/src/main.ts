@@ -9,7 +9,7 @@ import { setGlobals } from './lib/globals.js'
 import { GlobalScope, isNonEmptyString } from './lib/util.js'
 
 interface StartRuntimeOptions {
-  blobs: BlobsOptions
+  blobs?: BlobsOptions
   branch?: string
   cache: {
     getCacheAPIContext: RequestContextFactory
@@ -36,14 +36,16 @@ export const startRuntime = ({
   siteID,
   userAgent,
 }: StartRuntimeOptions) => {
-  setupBlobsEnvironment({
-    ...blobs,
-    deployID,
-    env,
-    globalScope,
-    preferGlobal,
-    siteID,
-  })
+  if (blobs) {
+    setupBlobsEnvironment({
+      ...blobs,
+      deployID,
+      env,
+      globalScope,
+      preferGlobal,
+      siteID,
+    })
+  }
 
   setGlobals({
     env,
@@ -64,3 +66,5 @@ export const startRuntime = ({
     setupBranchEnvironment({ branch, env })
   }
 }
+
+export type { EnvironmentVariables }
