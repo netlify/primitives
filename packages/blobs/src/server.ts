@@ -3,8 +3,6 @@ import { createReadStream, promises as fs } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import { platform } from 'node:process'
-import stream from 'node:stream'
-import { promisify } from 'node:util'
 
 import { HTTPServer } from '@netlify/dev-utils'
 
@@ -28,10 +26,6 @@ export enum Operation {
 }
 
 export type OnRequestCallback = (parameters: { type: Operation; url: string }) => void
-
-// TODO: Replace with `promises` import of `node:stream` once we can drop
-// support for Node 14.
-const pipeline = promisify(stream.pipeline)
 
 interface BlobsServerOptions {
   /**
@@ -73,7 +67,6 @@ export class BlobsServer {
   private directory: string
   private logger: Logger
   private onRequest?: OnRequestCallback
-  private port: number
   private server?: HTTPServer
   private token?: string
   private tokenHash: string
@@ -84,7 +77,6 @@ export class BlobsServer {
     this.directory = directory
     this.logger = logger ?? console.log
     this.onRequest = onRequest
-    this.port = port || 0
     this.token = token
     this.tokenHash = createHmac('sha256', Math.random.toString())
       .update(token ?? Math.random.toString())
@@ -101,15 +93,7 @@ export class BlobsServer {
     this.onRequest({ type, url: url.pathname + url.search })
   }
 
-  logDebug(...message: unknown[]) {
-    if (!this.debug) {
-      return
-    }
-
-    this.logger('[Netlify Blobs server]', ...message)
-  }
-
-  async delete(req: Request): Promise<Response> {
+  private async delete(req: Request): Promise<Response> {
     const apiMatch = this.parseAPIRequest(req)
 
     if (apiMatch?.useSignedURL) {
@@ -144,7 +128,7 @@ export class BlobsServer {
     return new Response(null, { status: 204 })
   }
 
-  async get(req: Request): Promise<Response> {
+  private async get(req: Request): Promise<Response> {
     const apiMatch = this.parseAPIRequest(req)
     const url = apiMatch?.url ?? new URL(req.url ?? '', this.address)
 
@@ -207,7 +191,7 @@ export class BlobsServer {
     }
   }
 
-  async head(req: Request): Promise<Response> {
+  private async head(req: Request): Promise<Response> {
     const url = this.parseAPIRequest(req)?.url ?? new URL(req.url ?? '', this.address)
     const { dataPath, key, metadataPath } = this.getLocalPaths(url)
 
@@ -236,7 +220,7 @@ export class BlobsServer {
     }
   }
 
-  async listBlobs(options: {
+  private async listBlobs(options: {
     dataPath: string
     metadataPath: string
     rootPath: string
@@ -268,7 +252,7 @@ export class BlobsServer {
     return Response.json(result)
   }
 
-  async listStores(rootPath: string, prefix: string): Promise<Response> {
+  private async listStores(rootPath: string, prefix: string): Promise<Response> {
     try {
       const allStores = await fs.readdir(rootPath)
       const filteredStores = allStores
@@ -284,7 +268,15 @@ export class BlobsServer {
     }
   }
 
-  async put(req: Request): Promise<Response> {
+  private logDebug(...message: unknown[]) {
+    if (!this.debug) {
+      return
+    }
+
+    this.logger('[Netlify Blobs server]', ...message)
+  }
+
+  private async put(req: Request): Promise<Response> {
     const apiMatch = this.parseAPIRequest(req)
     if (apiMatch) {
       return Response.json({ url: apiMatch.url.toString() })
@@ -329,7 +321,7 @@ export class BlobsServer {
    * Parses the URL and returns the filesystem paths where entries and metadata
    * should be stored.
    */
-  getLocalPaths(url?: URL) {
+  private getLocalPaths(url?: URL) {
     if (!url) {
       return {}
     }
@@ -362,7 +354,7 @@ export class BlobsServer {
     return { dataPath, key: key.join('/'), metadataPath, rootPath: storePath }
   }
 
-  async handleRequest(req: Request): Promise<Response> {
+  private async handleRequest(req: Request): Promise<Response> {
     if (!req.url || !this.validateAccess(req)) {
       return new Response(null, { status: 403 })
     }
@@ -399,7 +391,7 @@ export class BlobsServer {
    * Tries to parse a URL as being an API request and returns the different
    * components, such as the store name, site ID, key, and signed URL.
    */
-  parseAPIRequest(req: Request) {
+  private parseAPIRequest(req: Request) {
     if (!req.url) {
       return null
     }
@@ -444,28 +436,7 @@ export class BlobsServer {
     return null
   }
 
-  async start(): Promise<{ address: string; family: string; port: number }> {
-    await fs.mkdir(this.directory, { recursive: true })
-
-    const server = new HTTPServer((req) => this.handleRequest(req))
-    const address = await server.start()
-    const port = Number.parseInt(new URL(address).port)
-
-    this.address = address
-    this.server = server
-
-    return {
-      address,
-      family: 'ipv4',
-      port,
-    }
-  }
-
-  async stop() {
-    return this.server?.stop()
-  }
-
-  validateAccess(req: Request) {
+  private validateAccess(req: Request) {
     if (!this.token) {
       return true
     }
@@ -557,5 +528,26 @@ export class BlobsServer {
       // Call this method recursively with the directory as the starting point.
       await BlobsServer.walk({ directories, path: entryPath, prefix, rootPath, result })
     }
+  }
+
+  async start(): Promise<{ address: string; family: string; port: number }> {
+    await fs.mkdir(this.directory, { recursive: true })
+
+    const server = new HTTPServer((req) => this.handleRequest(req))
+    const address = await server.start()
+    const port = Number.parseInt(new URL(address).port)
+
+    this.address = address
+    this.server = server
+
+    return {
+      address,
+      family: 'ipv4',
+      port,
+    }
+  }
+
+  async stop() {
+    return this.server?.stop()
   }
 }
