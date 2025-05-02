@@ -1,13 +1,7 @@
 import { type RequestContextFactory, NetlifyCacheStorage } from '@netlify/cache/bootstrap'
+import type { Context, EnvironmentVariables, NetlifyGlobal } from '@netlify/runtime-utils'
 
-import { Context } from './context/context.js'
-import { EnvironmentVariables } from './environment-variables.js'
 import { GlobalScope } from './util.js'
-
-type NetlifyGlobal = {
-  context: Context | null
-  env: EnvironmentVariables
-}
 
 declare global {
   // Using `var` so that the declaration is hoisted in such a way that we can

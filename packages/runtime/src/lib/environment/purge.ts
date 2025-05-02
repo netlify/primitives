@@ -1,4 +1,4 @@
-import { EnvironmentVariables } from '../environment-variables.js'
+import type { EnvironmentVariables } from '@netlify/runtime-utils'
 
 export interface SetupCachePurgeEnvironmentOptions {
   env: EnvironmentVariables
