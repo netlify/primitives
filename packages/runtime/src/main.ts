@@ -1,8 +1,7 @@
 import type { RequestContextFactory } from '@netlify/cache/bootstrap'
+import type { Context, EnvironmentVariables } from '@netlify/runtime-utils'
 
-import type { Context } from './lib/context/context.js'
 import { type BlobsOptions, setupBlobsEnvironment } from './lib/environment/blobs.js'
-import { EnvironmentVariables } from './lib/environment-variables.js'
 import { setupBranchEnvironment } from './lib/environment/branch.js'
 import { setupCachePurgeEnvironment } from './lib/environment/purge.js'
 import { setGlobals } from './lib/globals.js'

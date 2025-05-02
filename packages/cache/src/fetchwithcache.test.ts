@@ -1,5 +1,5 @@
 import { MockFetch } from '@netlify/dev-utils'
-import { describe, test, expect, beforeEach, afterAll } from 'vitest'
+import { describe, test, expect, beforeEach, afterAll, vi } from 'vitest'
 
 import { NetlifyCacheStorage } from './bootstrap/cachestorage.js'
 import { fetchWithCache } from './fetchwithcache.js'
@@ -68,7 +68,7 @@ describe('`fetchWithCache`', () => {
   })
 
   describe('When not in the cache, fetches the resource and adds it to the cache', () => {
-    test('Without a `onCachePut` handler', async () => {
+    test('Without a `onCachePut` handler and no `waitUntil` available', async () => {
       const headers = new Headers()
       headers.set('content-type', 'text/html')
       headers.set('x-custom-header', 'foobar')
@@ -119,6 +119,72 @@ describe('`fetchWithCache`', () => {
       expect(mockFetch.fulfilled).toBe(true)
     })
 
+    test('Without a `onCachePut` handler and with `waitUntil` available', async () => {
+      const headers = new Headers()
+      headers.set('content-type', 'text/html')
+      headers.set('x-custom-header', 'foobar')
+
+      const cacheOptions = {
+        tags: ['tag1', 'tag2'],
+        ttl: 30,
+      }
+      const ac = new AbortController()
+      const mockFetch = new MockFetch()
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response(null, { status: 404 }),
+        })
+        .post({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          headers: (reqHeaders) => {
+            const headers = decodeHeaders(reqHeaders['netlify-programmable-headers'])
+
+            expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
+            expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
+          },
+          response: () =>
+            new Promise((resolve) => {
+              ac.signal.onabort = () => resolve(new Response(null, { status: 201 }))
+            }),
+        })
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response('<h1>Hello world</h1>', { headers }),
+        })
+        .get({
+          url: 'https://netlify.com',
+          response: new Response('<h1>Hello world</h1>', { headers }),
+        })
+        .inject()
+      const resourceURL = 'https://netlify.com'
+      const waitUntil = vi.fn()
+
+      // @ts-expect-error
+      globalThis.Netlify = {
+        context: {
+          waitUntil,
+        },
+      }
+
+      // `fetchWithCache` resolves without the cache put having resolved.
+      const fresh = await fetchWithCache(resourceURL, cacheOptions)
+      expect(await fresh.text()).toBe('<h1>Hello world</h1>')
+
+      // @ts-expect-error
+      delete globalThis.Netlify
+
+      expect(ac.signal.aborted).toBe(false)
+      expect(waitUntil).toHaveBeenCalledOnce()
+
+      ac.abort()
+
+      const cached = await fetchWithCache(resourceURL, cacheOptions)
+      expect(await cached.text()).toBe('<h1>Hello world</h1>')
+
+      mockFetch.restore()
+      expect(mockFetch.fulfilled).toBe(true)
+    })
+
     test('With a `onCachePut` handler', async () => {
       const headers = new Headers()
       headers.set('content-type', 'text/html')
@@ -157,20 +223,17 @@ describe('`fetchWithCache`', () => {
         })
         .inject()
       const resourceURL = 'https://netlify.com'
-
-      let onCachePutCalled = false
+      const onCachePut = vi.fn()
 
       // `fetchWithCache` resolves without the cache put having resolved.
       const fresh = await fetchWithCache(resourceURL, {
         ...cacheOptions,
-        onCachePut: () => {
-          onCachePutCalled = true
-        },
+        onCachePut,
       })
       expect(await fresh.text()).toBe('<h1>Hello world</h1>')
 
       expect(ac.signal.aborted).toBe(false)
-      expect(onCachePutCalled).toBe(true)
+      expect(onCachePut).toHaveBeenCalledOnce()
 
       ac.abort()
 

@@ -1,7 +1,11 @@
+import type { NetlifyGlobal } from '@netlify/runtime-utils'
+
 import type { NetlifyCache } from './bootstrap/cache.js'
 import { applyHeaders, cacheHeaders } from './cache-headers/cache-headers.js'
 import type { CacheSettings } from './cache-headers/options.js'
 import { caches } from './polyfill.js'
+
+type GlobalScope = typeof globalThis & { Netlify?: NetlifyGlobal }
 
 const requestInitOptions = [
   'method',
@@ -136,7 +140,13 @@ export const fetchWithCache: FetchWithCache = async (
   if (onCachePut) {
     await onCachePut(cachePut)
   } else {
-    await cachePut
+    const requestContext = (globalThis as GlobalScope).Netlify?.context
+
+    if (requestContext) {
+      requestContext.waitUntil(cachePut)
+    } else {
+      await cachePut
+    }
   }
 
   return clientResponse
