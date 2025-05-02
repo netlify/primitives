@@ -1,7 +1,5 @@
 import type { EnvironmentContext } from '@netlify/blobs'
-import { base64Encode } from '@netlify/runtime-utils'
-
-import type { EnvironmentVariables } from '../environment-variables.js'
+import { base64Encode, type EnvironmentVariables } from '@netlify/runtime-utils'
 
 export interface BlobsOptions {
   edgeURL: string
