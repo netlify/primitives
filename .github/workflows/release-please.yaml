@@ -38,31 +38,31 @@ jobs:
         run: npm run build -ws
 
       # Publishing packages in topological order, as defined in `package.json`.
-      - run: npm publish packages/dev-utils/ --provenance --access=public
+      - run: npm publish packages/dev-utils/ --access=public
         if: ${{ steps.release.outputs['packages/dev-utils--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/blobs/ --provenance --access=public
+      - run: npm publish packages/blobs/ --access=public
         if: ${{ steps.release.outputs['packages/blobs--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/cache/ --provenance --access=public
+      - run: npm publish packages/cache/ --access=public
         if: ${{ steps.release.outputs['packages/cache--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/functions/ --provenance --access=public
+      - run: npm publish packages/functions/ --access=public
         if: ${{ steps.release.outputs['packages/functions--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/redirects/ --provenance --access=public
+      - run: npm publish packages/redirects/ --access=public
         if: ${{ steps.release.outputs['packages/redirects--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/static/ --provenance --access=public
+      - run: npm publish packages/static/ --access=public
         if: ${{ steps.release.outputs['packages/static--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/dev/ --provenance --access=public
+      - run: npm publish packages/dev/ --access=public
         if: ${{ steps.release.outputs['packages/dev--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
