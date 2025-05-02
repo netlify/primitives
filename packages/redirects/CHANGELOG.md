@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1](https://github.com/netlify/primitives/compare/redirects-v1.1.0...redirects-v1.1.1) (2025-05-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 1.1.0 to 2.0.0
+
 ## [1.1.0](https://github.com/netlify/primitives/compare/redirects-v1.0.0...redirects-v1.1.0) (2025-04-16)
 
 

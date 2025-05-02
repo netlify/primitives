@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.1.3](https://github.com/netlify/primitives/compare/functions-v3.1.2...functions-v3.1.3) (2025-05-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/serverless-functions-api to v1.37.0 ([#146](https://github.com/netlify/primitives/issues/146)) ([ca75a23](https://github.com/netlify/primitives/commit/ca75a23361baea7c020afe1ec38b966d26403a42))
+* **deps:** update dependency @netlify/serverless-functions-api to v1.38.0 ([#152](https://github.com/netlify/primitives/issues/152)) ([89d6ea1](https://github.com/netlify/primitives/commit/89d6ea1c9380f0b91959c241135ac6f1fb70cf3e))
+* **deps:** update dependency @netlify/zip-it-and-ship-it to ^10.0.7 ([#148](https://github.com/netlify/primitives/issues/148)) ([4208214](https://github.com/netlify/primitives/commit/420821490bc6b2986c60fe78a205b68259cd429b))
+* **deps:** update dependency @netlify/zip-it-and-ship-it to v10 ([#149](https://github.com/netlify/primitives/issues/149)) ([152529d](https://github.com/netlify/primitives/commit/152529d17ca0a8ee850ea90ee1054e1033ab867e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^8.2.0 to ^9.0.0
+    * @netlify/dev-utils bumped from 1.1.0 to 2.0.0
+
 ## [3.1.2](https://github.com/netlify/primitives/compare/functions-v3.1.1...functions-v3.1.2) (2025-04-16)
 
 
