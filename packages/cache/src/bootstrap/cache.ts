@@ -83,11 +83,12 @@ export class NetlifyCache implements Cache {
 
     if (context) {
       const resourceURL = extractAndValidateURL(request)
-
-      await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
+      const response = await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
         headers: this[getInternalHeaders](context),
         method: 'DELETE',
       })
+
+      await response.text()
     }
 
     return true
@@ -178,6 +179,8 @@ export class NetlifyCache implements Cache {
 
       context.logger?.(`Failed to write to the cache: ${errorMessage}`)
     }
+
+    await cacheResponse.text()
   }
 }
 
