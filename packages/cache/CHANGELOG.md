@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.9.0](https://github.com/netlify/primitives/compare/cache-v1.8.2...cache-v1.9.0) (2025-05-02)
+
+
+### Features
+
+* add `runtime` and `runtime-utils` packages ([#150](https://github.com/netlify/primitives/issues/150)) ([be2cbf0](https://github.com/netlify/primitives/commit/be2cbf05cd3b73a795b54f94b7f51dacbcf6ef34))
+
+
+### Bug Fixes
+
+* manually tee response body in `fetchWithCache` ([#158](https://github.com/netlify/primitives/issues/158)) ([199590f](https://github.com/netlify/primitives/commit/199590f583711e92e133eedb694ce85e4cc7c7d4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 1.0.0 to 1.1.0
+  * devDependencies
+    * @netlify/dev-utils bumped from 1.1.0 to 2.0.0
+
 ## [1.8.2](https://github.com/netlify/primitives/compare/cache-v1.8.1...cache-v1.8.2) (2025-04-15)
 
 
