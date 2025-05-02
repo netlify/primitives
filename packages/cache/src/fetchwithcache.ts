@@ -1,5 +1,5 @@
 import type { NetlifyCache } from './bootstrap/cache.js'
-import { setCacheHeaders } from './cache-headers/cache-headers.js'
+import { applyHeaders, cacheHeaders } from './cache-headers/cache-headers.js'
 import type { CacheSettings } from './cache-headers/options.js'
 import { caches } from './polyfill.js'
 
@@ -118,8 +118,20 @@ export const fetchWithCache: FetchWithCache = async (
   }
 
   const fresh = await fetch(request, requestInit)
-  const responseForCache = setCacheHeaders(fresh.clone(), cacheSettings)
-  const cachePut = cache.put(request, responseForCache)
+  if (!fresh.body) {
+    return fresh
+  }
+
+  const [clientStream, cacheStream] = fresh.body.tee()
+
+  // The response to be returned to the client.
+  const clientResponse = new Response(clientStream, fresh)
+
+  // The response to be added to the cache.
+  const cacheResponse = new Response(cacheStream, fresh)
+  applyHeaders(cacheResponse.headers, cacheHeaders(cacheSettings))
+
+  const cachePut = cache.put(request, cacheResponse)
 
   if (onCachePut) {
     await onCachePut(cachePut)
@@ -127,5 +139,5 @@ export const fetchWithCache: FetchWithCache = async (
     await cachePut
   }
 
-  return fresh
+  return clientResponse
 }

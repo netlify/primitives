@@ -95,7 +95,7 @@ const getNetlifyVary = (varyOptions?: VaryOptions) => {
   return directives.join(',')
 }
 
-const applyHeaders = (subject: Headers, headersObject: Record<string, string>) => {
+export const applyHeaders = (subject: Headers, headersObject: Record<string, string>) => {
   for (const name in headersObject) {
     if (name === HEADERS.NetlifyCdnCacheControl) {
       subject.set(name, headersObject[name])
