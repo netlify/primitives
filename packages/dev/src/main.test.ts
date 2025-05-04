@@ -1,7 +1,11 @@
+import { readFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
+
 import { Fixture } from '@netlify/dev-utils'
 import { describe, expect, test } from 'vitest'
 
-import { handle } from './main.js'
+import { isFile } from './lib/fs.js'
+import { NetlifyDev } from './main.js'
 
 describe('Handling requests', () => {
   describe('No linked site', () => {
@@ -17,9 +21,13 @@ describe('Handling requests', () => {
         .withFile('public/to.html', `to.html`)
       const directory = await fixture.create()
       const req = new Request('https://site.netlify/from')
-      const res = await handle(req, {
+      const dev = new NetlifyDev({
         projectRoot: directory,
       })
+
+      await dev.start()
+
+      const res = await dev.handle(req)
 
       expect(await res?.text()).toBe('to.html')
 
@@ -39,9 +47,13 @@ describe('Handling requests', () => {
         .withFile('public/to.html', `to.html`)
       const directory = await fixture.create()
       const req = new Request('https://site.netlify/from')
-      const res = await handle(req, {
+      const dev = new NetlifyDev({
         projectRoot: directory,
       })
+
+      await dev.start()
+
+      const res = await dev.handle(req)
 
       expect(await res?.text()).toBe('from.html')
 
@@ -61,9 +73,13 @@ describe('Handling requests', () => {
         .withFile('public/to.html', `to.html`)
       const directory = await fixture.create()
       const req = new Request('https://site.netlify/from')
-      const res = await handle(req, {
+      const dev = new NetlifyDev({
         projectRoot: directory,
       })
+
+      await dev.start()
+
+      const res = await dev.handle(req)
 
       expect(await res?.text()).toBe('to.html')
 
@@ -85,9 +101,13 @@ describe('Handling requests', () => {
         )
       const directory = await fixture.create()
       const req = new Request('https://site.netlify/hello')
-      const res = await handle(req, {
+      const dev = new NetlifyDev({
         projectRoot: directory,
       })
+
+      await dev.start()
+
+      const res = await dev.handle(req)
 
       expect(await res?.text()).toBe('Hello from function')
 
@@ -109,9 +129,13 @@ describe('Handling requests', () => {
         )
       const directory = await fixture.create()
       const req = new Request('https://site.netlify/hello')
-      const res = await handle(req, {
+      const dev = new NetlifyDev({
         projectRoot: directory,
       })
+
+      await dev.start()
+
+      const res = await dev.handle(req)
 
       expect(await res?.text()).toBe('hello.html')
 
@@ -134,9 +158,13 @@ describe('Handling requests', () => {
         )
       const directory = await fixture.create()
       const req = new Request('https://site.netlify/from')
-      const res = await handle(req, {
+      const dev = new NetlifyDev({
         projectRoot: directory,
       })
+
+      await dev.start()
+
+      const res = await dev.handle(req)
 
       expect(await res?.text()).toBe('Hello from function')
 
@@ -165,16 +193,42 @@ describe('Handling requests', () => {
           };
           export const config = { path: "/hello" };`,
         )
+        .withFile(
+          '.gitignore',
+          `# Some comment
+        dir1/
+        !dir1/foo`,
+        )
         .withPackages({
           '@netlify/blobs': '8.2.0',
         })
       const directory = await fixture.create()
+
+      const gitIgnorePath = resolve(directory, '.gitignore')
+      expect(await isFile(gitIgnorePath)).toBe(true)
+
+      const gitIgnoresPre = (await readFile(gitIgnorePath, 'utf8')).split('\n').map((line) => line.trim())
+      expect(gitIgnoresPre).toContain('# Some comment')
+      expect(gitIgnoresPre).toContain('dir1/')
+      expect(gitIgnoresPre).toContain('!dir1/foo')
+
       const req = new Request('https://site.netlify/hello')
-      const res = await handle(req, {
+      const dev = new NetlifyDev({
         projectRoot: directory,
       })
 
+      await dev.start()
+
+      const res = await dev.handle(req)
+
       expect(await res?.text()).toBe('Hello from blob')
+
+      const gitIgnoresPost = (await readFile(gitIgnorePath, 'utf8')).split('\n').map((line) => line.trim())
+      expect(gitIgnoresPost).toContain('# Some comment')
+      expect(gitIgnoresPost).toContain('dir1/')
+      expect(gitIgnoresPost).toContain('!dir1/foo')
+      expect(gitIgnoresPost).toContain('# Local Netlify folder')
+      expect(gitIgnoresPost).toContain('.netlify')
 
       await fixture.destroy()
     })
@@ -200,9 +254,13 @@ describe('Handling requests', () => {
         )
       const directory = await fixture.create()
       const req = new Request('https://site.netlify/hello')
-      const res = await handle(req, {
+      const dev = new NetlifyDev({
         projectRoot: directory,
       })
+
+      await dev.start()
+
+      const res = await dev.handle(req)
 
       expect(await res?.text()).toBe('Hello world')
 

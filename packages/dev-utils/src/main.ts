@@ -1,6 +1,7 @@
 export { getAPIToken } from './lib/api-token.js'
 export { shouldBase64Encode } from './lib/base64.js'
 export { DevEvent, DevEventHandler } from './lib/event.js'
+export { ensureNetlifyIgnore } from './lib/gitignore.js'
 export { headers, toMultiValueHeaders } from './lib/headers.js'
 export * as globalConfig from './lib/global-config.js'
 export { Handler } from './lib/handler.js'
