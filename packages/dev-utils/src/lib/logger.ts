@@ -1,1 +1,7 @@
-export type Logger = (...message: unknown[]) => void
+type logFunction = (...message: unknown[]) => void
+
+export type Logger = {
+  error: logFunction
+  log: logFunction
+  warn: logFunction
+}

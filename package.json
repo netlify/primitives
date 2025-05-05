@@ -10,7 +10,8 @@
     "packages/redirects",
     "packages/runtime",
     "packages/static",
-    "packages/dev"
+    "packages/dev",
+    "packages/vite-plugin"
   ],
   "version": "0.0.0",
   "scripts": {

@@ -2,7 +2,7 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { resolveConfig } from '@netlify/config'
-import { ensureNetlifyIgnore, getAPIToken, LocalState } from '@netlify/dev-utils'
+import { ensureNetlifyIgnore, getAPIToken, LocalState, type Logger } from '@netlify/dev-utils'
 import { FunctionsHandler } from '@netlify/functions/dev'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
@@ -10,7 +10,7 @@ import { StaticHandler } from '@netlify/static'
 import { isDirectory, isFile } from './lib/fs.js'
 import { getRuntime } from './lib/runtime.js'
 
-interface NetlifyDevOptions {
+export interface Features {
   blobs?: {
     enabled: boolean
   }
@@ -20,9 +20,13 @@ interface NetlifyDevOptions {
   redirects?: {
     enabled: boolean
   }
-  static?: {
+  staticFiles?: {
     enabled: boolean
   }
+}
+
+interface NetlifyDevOptions extends Features {
+  logger?: Logger
   projectRoot?: string
 }
 
@@ -40,6 +44,7 @@ export class NetlifyDev {
     redirects: boolean
     static: boolean
   }
+  #logger: Logger
   #projectRoot: string
   #runtime?: Runtime
   #siteID?: string
@@ -49,8 +54,9 @@ export class NetlifyDev {
       blobs: options.blobs?.enabled !== false,
       functions: options.functions?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
-      static: options.static?.enabled !== false,
+      static: options.staticFiles?.enabled !== false,
     }
+    this.#logger = options.logger ?? globalThis.console
     this.#projectRoot = options.projectRoot ?? process.cwd()
   }
 
@@ -156,8 +162,12 @@ export class NetlifyDev {
     }
   }
 
+  get siteIsLinked() {
+    return Boolean(this.#siteID)
+  }
+
   async start() {
-    await ensureNetlifyIgnore(this.#projectRoot, console.log)
+    await ensureNetlifyIgnore(this.#projectRoot, this.#logger)
 
     const apiToken = await getAPIToken()
     this.#apiToken = apiToken

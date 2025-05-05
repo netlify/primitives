@@ -17,7 +17,7 @@ const hasGitIgnore = async function (dir: string) {
   }
 }
 
-export const ensureNetlifyIgnore = async (dir: string, log?: Logger) => {
+export const ensureNetlifyIgnore = async (dir: string, logger?: Logger) => {
   const gitIgnorePath = path.join(dir, '.gitignore')
   const ignoreContent = '# Local Netlify folder\n.netlify\n'
 
@@ -37,8 +37,8 @@ export const ensureNetlifyIgnore = async (dir: string, log?: Logger) => {
   }
   /* Not ignoring .netlify folder. Add to .gitignore */
   if (!ignorePatterns || !ignorePatterns.patterns.some((pattern) => /(^|\/|\\)\.netlify($|\/|\\)/.test(pattern))) {
-    log?.()
-    log?.('Adding local .netlify folder to .gitignore file...')
+    logger?.log()
+    logger?.log('Adding local .netlify folder to .gitignore file...')
     const newContents = `${gitIgnoreContents}\n${ignoreContent}`
     await writeFile(gitIgnorePath, newContents, 'utf8')
   }
