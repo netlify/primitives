@@ -11,15 +11,36 @@ import { isDirectory, isFile } from './lib/fs.js'
 import { getRuntime } from './lib/runtime.js'
 
 export interface Features {
+  /**
+   * Configuration options for Netlify Blobs.
+   *
+   * {@link} https://docs.netlify.com/blobs/overview/
+   */
   blobs?: {
     enabled: boolean
   }
+
+  /**
+   * Configuration options for Netlify Functions.
+   *
+   * {@link} https://docs.netlify.com/functions/overview/
+   */
   functions?: {
     enabled: boolean
   }
+
+  /**
+   * Configuration options for Netlify redirects and rewrites.
+   *
+   * {@link} https://docs.netlify.com/routing/redirects/
+   */
   redirects?: {
     enabled: boolean
   }
+
+  /**
+   * Configuration options for serving static files.
+   */
   staticFiles?: {
     enabled: boolean
   }
