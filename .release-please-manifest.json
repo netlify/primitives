@@ -1,12 +1,12 @@
 {
   "packages/blobs": "9.0.1",
   "packages/cache": "1.10.0",
-  "packages/dev": "2.1.1",
+  "packages/dev": "2.1.2",
   "packages/dev-utils": "2.1.0",
   "packages/functions": "3.1.5",
   "packages/redirects": "1.1.2",
-  "packages/runtime": "2.1.0",
+  "packages/runtime": "2.1.1",
   "packages/runtime-utils": "1.2.0",
   "packages/static": "1.1.2",
-  "packages/vite-plugin": "0.2.1"
+  "packages/vite-plugin": "0.2.2"
 }

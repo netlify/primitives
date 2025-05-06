@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.2](https://github.com/netlify/primitives/compare/vite-plugin-v0.2.1...vite-plugin-v0.2.2) (2025-05-06)
+
+
+### Bug Fixes
+
+* adjust dependencies and exports ([#169](https://github.com/netlify/primitives/issues/169)) ([7ebbd3a](https://github.com/netlify/primitives/commit/7ebbd3aa3126c8ebe6c9880c62b3ad50b0b219c2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 2.1.1 to 2.1.2
+
 ## [0.2.1](https://github.com/netlify/primitives/compare/vite-plugin-v0.2.0...vite-plugin-v0.2.1) (2025-05-06)
 
 

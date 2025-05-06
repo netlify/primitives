@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/netlify/primitives/compare/runtime-v2.1.0...runtime-v2.1.1) (2025-05-06)
+
+
+### Bug Fixes
+
+* adjust dependencies and exports ([#169](https://github.com/netlify/primitives/issues/169)) ([7ebbd3a](https://github.com/netlify/primitives/commit/7ebbd3aa3126c8ebe6c9880c62b3ad50b0b219c2))
+
 ## [2.1.0](https://github.com/netlify/primitives/compare/runtime-v2.0.0...runtime-v2.1.0) (2025-05-06)
 
 
