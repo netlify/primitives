@@ -40,6 +40,12 @@
     "dist/**/*.d.ts",
     "dist/**/*.d.cts",
     "dist/**/*.d.mts",
+    "dist-dev/**/*.js",
+    "dist-dev/**/*.cjs",
+    "dist-dev/**/*.mjs",
+    "dist-dev/**/*.d.ts",
+    "dist-dev/**/*.d.cts",
+    "dist-dev/**/*.d.mts",
     "internal.d.ts"
   ],
   "scripts": {
