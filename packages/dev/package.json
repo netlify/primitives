@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Local development emulation for Netlify",
   "type": "module",
   "engines": {
@@ -55,7 +55,7 @@
     "@netlify/dev-utils": "2.1.0",
     "@netlify/functions": "3.1.5",
     "@netlify/redirects": "1.1.2",
-    "@netlify/runtime": "2.1.0",
+    "@netlify/runtime": "2.1.1",
     "@netlify/static": "1.1.2"
   }
 }

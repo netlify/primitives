@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.2](https://github.com/netlify/primitives/compare/dev-v2.1.1...dev-v2.1.2) (2025-05-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime bumped from 2.1.0 to 2.1.1
+
 ## [2.1.1](https://github.com/netlify/primitives/compare/dev-v2.1.0...dev-v2.1.1) (2025-05-06)
 
 
