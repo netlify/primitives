@@ -12,7 +12,7 @@ export interface NetlifyPluginOptions extends Features {
   middleware?: boolean
 }
 
-export function netlify(options: NetlifyPluginOptions = {}): any {
+export default function netlify(options: NetlifyPluginOptions = {}): any {
   const plugin: vite.Plugin = {
     name: 'vite-plugin-netlify',
     async configureServer(viteDevServer) {
