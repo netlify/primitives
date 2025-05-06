@@ -1,6 +1,6 @@
 {
   "name": "@netlify/vite-plugin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Netlify Vite plugin",
   "type": "module",
   "engines": {
@@ -33,7 +33,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/dev": "2.0.0",
+    "@netlify/dev": "2.1.0",
     "chalk": "^5.4.1"
   },
   "peerDependencies": {

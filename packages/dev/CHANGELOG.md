@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.1.0](https://github.com/netlify/primitives/compare/dev-v2.0.0...dev-v2.1.0) (2025-05-06)
+
+
+### Features
+
+* add Vite plugin ([#165](https://github.com/netlify/primitives/issues/165)) ([2ec775e](https://github.com/netlify/primitives/commit/2ec775e29be11138f77f8db73e2a3bcfdbe88934))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.0.0 to 9.0.1
+    * @netlify/dev-utils bumped from 2.0.0 to 2.1.0
+    * @netlify/functions bumped from 3.1.3 to 3.1.4
+    * @netlify/redirects bumped from 1.1.1 to 1.1.2
+    * @netlify/runtime bumped from 2.0.0 to 2.1.0
+    * @netlify/static bumped from 1.1.1 to 1.1.2
+
 ## [2.0.0](https://github.com/netlify/primitives/compare/dev-v1.1.2...dev-v2.0.0) (2025-05-02)
 
 
