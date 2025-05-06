@@ -37,7 +37,7 @@ export class NetlifyCacheStorage {
     return Promise.resolve([...this.#stores.keys()])
   }
 
-  async match(request: RequestInfo, options?: MultiCacheQueryOptions): Promise<Response | undefined> {
+  async match(request: RequestInfo | URL, options?: MultiCacheQueryOptions): Promise<Response | undefined> {
     if (options?.cacheName) {
       return this.#stores.get(options.cacheName)?.match(request)
     }

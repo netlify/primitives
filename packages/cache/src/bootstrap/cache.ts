@@ -69,7 +69,7 @@ export class NetlifyCache implements Cache {
     return base64Encode(JSON.stringify(headersMap))
   }
 
-  async add(request: RequestInfo): Promise<void> {
+  async add(request: RequestInfo | URL): Promise<void> {
     await this.put(new Request(request), await fetch(request))
   }
 
@@ -78,7 +78,7 @@ export class NetlifyCache implements Cache {
   }
 
   // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
-  async delete(request: RequestInfo) {
+  async delete(request: RequestInfo | URL) {
     const context = this.#getContext({ operation: Operation.Delete })
 
     if (context) {
@@ -94,12 +94,12 @@ export class NetlifyCache implements Cache {
   }
 
   // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
-  async keys(_request?: Request) {
+  async keys(_request?: Request | URL) {
     // Not implemented.
     return []
   }
 
-  async match(request: RequestInfo) {
+  async match(request: RequestInfo | URL) {
     try {
       const context = this.#getContext({ operation: Operation.Read })
 
@@ -125,7 +125,7 @@ export class NetlifyCache implements Cache {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async matchAll(request?: RequestInfo, _options?: CacheQueryOptions): Promise<readonly Response[]> {
+  async matchAll(request?: RequestInfo | URL, _options?: CacheQueryOptions): Promise<readonly Response[]> {
     if (!request) {
       return []
     }
@@ -135,7 +135,7 @@ export class NetlifyCache implements Cache {
     return res ? [res] : []
   }
 
-  async put(request: RequestInfo | URL | string, response: Response) {
+  async put(request: RequestInfo | URL, response: Response) {
     if (!response.ok) {
       throw new TypeError(`Cannot cache response with status ${response.status}.`)
     }
