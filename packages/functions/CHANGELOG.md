@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.5](https://github.com/netlify/primitives/compare/functions-v3.1.4...functions-v3.1.5) (2025-05-06)
+
+
+### Bug Fixes
+
+* publish `functions` files ([#167](https://github.com/netlify/primitives/issues/167)) ([24117d7](https://github.com/netlify/primitives/commit/24117d79eab9f1ed1bcc15fca6c90fb90edef6ff))
+
 ## [3.1.4](https://github.com/netlify/primitives/compare/functions-v3.1.3...functions-v3.1.4) (2025-05-06)
 
 
