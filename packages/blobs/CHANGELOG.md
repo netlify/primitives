@@ -1,5 +1,15 @@
 # Changelog
 
+## [9.0.1](https://github.com/netlify/primitives/compare/blobs-v9.0.0...blobs-v9.0.1) (2025-05-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 2.0.0 to 2.1.0
+    * @netlify/runtime-utils bumped from 1.1.0 to 1.2.0
+
 ## [9.0.0](https://github.com/netlify/primitives/compare/blobs-v8.2.0...blobs-v9.0.0) (2025-05-02)
 
 

@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.10.0](https://github.com/netlify/primitives/compare/cache-v1.9.0...cache-v1.10.0) (2025-05-06)
+
+
+### Features
+
+* make `fetchWithCache` use `waitUntil` if available ([#161](https://github.com/netlify/primitives/issues/161)) ([dd9b7fd](https://github.com/netlify/primitives/commit/dd9b7fd5d0bd8b236d446d3211bfe880fedf4887))
+
+
+### Bug Fixes
+
+* make type definition for CacheStorage and Cache be the same as the one in TypeScript's generated dom type definition ([#166](https://github.com/netlify/primitives/issues/166)) ([c3ec2ed](https://github.com/netlify/primitives/commit/c3ec2ed3f1037f5a216a73af36050c314e7d6c89))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 1.1.0 to 1.2.0
+  * devDependencies
+    * @netlify/dev-utils bumped from 2.0.0 to 2.1.0
+
 ## [1.9.0](https://github.com/netlify/primitives/compare/cache-v1.8.2...cache-v1.9.0) (2025-05-02)
 
 

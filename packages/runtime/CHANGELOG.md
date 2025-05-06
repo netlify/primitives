@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.1.0](https://github.com/netlify/primitives/compare/runtime-v2.0.0...runtime-v2.1.0) (2025-05-06)
+
+
+### Features
+
+* make `fetchWithCache` use `waitUntil` if available ([#161](https://github.com/netlify/primitives/issues/161)) ([dd9b7fd](https://github.com/netlify/primitives/commit/dd9b7fd5d0bd8b236d446d3211bfe880fedf4887))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/cache bumped from 1.9.0 to 1.10.0
+    * @netlify/runtime-utils bumped from 1.1.0 to 1.2.0
+
 ## [2.0.0](https://github.com/netlify/primitives/compare/runtime-v1.0.0...runtime-v2.0.0) (2025-05-02)
 
 

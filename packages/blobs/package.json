@@ -1,6 +1,6 @@
 {
   "name": "@netlify/blobs",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "description": "A JavaScript client for the Netlify Blob Store",
   "type": "module",
   "engines": {
@@ -74,7 +74,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/dev-utils": "2.0.0",
-    "@netlify/runtime-utils": "1.1.0"
+    "@netlify/dev-utils": "2.1.0",
+    "@netlify/runtime-utils": "1.2.0"
   }
 }
