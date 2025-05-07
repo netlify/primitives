@@ -1,6 +1,6 @@
 {
   "name": "@netlify/vite-plugin",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Vite plugin with a local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -33,7 +33,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/dev": "2.1.2",
+    "@netlify/dev": "2.2.0",
     "chalk": "^5.4.1"
   },
   "peerDependencies": {

@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.2.0](https://github.com/netlify/primitives/compare/dev-v2.1.2...dev-v2.2.0) (2025-05-07)
+
+
+### Features
+
+* add separate package for types ([#175](https://github.com/netlify/primitives/issues/175)) ([bb70188](https://github.com/netlify/primitives/commit/bb7018856ebda7a52ccff291cb306478e2853468))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.0.1 to 9.1.0
+    * @netlify/functions bumped from 3.1.5 to 3.1.6
+    * @netlify/runtime bumped from 2.1.1 to 2.2.0
+  * devDependencies
+    * @netlify/types bumped from 1.0.0 to 1.1.0
+
 ## [2.1.2](https://github.com/netlify/primitives/compare/dev-v2.1.1...dev-v2.1.2) (2025-05-06)
 
 
