@@ -1,4 +1,4 @@
-import type { NetlifyGlobal } from '@netlify/runtime-utils'
+import type { NetlifyGlobal } from '@netlify/types'
 
 import type { NetlifyCache } from './bootstrap/cache.js'
 import { applyHeaders, cacheHeaders } from './cache-headers/cache-headers.js'

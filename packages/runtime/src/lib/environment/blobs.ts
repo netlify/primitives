@@ -1,5 +1,6 @@
 import type { EnvironmentContext } from '@netlify/blobs'
-import { base64Encode, type EnvironmentVariables } from '@netlify/runtime-utils'
+import { base64Encode } from '@netlify/runtime-utils'
+import type { NetlifyGlobal } from '@netlify/types'
 
 export interface BlobsOptions {
   edgeURL: string
@@ -10,7 +11,7 @@ export interface BlobsOptions {
 
 export interface SetupBlobsEnvironmentOptions extends BlobsOptions {
   deployID: string
-  env: EnvironmentVariables
+  env: NetlifyGlobal['env']
   globalScope: Record<string, any>
   preferGlobal?: boolean
   siteID: string

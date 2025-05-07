@@ -2,7 +2,8 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { BlobsServer } from '@netlify/blobs/server'
-import { type EnvironmentVariables, startRuntime } from '@netlify/runtime'
+import { startRuntime } from '@netlify/runtime'
+import type { NetlifyGlobal } from '@netlify/types'
 
 interface GetRuntimeOptions {
   blobs: boolean
@@ -33,7 +34,7 @@ export const getRuntime = async ({ blobs, deployID, projectRoot, siteID }: GetRu
   const blobsServerDetails = await blobsServer?.start()
 
   const envSnapshot: Record<string, string | undefined> = {}
-  const env: EnvironmentVariables = {
+  const env: NetlifyGlobal['env'] = {
     delete: (key: string) => {
       envSnapshot[key] = envSnapshot[key] || process.env[key]
 

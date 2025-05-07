@@ -66,6 +66,7 @@
     "test": "test"
   },
   "devDependencies": {
+    "@netlify/types": "1.0.0",
     "@types/node": "^22.14.1",
     "node-fetch": "^3.3.1",
     "semver": "^7.5.3",

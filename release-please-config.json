@@ -15,6 +15,7 @@
     "packages/runtime": {},
     "packages/runtime-utils": {},
     "packages/static": {},
+    "packages/types": {},
     "packages/vite-plugin": {}
   }
 }

@@ -1,5 +1,5 @@
 import type { RequestContextFactory } from '@netlify/cache/bootstrap'
-import type { Context, EnvironmentVariables } from '@netlify/runtime-utils'
+import type { Context, NetlifyGlobal } from '@netlify/types'
 
 import { type BlobsOptions, setupBlobsEnvironment } from './lib/environment/blobs.js'
 import { setupBranchEnvironment } from './lib/environment/branch.js'
@@ -15,7 +15,7 @@ interface StartRuntimeOptions {
     purgeToken?: string
   }
   deployID: string
-  env: EnvironmentVariables
+  env: NetlifyGlobal['env']
   getRequestContext: () => Context | null
   globalScope?: GlobalScope
   preferGlobal?: boolean
@@ -65,5 +65,3 @@ export const startRuntime = ({
     setupBranchEnvironment({ branch, env })
   }
 }
-
-export type { EnvironmentVariables }

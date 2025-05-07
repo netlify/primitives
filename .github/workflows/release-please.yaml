@@ -38,6 +38,10 @@ jobs:
         run: npm run build -ws
 
       # Publishing packages in topological order, as defined in `package.json`.
+      - run: npm publish packages/types/ --provenance --access=public
+        if: ${{ steps.release.outputs['packages/types--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/dev-utils/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/dev-utils--release_created'] }}
         env:
