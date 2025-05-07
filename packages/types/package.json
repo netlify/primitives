@@ -18,7 +18,8 @@
     "test:dev": "vitest",
     "test:ci": "npm run build && npm run test",
     "dev": "tsup-node --watch",
-    "types": "tsc --noEmit"
+    "types": "tsc --noEmit",
+    "publint": "npx -y publint --strict"
   },
   "keywords": [],
   "license": "MIT",

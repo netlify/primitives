@@ -72,6 +72,9 @@ jobs:
       - name: Tests
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
         run: npm run test -ws
+      - name: Publint
+        if: ${{ !steps.release-check.outputs.IS_RELEASE }}
+        run: npm run publint -ws --if-present
 
   test-build:
     runs-on: ${{ matrix.os }}
