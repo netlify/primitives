@@ -1,7 +1,7 @@
-import type { EnvironmentVariables } from '@netlify/runtime-utils'
+import type { NetlifyGlobal } from '@netlify/types'
 
 export interface SetupCachePurgeEnvironmentOptions {
-  env: EnvironmentVariables
+  env: NetlifyGlobal['env']
   token: string
 }
 

@@ -1,5 +1,5 @@
 import { type RequestContextFactory, NetlifyCacheStorage } from '@netlify/cache/bootstrap'
-import type { Context, EnvironmentVariables, NetlifyGlobal } from '@netlify/runtime-utils'
+import type { Context, NetlifyGlobal } from '@netlify/types'
 
 import { GlobalScope } from './util.js'
 
@@ -18,7 +18,7 @@ const setCachesGlobal = (globalScope: GlobalScope, getContext: RequestContextFac
   })
 }
 
-const setNetlifyGlobal = (globalScope: GlobalScope, env: EnvironmentVariables, getContext: () => Context | null) => {
+const setNetlifyGlobal = (globalScope: GlobalScope, env: NetlifyGlobal['env'], getContext: () => Context | null) => {
   globalScope.Netlify = {
     get context() {
       return getContext()
@@ -28,7 +28,7 @@ const setNetlifyGlobal = (globalScope: GlobalScope, env: EnvironmentVariables, g
 }
 
 export interface SetGlobalsOptions {
-  env: EnvironmentVariables
+  env: NetlifyGlobal['env']
   getCacheContext: RequestContextFactory
   getRequestContext: () => Context | null
   globalScope: GlobalScope

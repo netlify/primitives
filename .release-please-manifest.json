@@ -8,5 +8,6 @@
   "packages/runtime": "2.1.1",
   "packages/runtime-utils": "1.2.0",
   "packages/static": "1.1.2",
+  "packages/types": "1.0.0",
   "packages/vite-plugin": "0.2.2"
 }
