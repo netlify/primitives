@@ -61,9 +61,9 @@
     "cachestorage"
   ],
   "license": "MIT",
-  "repository": "netlify/cache",
+  "repository": "netlify/primitives",
   "bugs": {
-    "url": "https://github.com/netlify/cache/issues"
+    "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "devDependencies": {
