@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.11.0](https://github.com/netlify/primitives/compare/cache-v1.10.0...cache-v1.11.0) (2025-05-07)
+
+
+### Features
+
+* add separate package for types ([#175](https://github.com/netlify/primitives/issues/175)) ([bb70188](https://github.com/netlify/primitives/commit/bb7018856ebda7a52ccff291cb306478e2853468))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 1.2.0 to 1.3.0
+  * devDependencies
+    * @netlify/types bumped from 1.0.0 to 1.1.0
+
 ## [1.10.0](https://github.com/netlify/primitives/compare/cache-v1.9.0...cache-v1.10.0) (2025-05-06)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/netlify/primitives/compare/runtime-utils-v1.2.0...runtime-utils-v1.3.0) (2025-05-07)
+
+
+### Features
+
+* add separate package for types ([#175](https://github.com/netlify/primitives/issues/175)) ([bb70188](https://github.com/netlify/primitives/commit/bb7018856ebda7a52ccff291cb306478e2853468))
+
 ## [1.2.0](https://github.com/netlify/primitives/compare/runtime-utils-v1.1.0...runtime-utils-v1.2.0) (2025-05-06)
 
 

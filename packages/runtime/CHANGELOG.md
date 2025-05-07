@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.2.0](https://github.com/netlify/primitives/compare/runtime-v2.1.1...runtime-v2.2.0) (2025-05-07)
+
+
+### Features
+
+* add separate package for types ([#175](https://github.com/netlify/primitives/issues/175)) ([bb70188](https://github.com/netlify/primitives/commit/bb7018856ebda7a52ccff291cb306478e2853468))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/cache bumped from 1.10.0 to 1.11.0
+    * @netlify/runtime-utils bumped from 1.2.0 to 1.3.0
+    * @netlify/types bumped from 1.0.0 to 1.1.0
+
 ## [2.1.1](https://github.com/netlify/primitives/compare/runtime-v2.1.0...runtime-v2.1.1) (2025-05-06)
 
 
