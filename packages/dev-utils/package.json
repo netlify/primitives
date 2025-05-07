@@ -1,7 +1,7 @@
 {
   "name": "@netlify/dev-utils",
   "version": "2.1.0",
-  "description": "Utilities for local development with Netlify",
+  "description": "TypeScript utilities for the local emulation of the Netlify environment",
   "type": "module",
   "engines": {
     "node": "^14.16.0 || >=16.0.0"

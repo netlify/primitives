@@ -32,7 +32,7 @@
     }
   },
   "version": "3.1.5",
-  "description": "JavaScript utilities for Netlify Functions",
+  "description": "TypeScript utilities for interacting with Netlify Functions",
   "files": [
     "dist/**/*.js",
     "dist/**/*.cjs",

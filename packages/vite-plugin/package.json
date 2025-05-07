@@ -1,7 +1,7 @@
 {
   "name": "@netlify/vite-plugin",
   "version": "0.2.2",
-  "description": "Netlify Vite plugin",
+  "description": "Vite plugin with a local emulation of the Netlify environment",
   "type": "module",
   "engines": {
     "node": ">=16.0.0"

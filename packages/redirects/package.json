@@ -1,7 +1,7 @@
 {
   "name": "@netlify/redirects",
   "version": "1.1.2",
-  "description": "JavaScript implementtion of Netlify's static file serving logic",
+  "description": "TypeScript implementation of Netlify's rewrites and redirects engine",
   "type": "module",
   "engines": {
     "node": "^14.16.0 || >=16.0.0"

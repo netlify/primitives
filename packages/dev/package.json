@@ -1,7 +1,7 @@
 {
   "name": "@netlify/dev",
   "version": "2.1.2",
-  "description": "Local development emulation for Netlify",
+  "description": "Emulation of the Netlify environment for local development",
   "type": "module",
   "engines": {
     "node": "^14.16.0 || >=16.0.0"
