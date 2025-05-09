@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.7](https://github.com/netlify/primitives/compare/functions-v3.1.6...functions-v3.1.7) (2025-05-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/serverless-functions-api to v1.41.0 ([#177](https://github.com/netlify/primitives/issues/177)) ([5b00d0a](https://github.com/netlify/primitives/commit/5b00d0ab22e4e1cf478e906c389768a071bd6aa4))
+
 ## [3.1.6](https://github.com/netlify/primitives/compare/functions-v3.1.5...functions-v3.1.6) (2025-05-07)
 
 
