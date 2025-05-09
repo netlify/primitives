@@ -57,7 +57,8 @@
     "test:dev:tsd": "tsd",
     "test:dev:vitest": "vitest",
     "test:ci": "run-s test:ci:*",
-    "test:ci:vitest": "npm run build && vitest run"
+    "test:ci:vitest": "npm run build && vitest run",
+    "publint": "npx -y publint --strict"
   },
   "ava": {
     "files": [
@@ -70,7 +71,7 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "https://github.com/netlify/primitives",
+  "repository": "netlify/primitives",
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },

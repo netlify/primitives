@@ -7,6 +7,7 @@
     "node": ">=16.0.0"
   },
   "main": "./dist/main.js",
+  "exports": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "files": [
     "dist/**/*"
@@ -17,7 +18,8 @@
     "test": "vitest run",
     "test:dev": "vitest",
     "test:ci": "npm run build && vitest run",
-    "dev": "tsup-node --watch"
+    "dev": "tsup-node --watch",
+    "publint": "npx -y publint --strict"
   },
   "keywords": [],
   "license": "MIT",
