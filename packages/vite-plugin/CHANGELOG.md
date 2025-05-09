@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.4](https://github.com/netlify/primitives/compare/vite-plugin-v0.2.3...vite-plugin-v0.2.4) (2025-05-09)
+
+
+### Bug Fixes
+
+* make plugin a no-op when running inside the CLI ([#181](https://github.com/netlify/primitives/issues/181)) ([097dcc0](https://github.com/netlify/primitives/commit/097dcc07add9c787fe8f160f1ecec4908bffa534))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 2.2.0 to 2.2.1
+
 ## [0.2.3](https://github.com/netlify/primitives/compare/vite-plugin-v0.2.2...vite-plugin-v0.2.3) (2025-05-07)
 
 
