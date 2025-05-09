@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.2.2](https://github.com/netlify/primitives/compare/dev-v2.2.1...dev-v2.2.2) (2025-05-09)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#153](https://github.com/netlify/primitives/issues/153)) ([1fd1824](https://github.com/netlify/primitives/commit/1fd1824cd9f398921f006b0ccd538f371935d1fa))
+* fix package settings and add publint ([#180](https://github.com/netlify/primitives/issues/180)) ([dc093b4](https://github.com/netlify/primitives/commit/dc093b4bece80c79b73981602033e60497f87aa4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.1.0 to 9.1.1
+    * @netlify/dev-utils bumped from 2.1.0 to 2.1.1
+    * @netlify/functions bumped from 3.1.7 to 3.1.8
+    * @netlify/redirects bumped from 1.1.2 to 1.1.3
+    * @netlify/runtime bumped from 2.2.0 to 2.2.1
+    * @netlify/static bumped from 1.1.2 to 1.1.3
+  * devDependencies
+    * @netlify/types bumped from 1.1.0 to 1.1.1
+
 ## [2.2.1](https://github.com/netlify/primitives/compare/dev-v2.2.0...dev-v2.2.1) (2025-05-09)
 
 
