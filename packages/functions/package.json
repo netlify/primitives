@@ -71,7 +71,7 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "https://github.com/netlify/primitives",
+  "repository": "netlify/primitives",
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
