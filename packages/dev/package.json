@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@netlify/blobs": "9.1.0",
-    "@netlify/config": "^22.0.0",
+    "@netlify/config": "^22.0.1",
     "@netlify/dev-utils": "2.1.0",
     "@netlify/functions": "3.1.7",
     "@netlify/redirects": "1.1.2",
