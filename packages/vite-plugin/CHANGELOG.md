@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.5](https://github.com/netlify/primitives/compare/vite-plugin-v0.2.4...vite-plugin-v0.2.5) (2025-05-09)
+
+
+### Bug Fixes
+
+* fix package settings and add publint ([#180](https://github.com/netlify/primitives/issues/180)) ([dc093b4](https://github.com/netlify/primitives/commit/dc093b4bece80c79b73981602033e60497f87aa4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 2.2.1 to 2.2.2
+
 ## [0.2.4](https://github.com/netlify/primitives/compare/vite-plugin-v0.2.3...vite-plugin-v0.2.4) (2025-05-09)
 
 

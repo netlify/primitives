@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.3](https://github.com/netlify/primitives/compare/redirects-v1.1.2...redirects-v1.1.3) (2025-05-09)
+
+
+### Bug Fixes
+
+* fix package settings and add publint ([#180](https://github.com/netlify/primitives/issues/180)) ([dc093b4](https://github.com/netlify/primitives/commit/dc093b4bece80c79b73981602033e60497f87aa4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 2.1.0 to 2.1.1
+
 ## [1.1.2](https://github.com/netlify/primitives/compare/redirects-v1.1.1...redirects-v1.1.2) (2025-05-06)
 
 

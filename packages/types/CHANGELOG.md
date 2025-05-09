@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/netlify/primitives/compare/types-v1.1.0...types-v1.1.1) (2025-05-09)
+
+
+### Bug Fixes
+
+* fix package settings and add publint ([#180](https://github.com/netlify/primitives/issues/180)) ([dc093b4](https://github.com/netlify/primitives/commit/dc093b4bece80c79b73981602033e60497f87aa4))
+
 ## [1.1.0](https://github.com/netlify/primitives/compare/types-v1.0.0...types-v1.1.0) (2025-05-07)
 
 

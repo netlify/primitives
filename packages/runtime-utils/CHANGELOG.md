@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/netlify/primitives/compare/runtime-utils-v1.3.0...runtime-utils-v1.3.1) (2025-05-09)
+
+
+### Bug Fixes
+
+* fix package settings and add publint ([#180](https://github.com/netlify/primitives/issues/180)) ([dc093b4](https://github.com/netlify/primitives/commit/dc093b4bece80c79b73981602033e60497f87aa4))
+
 ## [1.3.0](https://github.com/netlify/primitives/compare/runtime-utils-v1.2.0...runtime-utils-v1.3.0) (2025-05-07)
 
 

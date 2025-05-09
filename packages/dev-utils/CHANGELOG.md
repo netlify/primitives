@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.1](https://github.com/netlify/primitives/compare/dev-utils-v2.1.0...dev-utils-v2.1.1) (2025-05-09)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#153](https://github.com/netlify/primitives/issues/153)) ([1fd1824](https://github.com/netlify/primitives/commit/1fd1824cd9f398921f006b0ccd538f371935d1fa))
+* fix package settings and add publint ([#180](https://github.com/netlify/primitives/issues/180)) ([dc093b4](https://github.com/netlify/primitives/commit/dc093b4bece80c79b73981602033e60497f87aa4))
+
 ## [2.1.0](https://github.com/netlify/primitives/compare/dev-utils-v2.0.0...dev-utils-v2.1.0) (2025-05-06)
 
 

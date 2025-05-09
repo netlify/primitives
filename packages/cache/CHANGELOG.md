@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.11.1](https://github.com/netlify/primitives/compare/cache-v1.11.0...cache-v1.11.1) (2025-05-09)
+
+
+### Bug Fixes
+
+* fix package settings and add publint ([#180](https://github.com/netlify/primitives/issues/180)) ([dc093b4](https://github.com/netlify/primitives/commit/dc093b4bece80c79b73981602033e60497f87aa4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 1.3.0 to 1.3.1
+  * devDependencies
+    * @netlify/dev-utils bumped from 2.1.0 to 2.1.1
+    * @netlify/types bumped from 1.1.0 to 1.1.1
+
 ## [1.11.0](https://github.com/netlify/primitives/compare/cache-v1.10.0...cache-v1.11.0) (2025-05-07)
 
 

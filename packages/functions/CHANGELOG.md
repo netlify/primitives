@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.1.8](https://github.com/netlify/primitives/compare/functions-v3.1.7...functions-v3.1.8) (2025-05-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/serverless-functions-api to v1.41.1 ([#182](https://github.com/netlify/primitives/issues/182)) ([5e2b72a](https://github.com/netlify/primitives/commit/5e2b72af6f0f7cea44c9176affed1f70badefa0a))
+* **deps:** update netlify packages ([#153](https://github.com/netlify/primitives/issues/153)) ([1fd1824](https://github.com/netlify/primitives/commit/1fd1824cd9f398921f006b0ccd538f371935d1fa))
+* fix package settings and add publint ([#180](https://github.com/netlify/primitives/issues/180)) ([dc093b4](https://github.com/netlify/primitives/commit/dc093b4bece80c79b73981602033e60497f87aa4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^9.1.0 to ^9.1.1
+    * @netlify/dev-utils bumped from 2.1.0 to 2.1.1
+
 ## [3.1.7](https://github.com/netlify/primitives/compare/functions-v3.1.6...functions-v3.1.7) (2025-05-09)
 
 
