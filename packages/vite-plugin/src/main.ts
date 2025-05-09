@@ -1,3 +1,5 @@
+import process from 'node:process'
+
 import { NetlifyDev, type Features } from '@netlify/dev'
 import * as vite from 'vite'
 
@@ -13,6 +15,12 @@ export interface NetlifyPluginOptions extends Features {
 }
 
 export default function netlify(options: NetlifyPluginOptions = {}): any {
+  // If we're already running inside the Netlify CLI, there is no need to run
+  // the plugin, as the environment will already be configured.
+  if (process.env.NETLIFY_DEV) {
+    return []
+  }
+
   const plugin: vite.Plugin = {
     name: 'vite-plugin-netlify',
     async configureServer(viteDevServer) {
