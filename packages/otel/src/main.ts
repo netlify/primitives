@@ -11,6 +11,5 @@ export const getTracer = async (name?: string, version?: string): Promise<Sugare
 }
 
 export const shutdownTracers = async (): Promise<void> => {
-    // @ts-ignore 
     return (globalThis as GlobalThisExtended)[SHUTDOWN_TRACERS]?.();
 }
