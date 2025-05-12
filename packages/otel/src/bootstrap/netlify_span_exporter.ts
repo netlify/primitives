@@ -2,6 +2,7 @@ import { diag, type DiagLogger } from '@opentelemetry/api'
 import { BindOnceFuture, ExportResult, ExportResultCode } from '@opentelemetry/core'
 import { JsonTraceSerializer } from '@opentelemetry/otlp-transformer'
 import type { SpanExporter, ReadableSpan } from '@opentelemetry/sdk-trace-node'
+import { TRACE_PREFIX } from '../constants.ts'
 
 export class NetlifySpanExporter implements SpanExporter {
   #shutdownOnce: BindOnceFuture<void>
@@ -26,7 +27,7 @@ export class NetlifySpanExporter implements SpanExporter {
       return
     }
 
-    console.log('__nfOTLPTrace', NetlifySpanExporter.#decoder.decode(JsonTraceSerializer.serializeRequest(spans)))
+    console.log(TRACE_PREFIX, NetlifySpanExporter.#decoder.decode(JsonTraceSerializer.serializeRequest(spans)))
     return resultCallback({ code: ExportResultCode.SUCCESS })
   }
 
