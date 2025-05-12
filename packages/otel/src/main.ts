@@ -2,8 +2,8 @@ import { type SugaredTracer } from '@opentelemetry/api/experimental';
 import { GET_TRACER, SHUTDOWN_TRACERS } from './constants.js';
 
 type GlobalThisExtended = typeof globalThis & {
-        [GET_TRACER]?: (name?: string, version?: string) => SugaredTracer | undefined;
-        [SHUTDOWN_TRACERS]?: () => void;
+    [GET_TRACER]?: (name?: string, version?: string) => SugaredTracer | undefined;
+    [SHUTDOWN_TRACERS]?: () => void;
 }
 
 export const getTracer = async (name?: string, version?: string): Promise<SugaredTracer | undefined> => {
