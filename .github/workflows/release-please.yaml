@@ -82,3 +82,7 @@ jobs:
         if: ${{ steps.release.outputs['packages/vite-plugin--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}          
+      - run: npm publish packages/otel/ --provenance --access=public
+        if: ${{ steps.release.outputs['packages/otel--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}          

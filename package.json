@@ -12,7 +12,8 @@
     "packages/runtime",
     "packages/static",
     "packages/dev",
-    "packages/vite-plugin"
+    "packages/vite-plugin",
+    "packages/otel"
   ],
   "version": "0.0.0",
   "scripts": {
