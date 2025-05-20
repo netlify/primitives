@@ -110,7 +110,7 @@ export const startMockApi = async ({ routes, silent }: MockApiOptions): Promise<
 
   return {
     server,
-    apiUrl: `${address}/api/v1`,
+    apiUrl: `${address.replace('localhost', '127.0.0.1')}/api/v1`,
     requests,
     clearRequests: clearRequests.bind(null, requests),
     async close() {
