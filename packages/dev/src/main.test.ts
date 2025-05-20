@@ -345,7 +345,7 @@ describe('Handling requests', () => {
         console.log('-> Mock API context', context)
 
         try {
-          const res = await fetch(`${context.apiUrl}/api/v1/sites/site_id`)
+          const res = await fetch(`${context.apiUrl}/sites/site_id`)
           const data = await res.json()
 
           console.log('-> API res', data, res.status)
