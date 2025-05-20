@@ -343,6 +343,16 @@ describe('Handling requests', () => {
 
       await withMockApi(routes, async (context) => {
         console.log('-> Mock API context', context)
+
+        try {
+          const res = await fetch(`${context.apiUrl}/api/v1/sites/site_id`)
+          const data = await res.json()
+
+          console.log('-> API res', data, res.status)
+        } catch (error) {
+          console.log('-> API error:', error)
+        }
+
         const dev = new NetlifyDev({
           apiURL: context.apiUrl,
           projectRoot: directory,
