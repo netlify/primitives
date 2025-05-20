@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "NodeNext",
-    "rootDir": "./src",
+    "rootDir": ".",
     "moduleResolution": "nodenext",
     "allowJs": true,
     "declaration": true,

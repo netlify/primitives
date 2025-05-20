@@ -7,6 +7,7 @@ import { FunctionsHandler } from '@netlify/functions/dev'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 
+import { injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
 import { getRuntime } from './lib/runtime.js'
 
@@ -17,6 +18,15 @@ export interface Features {
    * {@link} https://docs.netlify.com/blobs/overview/
    */
   blobs?: {
+    enabled: boolean
+  }
+
+  /**
+   * Configuration options for environment variables.
+   *
+   * {@link} https://docs.netlify.com/environment-variables/overview/
+   */
+  environmentVariables?: {
     enabled: boolean
   }
 
@@ -47,6 +57,7 @@ export interface Features {
 }
 
 interface NetlifyDevOptions extends Features {
+  apiURL?: string
   logger?: Logger
   projectRoot?: string
 }
@@ -57,10 +68,13 @@ type Config = Awaited<ReturnType<typeof resolveConfig>>
 type Runtime = { stop: () => Promise<void> }
 
 export class NetlifyDev {
+  #apiHost?: string
+  #apiScheme?: string
   #apiToken?: string
   #config?: Config
   #features: {
     blobs: boolean
+    environmentVariables: boolean
     functions: boolean
     redirects: boolean
     static: boolean
@@ -71,8 +85,16 @@ export class NetlifyDev {
   #siteID?: string
 
   constructor(options: NetlifyDevOptions) {
+    if (options.apiURL) {
+      const apiURL = new URL(options.apiURL)
+
+      this.#apiHost = apiURL.host
+      this.#apiScheme = apiURL.protocol.slice(0, -1)
+    }
+
     this.#features = {
       blobs: options.blobs?.enabled !== false,
+      environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
       static: options.staticFiles?.enabled !== false,
@@ -86,13 +108,15 @@ export class NetlifyDev {
     const configFileExists = await isFile(configFilePath)
     const config = await resolveConfig({
       config: configFileExists ? configFilePath : undefined,
-      repositoryRoot: this.#projectRoot,
-      cwd: process.cwd(),
       context: 'dev',
+      cwd: process.cwd(),
+      host: this.#apiHost,
+      offline: !this.#siteID,
+      mode: 'cli',
+      repositoryRoot: this.#projectRoot,
+      scheme: this.#apiScheme,
       siteId: this.#siteID,
       token: this.#apiToken,
-      mode: 'cli',
-      offline: !this.#siteID,
     })
 
     return config
@@ -197,14 +221,29 @@ export class NetlifyDev {
     const siteID = state.get('siteId')
     this.#siteID = siteID
 
-    this.#config = await this.getConfig()
+    const config = await this.getConfig()
+    this.#config = config
 
-    this.#runtime = await getRuntime({
+    const runtime = await getRuntime({
       blobs: Boolean(this.#features.blobs),
       deployID: '0',
       projectRoot: this.#projectRoot,
       siteID: siteID ?? '0',
     })
+    this.#runtime = runtime
+
+    const accountSlug = config?.siteInfo?.account_slug as string | undefined
+
+    if (this.#features.environmentVariables && siteID && accountSlug) {
+      // TODO: Use proper types for this.
+      await injectEnvVariables({
+        accountSlug,
+        baseVariables: config?.env || {},
+        envAPI: runtime.env,
+        netlifyAPI: config?.api,
+        siteID,
+      })
+    }
   }
 
   async stop() {
