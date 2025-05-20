@@ -342,6 +342,7 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello')
 
       await withMockApi(routes, async (context) => {
+        console.log('-> Mock API context', context)
         const dev = new NetlifyDev({
           apiURL: context.apiUrl,
           projectRoot: directory,

@@ -58,6 +58,7 @@ export const startMockApi = async ({ routes, silent }: MockApiOptions): Promise<
   const requests: MockApi['requests'] = []
   const server = new HTTPServer(async (req: Request): Promise<Response> => {
     const url = new URL(req.url)
+    console.log('-> API req', req.url)
     const path = url.pathname.replace('/api/v1/', '')
     const matchedRoute = routes.find(
       (route) => route.path === path && (!route.method || route.method.toLowerCase() === req.method.toLowerCase()),
@@ -104,6 +105,8 @@ export const startMockApi = async ({ routes, silent }: MockApiOptions): Promise<
   })
 
   const address = await server.start()
+
+  console.log('-> API address', address)
 
   return {
     server,
