@@ -346,6 +346,7 @@ describe('Handling requests', () => {
 
         const dev = new NetlifyDev({
           apiURL: context.apiUrl,
+          apiToken: 'token',
           projectRoot: directory,
         })
 

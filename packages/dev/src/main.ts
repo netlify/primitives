@@ -58,6 +58,7 @@ export interface Features {
 
 interface NetlifyDevOptions extends Features {
   apiURL?: string
+  apiToken?: string
   logger?: Logger
   projectRoot?: string
 }
@@ -92,6 +93,7 @@ export class NetlifyDev {
       this.#apiScheme = apiURL.protocol.slice(0, -1)
     }
 
+    this.#apiToken = options.apiToken
     this.#features = {
       blobs: options.blobs?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
@@ -214,8 +216,7 @@ export class NetlifyDev {
   async start() {
     await ensureNetlifyIgnore(this.#projectRoot, this.#logger)
 
-    const apiToken = await getAPIToken()
-    this.#apiToken = apiToken
+    this.#apiToken = this.#apiToken ?? (await getAPIToken())
 
     const state = new LocalState(this.#projectRoot)
     const siteID = state.get('siteId')
@@ -234,7 +235,7 @@ export class NetlifyDev {
 
     const accountSlug = config?.siteInfo?.account_slug as string | undefined
 
-    console.log('-> Start', { accountSlug, siteID, api: Boolean(config?.api), apiToken, config })
+    console.log('-> Start', { accountSlug, siteID, api: Boolean(config?.api), config })
 
     if (this.#features.environmentVariables && siteID && accountSlug) {
       // TODO: Use proper types for this.
