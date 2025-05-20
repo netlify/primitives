@@ -235,19 +235,15 @@ export class NetlifyDev {
 
     const accountSlug = config?.siteInfo?.account_slug as string | undefined
 
-    console.log('-> Start', { accountSlug, siteID, api: Boolean(config?.api), config })
-
     if (this.#features.environmentVariables && siteID && accountSlug) {
       // TODO: Use proper types for this.
-      const res = await injectEnvVariables({
+      await injectEnvVariables({
         accountSlug,
         baseVariables: config?.env || {},
         envAPI: runtime.env,
         netlifyAPI: config?.api,
         siteID,
       })
-
-      console.log('-> Vars', res)
     }
   }
 
