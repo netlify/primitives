@@ -185,8 +185,10 @@ export const getValueForContext = (
  * @param source - The source of the environment variable
  * @returns The dictionary of env vars that match the given source
  */
-export const filterEnvBySource = (env: object, source: EnvironmentVariableSource): typeof env =>
-  Object.fromEntries(Object.entries(env).filter(([, variable]) => variable.sources[0] === source))
+export const filterEnvBySource = (
+  env: Record<string, EnvironmentVariable>,
+  source: EnvironmentVariableSource,
+): typeof env => Object.fromEntries(Object.entries(env).filter(([, variable]) => variable.sources[0] === source))
 
 const fetchEnvelopeItems = async function ({
   accountId,
@@ -307,7 +309,7 @@ const getEnvelopeEnv = async ({
   accountId: string
   api: NetlifyAPI
   context?: ContextOrBranch | undefined
-  env: object
+  env: Record<string, EnvironmentVariable>
   key?: string | undefined
   raw?: boolean | undefined
   scope?: SupportedScope | undefined
