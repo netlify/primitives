@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 
@@ -111,6 +111,7 @@ const buildFunction = async ({
     runtimeAPIVersion,
     srcFiles,
     schedule,
+    targetDirectory,
   }
 }
 
@@ -135,18 +136,6 @@ const clearFunctionsCache = (functionsPath: string) => {
     .forEach(decache)
 }
 
-const getTargetDirectory = async (projectRoot: string) => {
-  const targetDirectory = path.resolve(projectRoot, serveFunctionsFolder)
-
-  try {
-    await mkdir(targetDirectory, { recursive: true })
-  } catch {
-    throw new Error(`Could not create directory: ${targetDirectory}`)
-  }
-
-  return targetDirectory
-}
-
 const netlifyConfigToZisiConfig = (functionsConfig: Record<string, TOMLFunctionConfig>, projectRoot: string) =>
   addFunctionsConfigDefaults(normalizeFunctionsConfig({ functionsConfig, projectRoot }))
 
@@ -156,6 +145,7 @@ interface HandlerOptions {
   func: NetlifyFunction
   metadata: any
   projectRoot: string
+  targetDirectory: string
 }
 
 export const getNoopBuilder = async ({ directory, func, metadata }: HandlerOptions): Promise<FunctionBuilder> => {
@@ -172,12 +162,11 @@ export const getNoopBuilder = async ({ directory, func, metadata }: HandlerOptio
       runtimeAPIVersion: func.runtimeAPIVersion,
       schedule: metadata.schedule,
       srcFiles,
-    } as BuildResult)
+    }) as BuildResult
 
   return {
     build,
     builderName: '',
-    target: '',
   }
 }
 
@@ -187,6 +176,7 @@ export const getZISIBuilder = async ({
   func,
   metadata,
   projectRoot,
+  targetDirectory,
 }: HandlerOptions): Promise<FunctionBuilder | null> => {
   const functionsConfig = netlifyConfigToZisiConfig(config.functions, projectRoot)
   const packageJson = await readPackageUp({ cwd: path.dirname(func.mainFile) })
@@ -218,8 +208,6 @@ export const getZISIBuilder = async ({
   // Enable source map support.
   sourceMapSupport.install()
 
-  const targetDirectory = await getTargetDirectory(projectRoot)
-
   return {
     build: ({ cache = {} }: { cache?: BuildCache }) =>
       buildFunction({
@@ -233,6 +221,5 @@ export const getZISIBuilder = async ({
         featureFlags,
       }),
     builderName: 'zip-it-and-ship-it',
-    target: targetDirectory,
   }
 }

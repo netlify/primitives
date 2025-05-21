@@ -4,7 +4,6 @@ import { ExtendedRoute, FunctionResult, ModuleFormat } from '@netlify/zip-it-and
 export interface FunctionBuilder {
   build: ({ cache }: { cache: BuildCache }) => Promise<BuildResult | undefined>
   builderName: string
-  target: string
 }
 
 export interface BuildResult {
@@ -17,6 +16,7 @@ export interface BuildResult {
   runtimeAPIVersion?: number
   srcFiles: string[]
   schedule?: string
+  targetDirectory?: string
 }
 
 export type BuildCache = MemoizeCache<FunctionResult>

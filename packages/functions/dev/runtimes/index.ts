@@ -8,6 +8,7 @@ export interface GetBuildFunctionOptions {
   directory: string
   func: NetlifyFunction
   projectRoot: string
+  targetDirectory: string
 }
 
 export interface InvokeFunctionOptions {
