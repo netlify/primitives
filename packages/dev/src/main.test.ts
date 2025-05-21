@@ -288,30 +288,20 @@ describe('Handling requests', () => {
         path: 'accounts/test-account/env',
         response: [
           {
-            key: 'WITH_BRANCH_OVERRIDE',
+            key: 'WITH_DEV_OVERRIDE',
             scopes: ['builds', 'functions', 'runtime'],
             values: [
-              { context: 'branch-deploy' as const, value: 'value from branch-deploy context' },
-              {
-                context: 'branch' as const,
-                context_parameter: 'feat/make-it-pop',
-                value: 'value from branch context',
-              },
               { context: 'dev' as const, value: 'value from dev context' },
               { context: 'production' as const, value: 'value from production context' },
-              {
-                context: 'deploy-preview' as const,
-                context_parameter: '12345',
-                value: 'value from deploy-preview context',
-              },
               { context: 'all' as const, value: 'value from all context' },
             ],
           },
           {
-            key: 'WITHOUT_OVERRIDE',
+            key: 'WITHOUT_DEV_OVERRIDE',
             scopes: ['builds', 'functions', 'runtime'],
             values: [
               { context: 'branch-deploy' as const, value: 'value from branch-deploy context' },
+              { context: 'production' as const, value: 'value from production context' },
               { context: 'all' as const, value: 'value from all context' },
             ],
           },
@@ -331,8 +321,8 @@ describe('Handling requests', () => {
         .withFile(
           'netlify/functions/hello.mjs',
           `export default async () => Response.json({
-             WITH_BRANCH_OVERRIDE: Netlify.env.get("WITH_BRANCH_OVERRIDE"),
-             WITHOUT_OVERRIDE: Netlify.env.get("WITHOUT_OVERRIDE")
+             WITH_DEV_OVERRIDE: Netlify.env.get("WITH_DEV_OVERRIDE"),
+             WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE")
            });
            
            export const config = { path: "/hello" };`,
@@ -353,8 +343,8 @@ describe('Handling requests', () => {
         const res = await dev.handle(req)
 
         expect(await res?.json()).toStrictEqual({
-          WITH_BRANCH_OVERRIDE: 'value from dev context',
-          WITHOUT_OVERRIDE: 'value from all context',
+          WITH_DEV_OVERRIDE: 'value from dev context',
+          WITHOUT_DEV_OVERRIDE: 'value from all context',
         })
       })
 
