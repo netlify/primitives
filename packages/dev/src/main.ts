@@ -233,12 +233,10 @@ export class NetlifyDev {
     })
     this.#runtime = runtime
 
-    const accountSlug = config?.siteInfo?.account_slug as string | undefined
-
-    if (this.#features.environmentVariables && siteID && accountSlug) {
+    if (this.#features.environmentVariables && siteID) {
       // TODO: Use proper types for this.
       await injectEnvVariables({
-        accountSlug,
+        accountSlug: config?.siteInfo?.account_slug,
         baseVariables: config?.env || {},
         envAPI: runtime.env,
         netlifyAPI: config?.api,
