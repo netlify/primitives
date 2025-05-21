@@ -70,6 +70,7 @@ export const getRuntime = async ({ blobs, deployID, projectRoot, siteID }: GetRu
   })
 
   return {
+    env,
     stop: async () => {
       restoreEnvironment(envSnapshot)
 

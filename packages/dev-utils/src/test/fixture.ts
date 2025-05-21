@@ -85,6 +85,12 @@ export class Fixture {
     return this
   }
 
+  withStateFile(state: object) {
+    this.files.push({ contents: JSON.stringify(state), path: '.netlify/state.json' })
+
+    return this
+  }
+
   async writeFile(path: string, contents: string) {
     if (!this.directory) {
       throw new Error("Fixture hasn't been initialized. Did you call `create()`?")
