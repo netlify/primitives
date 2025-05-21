@@ -88,7 +88,7 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
 
-    test('Function', async () => {
+    test('Invoking a function on a custom path', async () => {
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
@@ -116,7 +116,7 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
 
-    test('Function (shadowed)', async () => {
+    test('Invoking a function on a custom path, shadowed by a static file', async () => {
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
@@ -144,7 +144,7 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
 
-    test('Rewrite to function', async () => {
+    test('Rewrite to a function on a custom path', async () => {
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
@@ -173,7 +173,7 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
 
-    test('Function with Blobs', async () => {
+    test('Invoking a function that interacts with Blobs', async () => {
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
@@ -235,7 +235,7 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
 
-    test.skip('Function with Cache API', async () => {
+    test.skip('Invoking a function that interacts with the Cache API', async () => {
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
@@ -319,7 +319,7 @@ describe('Handling requests', () => {
       },
     ]
 
-    test('Function', async () => {
+    test('Invoking a function', async () => {
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
