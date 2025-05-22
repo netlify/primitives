@@ -53,8 +53,8 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/blobs": "9.1.1",
-    "@netlify/config": "^22.0.1",
+    "@netlify/blobs": "^9.1.1",
+    "@netlify/config": "^23.0.4",
     "@netlify/dev-utils": "2.1.1",
     "@netlify/functions": "3.1.8",
     "@netlify/redirects": "1.1.3",
