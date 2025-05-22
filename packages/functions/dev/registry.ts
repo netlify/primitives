@@ -26,7 +26,7 @@ import { runtimes } from './runtimes/index.js'
 export const DEFAULT_FUNCTION_URL_EXPRESSION = /^\/.netlify\/(functions|builders)\/([^/]+).*/
 const TYPES_PACKAGE = '@netlify/functions'
 
-interface FunctionRegistryOptions {
+export interface FunctionRegistryOptions {
   blobsContext?: BlobsContext
   destPath: string
   config: any
@@ -236,7 +236,7 @@ export class FunctionsRegistry {
         return { func: null, route: null }
       }
 
-      const { routes = [] } = (await func.getBuildData()) ?? {}
+      const { routes = [] } = func
 
       if (routes.length !== 0) {
         this.handleEvent({
@@ -313,7 +313,7 @@ export class FunctionsRegistry {
       } catch {
         func.mainFile = join(unzippedDirectory, basename(manifestEntry.mainFile))
       }
-    } else {
+    } else if (this.watch) {
       this.buildFunctionAndWatchFiles(func, !isReload)
     }
 
@@ -350,6 +350,7 @@ export class FunctionsRegistry {
       },
       configFileDirectories: [this.internalFunctionsPath].filter(Boolean) as string[],
       config: this.config.functions,
+      parseISC: true,
     })
 
     // user-defined functions take precedence over internal functions,
@@ -384,7 +385,7 @@ export class FunctionsRegistry {
       // zip-it-and-ship-it returns an array sorted based on which extension should have precedence,
       // where the last ones precede the previous ones. This is why
       // we reverse the array so we get the right functions precedence in the CLI.
-      functions.reverse().map(async ({ displayName, mainFile, name, runtime: runtimeName }) => {
+      functions.reverse().map(async ({ displayName, excludedRoutes, mainFile, name, routes, runtime: runtimeName }) => {
         if (ignoredFunctions.has(name)) {
           return
         }
@@ -414,11 +415,14 @@ export class FunctionsRegistry {
           config: this.config,
           directory,
           displayName,
+          excludedRoutes,
           mainFile,
           name,
           projectRoot: this.projectRoot,
+          routes,
           runtime,
           settings: this.settings,
+          targetDirectory: this.destPath,
           timeoutBackground: this.timeouts.backgroundFunctions,
           timeoutSynchronous: this.timeouts.syncFunctions,
         })

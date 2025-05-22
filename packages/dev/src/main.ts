@@ -1,3 +1,4 @@
+import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -105,26 +106,7 @@ export class NetlifyDev {
     this.#projectRoot = options.projectRoot ?? process.cwd()
   }
 
-  private async getConfig() {
-    const configFilePath = path.resolve(this.#projectRoot, 'netlify.toml')
-    const configFileExists = await isFile(configFilePath)
-    const config = await resolveConfig({
-      config: configFileExists ? configFilePath : undefined,
-      context: 'dev',
-      cwd: process.cwd(),
-      host: this.#apiHost,
-      offline: !this.#siteID,
-      mode: 'cli',
-      repositoryRoot: this.#projectRoot,
-      scheme: this.#apiScheme,
-      siteId: this.#siteID,
-      token: this.#apiToken,
-    })
-
-    return config
-  }
-
-  async handle(request: Request) {
+  private async handleInEphemeralDirectory(request: Request, destPath: string) {
     // Functions
     const userFunctionsPath =
       this.#config?.config.functionsDirectory ?? path.join(this.#projectRoot, 'netlify/functions')
@@ -132,7 +114,7 @@ export class NetlifyDev {
     const functions = this.#features.functions
       ? new FunctionsHandler({
           config: this.#config,
-          destPath: path.join(this.#projectRoot, '.netlify', 'functions-serve'),
+          destPath: destPath,
           projectRoot: this.#projectRoot,
           settings: {},
           siteId: this.#siteID,
@@ -206,6 +188,41 @@ export class NetlifyDev {
     const staticMatch = await staticFiles?.match(request)
     if (staticMatch) {
       return staticMatch.handle()
+    }
+  }
+
+  private async getConfig() {
+    const configFilePath = path.resolve(this.#projectRoot, 'netlify.toml')
+    const configFileExists = await isFile(configFilePath)
+    const config = await resolveConfig({
+      config: configFileExists ? configFilePath : undefined,
+      context: 'dev',
+      cwd: process.cwd(),
+      host: this.#apiHost,
+      offline: !this.#siteID,
+      mode: 'cli',
+      repositoryRoot: this.#projectRoot,
+      scheme: this.#apiScheme,
+      siteId: this.#siteID,
+      token: this.#apiToken,
+    })
+
+    return config
+  }
+
+  async handle(request: Request) {
+    const servePath = path.join(this.#projectRoot, '.netlify', 'functions-serve')
+
+    await fs.mkdir(servePath, { recursive: true })
+
+    const destPath = await fs.mkdtemp(path.join(servePath, '_'))
+
+    try {
+      return await this.handleInEphemeralDirectory(request, destPath)
+    } finally {
+      try {
+        await fs.rm(destPath, { force: true, recursive: true })
+      } catch {}
     }
   }
 
