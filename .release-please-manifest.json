@@ -4,6 +4,7 @@
   "packages/dev": "2.3.0",
   "packages/dev-utils": "2.2.0",
   "packages/functions": "3.1.9",
+  "packages/headers": {},
   "packages/otel": "1.1.0",
   "packages/redirects": "1.1.4",
   "packages/runtime": "2.2.2",
