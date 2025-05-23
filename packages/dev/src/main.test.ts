@@ -88,8 +88,8 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
 
-    test('Invoking a function on a custom path', async () => {
-      const fixture = new Fixture()
+    test('Invoking a function, updating its contents and invoking it again', async () => {
+      let fixture = new Fixture()
         .withFile(
           'netlify.toml',
           `[build]
@@ -109,9 +109,20 @@ describe('Handling requests', () => {
 
       await dev.start()
 
-      const res = await dev.handle(req)
+      const res1 = await dev.handle(req)
 
-      expect(await res?.text()).toBe('Hello from function')
+      expect(await res1?.text()).toBe('Hello from function')
+
+      fixture = fixture.withFile(
+        'netlify/functions/hello.mjs',
+        `export default async () => new Response("A new hello from function"); export const config = { path: "/hello" };`,
+      )
+
+      await fixture.create()
+
+      const res2 = await dev.handle(req)
+
+      expect(await res2?.text()).toBe('A new hello from function')
 
       await fixture.destroy()
     })
@@ -317,19 +328,26 @@ describe('Handling requests', () => {
         publish = "public"
         `,
         )
-        .withFile('public/hello.html', `hello.html`)
         .withFile(
           'netlify/functions/hello.mjs',
-          `export default async () => Response.json({
-             WITH_DEV_OVERRIDE: Netlify.env.get("WITH_DEV_OVERRIDE"),
-             WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE")
+          `export default async (req, context) => Response.json({
+             env: {
+               WITH_DEV_OVERRIDE: Netlify.env.get("WITH_DEV_OVERRIDE"),
+               WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE")             
+             },
+             geo: context.geo,
+             params: context.params,
+             path: context.path,
+             server: context.server,
+             site: context.site,
+             url: context.url
            });
            
-           export const config = { path: "/hello" };`,
+           export const config = { path: "/hello/:a/*" };`,
         )
         .withStateFile({ siteId: 'site_id' })
       const directory = await fixture.create()
-      const req = new Request('https://site.netlify/hello')
+      const req = new Request('https://site.netlify/hello/one/two/three')
 
       await withMockApi(routes, async (context) => {
         const dev = new NetlifyDev({
@@ -343,8 +361,37 @@ describe('Handling requests', () => {
         const res = await dev.handle(req)
 
         expect(await res?.json()).toStrictEqual({
-          WITH_DEV_OVERRIDE: 'value from dev context',
-          WITHOUT_DEV_OVERRIDE: 'value from all context',
+          env: {
+            WITH_DEV_OVERRIDE: 'value from dev context',
+            WITHOUT_DEV_OVERRIDE: 'value from all context',
+          },
+          geo: {
+            city: 'San Francisco',
+            country: {
+              code: 'US',
+              name: 'United States',
+            },
+            latitude: 0,
+            longitude: 0,
+            subdivision: {
+              code: 'CA',
+              name: 'California',
+            },
+            timezone: 'UTC',
+          },
+          params: {
+            '0': 'two/three',
+            a: 'one',
+          },
+          path: '/hello/:a/*',
+          server: {
+            region: 'dev',
+          },
+          site: {
+            id: 'site_id',
+            name: 'site-name',
+          },
+          url: 'https://site.netlify/hello/one/two/three',
         })
       })
 

@@ -25,4 +25,5 @@ export interface HandlerEvent {
   multiValueQueryStringParameters: EventMultiValueQueryStringParameters | null
   body: string | null
   isBase64Encoded: boolean
+  route?: string
 }
