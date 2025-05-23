@@ -9,8 +9,9 @@ import semver from 'semver'
 
 import { BuildResult } from './builder.js'
 import { Runtime } from './runtimes/index.js'
-import { HandlerContext, HandlerEvent } from '../src/main.js'
-import { lambdaEventFromWebRequest } from './runtimes/nodejs/lambda.js'
+import { HandlerContext } from '../src/main.js'
+
+export type FunctionBuildCache = MemoizeCache<FunctionResult>
 
 const BACKGROUND_FUNCTION_SUFFIX = '-background'
 const TYPESCRIPT_EXTENSIONS = new Set(['.cts', '.mts', '.ts'])
@@ -38,11 +39,14 @@ interface NetlifyFunctionOptions {
   config: any
   directory: string
   displayName?: string
+  excludedRoutes?: Route[]
   mainFile: string
   name: string
   projectRoot: string
+  routes?: ExtendedRoute[]
   runtime: Runtime
   settings: any
+  targetDirectory: string
   timeoutBackground: number
   timeoutSynchronous: number
 }
@@ -59,6 +63,7 @@ export class NetlifyFunction {
   private readonly directory: string
   private readonly projectRoot: string
   private readonly settings: any
+  private readonly targetDirectory: string
   private readonly timeoutBackground: number
   private readonly timeoutSynchronous: number
 
@@ -74,27 +79,36 @@ export class NetlifyFunction {
   // and will get populated on every build.
   private srcFiles = new Set<string>()
 
+  public excludedRoutes: Route[] | undefined
+  public routes: ExtendedRoute[] | undefined
+
   constructor({
     blobsContext,
     config,
     directory,
     displayName,
+    excludedRoutes,
     mainFile,
     name,
     projectRoot,
+    routes,
     runtime,
     settings,
+    targetDirectory,
     timeoutBackground,
     timeoutSynchronous,
   }: NetlifyFunctionOptions) {
     this.blobsContext = blobsContext
     this.config = config
     this.directory = directory
+    this.excludedRoutes = excludedRoutes
     this.mainFile = mainFile
     this.name = name
     this.displayName = displayName ?? name
     this.projectRoot = projectRoot
+    this.routes = routes
     this.runtime = runtime
+    this.targetDirectory = targetDirectory
     this.timeoutBackground = timeoutBackground
     this.timeoutSynchronous = timeoutSynchronous
     this.settings = settings
@@ -181,6 +195,7 @@ export class NetlifyFunction {
         directory: this.directory,
         func: this,
         projectRoot: this.projectRoot,
+        targetDirectory: this.targetDirectory,
       })
       .then((buildFunction) => buildFunction({ cache }))
 
@@ -191,12 +206,13 @@ export class NetlifyFunction {
         throw new Error(`Could not build function ${this.name}`)
       }
 
-      const { includedFiles = [], schedule, srcFiles } = buildData
+      const { includedFiles = [], routes, schedule, srcFiles } = buildData
       const srcFilesSet = new Set<string>(srcFiles)
       const srcFilesDiff = this.getSrcFilesDiff(srcFilesSet)
 
       this.buildData = buildData
       this.buildError = null
+      this.routes = routes
 
       this.srcFiles = srcFilesSet
       this.schedule = schedule || this.schedule
@@ -238,7 +254,12 @@ export class NetlifyFunction {
   }
 
   // Invokes the function and returns its response object.
-  async invoke(request: Request, clientContext: HandlerContext['clientContext']) {
+  async invoke(request: Request, clientContext: HandlerContext['clientContext'], buildCache: FunctionBuildCache = {}) {
+    // If we haven't started building the function, do it now.
+    if (!this.buildQueue) {
+      this.build({ cache: buildCache })
+    }
+
     await this.buildQueue
 
     if (this.buildError) {
@@ -268,11 +289,10 @@ export class NetlifyFunction {
    * @returns matched route
    */
   async matchURLPath(rawPath: string, method: string) {
-    await this.buildQueue
-
     let path = rawPath !== '/' && rawPath.endsWith('/') ? rawPath.slice(0, -1) : rawPath
     path = path.toLowerCase()
-    const { excludedRoutes = [], routes = [] } = this.buildData ?? {}
+    const { excludedRoutes = [], routes = [] } = this
+
     const matchingRoute = routes.find((route: ExtendedRoute) => {
       if (route.methods && route.methods.length !== 0 && !route.methods.includes(method)) {
         return false

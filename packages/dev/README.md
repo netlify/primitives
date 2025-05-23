@@ -21,7 +21,7 @@ Functions, Blobs, Static files, and Redirects.
 | Cache API              | ✅ Yes    |
 | Redirects and Rewrites | ✅ Yes    |
 | Headers                | ❌ No     |
-| Environment Variables  | ❌ No     |
+| Environment Variables  | ✅ Yes    |
 
 > Note: Missing features will be added incrementally. This module is **not** intended to be a full replacement for the
 > Netlify CLI.
