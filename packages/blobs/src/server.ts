@@ -67,6 +67,7 @@ export class BlobsServer {
   private directory: string
   private logger: Logger
   private onRequest?: OnRequestCallback
+  private port?: number
   private server?: HTTPServer
   private token?: string
   private tokenHash: string
