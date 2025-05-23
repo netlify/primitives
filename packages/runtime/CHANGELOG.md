@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.2.2](https://github.com/netlify/primitives/compare/runtime-v2.2.1...runtime-v2.2.2) (2025-05-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/cache bumped from 1.11.1 to 1.11.2
+    * @netlify/types bumped from 1.1.1 to 1.2.0
+
 ## [2.2.1](https://github.com/netlify/primitives/compare/runtime-v2.2.0...runtime-v2.2.1) (2025-05-09)
 
 

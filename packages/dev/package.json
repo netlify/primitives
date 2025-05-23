@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "description": "Emulation of the Netlify environment for local development",
   "type": "module",
   "engines": {
@@ -47,18 +47,18 @@
   "author": "Netlify Inc.",
   "devDependencies": {
     "@netlify/api": "^14.0.1",
-    "@netlify/types": "1.1.1",
+    "@netlify/types": "1.2.0",
     "tmp-promise": "^3.0.3",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/blobs": "^9.1.1",
+    "@netlify/blobs": "^9.1.2",
     "@netlify/config": "^23.0.4",
-    "@netlify/dev-utils": "2.1.1",
-    "@netlify/functions": "3.1.8",
-    "@netlify/redirects": "1.1.3",
-    "@netlify/runtime": "2.2.1",
-    "@netlify/static": "1.1.3"
+    "@netlify/dev-utils": "2.2.0",
+    "@netlify/functions": "3.1.9",
+    "@netlify/redirects": "1.1.4",
+    "@netlify/runtime": "2.2.2",
+    "@netlify/static": "1.1.4"
   }
 }
