@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.3.1](https://github.com/netlify/primitives/compare/dev-v2.3.0...dev-v2.3.1) (2025-05-23)
+
+
+### Bug Fixes
+
+* pin monorepo packages ([#205](https://github.com/netlify/primitives/issues/205)) ([353a812](https://github.com/netlify/primitives/commit/353a81275dae3076465daf505c770a9218427376))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions bumped from 3.1.9 to 3.1.10
+
 ## [2.3.0](https://github.com/netlify/primitives/compare/dev-v2.2.2...dev-v2.3.0) (2025-05-23)
 
 
