@@ -51,6 +51,13 @@ interface NetlifyFunctionOptions {
   timeoutSynchronous: number
 }
 
+interface InvokeFunctionOptions {
+  buildCache?: FunctionBuildCache
+  clientContext?: HandlerContext['clientContext']
+  request: Request
+  route?: string
+}
+
 export class NetlifyFunction {
   public name: string
   public mainFile: string
@@ -254,7 +261,7 @@ export class NetlifyFunction {
   }
 
   // Invokes the function and returns its response object.
-  async invoke(request: Request, clientContext: HandlerContext['clientContext'], buildCache: FunctionBuildCache = {}) {
+  async invoke({ buildCache = {}, clientContext = {}, request, route }: InvokeFunctionOptions) {
     // If we haven't started building the function, do it now.
     if (!this.buildQueue) {
       this.build({ cache: buildCache })
@@ -280,6 +287,7 @@ export class NetlifyFunction {
       environment,
       func: this,
       request,
+      route,
       timeout,
     })
   }

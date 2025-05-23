@@ -16,6 +16,7 @@ export interface InvokeFunctionOptions {
   environment: any
   func: NetlifyFunction
   request: Request
+  route?: string
   timeout: number
 }
 

@@ -29,7 +29,7 @@ export const webHeadersFromHeadersObject = (headersObject: HandlerResponse['head
   return headers
 }
 
-export const lambdaEventFromWebRequest = async (request: Request): Promise<HandlerEvent> => {
+export const lambdaEventFromWebRequest = async (request: Request, route?: string): Promise<HandlerEvent> => {
   const url = new URL(request.url)
   const queryStringParameters: Record<string, string> = {}
   const multiValueQueryStringParameters: Record<string, string[]> = {}
@@ -43,7 +43,6 @@ export const lambdaEventFromWebRequest = async (request: Request): Promise<Handl
   const body = (await request.text()) || null
 
   return {
-    blobs: '',
     rawUrl: url.toString(),
     rawQuery: url.search,
     path: url.pathname,
@@ -54,6 +53,7 @@ export const lambdaEventFromWebRequest = async (request: Request): Promise<Handl
     multiValueQueryStringParameters,
     body,
     isBase64Encoded: shouldBase64Encode(request.headers.get('content-type') ?? ''),
+    route,
   }
 }
 

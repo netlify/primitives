@@ -31,8 +31,8 @@ export const nodeJSRuntime: Runtime = {
     return noopBuilder.build
   },
 
-  invokeFunction: async ({ context, environment, func, request, timeout }) => {
-    const event = await lambdaEventFromWebRequest(request)
+  invokeFunction: async ({ context, environment, func, request, route, timeout }) => {
+    const event = await lambdaEventFromWebRequest(request, route)
     const buildData = await func.getBuildData()
 
     if (buildData?.runtimeAPIVersion !== 2) {

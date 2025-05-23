@@ -8,12 +8,20 @@ import tmp from 'tmp-promise'
 const run = promisify(exec)
 export class Fixture {
   directory?: tmp.DirectoryResult
-  files: { contents: string; path: string }[]
+  files: Record<string, string>
   npmDependencies: Record<string, string>
 
   constructor() {
-    this.files = []
+    this.files = {}
     this.npmDependencies = {}
+  }
+
+  private ensureDirectory() {
+    if (!this.directory) {
+      throw new Error("Fixture hasn't been initialized. Did you call `create()`?")
+    }
+
+    return this.directory.path
   }
 
   private async installNpmDependencies() {
@@ -21,37 +29,36 @@ export class Fixture {
       return
     }
 
-    if (!this.directory) {
-      throw new Error("Fixture hasn't been initialized. Did you call `create()`?")
-    }
-
+    const directory = this.ensureDirectory()
     const packageJSON = {
       name: 'fixture',
       version: '0.0.0',
       dependencies: this.npmDependencies,
     }
-    const packageJSONPath = join(this.directory.path, 'package.json')
+    const packageJSONPath = join(directory, 'package.json')
 
     await fs.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2))
-    await run('npm install', { cwd: this.directory.path })
+    await run('npm install', { cwd: directory })
   }
 
   async create() {
-    this.directory = await tmp.dir({ unsafeCleanup: true })
+    if (!this.directory) {
+      this.directory = await tmp.dir({ unsafeCleanup: true })
 
-    // `/var` is a symlink to `/private/var`, which causes unexpected behavior
-    // in the file watching logic, so we use the linked directory instead.
-    // TODO: Find a better way to do this. Maybe this is an issue that needs to
-    // be solved upstream in `@netlify/zip-it-and-ship-it`.
-    if (this.directory.path.startsWith('/var/')) {
-      this.directory.path = this.directory.path.replace('/var/', '/private/var/')
+      // `/var` is a symlink to `/private/var`, which causes unexpected behavior
+      // in the file watching logic, so we use the linked directory instead.
+      // TODO: Find a better way to do this. Maybe this is an issue that needs to
+      // be solved upstream in `@netlify/zip-it-and-ship-it`.
+      if (this.directory.path.startsWith('/var/')) {
+        this.directory.path = this.directory.path.replace('/var/', '/private/var/')
+      }
     }
 
-    for (const file of this.files) {
-      const filePath = join(this.directory.path, file.path)
+    for (const relativePath in this.files) {
+      const filePath = join(this.directory.path, relativePath)
 
       await fs.mkdir(dirname(filePath), { recursive: true })
-      await fs.writeFile(filePath, file.contents)
+      await fs.writeFile(filePath, this.files[relativePath])
     }
 
     await this.installNpmDependencies()
@@ -60,11 +67,7 @@ export class Fixture {
   }
 
   async deleteFile(path: string) {
-    if (!this.directory) {
-      throw new Error("Fixture hasn't been initialized. Did you call `create()`?")
-    }
-
-    const filePath = join(this.directory.path, path)
+    const filePath = join(this.ensureDirectory(), path)
 
     try {
       await fs.rm(filePath, { force: true })
@@ -80,23 +83,19 @@ export class Fixture {
   }
 
   withFile(path: string, contents: string) {
-    this.files.push({ contents, path })
+    this.files[path] = contents
 
     return this
   }
 
   withStateFile(state: object) {
-    this.files.push({ contents: JSON.stringify(state), path: '.netlify/state.json' })
+    this.files['.netlify/state.json'] = JSON.stringify(state)
 
     return this
   }
 
   async writeFile(path: string, contents: string) {
-    if (!this.directory) {
-      throw new Error("Fixture hasn't been initialized. Did you call `create()`?")
-    }
-
-    const filePath = join(this.directory.path, path)
+    const filePath = join(this.ensureDirectory(), path)
 
     await fs.writeFile(filePath, contents)
   }
