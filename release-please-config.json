@@ -11,6 +11,7 @@
     "packages/dev": {},
     "packages/dev-utils": {},
     "packages/functions": {},
+    "packages/headers": {},
     "packages/otel": {},
     "packages/redirects": {},
     "packages/runtime": {},
