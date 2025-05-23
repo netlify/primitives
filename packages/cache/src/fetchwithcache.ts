@@ -72,7 +72,7 @@ type FetchWithCache = {
  * whether it comes from the cache or from the network.
  */
 export const fetchWithCache: FetchWithCache = async (
-  request: string | URL | Request,
+  requestOrURL: string | URL | Request,
   optionsOrCacheSettings?: RequestInit | CacheSettings,
   cacheOptionsParam?: CacheOptions,
 ) => {
@@ -87,15 +87,9 @@ export const fetchWithCache: FetchWithCache = async (
     requestInit = {}
   }
 
-  let method: string | undefined
+  const request = new Request(requestOrURL, requestInit)
 
-  if (request instanceof Request) {
-    method = request.method
-  } else {
-    method = requestInit?.method
-  }
-
-  if (method && method?.toLowerCase() !== 'get') {
+  if (request.method.toLowerCase() !== 'get') {
     throw new TypeError('`fetchWithCache` only supports GET requests.')
   }
 
@@ -121,7 +115,7 @@ export const fetchWithCache: FetchWithCache = async (
     return cached
   }
 
-  const fresh = await fetch(request, requestInit)
+  const fresh = await fetch(request)
   if (!fresh.body) {
     return fresh
   }
