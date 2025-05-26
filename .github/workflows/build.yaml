@@ -67,11 +67,11 @@ jobs:
         run: npm ci
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
       - name: Build
-        run: npm run build -ws
+        run: npm run build --workspaces=true
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
       - name: Tests
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
-        run: npm run test -ws
+        run: npm run test --workspaces=true
 
   test-build:
     runs-on: ${{ matrix.os }}
@@ -123,10 +123,10 @@ jobs:
         run: ${{ matrix.install-command }}
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
       - name: Build workspaces
-        run: npm run build -ws
+        run: npm run build --workspaces=true
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
       - name: Tests
-        run: npm run test -ws
+        run: npm run test --workspaces=true
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
         env:
           # split tests across multiple machines
@@ -172,8 +172,8 @@ jobs:
         run: npm ci
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
       - name: Build
-        run: npm run build -ws
+        run: npm run build --workspaces=true
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
       - name: Publint
         if: ${{ !steps.release-check.outputs.IS_RELEASE }}
-        run: npm run publint -ws --if-present
+        run: npm run publint --workspaces=true --if-present
