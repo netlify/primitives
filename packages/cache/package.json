@@ -4,7 +4,7 @@
   "description": "TypeScript utilities for interacting with the Netlify cache",
   "type": "module",
   "engines": {
-    "node": "^14.16.0 || >=16.0.0"
+    "node": "^18.14.0 || >=20"
   },
   "main": "./dist/main.cjs",
   "module": "./dist/main.js",
