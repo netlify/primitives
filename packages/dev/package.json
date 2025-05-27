@@ -46,7 +46,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@netlify/api": "^14.0.1",
+    "@netlify/api": "^14.0.2",
     "@netlify/types": "1.2.0",
     "tmp-promise": "^3.0.3",
     "tsup": "^8.0.0",
@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "@netlify/blobs": "9.1.2",
-    "@netlify/config": "^23.0.4",
+    "@netlify/config": "^23.0.7",
     "@netlify/dev-utils": "2.2.0",
     "@netlify/functions": "3.1.9",
     "@netlify/redirects": "1.1.4",
