@@ -52,7 +52,7 @@
     "dev": "tsup-node --watch",
     "build": "tsup-node",
     "prepack": "npm run build",
-    "test": "run-s test:dev",
+    "test": "run-s test:ci",
     "test:dev": "run-s build test:dev:*",
     "test:dev:tsd": "tsd",
     "test:dev:vitest": "vitest",
@@ -80,7 +80,7 @@
     "test": "test"
   },
   "dependencies": {
-    "@netlify/blobs": "^9.1.2",
+    "@netlify/blobs": "9.1.2",
     "@netlify/dev-utils": "2.2.0",
     "@netlify/serverless-functions-api": "2.0.2",
     "@netlify/zip-it-and-ship-it": "^12.1.0",
