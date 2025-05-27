@@ -52,7 +52,7 @@
     "dev": "tsup-node --watch",
     "build": "tsup-node",
     "prepack": "npm run build",
-    "test": "run-s test:dev",
+    "test": "run-s test:ci",
     "test:dev": "run-s build test:dev:*",
     "test:dev:tsd": "tsd",
     "test:dev:vitest": "vitest",
