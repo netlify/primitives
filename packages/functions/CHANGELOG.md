@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.10](https://github.com/netlify/primitives/compare/functions-v3.1.9...functions-v3.1.10) (2025-05-27)
+
+
+### Bug Fixes
+
+* pin monorepo packages ([#205](https://github.com/netlify/primitives/issues/205)) ([353a812](https://github.com/netlify/primitives/commit/353a81275dae3076465daf505c770a9218427376))
+
 ## [3.1.9](https://github.com/netlify/primitives/compare/functions-v3.1.8...functions-v3.1.9) (2025-05-23)
 
 
