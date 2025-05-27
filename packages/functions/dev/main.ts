@@ -1,11 +1,7 @@
 import { Buffer } from 'node:buffer'
 
-import type { EnvironmentContext as BlobsContext } from '@netlify/blobs'
-import { Manifest } from '@netlify/zip-it-and-ship-it'
-import { DevEventHandler } from '@netlify/dev-utils'
-
-import type { NetlifyFunction } from './function.js'
-import { FunctionsRegistry } from './registry.js'
+import type { FunctionBuildCache, NetlifyFunction } from './function.js'
+import { FunctionsRegistry, type FunctionRegistryOptions } from './registry.js'
 import { headersObjectFromWebHeaders } from './runtimes/nodejs/lambda.js'
 import { buildClientContext } from './server/client-context.js'
 
@@ -27,39 +23,30 @@ export interface FunctionMatch {
   preferStatic: boolean
 }
 
-interface FunctionsHandlerOptions {
+type FunctionsHandlerOptions = FunctionRegistryOptions & {
   accountId?: string
-  blobsContext?: BlobsContext
-  destPath: string
-  config: any
-  debug?: boolean
-  eventHandler?: DevEventHandler
-  frameworksAPIFunctionsPath?: string
-  internalFunctionsPath?: string
-  manifest?: Manifest
-  projectRoot: string
   siteId?: string
-  settings: any
-  timeouts: any
   userFunctionsPath?: string
 }
 
 export class FunctionsHandler {
   private accountID?: string
+  private buildCache: FunctionBuildCache
   private registry: FunctionsRegistry
   private scan: Promise<void>
   private siteID?: string
 
-  constructor(options: FunctionsHandlerOptions) {
-    const registry = new FunctionsRegistry(options)
+  constructor({ accountId, siteId, userFunctionsPath, ...registryOptions }: FunctionsHandlerOptions) {
+    const registry = new FunctionsRegistry(registryOptions)
 
-    this.accountID = options.accountId
+    this.accountID = accountId
+    this.buildCache = {}
     this.registry = registry
-    this.scan = registry.scan([options.userFunctionsPath])
-    this.siteID = options.siteId
+    this.scan = registry.scan([userFunctionsPath])
+    this.siteID = siteId
   }
 
-  private async invoke(request: Request, func: NetlifyFunction) {
+  private async invoke(request: Request, route: string | undefined, func: NetlifyFunction) {
     // TODO: Wtf?
     let remoteAddress = request.headers.get('x-forwarded-for') || ''
     remoteAddress =
@@ -82,7 +69,11 @@ export class FunctionsHandler {
 
     if (func.isBackground) {
       // Background functions do not receive a clientContext
-      await func.invoke(request, {})
+      await func.invoke({
+        buildCache: this.buildCache,
+        request,
+        route,
+      })
 
       return new Response(null, { status: 202 })
     }
@@ -100,10 +91,20 @@ export class FunctionsHandler {
       newRequest.headers.set('user-agent', CLOCKWORK_USERAGENT)
       newRequest.headers.set('x-nf-event', 'schedule')
 
-      return await func.invoke(newRequest, clientContext)
+      return await func.invoke({
+        buildCache: this.buildCache,
+        clientContext,
+        request: newRequest,
+        route,
+      })
     }
 
-    return await func.invoke(request, clientContext)
+    return await func.invoke({
+      buildCache: this.buildCache,
+      clientContext,
+      request,
+      route,
+    })
   }
 
   async match(request: Request): Promise<FunctionMatch | undefined> {
@@ -119,6 +120,8 @@ export class FunctionsHandler {
     if (!functionName) {
       return
     }
+
+    const matchingRoute = match.route?.pattern
 
     const func = this.registry.get(functionName)
     if (func === undefined) {
@@ -142,7 +145,7 @@ export class FunctionsHandler {
     }
 
     return {
-      handle: (request: Request) => this.invoke(request, func),
+      handle: (request: Request) => this.invoke(request, matchingRoute, func),
       preferStatic: match.route?.prefer_static ?? false,
     }
   }

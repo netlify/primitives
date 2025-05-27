@@ -8,6 +8,7 @@ export interface GetBuildFunctionOptions {
   directory: string
   func: NetlifyFunction
   projectRoot: string
+  targetDirectory: string
 }
 
 export interface InvokeFunctionOptions {
@@ -15,6 +16,7 @@ export interface InvokeFunctionOptions {
   environment: any
   func: NetlifyFunction
   request: Request
+  route?: string
   timeout: number
 }
 

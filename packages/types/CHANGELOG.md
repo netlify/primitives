@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/netlify/primitives/compare/types-v1.1.1...types-v1.2.0) (2025-05-23)
+
+
+### Features
+
+* add support for environment variables ([#197](https://github.com/netlify/primitives/issues/197)) ([03878db](https://github.com/netlify/primitives/commit/03878dbfff4e7e379b9d3e4fb6d9d783e66cc2af))
+
 ## [1.1.1](https://github.com/netlify/primitives/compare/types-v1.1.0...types-v1.1.1) (2025-05-09)
 
 

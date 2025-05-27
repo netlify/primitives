@@ -37,9 +37,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       await netlifyDev.start()
 
       if (!netlifyDev.siteIsLinked) {
-        logger.log(
-          'Your project is not linked to a Netlify site. Refer to https://ntl.fyi/vite-link for more information.',
-        )
+        logger.log('Your project is not linked to a Netlify site. Run `npx netlify link` to get started.')
       }
 
       if (middleware) {

@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.3.0](https://github.com/netlify/primitives/compare/dev-v2.2.2...dev-v2.3.0) (2025-05-23)
+
+
+### Features
+
+* add support for environment variables ([#197](https://github.com/netlify/primitives/issues/197)) ([03878db](https://github.com/netlify/primitives/commit/03878dbfff4e7e379b9d3e4fb6d9d783e66cc2af))
+
+
+### Bug Fixes
+
+* pass route to function invocation ([#202](https://github.com/netlify/primitives/issues/202)) ([7bb9396](https://github.com/netlify/primitives/commit/7bb939649dede2fae6642f724e3491dc598621b6))
+* use ephemeral directories to serve functions ([#199](https://github.com/netlify/primitives/issues/199)) ([a749e26](https://github.com/netlify/primitives/commit/a749e2600c1245dbe7f1401ebd020a862cb8f734))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^9.1.1 to ^9.1.2
+    * @netlify/dev-utils bumped from 2.1.1 to 2.2.0
+    * @netlify/functions bumped from 3.1.8 to 3.1.9
+    * @netlify/redirects bumped from 1.1.3 to 1.1.4
+    * @netlify/runtime bumped from 2.2.1 to 2.2.2
+    * @netlify/static bumped from 1.1.3 to 1.1.4
+  * devDependencies
+    * @netlify/types bumped from 1.1.1 to 1.2.0
+
 ## [2.2.2](https://github.com/netlify/primitives/compare/dev-v2.2.1...dev-v2.2.2) (2025-05-09)
 
 

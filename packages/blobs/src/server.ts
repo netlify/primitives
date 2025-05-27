@@ -67,12 +67,14 @@ export class BlobsServer {
   private directory: string
   private logger: Logger
   private onRequest?: OnRequestCallback
+  private port?: number
   private server?: HTTPServer
   private token?: string
   private tokenHash: string
 
   constructor({ debug, directory, logger, onRequest, port, token }: BlobsServerOptions) {
     this.address = ''
+    this.port = port
     this.debug = debug === true
     this.directory = directory
     this.logger = logger ?? console.log
@@ -534,7 +536,7 @@ export class BlobsServer {
     await fs.mkdir(this.directory, { recursive: true })
 
     const server = new HTTPServer((req) => this.handleRequest(req))
-    const address = await server.start()
+    const address = await server.start(this.port ?? 0)
     const port = Number.parseInt(new URL(address).port)
 
     this.address = address

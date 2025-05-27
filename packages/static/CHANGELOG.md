@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.4](https://github.com/netlify/primitives/compare/static-v1.1.3...static-v1.1.4) (2025-05-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 2.1.1 to 2.2.0
+
 ## [1.1.3](https://github.com/netlify/primitives/compare/static-v1.1.2...static-v1.1.3) (2025-05-09)
 
 

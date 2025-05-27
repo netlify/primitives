@@ -18,21 +18,21 @@ import { HandlerEvent, HandlerResponse } from '../../../src/main.js'
 import { lambdaEventFromWebRequest, webResponseFromLambdaResponse } from './lambda.js'
 
 export const nodeJSRuntime: Runtime = {
-  getBuildFunction: async ({ config, directory, func, projectRoot }) => {
+  getBuildFunction: async ({ config, directory, func, projectRoot, targetDirectory }) => {
     const metadata = await parseFunctionForMetadata({ mainFile: func.mainFile, config, projectRoot })
-    const zisiBuilder = await getZISIBuilder({ config, directory, func, metadata, projectRoot })
+    const zisiBuilder = await getZISIBuilder({ config, directory, func, metadata, projectRoot, targetDirectory })
 
     if (zisiBuilder) {
       return zisiBuilder.build
     }
 
-    const noopBuilder = await getNoopBuilder({ config, directory, func, metadata, projectRoot })
+    const noopBuilder = await getNoopBuilder({ config, directory, func, metadata, projectRoot, targetDirectory })
 
     return noopBuilder.build
   },
 
-  invokeFunction: async ({ context, environment, func, request, timeout }) => {
-    const event = await lambdaEventFromWebRequest(request)
+  invokeFunction: async ({ context, environment, func, request, route, timeout }) => {
+    const event = await lambdaEventFromWebRequest(request, route)
     const buildData = await func.getBuildData()
 
     if (buildData?.runtimeAPIVersion !== 2) {

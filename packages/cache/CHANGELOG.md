@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.11.2](https://github.com/netlify/primitives/compare/cache-v1.11.1...cache-v1.11.2) (2025-05-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 2.1.1 to 2.2.0
+    * @netlify/types bumped from 1.1.1 to 1.2.0
+
 ## [1.11.1](https://github.com/netlify/primitives/compare/cache-v1.11.0...cache-v1.11.1) (2025-05-09)
 
 

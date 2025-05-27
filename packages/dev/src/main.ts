@@ -1,3 +1,4 @@
+import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -7,6 +8,7 @@ import { FunctionsHandler } from '@netlify/functions/dev'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 
+import { injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
 import { getRuntime } from './lib/runtime.js'
 
@@ -17,6 +19,15 @@ export interface Features {
    * {@link} https://docs.netlify.com/blobs/overview/
    */
   blobs?: {
+    enabled: boolean
+  }
+
+  /**
+   * Configuration options for environment variables.
+   *
+   * {@link} https://docs.netlify.com/environment-variables/overview/
+   */
+  environmentVariables?: {
     enabled: boolean
   }
 
@@ -47,6 +58,8 @@ export interface Features {
 }
 
 interface NetlifyDevOptions extends Features {
+  apiURL?: string
+  apiToken?: string
   logger?: Logger
   projectRoot?: string
 }
@@ -57,10 +70,13 @@ type Config = Awaited<ReturnType<typeof resolveConfig>>
 type Runtime = { stop: () => Promise<void> }
 
 export class NetlifyDev {
+  #apiHost?: string
+  #apiScheme?: string
   #apiToken?: string
   #config?: Config
   #features: {
     blobs: boolean
+    environmentVariables: boolean
     functions: boolean
     redirects: boolean
     static: boolean
@@ -71,8 +87,17 @@ export class NetlifyDev {
   #siteID?: string
 
   constructor(options: NetlifyDevOptions) {
+    if (options.apiURL) {
+      const apiURL = new URL(options.apiURL)
+
+      this.#apiHost = apiURL.host
+      this.#apiScheme = apiURL.protocol.slice(0, -1)
+    }
+
+    this.#apiToken = options.apiToken
     this.#features = {
       blobs: options.blobs?.enabled !== false,
+      environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
       static: options.staticFiles?.enabled !== false,
@@ -81,24 +106,7 @@ export class NetlifyDev {
     this.#projectRoot = options.projectRoot ?? process.cwd()
   }
 
-  private async getConfig() {
-    const configFilePath = path.resolve(this.#projectRoot, 'netlify.toml')
-    const configFileExists = await isFile(configFilePath)
-    const config = await resolveConfig({
-      config: configFileExists ? configFilePath : undefined,
-      repositoryRoot: this.#projectRoot,
-      cwd: process.cwd(),
-      context: 'dev',
-      siteId: this.#siteID,
-      token: this.#apiToken,
-      mode: 'cli',
-      offline: !this.#siteID,
-    })
-
-    return config
-  }
-
-  async handle(request: Request) {
+  private async handleInEphemeralDirectory(request: Request, destPath: string) {
     // Functions
     const userFunctionsPath =
       this.#config?.config.functionsDirectory ?? path.join(this.#projectRoot, 'netlify/functions')
@@ -106,7 +114,7 @@ export class NetlifyDev {
     const functions = this.#features.functions
       ? new FunctionsHandler({
           config: this.#config,
-          destPath: path.join(this.#projectRoot, '.netlify', 'functions-serve'),
+          destPath: destPath,
           projectRoot: this.#projectRoot,
           settings: {},
           siteId: this.#siteID,
@@ -183,6 +191,41 @@ export class NetlifyDev {
     }
   }
 
+  private async getConfig() {
+    const configFilePath = path.resolve(this.#projectRoot, 'netlify.toml')
+    const configFileExists = await isFile(configFilePath)
+    const config = await resolveConfig({
+      config: configFileExists ? configFilePath : undefined,
+      context: 'dev',
+      cwd: process.cwd(),
+      host: this.#apiHost,
+      offline: !this.#siteID,
+      mode: 'cli',
+      repositoryRoot: this.#projectRoot,
+      scheme: this.#apiScheme,
+      siteId: this.#siteID,
+      token: this.#apiToken,
+    })
+
+    return config
+  }
+
+  async handle(request: Request) {
+    const servePath = path.join(this.#projectRoot, '.netlify', 'functions-serve')
+
+    await fs.mkdir(servePath, { recursive: true })
+
+    const destPath = await fs.mkdtemp(path.join(servePath, '_'))
+
+    try {
+      return await this.handleInEphemeralDirectory(request, destPath)
+    } finally {
+      try {
+        await fs.rm(destPath, { force: true, recursive: true })
+      } catch {}
+    }
+  }
+
   get siteIsLinked() {
     return Boolean(this.#siteID)
   }
@@ -190,21 +233,33 @@ export class NetlifyDev {
   async start() {
     await ensureNetlifyIgnore(this.#projectRoot, this.#logger)
 
-    const apiToken = await getAPIToken()
-    this.#apiToken = apiToken
+    this.#apiToken = this.#apiToken ?? (await getAPIToken())
 
     const state = new LocalState(this.#projectRoot)
     const siteID = state.get('siteId')
     this.#siteID = siteID
 
-    this.#config = await this.getConfig()
+    const config = await this.getConfig()
+    this.#config = config
 
-    this.#runtime = await getRuntime({
+    const runtime = await getRuntime({
       blobs: Boolean(this.#features.blobs),
       deployID: '0',
       projectRoot: this.#projectRoot,
       siteID: siteID ?? '0',
     })
+    this.#runtime = runtime
+
+    if (this.#features.environmentVariables && siteID) {
+      // TODO: Use proper types for this.
+      await injectEnvVariables({
+        accountSlug: config?.siteInfo?.account_slug,
+        baseVariables: config?.env || {},
+        envAPI: runtime.env,
+        netlifyAPI: config?.api,
+        siteID,
+      })
+    }
   }
 
   async stop() {

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0](https://github.com/netlify/primitives/compare/vite-plugin-v0.2.5...vite-plugin-v0.3.0) (2025-05-23)
+
+
+### Features
+
+* add support for environment variables ([#197](https://github.com/netlify/primitives/issues/197)) ([03878db](https://github.com/netlify/primitives/commit/03878dbfff4e7e379b9d3e4fb6d9d783e66cc2af))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 2.2.2 to 2.3.0
+
 ## [0.2.5](https://github.com/netlify/primitives/compare/vite-plugin-v0.2.4...vite-plugin-v0.2.5) (2025-05-09)
 
 
