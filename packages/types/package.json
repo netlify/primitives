@@ -4,7 +4,7 @@
   "description": "TypeScript definitions for the Netlify platform",
   "type": "module",
   "engines": {
-    "node": ">=16.0.0"
+    "node": "^18.14.0 || >=20"
   },
   "main": "./dist/main.js",
   "types": "./dist/main.d.ts",

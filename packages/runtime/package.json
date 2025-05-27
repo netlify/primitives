@@ -4,7 +4,7 @@
   "description": "Netlify compute runtime",
   "type": "module",
   "engines": {
-    "node": ">=16.0.0"
+    "node": "^18.14.0 || >=20"
   },
   "main": "./dist/main.js",
   "exports": "./dist/main.js",
