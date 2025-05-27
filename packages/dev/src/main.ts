@@ -142,6 +142,7 @@ export class NetlifyDev {
           configHeaders: this.#config?.config.headers,
           projectDir: this.#projectRoot,
           publishDir: this.#config?.config.build.publish ?? undefined,
+          logger: this.#logger,
         })
       : {handle: async (_request: Request, response: Response) => response}
 

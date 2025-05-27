@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { expect, it, vi } from 'vitest'
-import { Fixture } from '@netlify/dev-utils'
+import { Fixture, createMockLogger } from '@netlify/dev-utils'
 
 import { parseHeaders } from './parseHeaders.js'
 
@@ -31,23 +31,19 @@ const headers = [
 ]
 
 it('allows valid syntax', async () => {
-  const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-
   const fixture = new Fixture().withHeadersFile({ headers })
   const directory = await fixture.create()
 
   const headersFile = path.resolve(directory, '_headers')
-  await expect(parseHeaders({ configHeaders: [], headersFiles: [headersFile] })).resolves.not.toThrowError()
+  const logger = { ...createMockLogger(), error: vi.fn() }
+  await expect(parseHeaders({ configHeaders: [], headersFiles: [headersFile], logger })).resolves.not.toThrowError()
 
-  expect(consoleErrorSpy).not.toHaveBeenCalled()
+  expect(logger.error).not.toHaveBeenCalled()
 
-  consoleErrorSpy.mockRestore()
   await fixture.destroy()
 })
 
 it('logs an error without throwing on invalid syntax', async () => {
-  const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-
   const fixture = new Fixture().withFile(
     '_invalid_headers',
     `
@@ -61,15 +57,17 @@ X-Frame-Thing:
   const directory = await fixture.create()
 
   const invalidHeadersFile = path.resolve(directory, '_invalid_headers')
-  await expect(parseHeaders({ configHeaders: [], headersFiles: [invalidHeadersFile] })).resolves.not.toThrowError()
+  const logger = { ...createMockLogger(), error: vi.fn() }
+  await expect(
+    parseHeaders({ configHeaders: [], headersFiles: [invalidHeadersFile], logger }),
+  ).resolves.not.toThrowError()
 
-  expect(consoleErrorSpy).toHaveBeenCalledOnce()
-  expect(consoleErrorSpy).toHaveBeenCalledWith(`Headers syntax errors:
+  expect(logger.error).toHaveBeenCalledOnce()
+  expect(logger.error).toHaveBeenCalledWith(`Headers syntax errors:
 Could not parse header line 6:
   X-Frame-Thing:
 Missing header value`)
 
-  consoleErrorSpy.mockRestore()
   await fixture.destroy()
 })
 
@@ -78,7 +76,8 @@ it('parses header rules', async () => {
   const directory = await fixture.create()
 
   const headersFile = path.resolve(directory, '_headers')
-  const rules = await parseHeaders({ configHeaders: [], headersFiles: [headersFile] })
+  const logger = createMockLogger()
+  const rules = await parseHeaders({ configHeaders: [], headersFiles: [headersFile], logger })
 
   const normalizedHeaders = rules.map(({ for: path, values }) => ({ for: path, values }))
   expect(normalizedHeaders).toEqual([

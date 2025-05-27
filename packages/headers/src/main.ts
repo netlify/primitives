@@ -1,5 +1,7 @@
 import path from 'node:path'
 
+import type { Logger } from '@netlify/dev-utils'
+
 import { type ConfigHeader, parseHeaders } from './lib/parseHeaders.js'
 import { headersForPath } from './lib/headersForPath.js'
 
@@ -17,16 +19,19 @@ interface HeadersHandlerOptions {
    * Publish directory of the project, relative to the `projectDir`.
    */
   publishDir?: string | undefined
+  logger: Logger
 }
 
 export class HeadersHandler {
   #configHeaders: ConfigHeader[] | undefined
   #configPath: string | undefined
   #headersFiles: string[]
+  #logger: Logger
 
-  constructor({ configPath, configHeaders, projectDir, publishDir }: HeadersHandlerOptions) {
+  constructor({ configPath, configHeaders, projectDir, publishDir, logger }: HeadersHandlerOptions) {
     this.#configHeaders = configHeaders
     this.#configPath = configPath
+    this.#logger = logger
     // Project dir is resolved relative to cwd
     const projectDirHeadersFile = path.resolve(projectDir, HEADERS_FILE_NAME)
     // Publish dir is resolved relative to project dir
@@ -45,6 +50,7 @@ export class HeadersHandler {
       headersFiles: this.#headersFiles,
       configPath: this.#configPath,
       configHeaders: this.#configHeaders,
+      logger: this.#logger,
     })
     const matchingHeaderRules = headersForPath(headerRules, new URL(request.url).pathname)
 
