@@ -34,9 +34,12 @@
   },
   "devDependencies": {
     "@netlify/dev-utils": "2.2.0",
-    "@types/jsonwebtoken": "9.0.9"
+    "@types/jsonwebtoken": "9.0.9",
+    "tsup": "^8.5.0",
+    "vitest": "^3.1.4"
   },
   "dependencies": {
+    "@netlify/redirect-parser": "^15.0.1",
     "cookie": "^1.0.2",
     "jsonwebtoken": "9.0.2",
     "netlify-redirector": "^0.5.0"
