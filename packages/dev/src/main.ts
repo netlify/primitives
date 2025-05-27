@@ -143,7 +143,7 @@ export class NetlifyDev {
           projectDir: this.#projectRoot,
           publishDir: this.#config?.config.build.publish ?? undefined,
         })
-      : null
+      : {handle: async (_request: Request, response: Response) => response}
 
     // Redirects
     const redirects = this.#features.redirects
@@ -178,7 +178,7 @@ export class NetlifyDev {
 
         if (staticMatch) {
           const response = await staticMatch.handle()
-          return headers != null ? headers.handle(request, response) : response
+          return headers.handle(request, response)
         }
       }
 
@@ -204,7 +204,7 @@ export class NetlifyDev {
 
         return async () => {
           const response = await staticMatch.handle()
-          return headers != null ? headers.handle(new Request(redirectMatch.target), response) : response
+          return headers.handle(new Request(redirectMatch.target), response)
         }
       })
       if (response) {
@@ -216,7 +216,7 @@ export class NetlifyDev {
     const staticMatch = await staticFiles?.match(request)
     if (staticMatch) {
       const response = await staticMatch.handle()
-      return headers != null ? headers.handle(request, response) : response
+      return headers.handle(request, response)
     }
   }
 
