@@ -17,7 +17,7 @@
   ],
   "version": "0.0.0",
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky",
     "lint": "eslint --cache --report-unused-disable-directives --ignore-path .gitignore --max-warnings=0 . --fix",
     "lint:ci": "eslint --cache --report-unused-disable-directives --ignore-path .gitignore --max-warnings=0 .",
     "format": "prettier --write .",
