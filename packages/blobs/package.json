@@ -48,10 +48,10 @@
     "build": "tsup-node",
     "dev": "tsup-node --watch",
     "prepack": "npm run build",
-    "test": "run-s build test:dev",
+    "test": "run-s build test:ci",
     "test:dev": "run-s build test:dev:*",
     "test:ci": "run-s build test:ci:*",
-    "test:dev:vitest": "vitest run",
+    "test:dev:vitest": "vitest",
     "test:dev:vitest:watch": "vitest watch",
     "test:ci:vitest": "vitest run",
     "publint": "npx -y publint --strict"
