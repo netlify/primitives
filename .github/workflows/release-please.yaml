@@ -35,7 +35,7 @@ jobs:
         if: ${{ steps.release.outputs.releases_created }}
       - name: Build packages
         if: ${{ steps.release.outputs.releases_created }}
-        run: npm run build -ws
+        run: npm run build --workspaces=true
 
       # Publishing packages in topological order, as defined in `package.json`.
       - run: npm publish packages/types/ --provenance --access=public
@@ -49,7 +49,7 @@ jobs:
       - run: npm publish packages/runtime-utils/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/runtime-utils--release_created'] }}
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}          
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/blobs/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/blobs--release_created'] }}
         env:
@@ -81,8 +81,8 @@ jobs:
       - run: npm publish packages/vite-plugin/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/vite-plugin--release_created'] }}
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}          
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/otel/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/otel--release_created'] }}
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}          
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
