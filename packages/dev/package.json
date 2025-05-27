@@ -57,7 +57,7 @@
     "@netlify/config": "^23.0.7",
     "@netlify/dev-utils": "2.2.0",
     "@netlify/functions": "3.1.10",
-    "@netlify/headers": "^0.0.0",
+    "@netlify/headers": "0.0.0",
     "@netlify/redirects": "1.1.4",
     "@netlify/runtime": "2.2.2",
     "@netlify/static": "1.1.4"
