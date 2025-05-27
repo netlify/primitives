@@ -94,7 +94,6 @@
     "source-map-support": "^0.5.21"
   },
   "devDependencies": {
-    "@netlify/eslint-config-node": "^7.0.1",
     "@types/semver": "^7.5.8",
     "@types/source-map-support": "^0.5.10",
     "npm-run-all2": "^5.0.0",

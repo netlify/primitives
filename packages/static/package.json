@@ -33,7 +33,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "2.2.0",
+    "@netlify/dev-utils": "^2.2.0",
     "@types/mime-types": "^2.1.4"
   },
   "dependencies": {
