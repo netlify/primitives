@@ -1,4 +1,4 @@
-name: Build
+name: Test
 on:
   # Ensure GitHub actions are not run twice for same commits
   push:
