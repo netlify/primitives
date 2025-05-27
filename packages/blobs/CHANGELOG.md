@@ -1,5 +1,21 @@
 # Changelog
 
+## [9.1.2](https://github.com/netlify/primitives/compare/blobs-v9.1.1...blobs-v9.1.2) (2025-05-23)
+
+
+### Bug Fixes
+
+* pass through server port when configured ([#184](https://github.com/netlify/primitives/issues/184)) ([ed092cf](https://github.com/netlify/primitives/commit/ed092cf14f75b4d4b3110924c103a57570a5b6ab))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 2.1.1 to 2.2.0
+  * devDependencies
+    * @netlify/types bumped from 1.1.1 to 1.2.0
+
 ## [9.1.1](https://github.com/netlify/primitives/compare/blobs-v9.1.0...blobs-v9.1.1) (2025-05-09)
 
 

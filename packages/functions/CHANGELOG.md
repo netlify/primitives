@@ -1,5 +1,29 @@
 # Changelog
 
+## [3.1.10](https://github.com/netlify/primitives/compare/functions-v3.1.9...functions-v3.1.10) (2025-05-27)
+
+
+### Bug Fixes
+
+* pin monorepo packages ([#205](https://github.com/netlify/primitives/issues/205)) ([353a812](https://github.com/netlify/primitives/commit/353a81275dae3076465daf505c770a9218427376))
+
+## [3.1.9](https://github.com/netlify/primitives/compare/functions-v3.1.8...functions-v3.1.9) (2025-05-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/serverless-functions-api to v1.41.2 ([#201](https://github.com/netlify/primitives/issues/201)) ([fa01004](https://github.com/netlify/primitives/commit/fa010041754e97b97bd1d80ca6d5f1fd4d1fcfb8))
+* pass route to function invocation ([#202](https://github.com/netlify/primitives/issues/202)) ([7bb9396](https://github.com/netlify/primitives/commit/7bb939649dede2fae6642f724e3491dc598621b6))
+* use ephemeral directories to serve functions ([#199](https://github.com/netlify/primitives/issues/199)) ([a749e26](https://github.com/netlify/primitives/commit/a749e2600c1245dbe7f1401ebd020a862cb8f734))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^9.1.1 to ^9.1.2
+    * @netlify/dev-utils bumped from 2.1.1 to 2.2.0
+
 ## [3.1.8](https://github.com/netlify/primitives/compare/functions-v3.1.7...functions-v3.1.8) (2025-05-09)
 
 
