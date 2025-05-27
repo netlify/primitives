@@ -101,7 +101,7 @@ export class NetlifyCache implements Cache {
     await Promise.allSettled(requests.map((request) => this.add(request)))
   }
 
-  // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
+   
   async delete(request: RequestInfo | URL) {
     const context = this.#getContext({ operation: Operation.Delete })
 
@@ -117,7 +117,6 @@ export class NetlifyCache implements Cache {
     return true
   }
 
-  // eslint-disable-next-line class-methods-use-this, require-await, @typescript-eslint/no-unused-vars
   async keys(_request?: Request | URL) {
     // Not implemented.
     return []
@@ -151,7 +150,6 @@ export class NetlifyCache implements Cache {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async matchAll(request?: RequestInfo | URL, _options?: CacheQueryOptions): Promise<readonly Response[]> {
     if (!request) {
       return []

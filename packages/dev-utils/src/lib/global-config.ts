@@ -9,14 +9,14 @@ import { sync as writeFileAtomicSync } from 'write-file-atomic'
 import { getLegacyPathInHome, getPathInHome } from './paths.js'
 
 type ConfigStoreOptions<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   T extends Record<string, any>,
 > = {
   defaults?: T | undefined
 }
 
 export class GlobalConfigStore<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   T extends Record<string, any> = Record<string, any>,
 > {
   #storagePath: string
@@ -41,7 +41,7 @@ export class GlobalConfigStore<
   }
 
   public get(key: string): T[typeof key] {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+     
     return dot.getProperty(this.getConfig(), key)
   }
 

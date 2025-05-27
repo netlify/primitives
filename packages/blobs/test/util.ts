@@ -7,7 +7,7 @@ export const base64Encode = (input: string | object) => {
 }
 
 export const streamToString = async function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const chunks: Array<any> = []
 
   for await (const chunk of stream) {

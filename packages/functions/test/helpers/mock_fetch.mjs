@@ -28,7 +28,7 @@ export class MockFetch {
   }
 
   get fetcher() {
-    // eslint-disable-next-line require-await
+     
     return async (...args) => {
       const [url, options] = args
       const headers = options?.headers

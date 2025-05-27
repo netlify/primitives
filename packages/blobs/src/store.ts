@@ -107,7 +107,7 @@ export class Store {
   async get(key: string, opts: GetOptions): Promise<string>
   async get(key: string, { type }: GetOptions & { type: 'arrayBuffer' }): Promise<ArrayBuffer>
   async get(key: string, { type }: GetOptions & { type: 'blob' }): Promise<Blob>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   async get(key: string, { type }: GetOptions & { type: 'json' }): Promise<any>
   async get(key: string, { type }: GetOptions & { type: 'stream' }): Promise<ReadableStream>
   async get(key: string, { type }: GetOptions & { type: 'text' }): Promise<string>
@@ -185,14 +185,14 @@ export class Store {
     options: { type: 'blob' } & GetWithMetadataOptions,
   ): Promise<({ data: Blob } & GetWithMetadataResult) | null>
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
+   
 
   async getWithMetadata(
     key: string,
     options: { type: 'json' } & GetWithMetadataOptions,
   ): Promise<({ data: any } & GetWithMetadataResult) | null>
 
-  /* eslint-enable @typescript-eslint/no-explicit-any */
+   
 
   async getWithMetadata(
     key: string,
@@ -276,7 +276,6 @@ export class Store {
 
     // We can't use `async/await` here because that would make the signature
     // incompatible with one of the overloads.
-    // eslint-disable-next-line promise/prefer-await-to-then
     return collectIterator(iterator).then((items) =>
       items.reduce(
         (acc, item) => ({

@@ -64,7 +64,7 @@ export class MockFetch {
   }
 
   get fetch() {
-    // eslint-disable-next-line require-await
+     
     return async (...args: Parameters<typeof globalThis.fetch>) => {
       const [reqOrURL, options] = args
       const url = (reqOrURL instanceof Request ? reqOrURL.url : reqOrURL).toString()

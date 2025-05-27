@@ -30,7 +30,7 @@ interface PurgeAPIPayload {
   site_slug?: string
 }
 
-// eslint-disable-next-line complexity
+ 
 export const purgeCache = async (options: PurgeCacheOptions = {}) => {
   if (globalThis.fetch === undefined) {
     throw new Error(

@@ -34,9 +34,7 @@ test('Injects the metadata object into a synchronous handler', async () => {
     body: ':thumbsup:',
     statusCode: 200,
   }
-  // eslint-disable-next-line promise/prefer-await-to-callbacks
   const myHandler: BaseHandler = (event, context, callback) => {
-    // eslint-disable-next-line n/callback-return, promise/prefer-await-to-callbacks
     callback?.(null, originalResponse)
   }
   const response = await invokeLambda(builder(myHandler))
@@ -167,7 +165,7 @@ test('Does not pass query parameters to the wrapped handler', async () => {
     body: ':thumbsup:',
     statusCode: 200,
   }
-  // eslint-disable-next-line require-await
+   
   const myHandler = async (event: HandlerEvent) => {
     expect(event.multiValueQueryStringParameters).toStrictEqual({})
     expect(event.queryStringParameters).toStrictEqual({})

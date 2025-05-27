@@ -45,7 +45,6 @@ test('Calls the purge API endpoint and returns `undefined` if the operation was 
     response: new Response(null, { status: 202 }),
     url: `https://api.netlify.com/api/v1/purge`,
   })
-  // eslint-disable-next-line unicorn/consistent-function-scoping
   const myFunction = async () => {
     await purgeCache()
   }
@@ -80,7 +79,6 @@ test('Throws if the API response does not have a successful status code', async 
     response: new Response(null, { status: 500 }),
     url: `https://api.netlify.com/api/v1/purge`,
   })
-  // eslint-disable-next-line unicorn/consistent-function-scoping
   const myFunction = async () => {
     await purgeCache()
   }
@@ -112,7 +110,6 @@ test('Ignores purgeCache if in local dev with no token or site', async () => {
       throw new Error('Unexpected request')
     },
   })
-  // eslint-disable-next-line unicorn/consistent-function-scoping
   const myFunction = async () => {
     await purgeCache()
   }

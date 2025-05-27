@@ -21,7 +21,6 @@ export function listStores(
 
   // We can't use `async/await` here because that would make the signature
   // incompatible with one of the overloads.
-  // eslint-disable-next-line promise/prefer-await-to-then
   return collectIterator(iterator).then((results) => ({ stores: results.flatMap((page) => page.stores) }))
 }
 

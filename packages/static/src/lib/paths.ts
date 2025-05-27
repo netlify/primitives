@@ -6,7 +6,7 @@ const assetExtensionRegExp = /\.(html?|png|jpg|js|css|svg|gif|ico|woff|woff2)$/
 export const getFilePathsForURL = (pathname: string, baseDirectory = '') => {
   const urlVariations = getURLVariations(pathname)
   const possiblePaths = urlVariations.map((urlVariation) => {
-    const parts = urlVariation.split('/').filter(Boolean) as string[]
+    const parts = urlVariation.split('/').filter(Boolean)
 
     return path.resolve.apply(null, [baseDirectory, ...parts])
   })

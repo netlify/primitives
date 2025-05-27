@@ -16,6 +16,6 @@ export interface BuilderResponse extends HandlerResponse {
 }
 
 export interface StreamingResponse extends Omit<HandlerResponse, 'body'> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   body?: string | PipelineSource<any>
 }
