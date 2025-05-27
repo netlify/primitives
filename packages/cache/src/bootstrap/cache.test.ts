@@ -151,6 +151,54 @@ describe('Cache API', () => {
       expect(missResponse).toBeUndefined()
     })
 
+    test('retains request headers, discarding any forbidden ones', async () => {
+      const headers = new Headers()
+      headers.set('content-type', 'text/html')
+      headers.set('x-custom-header', 'foobar')
+
+      const response = new Response('<h1>Hello world</h1>', { headers })
+      const mockFetch = new MockFetch()
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          headers: (headers) => {
+            expect(headers.Authorization).toBe(`Bearer ${token}`)
+            expect(headers['netlify-forwarded-host']).toBe(host)
+            expect(headers['x-custom-header']).toBe('foo')
+            expect(headers['netlify-programmable-store']).toBe('my-cache')
+            expect(headers['netlify-programmable-headers']).toBeUndefined()
+          },
+          response,
+        })
+        .inject()
+      const cache = new NetlifyCache({
+        getContext: ({ operation }) => {
+          expect(operation).toBe(Operation.Read)
+
+          return { host, token, url }
+        },
+        name: 'my-cache',
+        userAgent,
+      })
+
+      const cached = await cache.match(
+        new Request('https://netlify.com', {
+          headers: {
+            'X-Custom-Header': 'foo',
+            'Netlify-Programmable-Headers': 'forbidden',
+            'Netlify-Programmable-Store': 'not the right store',
+            'Netlify-Forwarded-Host': 'this would break things',
+          },
+        }),
+      )
+
+      mockFetch.restore()
+
+      expect(mockFetch.requests.length).toBe(1)
+
+      expect(cached?.status).toBe(200)
+      expect(await cached?.text()).toBe('<h1>Hello world</h1>')
+    })
+
     test('is a no-op when the `getContext` callback returns `null`', async () => {
       const mockFetch = new MockFetch().inject()
       const cache = new NetlifyCache({

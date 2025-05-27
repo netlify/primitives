@@ -53,6 +53,43 @@ describe('`fetchWithCache`', () => {
     expect(mockFetch.requests.length).toBe(2)
   })
 
+  test('Respects request headers', async () => {
+    const headers = new Headers()
+    headers.set('content-type', 'text/html')
+    headers.set('vary', 'x-custom-header')
+
+    const cachedResponse = new Response('<h1>Hello world</h1>', { headers })
+    const mockFetch = new MockFetch()
+      .post({
+        response: new Response(null, { status: 201 }),
+        url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+      })
+      .get({
+        headers: (headers) => {
+          expect(headers.vary).toBe('x-custom-header')
+        },
+        response: () => cachedResponse,
+        url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+      })
+      .inject()
+    const resourceURL = 'https://netlify.com'
+
+    const cache = await caches.open('')
+    await cache.put(resourceURL, cachedResponse)
+
+    const response = await fetchWithCache(resourceURL, {
+      headers: {
+        vary: 'x-custom-header',
+      },
+    })
+
+    expect(await response.text()).toBe('<h1>Hello world</h1>')
+
+    mockFetch.restore()
+
+    expect(mockFetch.requests.length).toBe(2)
+  })
+
   test('Throws when used with a method other than GET', async () => {
     const mockFetch = new MockFetch().inject()
     const resourceURL = 'https://netlify.com'
@@ -103,7 +140,7 @@ describe('`fetchWithCache`', () => {
           url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
           response: () => new Response('<h1>Hello world</h1>', { headers }),
         })
-        .get({ url: 'https://netlify.com', response: new Response('<h1>Hello world</h1>', { headers }) })
+        .get({ url: 'https://netlify.com/', response: new Response('<h1>Hello world</h1>', { headers }) })
         .inject()
       const resourceURL = 'https://netlify.com'
 
@@ -152,7 +189,7 @@ describe('`fetchWithCache`', () => {
           response: new Response('<h1>Hello world</h1>', { headers }),
         })
         .get({
-          url: 'https://netlify.com',
+          url: 'https://netlify.com/',
           response: new Response('<h1>Hello world</h1>', { headers }),
         })
         .inject()
@@ -218,7 +255,7 @@ describe('`fetchWithCache`', () => {
           response: new Response('<h1>Hello world</h1>', { headers }),
         })
         .get({
-          url: 'https://netlify.com',
+          url: 'https://netlify.com/',
           response: new Response('<h1>Hello world</h1>', { headers }),
         })
         .inject()
@@ -253,7 +290,7 @@ describe('`fetchWithCache`', () => {
         response: new Response(html),
       })
       .get({
-        url: 'https://netlify.com',
+        url: 'https://netlify.com/',
         response: new Response(html),
       })
       .inject()

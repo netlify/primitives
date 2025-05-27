@@ -11,12 +11,17 @@ const allowedProtocols = new Set(['http:', 'https:'])
 // sent to the API.
 const discardedHeaders = new Set(['cookie', 'content-encoding', 'content-length'])
 
+// Headers with these prefixes will be discarded from requests when doing cache
+// lookups; allowing clients to set them could lead to unexpected behavior.
+const forbiddenHeaderPrefixes = ['netlify-programmable-', 'x-nf-']
+
 type NetlifyCacheOptions = EnvironmentOptions & {
   name: string
 }
 
 const getInternalHeaders = Symbol('getInternalHeaders')
-const serializeResourceHeaders = Symbol('serializeResourceHeaders')
+const serializeRequestHeaders = Symbol('serializeRequestHeaders')
+const serializeResponseHeaders = Symbol('serializeResponseHeaders')
 
 export class NetlifyCache implements Cache {
   #getContext: RequestContextFactory
@@ -47,7 +52,26 @@ export class NetlifyCache implements Cache {
     return headers
   }
 
-  private [serializeResourceHeaders](headers: Headers) {
+  private [serializeRequestHeaders](headers: Headers) {
+    const headersMap: Record<string, string> = {}
+
+    headers.forEach((value, key) => {
+      const normalizedKey = key.toLowerCase()
+
+      // Discard any internal headers that the client should not be setting.
+      for (const prefix of forbiddenHeaderPrefixes) {
+        if (normalizedKey.startsWith(prefix)) {
+          return
+        }
+      }
+
+      headersMap[normalizedKey] = value
+    })
+
+    return headersMap
+  }
+
+  private [serializeResponseHeaders](headers: Headers) {
     const headersMap: Record<string, string[]> = {}
 
     headers.forEach((value, key) => {
@@ -110,7 +134,10 @@ export class NetlifyCache implements Cache {
       const resourceURL = extractAndValidateURL(request)
       const cacheURL = `${context.url}/${toCacheKey(resourceURL)}`
       const response = await fetch(cacheURL, {
-        headers: this[getInternalHeaders](context),
+        headers: {
+          ...(request instanceof Request ? this[serializeRequestHeaders](request.headers) : {}),
+          ...this[getInternalHeaders](context),
+        },
         method: 'GET',
       })
 
@@ -164,7 +191,7 @@ export class NetlifyCache implements Cache {
       body: response.body,
       headers: {
         ...this[getInternalHeaders](context),
-        [HEADERS.ResourceHeaders]: this[serializeResourceHeaders](response.headers),
+        [HEADERS.ResourceHeaders]: this[serializeResponseHeaders](response.headers),
         [HEADERS.ResourceStatus]: response.status.toString(),
       },
       // @ts-expect-error https://github.com/whatwg/fetch/pull/1457
