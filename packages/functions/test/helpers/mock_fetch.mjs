@@ -1,4 +1,4 @@
-import assert from "node:assert"
+import assert from 'node:assert'
 
 export class MockFetch {
   constructor() {

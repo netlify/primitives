@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev-utils",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "TypeScript utilities for the local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -56,14 +56,13 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@whatwg-node/server": "^0.9.60",
+    "@whatwg-node/server": "^0.10.0",
     "chokidar": "^4.0.1",
     "decache": "^4.6.2",
     "dot-prop": "9.0.0",
     "env-paths": "^3.0.0",
     "find-up": "7.0.0",
     "lodash.debounce": "^4.0.8",
-    "netlify": "^13.3.5",
     "parse-gitignore": "^2.0.0",
     "uuid": "^11.1.0",
     "write-file-atomic": "^6.0.0"

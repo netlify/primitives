@@ -88,6 +88,158 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
 
+    test('Headers rules matching a static file are applied', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+           publish = "public"
+           [[headers]]
+           for = "/hello.txt"
+           [headers.values]
+           "Vary" = "User-Agent"
+           `,
+        )
+        .withHeadersFile({
+          pathPrefix: 'public',
+          headers: [{ path: '/hello.txt', headers: ['Cache-Control: max-age=42'] }],
+        })
+        .withFile('public/hello.txt', 'Hello from hello.txt')
+        .withFile('public/another-path.txt', 'Hello from another-path.txt')
+      const directory = await fixture.create()
+      const req = new Request('https://site.netlify/hello.txt')
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+      })
+      await dev.start()
+
+      const matchRes = await dev.handle(req)
+
+      expect(await matchRes?.text()).toBe('Hello from hello.txt')
+      expect(Object.fromEntries(matchRes?.headers?.entries() ?? [])).toMatchObject({
+        'cache-control': 'max-age=42',
+        vary: 'User-Agent',
+      })
+
+      const noMatchRes = await dev.handle(new Request('https://site.netlify/another-path.txt'))
+      expect(await noMatchRes?.text()).toBe('Hello from another-path.txt')
+      expect(Object.fromEntries(noMatchRes?.headers?.entries() ?? [])).not.toMatchObject({
+        'cache-control': 'max-age=42',
+        vary: 'User-Agent',
+      })
+
+      await fixture.destroy()
+    })
+
+    test('Headers rules matching target of a rewrite to a static file are applied', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+           publish = "public"
+           [[headers]]
+           for = "/from"
+           [headers.values]
+           "X-Custom" = "value for from rule"
+           "X-Custom-From" = "another value for from rule"
+           [[headers]]
+           for = "/to.txt"
+           [headers.values]
+           "X-Custom" = "value for to rule"
+           `,
+        )
+        .withFile('public/_redirects', `/from  /to.txt  200`)
+        .withFile('public/to.txt', `to.txt content`)
+      const directory = await fixture.create()
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+      })
+      await dev.start()
+
+      const directRes = await dev.handle(new Request('https://site.netlify/to.txt'))
+      expect(await directRes?.text()).toBe('to.txt content')
+      expect(directRes?.headers.get('X-Custom')).toBe('value for to rule')
+      expect(directRes?.headers.get('X-Custom-From')).toBeNull()
+
+      const rewriteRes = await dev.handle(new Request('https://site.netlify/from'))
+      expect(await rewriteRes?.text()).toBe('to.txt content')
+      expect(rewriteRes?.headers.get('X-Custom')).toBe('value for to rule')
+      expect(rewriteRes?.headers.get('X-Custom-From')).toBeNull()
+
+      await fixture.destroy()
+    })
+
+    test('Headers rules matching a static file that shadows a function are applied', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+           publish = "public"
+           [[headers]]
+           for = "/shadowed-path.html"
+           [headers.values]
+           "X-Custom-Header" = "custom-value"
+           `,
+        )
+        .withFile('public/shadowed-path.html', 'Hello from the static file')
+        .withFile(
+          'netlify/functions/shadowed-path.mjs',
+          `export default async () => new Response("Hello from the function");
+           export const config = { path: "/shadowed-path.html", preferStatic: true };
+          `,
+        )
+      const directory = await fixture.create()
+      const req = new Request('https://site.netlify/shadowed-path.html')
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+      })
+      await dev.start()
+
+      const res = await dev.handle(req)
+      expect(await res?.text()).toBe('Hello from the static file')
+      expect(Object.fromEntries(res?.headers?.entries() ?? [])).toMatchObject({
+        'x-custom-header': 'custom-value',
+      })
+
+      await fixture.destroy()
+    })
+
+    test('Headers rules matching an unshadowed function on a custom path are not applied', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+           publish = "public"
+           [[headers]]
+           for = "/hello.html"
+           [headers.values]
+           "X-Custom-Header" = "custom-value"
+           `,
+        )
+        .withFile('public/hello.html', 'Hello from the static file')
+        .withFile(
+          'netlify/functions/hello.mjs',
+          `export default async () => new Response("Hello from the function");
+           export const config = { path: "/hello.html" };
+          `,
+        )
+      const directory = await fixture.create()
+      const req = new Request('https://site.netlify/hello.html')
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+      })
+      await dev.start()
+
+      const res = await dev.handle(req)
+      expect(await res?.text()).toBe('Hello from the function')
+      expect(res?.headers.get('x-custom-header')).toBeNull()
+
+      await fixture.destroy()
+    })
+
+    // TODO(FRB-1834): Implement this test when edge functions are supported
+    test.todo('Headers rules matching a path are not applied to edge function responses')
+
     test('Invoking a function, updating its contents and invoking it again', async () => {
       let fixture = new Fixture()
         .withFile(

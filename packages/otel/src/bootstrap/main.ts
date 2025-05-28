@@ -1,13 +1,13 @@
 import { GET_TRACER, SHUTDOWN_TRACERS } from '../constants.js'
 
 export const createTracerProvider = async (options: {
-  headers: Headers,
-  serviceName: string,
-  serviceVersion: string,
-  deploymentEnvironment: string,
-  siteUrl: string,
-  siteId: string,
-  siteName: string,
+  headers: Headers
+  serviceName: string
+  serviceVersion: string
+  deploymentEnvironment: string
+  siteUrl: string
+  siteId: string
+  siteName: string
 }) => {
   if (!options.headers.has('x-nf-enable-tracing')) {
     return
@@ -52,7 +52,7 @@ export const createTracerProvider = async (options: {
 
       const { default: pkg } = await import('../../package.json', { with: { type: 'json' } })
       return new SugaredTracer(trace.getTracer(pkg.name, pkg.version))
-    }
+    },
   })
 
   Object.defineProperty(globalThis, SHUTDOWN_TRACERS, {
@@ -61,7 +61,6 @@ export const createTracerProvider = async (options: {
     writable: false,
     value: async () => {
       return await nodeTracerProvider.shutdown()
-    }
+    },
   })
 }
-

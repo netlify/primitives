@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.0.0](https://github.com/netlify/primitives/compare/dev-utils-v2.2.0...dev-utils-v3.0.0) (2025-05-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210))
+
+### Features
+
+* add support for headers config ([#200](https://github.com/netlify/primitives/issues/200)) ([dca313e](https://github.com/netlify/primitives/commit/dca313ec82980231724a2d801bcc739df1d27924))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @whatwg-node/server to ^0.10.0 ([#214](https://github.com/netlify/primitives/issues/214)) ([b3ea166](https://github.com/netlify/primitives/commit/b3ea1661c63b223f8c0722910ae76ee936f754b4))
+* remove unused dependencies, add undeclared dependencies ([#230](https://github.com/netlify/primitives/issues/230)) ([180546a](https://github.com/netlify/primitives/commit/180546aa03b569000ed52cafb07014e9a4c76a1a))
+
+
+### Build System
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210)) ([5604545](https://github.com/netlify/primitives/commit/56045450d0f6c24988a8956c1946209bda4502bc))
+
 ## [2.2.0](https://github.com/netlify/primitives/compare/dev-utils-v2.1.1...dev-utils-v2.2.0) (2025-05-23)
 
 

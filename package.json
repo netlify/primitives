@@ -8,6 +8,7 @@
     "packages/blobs",
     "packages/cache",
     "packages/functions",
+    "packages/headers",
     "packages/redirects",
     "packages/runtime",
     "packages/static",
@@ -26,19 +27,8 @@
   "keywords": [],
   "license": "ISC",
   "devDependencies": {
-    "@commitlint/cli": "^19.0.0",
-    "@commitlint/config-conventional": "^19.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "ci-info": "^4.0.0",
     "eslint": "^9.0.0",
-    "eslint-config-prettier": "^10.0.0",
-    "eslint-plugin-import": "^2.26.0",
     "husky": "^9.0.0",
-    "lint-staged": "^15.0.0",
     "prettier": "^3.0.0"
-  },
-  "lint-staged": {
-    "!(packages/*/tests/**/fixtures/**/*)*.+(j|t)s": "eslint --ignore-path .gitignore --cache --fix",
-    "*": "prettier --write --ignore-unknown"
   }
 }
