@@ -6,7 +6,7 @@ on:
     types: [opened, synchronize, reopened]
   merge_group:
 jobs:
-  test:
+  format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
