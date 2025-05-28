@@ -30,7 +30,6 @@ interface PurgeAPIPayload {
   site_slug?: string
 }
 
- 
 export const purgeCache = async (options: PurgeCacheOptions = {}) => {
   if (globalThis.fetch === undefined) {
     throw new Error(

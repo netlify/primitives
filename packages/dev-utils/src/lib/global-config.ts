@@ -8,17 +8,11 @@ import { sync as writeFileAtomicSync } from 'write-file-atomic'
 
 import { getLegacyPathInHome, getPathInHome } from './paths.js'
 
-type ConfigStoreOptions<
-   
-  T extends Record<string, any>,
-> = {
+type ConfigStoreOptions<T extends Record<string, any>> = {
   defaults?: T | undefined
 }
 
-export class GlobalConfigStore<
-   
-  T extends Record<string, any> = Record<string, any>,
-> {
+export class GlobalConfigStore<T extends Record<string, any> = Record<string, any>> {
   #storagePath: string
 
   public constructor(options: ConfigStoreOptions<T> = {}) {
@@ -41,7 +35,6 @@ export class GlobalConfigStore<
   }
 
   public get(key: string): T[typeof key] {
-     
     return dot.getProperty(this.getConfig(), key)
   }
 

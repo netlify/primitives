@@ -101,7 +101,6 @@ export class NetlifyCache implements Cache {
     await Promise.allSettled(requests.map((request) => this.add(request)))
   }
 
-   
   async delete(request: RequestInfo | URL) {
     const context = this.#getContext({ operation: Operation.Delete })
 

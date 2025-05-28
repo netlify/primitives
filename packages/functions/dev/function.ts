@@ -185,7 +185,6 @@ export class NetlifyFunction {
       return null
     }
 
-     
     return getNextRun(this.schedule!)
   }
 

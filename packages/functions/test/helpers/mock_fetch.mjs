@@ -28,7 +28,6 @@ export class MockFetch {
   }
 
   get fetcher() {
-     
     return async (...args) => {
       const [url, options] = args
       const headers = options?.headers

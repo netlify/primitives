@@ -107,7 +107,7 @@ export class Store {
   async get(key: string, opts: GetOptions): Promise<string>
   async get(key: string, { type }: GetOptions & { type: 'arrayBuffer' }): Promise<ArrayBuffer>
   async get(key: string, { type }: GetOptions & { type: 'blob' }): Promise<Blob>
-   
+
   async get(key: string, { type }: GetOptions & { type: 'json' }): Promise<any>
   async get(key: string, { type }: GetOptions & { type: 'stream' }): Promise<ReadableStream>
   async get(key: string, { type }: GetOptions & { type: 'text' }): Promise<string>
@@ -185,14 +185,10 @@ export class Store {
     options: { type: 'blob' } & GetWithMetadataOptions,
   ): Promise<({ data: Blob } & GetWithMetadataResult) | null>
 
-   
-
   async getWithMetadata(
     key: string,
     options: { type: 'json' } & GetWithMetadataOptions,
   ): Promise<({ data: any } & GetWithMetadataResult) | null>
-
-   
 
   async getWithMetadata(
     key: string,

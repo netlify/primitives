@@ -87,7 +87,7 @@ export class LocalState {
       // TODO figure out cleaner way of grabbing ENV vars
       return process.env.NETLIFY_SITE_ID
     }
-     
+
     return getProperty(this.all, key)
   }
 

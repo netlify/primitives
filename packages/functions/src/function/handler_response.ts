@@ -16,6 +16,5 @@ export interface BuilderResponse extends HandlerResponse {
 }
 
 export interface StreamingResponse extends Omit<HandlerResponse, 'body'> {
-   
   body?: string | PipelineSource<any>
 }

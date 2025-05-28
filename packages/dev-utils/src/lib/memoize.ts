@@ -22,7 +22,7 @@ interface MemoizeOptions<T> {
 // This allows us to discard any duplicate filesystem events, while ensuring
 // that actual updates happening during the zip operation will be executed
 // after it finishes (only the last update will run).
- 
+
 export const memoize = <T>({ cache, cacheKey, command }: MemoizeOptions<T>) => {
   if (cache[cacheKey] === undefined) {
     cache[cacheKey] = {
@@ -43,4 +43,3 @@ export const memoize = <T>({ cache, cacheKey, command }: MemoizeOptions<T>) => {
 
   return cache[cacheKey].task
 }
- 

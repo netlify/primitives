@@ -64,7 +64,6 @@ export class MockFetch {
   }
 
   get fetch() {
-     
     return async (...args: Parameters<typeof globalThis.fetch>) => {
       const [reqOrURL, options] = args
       const url = (reqOrURL instanceof Request ? reqOrURL.url : reqOrURL).toString()

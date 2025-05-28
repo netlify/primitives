@@ -165,7 +165,7 @@ test('Does not pass query parameters to the wrapped handler', async () => {
     body: ':thumbsup:',
     statusCode: 200,
   }
-   
+
   const myHandler = async (event: HandlerEvent) => {
     expect(event.multiValueQueryStringParameters).toStrictEqual({})
     expect(event.queryStringParameters).toStrictEqual({})
