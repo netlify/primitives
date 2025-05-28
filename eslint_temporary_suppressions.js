@@ -98,4 +98,10 @@ export default [
       '@typescript-eslint/no-unnecessary-type-assertion': 'off',
     },
   },
+  {
+    files: ['packages/functions/dev/events.ts'],
+    rules: {
+      '@typescript-eslint/no-empty-object-type': 'off',
+    },
+  }
 ]
