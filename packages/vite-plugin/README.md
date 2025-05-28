@@ -1,6 +1,7 @@
 # @netlify/vite-plugin
 
-> [!WARNING] This is an experimental Vite plugin for Netlify. It is under active development and does **not** yet support all Netlify platform features.
+> [!WARNING] This is an experimental Vite plugin for Netlify. It is under active development and does **not** yet
+> support all Netlify platform features.
 
 A Vite plugin that integrates with Netlify's platform features.
 
@@ -14,9 +15,11 @@ npm install @netlify/vite-plugin
 
 The plugin accepts the following options:
 
-- `middleware` (boolean, default: `true`): Attach a Vite middleware that intercepts requests and handles them in the same way as the Netlify production environment
+- `middleware` (boolean, default: `true`): Attach a Vite middleware that intercepts requests and handles them in the
+  same way as the Netlify production environment
 - `blobs`: Configure blob storage functionality
 - `functions`: Configure serverless functions
+- `headers`: Configure response headers
 - `redirects`: Configure URL redirects
 - `staticFiles`: Configure static file serving
 
@@ -29,6 +32,6 @@ import { defineConfig } from 'vite'
 import netlify from '@netlify/vite-plugin'
 
 export default defineConfig({
-  plugins: [netlify()]
+  plugins: [netlify()],
 })
 ```
