@@ -1,5 +1,6 @@
 export { getAPIToken } from './lib/api-token.js'
 export { shouldBase64Encode } from './lib/base64.js'
+export { renderFunctionErrorPage } from './lib/errors.js'
 export { DevEvent, DevEventHandler } from './lib/event.js'
 export { ensureNetlifyIgnore } from './lib/gitignore.js'
 export { headers, toMultiValueHeaders } from './lib/headers.js'

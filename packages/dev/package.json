@@ -55,9 +55,11 @@
     "@netlify/blobs": "9.1.2",
     "@netlify/config": "^23.0.7",
     "@netlify/dev-utils": "2.2.0",
+    "@netlify/edge-functions": "2.12.0",
     "@netlify/functions": "3.1.10",
     "@netlify/redirects": "1.1.4",
     "@netlify/runtime": "2.2.2",
-    "@netlify/static": "1.1.4"
+    "@netlify/static": "1.1.4",
+    "ulid": "^3.0.0"
   }
 }

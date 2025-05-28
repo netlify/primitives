@@ -58,6 +58,10 @@ jobs:
         if: ${{ steps.release.outputs['packages/cache--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish packages/edge-functions/ --provenance --access=public
+        if: ${{ steps.release.outputs['packages/edge-functions--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/functions/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/functions--release_created'] }}
         env:

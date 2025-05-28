@@ -34,7 +34,6 @@ const { clientContext, entryFilePath, environment = {}, event, timeoutMs } = wor
 for (const key in environment) {
   process.env[key] = environment[key]
 }
-
 const lambdaFunc = await import(entryFilePath)
 const invocationResult = /** @type {HandlerResponse} */ (
   await lambdaLocal.execute({

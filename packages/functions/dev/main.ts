@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import type { FunctionBuildCache, NetlifyFunction } from './function.js'
+import type { FunctionBuildCache, InvocationError, NetlifyFunction } from './function.js'
 import { FunctionsRegistry, type FunctionRegistryOptions } from './registry.js'
 import { headersObjectFromWebHeaders } from './runtimes/nodejs/lambda.js'
 import { buildClientContext } from './server/client-context.js'
@@ -32,6 +32,7 @@ type FunctionsHandlerOptions = FunctionRegistryOptions & {
 export class FunctionsHandler {
   private accountID?: string
   private buildCache: FunctionBuildCache
+  private globalBuildDirectory: string
   private registry: FunctionsRegistry
   private scan: Promise<void>
   private siteID?: string
@@ -41,13 +42,14 @@ export class FunctionsHandler {
 
     this.accountID = accountId
     this.buildCache = {}
+    this.globalBuildDirectory = registryOptions.destPath
     this.registry = registry
     this.scan = registry.scan([userFunctionsPath])
     this.siteID = siteId
   }
 
-  private async invoke(request: Request, route: string | undefined, func: NetlifyFunction) {
-    // TODO: Wtf?
+  private async invoke(request: Request, route: string | undefined, func: NetlifyFunction, buildDirectory?: string) {
+    // TODO: Revisit this logic that was copied over from the CLI.
     let remoteAddress = request.headers.get('x-forwarded-for') || ''
     remoteAddress =
       remoteAddress
@@ -71,6 +73,7 @@ export class FunctionsHandler {
       // Background functions do not receive a clientContext
       await func.invoke({
         buildCache: this.buildCache,
+        buildDirectory: buildDirectory ?? this.globalBuildDirectory,
         request,
         route,
       })
@@ -93,6 +96,7 @@ export class FunctionsHandler {
 
       return await func.invoke({
         buildCache: this.buildCache,
+        buildDirectory: buildDirectory ?? this.globalBuildDirectory,
         clientContext,
         request: newRequest,
         route,
@@ -101,13 +105,14 @@ export class FunctionsHandler {
 
     return await func.invoke({
       buildCache: this.buildCache,
+      buildDirectory: buildDirectory ?? this.globalBuildDirectory,
       clientContext,
       request,
       route,
     })
   }
 
-  async match(request: Request): Promise<FunctionMatch | undefined> {
+  async match(request: Request, buildDirectory?: string): Promise<FunctionMatch | undefined> {
     await this.scan
 
     const url = new URL(request.url)
@@ -145,7 +150,7 @@ export class FunctionsHandler {
     }
 
     return {
-      handle: (request: Request) => this.invoke(request, matchingRoute, func),
+      handle: (request: Request) => this.invoke(request, matchingRoute, func, buildDirectory),
       preferStatic: match.route?.prefer_static ?? false,
     }
   }
