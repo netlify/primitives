@@ -1,5 +1,41 @@
 # Changelog
 
+## [3.0.0](https://github.com/netlify/primitives/compare/dev-v2.3.1...dev-v3.0.0) (2025-05-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210))
+
+### Features
+
+* add support for headers config ([#200](https://github.com/netlify/primitives/issues/200)) ([dca313e](https://github.com/netlify/primitives/commit/dca313ec82980231724a2d801bcc739df1d27924))
+
+
+### Bug Fixes
+
+* remove unused dependencies, add undeclared dependencies ([#230](https://github.com/netlify/primitives/issues/230)) ([180546a](https://github.com/netlify/primitives/commit/180546aa03b569000ed52cafb07014e9a4c76a1a))
+
+
+### Build System
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210)) ([5604545](https://github.com/netlify/primitives/commit/56045450d0f6c24988a8956c1946209bda4502bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.1.2 to 9.1.3
+    * @netlify/dev-utils bumped from 2.2.0 to 3.0.0
+    * @netlify/functions bumped from 3.1.10 to 4.0.0
+    * @netlify/headers bumped from 0.0.0 to 1.0.0
+    * @netlify/redirects bumped from 1.1.4 to 2.0.0
+    * @netlify/runtime bumped from 2.2.2 to 3.0.0
+    * @netlify/static bumped from 1.1.4 to 2.0.0
+  * devDependencies
+    * @netlify/types bumped from 1.2.0 to 2.0.0
+
 ## [2.3.1](https://github.com/netlify/primitives/compare/dev-v2.3.0...dev-v2.3.1) (2025-05-27)
 
 

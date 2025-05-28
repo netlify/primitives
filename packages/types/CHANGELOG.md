@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/netlify/primitives/compare/types-v1.2.0...types-v2.0.0) (2025-05-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210))
+
+### Build System
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210)) ([5604545](https://github.com/netlify/primitives/commit/56045450d0f6c24988a8956c1946209bda4502bc))
+
 ## [1.2.0](https://github.com/netlify/primitives/compare/types-v1.1.1...types-v1.2.0) (2025-05-23)
 
 
