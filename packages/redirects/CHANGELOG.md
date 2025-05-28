@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.0.0](https://github.com/netlify/primitives/compare/redirects-v1.1.4...redirects-v2.0.0) (2025-05-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210))
+
+### Bug Fixes
+
+* remove unused dependencies, add undeclared dependencies ([#230](https://github.com/netlify/primitives/issues/230)) ([180546a](https://github.com/netlify/primitives/commit/180546aa03b569000ed52cafb07014e9a4c76a1a))
+
+
+### Build System
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210)) ([5604545](https://github.com/netlify/primitives/commit/56045450d0f6c24988a8956c1946209bda4502bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 2.2.0 to 3.0.0
+
 ## [1.1.4](https://github.com/netlify/primitives/compare/redirects-v1.1.3...redirects-v1.1.4) (2025-05-23)
 
 
