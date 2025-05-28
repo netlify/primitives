@@ -19,6 +19,7 @@ The plugin accepts the following options:
   same way as the Netlify production environment
 - `blobs`: Configure blob storage functionality
 - `functions`: Configure serverless functions
+- `headers`: Configure response headers
 - `redirects`: Configure URL redirects
 - `staticFiles`: Configure static file serving
 

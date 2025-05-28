@@ -1,7 +1,7 @@
 {
-  "name": "@netlify/static",
-  "version": "1.1.4",
-  "description": "TypeScript implementtion of Netlify's static file serving logic",
+  "name": "@netlify/headers",
+  "version": "0.0.0",
+  "description": "TypeScript implementation of Netlify's headers engine",
   "type": "module",
   "engines": {
     "node": "^18.14.0 || >=20"
@@ -10,35 +10,33 @@
   "exports": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "files": [
-    "dist/**/*",
-    "server.d.ts"
+    "dist/**/*"
   ],
   "scripts": {
     "build": "tsup-node",
-    "prepack": "npm run build",
-    "test": "vitest run",
-    "test:dev": "vitest",
-    "test:ci": "npm run build && vitest run",
     "dev": "tsup-node --watch",
-    "publint": "npx -y publint --strict"
+    "prepack": "npm run build",
+    "publint": "npx -y publint --strict",
+    "test": "vitest run",
+    "test:ci": "npm run build && vitest run",
+    "test:dev": "vitest"
   },
-  "keywords": [],
+  "keywords": [
+    "netlify",
+    "headers"
+  ],
   "license": "MIT",
   "repository": "netlify/primitives",
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
-  "directories": {
-    "test": "test"
-  },
   "devDependencies": {
     "@netlify/dev-utils": "^2.2.0",
-    "@types/mime-types": "^2.1.4",
-    "tsup": "^8.5.0",
+    "@types/node": "^18.19.103",
     "vitest": "^3.1.4"
   },
   "dependencies": {
-    "mime-types": "^2.1.35"
+    "@netlify/headers-parser": "^9.0.0"
   }
 }
