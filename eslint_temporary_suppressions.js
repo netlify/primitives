@@ -81,12 +81,6 @@ export default [
 
   /* Per-file rule suppressions */
   {
-    files: ['packages/cache/src/fetchwithcache.test.ts'],
-    rules: {
-      'prefer-const': 'off',
-    },
-  },
-  {
     files: ['packages/functions/dev/main.ts'],
     rules: {
       '@typescript-eslint/no-misused-spread': 'off',
