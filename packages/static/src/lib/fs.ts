@@ -17,6 +17,6 @@ export const fileExists = async (path: string) => {
 
 export const getReadableStreamFromFile = (path: string) => {
   const stream = createReadStream(path)
-  
+
   return Readable.toWeb(stream) as ReadableStream
 }
