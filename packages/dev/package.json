@@ -48,7 +48,6 @@
   "devDependencies": {
     "@netlify/api": "^14.0.2",
     "@netlify/types": "1.2.0",
-    "tmp-promise": "^3.0.3",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   },

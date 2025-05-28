@@ -33,8 +33,10 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "2.2.0",
-    "@types/mime-types": "^2.1.4"
+    "@netlify/dev-utils": "^2.2.0",
+    "@types/mime-types": "^2.1.4",
+    "tsup": "^8.5.0",
+    "vitest": "^3.1.4"
   },
   "dependencies": {
     "mime-types": "^2.1.35"
