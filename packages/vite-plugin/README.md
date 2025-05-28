@@ -17,6 +17,7 @@ The plugin accepts the following options:
 - `middleware` (boolean, default: `true`): Attach a Vite middleware that intercepts requests and handles them in the same way as the Netlify production environment
 - `blobs`: Configure blob storage functionality
 - `functions`: Configure serverless functions
+- `headers`: Configure response headers
 - `redirects`: Configure URL redirects
 - `staticFiles`: Configure static file serving
 

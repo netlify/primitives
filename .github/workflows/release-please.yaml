@@ -62,6 +62,10 @@ jobs:
         if: ${{ steps.release.outputs['packages/functions--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish packages/headers/ --provenance --access=public
+        if: ${{ steps.release.outputs['packages/headers--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/redirects/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/redirects--release_created'] }}
         env:
