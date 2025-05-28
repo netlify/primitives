@@ -18,7 +18,6 @@ const augmentResponse = (response: BuilderResponse) => {
 
 const wrapHandler =
   (handler: BuilderHandler): Handler =>
-  // eslint-disable-next-line promise/prefer-await-to-callbacks
   (event: HandlerEvent, context: HandlerContext, callback?: HandlerCallback<HandlerResponse>) => {
     if (event.httpMethod !== 'GET' && event.httpMethod !== 'HEAD') {
       return Promise.resolve({
@@ -35,13 +34,10 @@ const wrapHandler =
     }
 
     const wrappedCallback = (error: unknown, response: BuilderResponse) =>
-      // eslint-disable-next-line promise/prefer-await-to-callbacks
       callback ? callback(error, augmentResponse(response)) : null
     const execution = handler(modifiedEvent, context, wrappedCallback)
 
-    // eslint-disable-next-line promise/prefer-await-to-then
     if (typeof execution === 'object' && typeof execution.then === 'function') {
-      // eslint-disable-next-line promise/prefer-await-to-then
       return execution.then(augmentResponse)
     }
 

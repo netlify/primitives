@@ -159,7 +159,6 @@ export class NetlifyFunction {
 
   hasValidName() {
     // same as https://github.com/netlify/bitballoon/blob/fbd7881e6c8e8c48e7a0145da4ee26090c794108/app/models/deploy.rb#L482
-    // eslint-disable-next-line unicorn/better-regex
     return /^[A-Za-z0-9_-]+$/.test(this.name)
   }
 
@@ -186,7 +185,6 @@ export class NetlifyFunction {
       return null
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return getNextRun(this.schedule!)
   }
 

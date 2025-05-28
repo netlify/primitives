@@ -3,7 +3,6 @@ import type { HandlerEvent } from './handler_event.js'
 import type { HandlerResponse, BuilderResponse, StreamingResponse } from './handler_response.js'
 
 export interface HandlerCallback<ResponseType extends HandlerResponse = HandlerResponse> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (error: any, response: ResponseType): void
 }
 

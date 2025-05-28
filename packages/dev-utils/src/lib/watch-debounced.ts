@@ -30,7 +30,7 @@ export const watchDebounced = async (
     depth,
     ignored: [...baseIgnores, ...ignored],
     ignoreInitial: true,
-  }) as FSWatcher
+  })
 
   await once(watcher, 'ready')
 
