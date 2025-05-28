@@ -68,7 +68,7 @@ To use Scheduled Functions, wrap your function handler with the `schedule` funct
   ```ts
   import { schedule } from '@netlify/functions'
 
-  export const handler = schedule("5 4 * * *", async () => {
+  export const handler = schedule('5 4 * * *', async () => {
     console.log("It's 04:05 AM!")
   })
   ```
