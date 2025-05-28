@@ -71,8 +71,6 @@
     "@netlify/dev-utils": "2.2.0",
     "@netlify/types": "1.2.0",
     "npm-run-all2": "^7.0.2",
-    "semver": "^7.5.3",
-    "tmp-promise": "^3.0.3",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   },
