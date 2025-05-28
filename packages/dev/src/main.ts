@@ -144,7 +144,7 @@ export class NetlifyDev {
           publishDir: this.#config?.config.build.publish ?? undefined,
           logger: this.#logger,
         })
-      : {handle: async (_request: Request, response: Response) => response}
+      : { handle: async (_request: Request, response: Response) => response }
 
     // Redirects
     const redirects = this.#features.redirects
