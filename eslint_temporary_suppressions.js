@@ -17,25 +17,6 @@ export default [
       // scenarios to communicate intent.
       'no-empty': 'off',
       '@typescript-eslint/no-empty-function': 'off',
-
-      // We use these globals even though they're technically unstable features on our minimum
-      // supported node version.
-      'n/no-unsupported-features/node-builtins': [
-        'error',
-        {
-          ignores: [
-            'Blob',
-            'fetch',
-            'Headers',
-            'ReadableStream',
-            'Request',
-            'Response',
-            'stream.Readable.fromWeb',
-            'stream.Readable.toWeb',
-            'stream/web',
-          ],
-        },
-      ],
     },
   },
 
