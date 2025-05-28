@@ -16,4 +16,3 @@ export const invokeLambda = (handler, { method = 'GET', ...options } = {}) => {
     resolve(handler(event, {}, callback))
   })
 }
-
