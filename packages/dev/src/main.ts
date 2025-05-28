@@ -5,6 +5,7 @@ import process from 'node:process'
 import { resolveConfig } from '@netlify/config'
 import { ensureNetlifyIgnore, getAPIToken, LocalState, type Logger } from '@netlify/dev-utils'
 import { FunctionsHandler } from '@netlify/functions/dev'
+import { ImageHandler } from '@netlify/images'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 
@@ -37,6 +38,15 @@ export interface Features {
    * {@link} https://docs.netlify.com/functions/overview/
    */
   functions?: {
+    enabled: boolean
+  }
+
+  /**
+   * Configuration options for Netlify Image CDN.
+   *
+   * {@link} https://docs.netlify.com/image-cdn/overview/
+   */
+  images?: {
     enabled: boolean
   }
 
@@ -78,6 +88,7 @@ export class NetlifyDev {
     blobs: boolean
     environmentVariables: boolean
     functions: boolean
+    images: boolean
     redirects: boolean
     static: boolean
   }
@@ -99,6 +110,7 @@ export class NetlifyDev {
       blobs: options.blobs?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
+      images: options.images?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
       static: options.staticFiles?.enabled !== false,
     }
@@ -120,6 +132,12 @@ export class NetlifyDev {
           siteId: this.#siteID,
           timeouts: {},
           userFunctionsPath: userFunctionsPathExists ? userFunctionsPath : undefined,
+        })
+      : null
+
+    const images = this.#features.images
+      ? new ImageHandler({
+          imagesConfig: this.#config?.config.images,
         })
       : null
 
@@ -163,7 +181,13 @@ export class NetlifyDev {
       return functionMatch.handle(request)
     }
 
-    // 2. Check if the request matches a redirect rule.
+    // 2. Check if the request matches Image CDN.
+    const imageMatch = await images?.match(request)
+    if (imageMatch) {
+      return imageMatch.handle()
+    }
+
+    // 3. Check if the request matches a redirect rule.
     const redirectMatch = await redirects?.match(request)
     if (redirectMatch) {
       // If the redirect rule matches a function, we'll serve it. The exception
@@ -184,7 +208,7 @@ export class NetlifyDev {
       }
     }
 
-    // 3. Check if the request matches a static file.
+    // 4. Check if the request matches a static file.
     const staticMatch = await staticFiles?.match(request)
     if (staticMatch) {
       return staticMatch.handle()

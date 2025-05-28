@@ -1,0 +1,43 @@
+{
+  "name": "@netlify/images",
+  "version": "0.0.0",
+  "description": "TypeScript implementtion of Netlify's Image CDN",
+  "type": "module",
+  "engines": {
+    "node": "^18.14.0 || >=20"
+  },
+  "main": "./dist/main.js",
+  "exports": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "files": [
+    "dist/**/*",
+    "server.d.ts"
+  ],
+  "scripts": {
+    "build": "tsup-node",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "test:ci": "npm run build && vitest run",
+    "dev": "tsup-node --watch",
+    "publint": "npx -y publint --strict"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "repository": "netlify/primitives",
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  },
+  "author": "Netlify Inc.",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "@netlify/dev-utils": "^2.2.0",
+    "tsup": "^8.5.0",
+    "vitest": "^3.1.4"
+  },
+  "dependencies": {
+    "ipx": "^3.0.3"
+  }
+}

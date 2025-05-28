@@ -2,7 +2,9 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "bootstrap-sha": "1e628be35d2ae079b63ec8e98ca0c6831237b677",
   "last-release-sha": "1e628be35d2ae079b63ec8e98ca0c6831237b677",
-  "plugins": ["node-workspace"],
+  "plugins": [
+    "node-workspace"
+  ],
   "release-type": "node",
   "separate-pull-requests": false,
   "packages": {
@@ -11,6 +13,7 @@
     "packages/dev": {},
     "packages/dev-utils": {},
     "packages/functions": {},
+    "packages/images": {},
     "packages/otel": {},
     "packages/redirects": {},
     "packages/runtime": {},

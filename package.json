@@ -8,6 +8,7 @@
     "packages/blobs",
     "packages/cache",
     "packages/functions",
+    "packages/images",
     "packages/redirects",
     "packages/runtime",
     "packages/static",
