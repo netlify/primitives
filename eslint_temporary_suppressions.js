@@ -93,12 +93,6 @@ export default [
     },
   },
   {
-    files: ['packages/dev-utils/src/lib/watch-debounced.ts'],
-    rules: {
-      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-    },
-  },
-  {
     files: ['packages/functions/dev/events.ts'],
     rules: {
       '@typescript-eslint/no-empty-object-type': 'off',
