@@ -1,5 +1,20 @@
 # Changelog
 
+## [9.1.3](https://github.com/netlify/primitives/compare/blobs-v9.1.2...blobs-v9.1.3) (2025-05-28)
+
+
+### Bug Fixes
+
+* remove unused dependencies, add undeclared dependencies ([#230](https://github.com/netlify/primitives/issues/230)) ([180546a](https://github.com/netlify/primitives/commit/180546aa03b569000ed52cafb07014e9a4c76a1a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 2.2.0 to 3.0.0
+    * @netlify/runtime-utils bumped from 1.3.1 to 2.0.0
+
 ## [9.1.2](https://github.com/netlify/primitives/compare/blobs-v9.1.1...blobs-v9.1.2) (2025-05-23)
 
 

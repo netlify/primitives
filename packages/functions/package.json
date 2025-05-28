@@ -31,7 +31,7 @@
       }
     }
   },
-  "version": "3.1.10",
+  "version": "4.0.0",
   "description": "TypeScript utilities for interacting with Netlify Functions",
   "files": [
     "dist/**/*.js",
@@ -80,8 +80,8 @@
     "test": "test"
   },
   "dependencies": {
-    "@netlify/blobs": "9.1.2",
-    "@netlify/dev-utils": "2.2.0",
+    "@netlify/blobs": "9.1.3",
+    "@netlify/dev-utils": "3.0.0",
     "@netlify/serverless-functions-api": "2.0.2",
     "@netlify/zip-it-and-ship-it": "^12.1.0",
     "cron-parser": "^4.9.0",
@@ -94,12 +94,11 @@
     "source-map-support": "^0.5.21"
   },
   "devDependencies": {
-    "@netlify/eslint-config-node": "^7.0.1",
     "@types/semver": "^7.5.8",
     "@types/source-map-support": "^0.5.10",
     "npm-run-all2": "^5.0.0",
     "semver": "^7.6.3",
-    "tsd": "^0.31.0",
+    "tsd": "^0.32.0",
     "tsup": "^8.0.2",
     "vitest": "^3.0.0"
   },

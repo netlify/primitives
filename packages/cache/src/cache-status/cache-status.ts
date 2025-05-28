@@ -42,14 +42,17 @@ export const parseCacheStatusValue = (value: string) => {
   const parts = value.split(';').map((part) => part.trim())
   const [namePart, ...attributeParts] = parts
   const name = (namePart ?? '').replace(/"/g, '').toLowerCase()
-  const attributes = attributeParts.reduce((acc, part) => {
-    const [key, value = ''] = part.split('=')
+  const attributes = attributeParts.reduce(
+    (acc, part) => {
+      const [key, value = ''] = part.split('=')
 
-    return {
-      ...acc,
-      [key]: value,
-    }
-  }, {} as Record<string, string>)
+      return {
+        ...acc,
+        [key]: value,
+      }
+    },
+    {} as Record<string, string>,
+  )
 
   return {
     attributes,

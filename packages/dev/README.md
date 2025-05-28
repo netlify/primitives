@@ -1,7 +1,6 @@
 # @netlify/dev
 
-> [!WARNING]
-> This module is under active development and does **not** yet support all Netlify platform features.
+> [!WARNING] This module is under active development and does **not** yet support all Netlify platform features.
 
 `@netlify/dev` is a local emulator for the Netlify production environment. While it can be used directly by advanced
 users, it is primarily designed as a foundational library for higher-level tools like the
