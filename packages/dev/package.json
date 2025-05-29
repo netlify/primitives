@@ -60,6 +60,7 @@
     "@netlify/headers": "1.0.0",
     "@netlify/redirects": "2.0.0",
     "@netlify/runtime": "3.0.0",
-    "@netlify/static": "2.0.0"
+    "@netlify/static": "2.0.0",
+    "ulid": "^3.0.0"
   }
 }
