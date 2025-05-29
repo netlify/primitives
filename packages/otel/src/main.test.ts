@@ -22,7 +22,7 @@ describe('`getTracer` export', () => {
 })
 
 describe('`shutdownTracers` export', () => {
-  test('Returns undefined ', async () => {
+  test('Returns undefined', async () => {
     await expect(shutdownTracers()).resolves.toBeUndefined()
   })
   test('Returns undefined if tracing has been previously activated', async () => {

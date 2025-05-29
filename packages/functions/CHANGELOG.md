@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.0.0](https://github.com/netlify/primitives/compare/functions-v3.1.10...functions-v4.0.0) (2025-05-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210))
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/serverless-functions-api to v2 ([#190](https://github.com/netlify/primitives/issues/190)) ([5f20b5f](https://github.com/netlify/primitives/commit/5f20b5f75e0bb96e9224bedd7e158230ee688ac5))
+* remove unused dependencies, add undeclared dependencies ([#230](https://github.com/netlify/primitives/issues/230)) ([180546a](https://github.com/netlify/primitives/commit/180546aa03b569000ed52cafb07014e9a4c76a1a))
+
+
+### Build System
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210)) ([5604545](https://github.com/netlify/primitives/commit/56045450d0f6c24988a8956c1946209bda4502bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.1.2 to 9.1.3
+    * @netlify/dev-utils bumped from 2.2.0 to 3.0.0
+
 ## [3.1.10](https://github.com/netlify/primitives/compare/functions-v3.1.9...functions-v3.1.10) (2025-05-27)
 
 

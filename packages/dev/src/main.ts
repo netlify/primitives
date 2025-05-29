@@ -6,6 +6,7 @@ import { resolveConfig } from '@netlify/config'
 import { ensureNetlifyIgnore, getAPIToken, mockLocation, LocalState, type Logger, HTTPServer } from '@netlify/dev-utils'
 import { EdgeFunctionsHandler } from '@netlify/edge-functions/dev'
 import { FunctionsHandler } from '@netlify/functions/dev'
+import { HeadersHandler } from '@netlify/headers'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 
@@ -48,6 +49,15 @@ export interface Features {
    * {@link} https://docs.netlify.com/functions/overview/
    */
   functions?: {
+    enabled: boolean
+  }
+
+  /**
+   * Configuration options for Netlify response headers.
+   *
+   * {@link} https://docs.netlify.com/routing/headers/
+   */
+  headers?: {
     enabled: boolean
   }
 
@@ -99,9 +109,11 @@ export class NetlifyDev {
     edgeFunctions: boolean
     environmentVariables: boolean
     functions: boolean
+    headers: boolean
     redirects: boolean
     static: boolean
   }
+  #headersHandler: HeadersHandler
   #logger: Logger
   #projectRoot: string
   #redirectsHandler?: RedirectsHandler
@@ -126,6 +138,7 @@ export class NetlifyDev {
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
+      headers: options.headers?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
       static: options.staticFiles?.enabled !== false,
     }
@@ -155,7 +168,8 @@ export class NetlifyDev {
         const staticMatch = await this.#staticHandler?.match(request)
 
         if (staticMatch) {
-          return staticMatch.handle()
+          const response = await staticMatch.handle()
+          return headers.handle(request, response)
         }
       }
 
@@ -180,7 +194,12 @@ export class NetlifyDev {
         async (maybeStaticFile: Request) => {
           const staticMatch = await this.#staticHandler?.match(maybeStaticFile)
 
-          return staticMatch?.handle
+          if (!staticMatch) return
+
+          return async () => {
+            const response = await staticMatch.handle()
+            return headers.handle(new Request(redirectMatch.target), response)
+          }
         },
       )
       if (response) {
@@ -191,7 +210,8 @@ export class NetlifyDev {
     // 4. Check if the request matches a static file.
     const staticMatch = await this.#staticHandler?.match(request)
     if (staticMatch) {
-      return staticMatch.handle()
+      const response = await staticMatch.handle()
+      return headers.handle(request, response)
     }
   }
 
@@ -339,6 +359,17 @@ export class NetlifyDev {
         userFunctionsPath: userFunctionsPathExists ? userFunctionsPath : undefined,
       })
     }
+
+    this.#headersHandler = this.#features.redirects
+      ? new RedirectsHandler({
+          configPath: this.#config?.configPath,
+          configRedirects: this.#config?.config.redirects,
+          jwtRoleClaim: '',
+          jwtSecret: '',
+          notFoundHandler,
+          projectDir: this.#projectRoot,
+        })
+      : null
 
     if (this.#features.redirects) {
       this.#redirectsHandler = new RedirectsHandler({

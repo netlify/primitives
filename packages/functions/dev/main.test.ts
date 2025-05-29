@@ -94,9 +94,9 @@ describe('Functions with the v2 API syntax', () => {
     const match = await functions.match(req, destPath)
     expect(match).not.toBeUndefined()
     const res = await match!.handle(req)
-    expect(res!.status).toBe(200)
+    expect(res.status).toBe(200)
 
-    const reader = res!.body!.getReader()
+    const reader = res.body!.getReader()
 
     const firstChunk = await reader.read()
     expect(new TextDecoder().decode(firstChunk.value)).toBe('first chunk')

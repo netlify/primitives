@@ -22,11 +22,10 @@ interface MemoizeOptions<T> {
 // This allows us to discard any duplicate filesystem events, while ensuring
 // that actual updates happening during the zip operation will be executed
 // after it finishes (only the last update will run).
-/* eslint-disable no-param-reassign */
+
 export const memoize = <T>({ cache, cacheKey, command }: MemoizeOptions<T>) => {
   if (cache[cacheKey] === undefined) {
     cache[cacheKey] = {
-      // eslint-disable-next-line promise/prefer-await-to-then
       task: command().finally(() => {
         const entry = cache[cacheKey]
 
@@ -44,4 +43,3 @@ export const memoize = <T>({ cache, cacheKey, command }: MemoizeOptions<T>) => {
 
   return cache[cacheKey].task
 }
-/* eslint-enable no-param-reassign */

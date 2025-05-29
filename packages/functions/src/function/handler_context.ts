@@ -1,6 +1,3 @@
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 // From https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html.
 export interface HandlerContext {
   callbackWaitsForEmptyEventLoop: boolean

@@ -16,7 +16,8 @@ npm install @netlify/types
 
 ## Usage
 
-This package provides TypeScript type definitions for various Netlify platform primitives. Import the types you need in your TypeScript code:
+This package provides TypeScript type definitions for various Netlify platform primitives. Import the types you need in
+your TypeScript code:
 
 ```typescript
 import type { Context } from '@netlify/types'
@@ -32,4 +33,5 @@ The package includes TypeScript definitions for:
 
 ## Contributing
 
-Contributions are welcome! If you encounter any issues or have suggestions for improvements, please open an issue or submit a pull request.
+Contributions are welcome! If you encounter any issues or have suggestions for improvements, please open an issue or
+submit a pull request.

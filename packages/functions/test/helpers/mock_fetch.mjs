@@ -1,4 +1,4 @@
-import assert from "node:assert"
+import assert from 'node:assert'
 
 export class MockFetch {
   constructor() {
@@ -28,7 +28,6 @@ export class MockFetch {
   }
 
   get fetcher() {
-    // eslint-disable-next-line require-await
     return async (...args) => {
       const [url, options] = args
       const headers = options?.headers

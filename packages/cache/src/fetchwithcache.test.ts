@@ -10,7 +10,7 @@ const host = 'host.netlify'
 const url = 'https://example.netlify/.netlify/cache'
 const token = 'mock-token'
 
-let originalCaches = globalThis.caches
+const originalCaches = globalThis.caches
 
 beforeEach(async () => {
   globalThis.caches = new NetlifyCacheStorage({
