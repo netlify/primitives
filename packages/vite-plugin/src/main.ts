@@ -28,14 +28,11 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       const { blobs, edgeFunctions, functions, middleware = true, redirects, staticFiles } = options
       const netlifyDev = new NetlifyDev({
         blobs,
-        edgeFunctions: {
-          ...edgeFunctions,
-          enabled: edgeFunctions?.enabled !== false,
-          originServerAddress: `http://localhost:${port}`,
-        },
+        edgeFunctions,
         functions,
         logger,
         redirects,
+        serverAddress: `http://localhost:${port}`,
         staticFiles,
         projectRoot: viteDevServer.config.root,
       })
