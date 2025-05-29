@@ -113,7 +113,7 @@ export class NetlifyDev {
     redirects: boolean
     static: boolean
   }
-  #headersHandler: HeadersHandler
+  #headersHandler: { handle: HeadersHandler['handle'] }
   #logger: Logger
   #projectRoot: string
   #redirectsHandler?: RedirectsHandler
@@ -143,6 +143,7 @@ export class NetlifyDev {
       static: options.staticFiles?.enabled !== false,
     }
     this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')
+    this.#headersHandler = { handle: async (_request: Request, response: Response) => response }
     this.#logger = options.logger ?? globalThis.console
     this.#server = options.serverAddress
     this.#projectRoot = projectRoot
@@ -169,7 +170,7 @@ export class NetlifyDev {
 
         if (staticMatch) {
           const response = await staticMatch.handle()
-          return headers.handle(request, response)
+          return this.#headersHandler.handle(request, response)
         }
       }
 
@@ -198,7 +199,7 @@ export class NetlifyDev {
 
           return async () => {
             const response = await staticMatch.handle()
-            return headers.handle(new Request(redirectMatch.target), response)
+            return this.#headersHandler.handle(new Request(redirectMatch.target), response)
           }
         },
       )
@@ -211,7 +212,7 @@ export class NetlifyDev {
     const staticMatch = await this.#staticHandler?.match(request)
     if (staticMatch) {
       const response = await staticMatch.handle()
-      return headers.handle(request, response)
+      return this.#headersHandler.handle(request, response)
     }
   }
 
@@ -330,9 +331,7 @@ export class NetlifyDev {
       )
 
       this.#edgeFunctionsHandler = new EdgeFunctionsHandler({
-        // bootstrapURL: 'https://edge.netlify.com/bootstrap/index-combined.ts',
-        bootstrapURL:
-          'file:///Users/eduardoboucas/Sites/netlify/edge-functions-bootstrap/src/bootstrap/index-combined.ts',
+        bootstrapURL: 'https://edge.netlify.com/bootstrap/index-combined.ts',
         configDeclarations: this.#config?.config.edge_functions ?? [],
         directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
         env,
@@ -360,16 +359,15 @@ export class NetlifyDev {
       })
     }
 
-    this.#headersHandler = this.#features.redirects
-      ? new RedirectsHandler({
-          configPath: this.#config?.configPath,
-          configRedirects: this.#config?.config.redirects,
-          jwtRoleClaim: '',
-          jwtSecret: '',
-          notFoundHandler,
-          projectDir: this.#projectRoot,
-        })
-      : null
+    if (this.#features.headers) {
+      this.#headersHandler = new HeadersHandler({
+        configPath: this.#config?.configPath,
+        configHeaders: this.#config?.config.headers,
+        projectDir: this.#projectRoot,
+        publishDir: this.#config?.config.build.publish ?? undefined,
+        logger: this.#logger,
+      })
+    }
 
     if (this.#features.redirects) {
       this.#redirectsHandler = new RedirectsHandler({
