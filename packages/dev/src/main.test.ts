@@ -398,7 +398,7 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
 
-    test.only('Invoking an edge function', async () => {
+    test('Invoking an edge function', async () => {
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
