@@ -31,6 +31,8 @@ describe('Handling requests', () => {
 
       const res = await dev.handle(req)
 
+      await dev.stop()
+
       expect(await res?.text()).toBe('to.html')
 
       await fixture.destroy()
@@ -57,6 +59,8 @@ describe('Handling requests', () => {
 
       const res = await dev.handle(req)
 
+      await dev.stop()
+
       expect(await res?.text()).toBe('from.html')
 
       await fixture.destroy()
@@ -82,6 +86,8 @@ describe('Handling requests', () => {
       await dev.start()
 
       const res = await dev.handle(req)
+
+      await dev.stop()
 
       expect(await res?.text()).toBe('to.html')
 
@@ -114,6 +120,8 @@ describe('Handling requests', () => {
       await dev.start()
 
       const matchRes = await dev.handle(req)
+
+      await dev.stop()
 
       expect(await matchRes?.text()).toBe('Hello from hello.txt')
       expect(Object.fromEntries(matchRes?.headers?.entries() ?? [])).toMatchObject({
@@ -166,6 +174,7 @@ describe('Handling requests', () => {
       expect(rewriteRes?.headers.get('X-Custom')).toBe('value for to rule')
       expect(rewriteRes?.headers.get('X-Custom-From')).toBeNull()
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -201,6 +210,7 @@ describe('Handling requests', () => {
         'x-custom-header': 'custom-value',
       })
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -234,6 +244,7 @@ describe('Handling requests', () => {
       expect(await res?.text()).toBe('Hello from the function')
       expect(res?.headers.get('x-custom-header')).toBeNull()
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -276,6 +287,7 @@ describe('Handling requests', () => {
 
       expect(await res2?.text()).toBe('A new hello from function')
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -304,6 +316,7 @@ describe('Handling requests', () => {
 
       expect(await res?.text()).toBe('hello.html')
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -333,6 +346,7 @@ describe('Handling requests', () => {
 
       expect(await res?.text()).toBe('Hello from function')
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -395,6 +409,7 @@ describe('Handling requests', () => {
       expect(gitIgnoresPost).toContain('# Local Netlify folder')
       expect(gitIgnoresPost).toContain('.netlify')
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -429,6 +444,7 @@ describe('Handling requests', () => {
 
       expect(await res?.text()).toBe('Hello world')
 
+      await dev.stop()
       await fixture.destroy()
     })
   })
@@ -511,6 +527,8 @@ describe('Handling requests', () => {
         await dev.start()
 
         const res = await dev.handle(req)
+
+        await dev.stop()
 
         expect(await res?.json()).toStrictEqual({
           env: {
@@ -647,6 +665,8 @@ describe('Handling requests', () => {
           },
           url: req2URL.toString(),
         })
+
+        await dev.stop()
       })
 
       await fixture.destroy()

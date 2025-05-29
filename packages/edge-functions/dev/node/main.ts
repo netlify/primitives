@@ -11,6 +11,7 @@ import {
   EdgeFunction,
   FunctionConfig,
 } from '@netlify/edge-bundler'
+import { getURL as getBootstrapURL } from '@netlify/edge-functions-bootstrap/version'
 import { base64Encode } from '@netlify/runtime-utils'
 import getAvailablePort from 'get-port'
 
@@ -18,7 +19,6 @@ import type { RunOptions } from '../shared/types.js'
 import { headers } from './headers.js'
 
 interface EdgeFunctionsHandlerOptions {
-  bootstrapURL: string
   configDeclarations: Declaration[]
   directories: string[]
   env: Record<string, string>
@@ -34,7 +34,6 @@ const DENO_SERVER_POLL_TIMEOUT = 3000
 const LOCAL_HOST = '127.0.0.1'
 
 export class EdgeFunctionsHandler {
-  private bootstrapURL: string
   private configDeclarations: Declaration[]
   private directories: string[]
   private geolocation: Geolocation
@@ -44,7 +43,6 @@ export class EdgeFunctionsHandler {
   private siteName?: string
 
   constructor(options: EdgeFunctionsHandlerOptions) {
-    this.bootstrapURL = options.bootstrapURL
     this.configDeclarations = options.configDeclarations
     this.directories = options.directories
     this.geolocation = options.geolocation
@@ -233,7 +231,7 @@ export class EdgeFunctionsHandler {
       versionRange: '^2.2.4',
     })
     const runOptions: RunOptions = {
-      bootstrapURL: this.bootstrapURL,
+      bootstrapURL: await getBootstrapURL(),
       denoPort,
     }
     const denoFlags: string[] = ['--allow-all', '--no-config']
