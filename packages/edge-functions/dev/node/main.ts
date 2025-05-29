@@ -234,7 +234,7 @@ export class EdgeFunctionsHandler {
       bootstrapURL: await getBootstrapURL(),
       denoPort,
     }
-    const denoFlags: string[] = ['--allow-all', '--no-config']
+    const denoFlags: string[] = ['--allow-all', '--no-config', '--quiet']
 
     try {
       await denoBridge.runInBackground(['run', ...denoFlags, denoRunPath, JSON.stringify(runOptions)], processRef, {
