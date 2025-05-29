@@ -1,22 +1,13 @@
 import { Buffer } from 'node:buffer'
 
-import type { FunctionBuildCache, InvocationError, NetlifyFunction } from './function.js'
+import { Geolocation } from '@netlify/dev-utils'
+import type { FunctionBuildCache, NetlifyFunction } from './function.js'
 import { FunctionsRegistry, type FunctionRegistryOptions } from './registry.js'
 import { headersObjectFromWebHeaders } from './runtimes/nodejs/lambda.js'
 import { buildClientContext } from './server/client-context.js'
 
 const CLOCKWORK_USERAGENT = 'Netlify Clockwork'
 const UNLINKED_SITE_MOCK_ID = 'unlinked'
-
-// TODO: Integrate CLI mock geo location logic.
-const mockLocation = {
-  city: 'San Francisco',
-  country: { code: 'US', name: 'United States' },
-  subdivision: { code: 'CA', name: 'California' },
-  longitude: 0,
-  latitude: 0,
-  timezone: 'UTC',
-}
 
 export interface FunctionMatch {
   handle: (req: Request) => Promise<Response>
@@ -25,6 +16,7 @@ export interface FunctionMatch {
 
 type FunctionsHandlerOptions = FunctionRegistryOptions & {
   accountId?: string
+  geolocation: Geolocation
   siteId?: string
   userFunctionsPath?: string
 }
@@ -32,16 +24,18 @@ type FunctionsHandlerOptions = FunctionRegistryOptions & {
 export class FunctionsHandler {
   private accountID?: string
   private buildCache: FunctionBuildCache
+  private geolocation: Geolocation
   private globalBuildDirectory: string
   private registry: FunctionsRegistry
   private scan: Promise<void>
   private siteID?: string
 
-  constructor({ accountId, siteId, userFunctionsPath, ...registryOptions }: FunctionsHandlerOptions) {
+  constructor({ accountId, geolocation, siteId, userFunctionsPath, ...registryOptions }: FunctionsHandlerOptions) {
     const registry = new FunctionsRegistry(registryOptions)
 
     this.accountID = accountId
     this.buildCache = {}
+    this.geolocation = geolocation
     this.globalBuildDirectory = registryOptions.destPath
     this.registry = registry
     this.scan = registry.scan([userFunctionsPath])
@@ -64,7 +58,7 @@ export class FunctionsHandler {
     }
 
     request.headers.set('x-nf-site-id', this.siteID ?? UNLINKED_SITE_MOCK_ID)
-    request.headers.set('x-nf-geo', Buffer.from(JSON.stringify(mockLocation)).toString('base64'))
+    request.headers.set('x-nf-geo', Buffer.from(JSON.stringify(this.geolocation)).toString('base64'))
 
     const { headers: headersObject } = headersObjectFromWebHeaders(request.headers)
     const clientContext = buildClientContext(headersObject) || {}

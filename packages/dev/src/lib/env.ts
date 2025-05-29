@@ -30,11 +30,12 @@ export type EnvironmentVariable = {
   scopes?: (typeof ALL_ENVELOPE_SCOPES)[]
 }
 
-type InjectedEnvironmentVariable = {
+export type InjectedEnvironmentVariable = {
   isInternal: boolean
   originalValue: string | undefined
   overriddenSources: string[]
   usedSource: string
+  value: string
 }
 
 interface InjectEnvironmentVariablesOptions {
@@ -74,6 +75,7 @@ export const injectEnvVariables = async ({
       originalValue: envAPI.get(key),
       overriddenSources,
       usedSource,
+      value: variable.value,
     }
 
     if (!existsInProcess || isInternal) {

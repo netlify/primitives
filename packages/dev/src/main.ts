@@ -3,13 +3,13 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { resolveConfig } from '@netlify/config'
-import { ensureNetlifyIgnore, getAPIToken, LocalState, type Logger, HTTPServer } from '@netlify/dev-utils'
+import { ensureNetlifyIgnore, getAPIToken, mockLocation, LocalState, type Logger, HTTPServer } from '@netlify/dev-utils'
 import { EdgeFunctionsHandler } from '@netlify/edge-functions/dev'
 import { FunctionsHandler } from '@netlify/functions/dev'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 
-import { injectEnvVariables } from './lib/env.js'
+import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
 import { generateRequestID } from './lib/request_id.js'
 import { getRuntime } from './lib/runtime.js'
@@ -31,12 +31,6 @@ export interface Features {
    */
   edgeFunctions?: {
     enabled: boolean
-
-    /**
-     * If your local development setup has its own HTTP server (e.g. Vite), set
-     * its address here.
-     */
-    originServerAddress?: string
   }
 
   /**
@@ -56,6 +50,12 @@ export interface Features {
   functions?: {
     enabled: boolean
   }
+
+  /**
+   * If your local development setup has its own HTTP server (e.g. Vite), set
+   * its address here.
+   */
+  originServerAddress?: string
 
   /**
    * Configuration options for Netlify redirects and rewrites.
@@ -84,7 +84,6 @@ interface NetlifyDevOptions extends Features {
 const notFoundHandler = async () => new Response('Not found', { status: 404 })
 
 type Config = Awaited<ReturnType<typeof resolveConfig>>
-type Runtime = { stop: () => Promise<void> }
 
 export class NetlifyDev {
   #apiHost?: string
@@ -92,7 +91,6 @@ export class NetlifyDev {
   #apiToken?: string
   #cleanupJobs: (() => Promise<void>)[]
   #edgeFunctionsHandler?: EdgeFunctionsHandler
-  #edgeFunctionsOriginServer?: string | HTTPServer
   #functionsHandler?: FunctionsHandler
   #functionsServePath: string
   #config?: Config
@@ -105,6 +103,7 @@ export class NetlifyDev {
     static: boolean
   }
   #logger: Logger
+  #originServer?: string | HTTPServer
   #projectRoot: string
   #redirectsHandler?: RedirectsHandler
   #siteID?: string
@@ -122,7 +121,6 @@ export class NetlifyDev {
 
     this.#apiToken = options.apiToken
     this.#cleanupJobs = []
-    this.#edgeFunctionsOriginServer = options.edgeFunctions?.originServerAddress
     this.#features = {
       blobs: options.blobs?.enabled !== false,
       edgeFunctions: options.edgeFunctions?.enabled !== false,
@@ -133,6 +131,7 @@ export class NetlifyDev {
     }
     this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')
     this.#logger = options.logger ?? globalThis.console
+    this.#originServer = options.originServerAddress
     this.#projectRoot = projectRoot
   }
 
@@ -258,9 +257,29 @@ export class NetlifyDev {
 
     this.#cleanupJobs.push(() => runtime.stop())
 
+    let originServerAddress: string
+
+    // If a custom origin server has been provided, use it. If not, we must
+    // stand up a new HTTP server.
+    if (typeof this.#originServer === 'string') {
+      originServerAddress = this.#originServer
+    } else {
+      const passthroughServer = new HTTPServer(async (req) => {
+        const res = await this.handle(req)
+
+        return res ?? new Response(null, { status: 404 })
+      })
+
+      this.#cleanupJobs.push(() => passthroughServer.stop())
+
+      originServerAddress = await passthroughServer.start()
+    }
+
+    let envVariables: Record<string, InjectedEnvironmentVariable> = {}
+
     if (this.#features.environmentVariables && siteID) {
       // TODO: Use proper types for this.
-      await injectEnvVariables({
+      envVariables = await injectEnvVariables({
         accountSlug: config?.siteInfo?.account_slug,
         baseVariables: config?.env || {},
         envAPI: runtime.env,
@@ -270,29 +289,37 @@ export class NetlifyDev {
     }
 
     if (this.#features.edgeFunctions) {
-      let originServerAddress: string
+      const env = Object.entries(envVariables).reduce(
+        (acc, [key, variable]) => {
+          if (
+            variable.usedSource === 'account' ||
+            variable.usedSource === 'addons' ||
+            variable.usedSource === 'internal' ||
+            variable.usedSource === 'ui' ||
+            variable.usedSource.startsWith('.env')
+          ) {
+            return {
+              ...acc,
+              [key]: variable.value,
+            }
+          }
 
-      // If a custom origin server has been provided, use it. If not, we must
-      // stand up a new HTTP server.
-      if (typeof this.#edgeFunctionsOriginServer === 'string') {
-        originServerAddress = this.#edgeFunctionsOriginServer
-      } else {
-        const passthroughServer = new HTTPServer(async (req) => {
-          const res = await this.handle(req)
-
-          return res ?? new Response(null, { status: 404 })
-        })
-
-        this.#cleanupJobs.push(() => passthroughServer.stop())
-
-        originServerAddress = await passthroughServer.start()
-      }
+          return acc
+        },
+        {} as Record<string, string>,
+      )
 
       this.#edgeFunctionsHandler = new EdgeFunctionsHandler({
-        bootstrapURL: 'https://edge.netlify.com/bootstrap/index-combined.ts',
-        configDeclarations: this.#config?.config.edge_functions,
+        // bootstrapURL: 'https://edge.netlify.com/bootstrap/index-combined.ts',
+        bootstrapURL:
+          'file:///Users/eduardoboucas/Sites/netlify/edge-functions-bootstrap/src/bootstrap/index-combined.ts',
+        configDeclarations: this.#config?.config.edge_functions ?? [],
         directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
+        env,
+        geolocation: mockLocation,
         originServerAddress,
+        siteID,
+        siteName: config?.siteInfo.name,
       })
     }
 
@@ -304,6 +331,7 @@ export class NetlifyDev {
       this.#functionsHandler = new FunctionsHandler({
         config: this.#config,
         destPath: this.#functionsServePath,
+        geolocation: mockLocation,
         projectRoot: this.#projectRoot,
         settings: {},
         siteId: this.#siteID,
@@ -327,6 +355,10 @@ export class NetlifyDev {
       this.#staticHandler = new StaticHandler({
         directory: this.#config?.config.build.publish ?? this.#projectRoot,
       })
+    }
+
+    return {
+      originServerAddress,
     }
   }
 

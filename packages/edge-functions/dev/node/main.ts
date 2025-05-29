@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { renderFunctionErrorPage } from '@netlify/dev-utils'
+import { renderFunctionErrorPage, type Geolocation } from '@netlify/dev-utils'
 import {
   find,
   generateManifest,
@@ -11,6 +11,7 @@ import {
   EdgeFunction,
   FunctionConfig,
 } from '@netlify/edge-bundler'
+import { base64Encode } from '@netlify/runtime-utils'
 import getAvailablePort from 'get-port'
 
 import type { RunOptions } from '../shared/types.js'
@@ -20,7 +21,11 @@ interface EdgeFunctionsHandlerOptions {
   bootstrapURL: string
   configDeclarations: Declaration[]
   directories: string[]
+  env: Record<string, string>
+  geolocation: Geolocation
   originServerAddress: string
+  siteID?: string
+  siteName?: string
 }
 
 const denoRunPath = resolve(fileURLToPath(import.meta.url), '../../dev/deno/run.ts')
@@ -32,15 +37,24 @@ export class EdgeFunctionsHandler {
   private bootstrapURL: string
   private configDeclarations: Declaration[]
   private directories: string[]
+  private geolocation: Geolocation
   private initialization: ReturnType<typeof this.initialize>
   private originServerAddress: string
+  private siteID?: string
+  private siteName?: string
 
   constructor(options: EdgeFunctionsHandlerOptions) {
     this.bootstrapURL = options.bootstrapURL
     this.configDeclarations = options.configDeclarations
     this.directories = options.directories
-    this.initialization = this.initialize()
+    this.geolocation = options.geolocation
+    this.initialization = this.initialize({
+      ...options.env,
+      DENO_REGION: 'dev',
+    })
     this.originServerAddress = options.originServerAddress
+    this.siteID = options.siteID
+    this.siteName = options.siteName
   }
 
   /**
@@ -136,7 +150,6 @@ export class EdgeFunctionsHandler {
     }
 
     const functions = await find(this.directories)
-
     if (functions.length === 0) {
       return
     }
@@ -166,16 +179,29 @@ export class EdgeFunctionsHandler {
     const url = new URL(request.url)
     url.hostname = LOCAL_HOST
     url.port = denoPort.toString()
+    url.protocol = 'http:'
 
     request.headers.set(headers.AcceptEncoding, 'identity')
     request.headers.set(headers.AvailableFunctions, JSON.stringify(functionsMap))
+    request.headers.set(headers.DeployContext, 'dev')
+    request.headers.set(headers.DeployID, '0')
+    request.headers.set(headers.ForwardedHost, `localhost:${originURL.port}`)
     request.headers.set(headers.ForwardedProtocol, `http:`)
-    request.headers.set(headers.InvocationMetadata, Buffer.from(JSON.stringify(invocationMetadata)).toString('base64'))
+    request.headers.set(headers.Functions, functionNames.join(','))
+    request.headers.set(headers.Geo, base64Encode(this.geolocation))
+    request.headers.set(headers.InvocationMetadata, base64Encode(invocationMetadata))
     request.headers.set(headers.IP, LOCAL_HOST)
     request.headers.set(headers.Passthrough, 'passthrough')
     request.headers.set(headers.PassthroughHost, `localhost:${originURL.port}`)
     request.headers.set(headers.PassthroughProtocol, 'http:')
-    request.headers.set(headers.Functions, functionNames.join(','))
+
+    const site = {
+      id: this.siteID,
+      name: this.siteName,
+      url: this.originServerAddress,
+    }
+
+    request.headers.set(headers.Site, base64Encode(site))
 
     // Proxying the request to the Deno server.
     const response = await fetch(url, request)
@@ -193,7 +219,7 @@ export class EdgeFunctionsHandler {
   /**
    * Initializes the Deno server where the edge functions will run.
    */
-  private async initialize() {
+  private async initialize(env: Record<string, string>) {
     let success = true
 
     const processRef = {}
@@ -201,7 +227,11 @@ export class EdgeFunctionsHandler {
     // If we ran the server on a random port, we wouldn't know how to reach it.
     // Compute the port upfront and pass it on to the server.
     const denoPort = await getAvailablePort()
-    const denoBridge = new DenoBridge({})
+    const denoBridge = new DenoBridge({
+      // TODO: Remove this override once `@netlify/edge-bundler` has been
+      // updated to require Deno 2.x.
+      versionRange: '^2.2.4',
+    })
     const runOptions: RunOptions = {
       bootstrapURL: this.bootstrapURL,
       denoPort,
@@ -210,6 +240,7 @@ export class EdgeFunctionsHandler {
 
     try {
       await denoBridge.runInBackground(['run', ...denoFlags, denoRunPath, JSON.stringify(runOptions)], processRef, {
+        env,
         extendEnv: false,
         pipeOutput: true,
       })

@@ -34,8 +34,13 @@ export const serveLocal = async ({ bootstrapURL, denoPort: port }: RunOptions) =
     const url = new URL(req.url)
     const method = req.method.toUpperCase()
 
+    // This custom method represents an introspection request that will make
+    // the Deno server take a list of functiond, import them, evaluate their
+    // configs, and return them as a JSON payload.
     if (method === 'NETLIFYCONFIG') {
       const errors: Error[] = []
+
+      // This is the list of all the functions found in the project.
       const availableFunctions: AvailableFunctions = url.searchParams.has('functions')
         ? JSON.parse(decodeURIComponent(url.searchParams.get('functions')!))
         : {}

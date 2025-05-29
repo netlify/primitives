@@ -397,5 +397,107 @@ describe('Handling requests', () => {
 
       await fixture.destroy()
     })
+
+    test.only('Invoking an edge function', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+        publish = "public"
+        `,
+        )
+        .withFile(
+          'netlify/functions/hello.mjs',
+          `export default async (req, context) => new Response("Hello from function");
+           
+           export const config = { path: "/hello/:a/*" };`,
+        )
+        .withFile(
+          'netlify/edge-functions/passthrough.mjs',
+          `export default async (req, context) => {
+            const res = await context.next();
+            const text = await res.text();
+
+            return new Response(text.toUpperCase(), res);
+          };
+           
+           export const config = { path: "/hello/passthrough/*" };`,
+        )
+        .withFile(
+          'netlify/edge-functions/terminate.mjs',
+          `export default async (req, context) => Response.json({
+             env: {
+               WITH_DEV_OVERRIDE: Netlify.env.get("WITH_DEV_OVERRIDE"),
+               WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE")             
+             },
+             geo: context.geo,
+             params: context.params,
+             path: context.path,
+             server: context.server,
+             site: context.site,
+             url: context.url
+           });
+           
+           export const config = { path: "/hello/terminate/*" };`,
+        )
+        .withStateFile({ siteId: 'site_id' })
+      const directory = await fixture.create()
+
+      await withMockApi(routes, async (context) => {
+        const dev = new NetlifyDev({
+          apiURL: context.apiUrl,
+          apiToken: 'token',
+          projectRoot: directory,
+        })
+
+        const { originServerAddress } = await dev.start()
+
+        const req1 = new Request('https://site.netlify/hello/passthrough/two/three')
+        const res1 = await dev.handle(req1)
+
+        expect(await res1?.text()).toBe('HELLO FROM FUNCTION')
+
+        const req2 = new Request('https://site.netlify/hello/terminate/two/three')
+        const res2 = await dev.handle(req2)
+        const req2URL = new URL('/hello/terminate/two/three', originServerAddress)
+
+        expect(await res2?.json()).toStrictEqual({
+          env: {
+            WITH_DEV_OVERRIDE: 'value from dev context',
+            WITHOUT_DEV_OVERRIDE: 'value from all context',
+          },
+          geo: {
+            city: 'San Francisco',
+            country: {
+              code: 'US',
+              name: 'United States',
+            },
+            latitude: 0,
+            longitude: 0,
+            subdivision: {
+              code: 'CA',
+              name: 'California',
+            },
+            timezone: 'UTC',
+          },
+          params: {
+            '0': 'two/three',
+          },
+          // TODO: This doesn't exist in edge functions but it should.
+          // path: '/hello/terminate/*',
+          server: {
+            region: 'dev',
+          },
+          site: {
+            id: 'site_id',
+            name: 'site-name',
+            url: originServerAddress,
+          },
+          url: req2URL.toString(),
+        })
+      })
+
+      await fixture.destroy()
+    })
   })
 })
