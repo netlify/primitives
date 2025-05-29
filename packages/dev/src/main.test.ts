@@ -450,7 +450,7 @@ describe('Handling requests', () => {
           projectRoot: directory,
         })
 
-        const { originServerAddress } = await dev.start()
+        const { serverAddress } = await dev.start()
 
         const req1 = new Request('https://site.netlify/hello/passthrough/two/three')
         const res1 = await dev.handle(req1)
@@ -459,7 +459,7 @@ describe('Handling requests', () => {
 
         const req2 = new Request('https://site.netlify/hello/terminate/two/three')
         const res2 = await dev.handle(req2)
-        const req2URL = new URL('/hello/terminate/two/three', originServerAddress)
+        const req2URL = new URL('/hello/terminate/two/three', serverAddress)
 
         expect(await res2?.json()).toStrictEqual({
           env: {
@@ -491,7 +491,7 @@ describe('Handling requests', () => {
           site: {
             id: 'site_id',
             name: 'site-name',
-            url: originServerAddress,
+            url: serverAddress,
           },
           url: req2URL.toString(),
         })

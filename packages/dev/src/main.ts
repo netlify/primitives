@@ -52,12 +52,6 @@ export interface Features {
   }
 
   /**
-   * If your local development setup has its own HTTP server (e.g. Vite), set
-   * its address here.
-   */
-  originServerAddress?: string
-
-  /**
    * Configuration options for Netlify redirects and rewrites.
    *
    * {@link} https://docs.netlify.com/routing/redirects/
@@ -65,6 +59,12 @@ export interface Features {
   redirects?: {
     enabled: boolean
   }
+
+  /**
+   * If your local development setup has its own HTTP server (e.g. Vite), set
+   * its address here.
+   */
+  serverAddress?: string
 
   /**
    * Configuration options for serving static files.
@@ -103,9 +103,9 @@ export class NetlifyDev {
     static: boolean
   }
   #logger: Logger
-  #originServer?: string | HTTPServer
   #projectRoot: string
   #redirectsHandler?: RedirectsHandler
+  #server?: string | HTTPServer
   #siteID?: string
   #staticHandler?: StaticHandler
 
@@ -131,7 +131,7 @@ export class NetlifyDev {
     }
     this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')
     this.#logger = options.logger ?? globalThis.console
-    this.#originServer = options.originServerAddress
+    this.#server = options.serverAddress
     this.#projectRoot = projectRoot
   }
 
@@ -257,12 +257,12 @@ export class NetlifyDev {
 
     this.#cleanupJobs.push(() => runtime.stop())
 
-    let originServerAddress: string
+    let serverAddress: string
 
-    // If a custom origin server has been provided, use it. If not, we must
-    // stand up a new HTTP server.
-    if (typeof this.#originServer === 'string') {
-      originServerAddress = this.#originServer
+    // If a custom server has been provided, use it. If not, we must stand up
+    // a new one, since it's required for communication with edge functions.
+    if (typeof this.#server === 'string') {
+      serverAddress = this.#server
     } else {
       const passthroughServer = new HTTPServer(async (req) => {
         const res = await this.handle(req)
@@ -272,7 +272,7 @@ export class NetlifyDev {
 
       this.#cleanupJobs.push(() => passthroughServer.stop())
 
-      originServerAddress = await passthroughServer.start()
+      serverAddress = await passthroughServer.start()
     }
 
     let envVariables: Record<string, InjectedEnvironmentVariable> = {}
@@ -317,7 +317,7 @@ export class NetlifyDev {
         directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
         env,
         geolocation: mockLocation,
-        originServerAddress,
+        originServerAddress: serverAddress,
         siteID,
         siteName: config?.siteInfo.name,
       })
@@ -358,7 +358,7 @@ export class NetlifyDev {
     }
 
     return {
-      originServerAddress,
+      serverAddress,
     }
   }
 
