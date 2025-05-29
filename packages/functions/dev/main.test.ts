@@ -19,7 +19,7 @@ describe('Functions with the v2 API syntax', () => {
     const functions = new FunctionsHandler({
       accountId: 'account-123',
       config: {},
-      eventHandler: (event) => events.handleEvent(event),
+      eventHandler: (event) => { events.handleEvent(event); },
       destPath,
       projectRoot: directory,
       settings: {},
@@ -126,7 +126,7 @@ describe('Functions with the v2 API syntax', () => {
     const functions = new FunctionsHandler({
       accountId: 'account-123',
       config: {},
-      eventHandler: (event) => events.handleEvent(event),
+      eventHandler: (event) => { events.handleEvent(event); },
       destPath,
       projectRoot: directory,
       settings: {},

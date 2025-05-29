@@ -15,7 +15,7 @@ export const renderFunctionErrorPage = async (errString: string, functionType: s
     errorTemplateFile = errorTemplateFile || (await readFile(functionErrorTemplatePath, 'utf-8'))
 
     return errorTemplateFile.replace(errorDetailsRegex, errString).replace(functionTypeRegex, functionType)
-  } catch (error) {
+  } catch {
     return errString
   }
 }

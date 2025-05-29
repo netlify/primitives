@@ -152,12 +152,12 @@ export class EdgeFunctionsHandler {
       return
     }
 
-    const functionsMap = functions.reduce(
+    const functionsMap = functions.reduce<Record<string, string>>(
       (acc, { name, path }) => ({
         ...acc,
         [name]: pathToFileURL(path).toString(),
       }),
-      {} as Record<string, string>,
+      {},
     )
     const { denoPort, success } = await this.initialization
 

@@ -310,7 +310,7 @@ export class NetlifyDev {
     }
 
     if (this.#features.edgeFunctions) {
-      const env = Object.entries(envVariables).reduce(
+      const env = Object.entries(envVariables).reduce<Record<string, string>>(
         (acc, [key, variable]) => {
           if (
             variable.usedSource === 'account' ||
@@ -327,7 +327,7 @@ export class NetlifyDev {
 
           return acc
         },
-        {} as Record<string, string>,
+        {},
       )
 
       this.#edgeFunctionsHandler = new EdgeFunctionsHandler({
