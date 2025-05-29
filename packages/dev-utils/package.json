@@ -6,15 +6,10 @@
   "engines": {
     "node": "^18.14.0 || >=20"
   },
-  "main": "./dist/main.cjs",
-  "module": "./dist/main.js",
+  "main": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "exports": {
     ".": {
-      "require": {
-        "types": "./dist/main.d.cts",
-        "default": "./dist/main.cjs"
-      },
       "import": {
         "types": "./dist/main.d.ts",
         "default": "./dist/main.js"

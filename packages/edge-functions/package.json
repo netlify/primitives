@@ -9,16 +9,16 @@
   "main": "./dist/main.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.mjs"
+      "types": "./dist/main.d.ts",
+      "default": "./dist/main.js"
     },
     "./dev": {
       "types": "./dist-dev/main.d.ts",
       "default": "./dist-dev/main.js"
     },
     "./version": {
-      "types": "./dist/version.d.mts",
-      "default": "./dist/version.mjs"
+      "types": "./dist/version.d.ts",
+      "default": "./dist/version.js"
     }
   },
   "types": "./dist/main.d.ts",

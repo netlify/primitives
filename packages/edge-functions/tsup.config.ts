@@ -16,6 +16,17 @@ export default defineConfig([
   },
   {
     clean: true,
+    format: ['esm'],
+    entry: ['src/version.ts'],
+    tsconfig: 'tsconfig.json',
+    splitting: false,
+    bundle: true,
+    dts: true,
+    outDir: './dist',
+    watch: argv.includes('--watch'),
+  },
+  {
+    clean: true,
     outDir: 'dist-dev',
     entry: ['dev/node/main.ts'],
     format: ['esm'],
