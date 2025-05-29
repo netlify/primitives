@@ -39,7 +39,7 @@
     "vitest": "^3.1.4"
   },
   "dependencies": {
-    "@netlify/redirect-parser": "^15.0.1",
+    "@netlify/redirect-parser": "^15.0.2",
     "cookie": "^1.0.2",
     "jsonwebtoken": "9.0.2",
     "netlify-redirector": "^0.5.0"
