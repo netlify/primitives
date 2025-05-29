@@ -331,7 +331,9 @@ export class NetlifyDev {
       )
 
       this.#edgeFunctionsHandler = new EdgeFunctionsHandler({
-        bootstrapURL: 'https://edge.netlify.com/bootstrap/index-combined.ts',
+        // TODO: Pull this dynamically once this is merged
+        // https://github.com/netlify/edge-functions-bootstrap/pull/423
+        bootstrapURL: 'https://6835eab98680520008f5dd6f--edge.netlify.com/bootstrap/index-combined.ts',
         configDeclarations: this.#config?.config.edge_functions ?? [],
         directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
         env,
