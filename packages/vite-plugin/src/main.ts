@@ -40,7 +40,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       await netlifyDev.start()
 
       if (!netlifyDev.siteIsLinked) {
-        logger.log('Your project is not linked to a Netlify site. Run `npx netlify link` to get started.')
+        logger.log('Your project is not linked to a Netlify site. Run `npx netlify init` to get started.')
       }
 
       if (middleware) {
