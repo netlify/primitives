@@ -184,6 +184,6 @@ describe('`EdgeFunctionsHandler`', () => {
       slug: 'hello-world',
     })
 
-    // await fixture.destroy()
+    await fixture.destroy()
   })
 })
