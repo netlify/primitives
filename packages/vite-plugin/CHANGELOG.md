@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.0.0](https://github.com/netlify/primitives/compare/vite-plugin-v0.3.1...vite-plugin-v1.0.0) (2025-05-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210))
+
+### Features
+
+* add support for headers config ([#200](https://github.com/netlify/primitives/issues/200)) ([dca313e](https://github.com/netlify/primitives/commit/dca313ec82980231724a2d801bcc739df1d27924))
+
+
+### Bug Fixes
+
+* update Netlify brand diamond icon ([#224](https://github.com/netlify/primitives/issues/224)) ([1ce8106](https://github.com/netlify/primitives/commit/1ce81067f890d0435c51c525425dee8968ba9880))
+
+
+### Build System
+
+* fix `engines.node` ([#210](https://github.com/netlify/primitives/issues/210)) ([5604545](https://github.com/netlify/primitives/commit/56045450d0f6c24988a8956c1946209bda4502bc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 2.3.1 to 3.0.0
+
 ## [0.3.1](https://github.com/netlify/primitives/compare/vite-plugin-v0.3.0...vite-plugin-v0.3.1) (2025-05-27)
 
 

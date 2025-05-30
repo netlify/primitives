@@ -5,6 +5,7 @@ import process from 'node:process'
 import { resolveConfig } from '@netlify/config'
 import { ensureNetlifyIgnore, getAPIToken, LocalState, type Logger } from '@netlify/dev-utils'
 import { FunctionsHandler } from '@netlify/functions/dev'
+import { HeadersHandler } from '@netlify/headers'
 import { ImageHandler } from '@netlify/images'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
@@ -38,6 +39,15 @@ export interface Features {
    * {@link} https://docs.netlify.com/functions/overview/
    */
   functions?: {
+    enabled: boolean
+  }
+
+  /**
+   * Configuration options for Netlify response headers.
+   *
+   * {@link} https://docs.netlify.com/routing/headers/
+   */
+  headers?: {
     enabled: boolean
   }
 
@@ -88,6 +98,7 @@ export class NetlifyDev {
     blobs: boolean
     environmentVariables: boolean
     functions: boolean
+    headers: boolean
     images: boolean
     redirects: boolean
     static: boolean
@@ -110,6 +121,7 @@ export class NetlifyDev {
       blobs: options.blobs?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
+      headers: options.headers?.enabled !== false,
       images: options.images?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
       static: options.staticFiles?.enabled !== false,
@@ -134,6 +146,17 @@ export class NetlifyDev {
           userFunctionsPath: userFunctionsPathExists ? userFunctionsPath : undefined,
         })
       : null
+
+    // Headers
+    const headers = this.#features.headers
+      ? new HeadersHandler({
+          configPath: this.#config?.configPath,
+          configHeaders: this.#config?.config.headers,
+          projectDir: this.#projectRoot,
+          publishDir: this.#config?.config.build.publish ?? undefined,
+          logger: this.#logger,
+        })
+      : { handle: async (_request: Request, response: Response) => response }
 
     const images = this.#features.images
       ? new ImageHandler({
@@ -173,7 +196,8 @@ export class NetlifyDev {
         const staticMatch = await staticFiles?.match(request)
 
         if (staticMatch) {
-          return staticMatch.handle()
+          const response = await staticMatch.handle()
+          return headers.handle(request, response)
         }
       }
 
@@ -201,7 +225,12 @@ export class NetlifyDev {
       const response = await redirects?.handle(request, redirectMatch, async (maybeStaticFile: Request) => {
         const staticMatch = await staticFiles?.match(maybeStaticFile)
 
-        return staticMatch?.handle
+        if (!staticMatch) return
+
+        return async () => {
+          const response = await staticMatch.handle()
+          return headers.handle(new Request(redirectMatch.target), response)
+        }
       })
       if (response) {
         return response
@@ -211,7 +240,8 @@ export class NetlifyDev {
     // 4. Check if the request matches a static file.
     const staticMatch = await staticFiles?.match(request)
     if (staticMatch) {
-      return staticMatch.handle()
+      const response = await staticMatch.handle()
+      return headers.handle(request, response)
     }
   }
 

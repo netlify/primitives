@@ -13,6 +13,7 @@
     "packages/dev": {},
     "packages/dev-utils": {},
     "packages/functions": {},
+    "packages/headers": {},
     "packages/images": {},
     "packages/otel": {},
     "packages/redirects": {},

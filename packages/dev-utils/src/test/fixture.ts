@@ -1,5 +1,6 @@
 import { exec } from 'node:child_process'
 import { promises as fs } from 'node:fs'
+import { EOL } from 'node:os'
 import { dirname, join } from 'node:path'
 import { promisify } from 'node:util'
 
@@ -86,6 +87,24 @@ export class Fixture {
     this.files[path] = contents
 
     return this
+  }
+
+  withHeadersFile({
+    headers = [],
+    pathPrefix = '',
+  }: {
+    headers?: { headers: string[]; path: string }[]
+    pathPrefix?: string
+  }) {
+    const dest = join(pathPrefix, '_headers')
+    const contents = headers
+      .map(
+        ({ headers: headersValues, path: headerPath }) =>
+          `${headerPath}${EOL}${headersValues.map((header) => `  ${header}`).join(EOL)}`,
+      )
+      .join(EOL)
+
+    return this.withFile(dest, contents)
   }
 
   withStateFile(state: object) {

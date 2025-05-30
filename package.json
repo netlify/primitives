@@ -1,6 +1,7 @@
 {
   "name": "netlify-primitives-monorepo",
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/types",
     "packages/dev-utils",
@@ -8,6 +9,7 @@
     "packages/blobs",
     "packages/cache",
     "packages/functions",
+    "packages/headers",
     "packages/images",
     "packages/redirects",
     "packages/runtime",
@@ -18,17 +20,24 @@
   ],
   "version": "0.0.0",
   "scripts": {
-    "prepare": "husky install",
-    "lint": "eslint --cache --report-unused-disable-directives --ignore-path .gitignore --max-warnings=0 . --fix",
-    "lint:ci": "eslint --cache --report-unused-disable-directives --ignore-path .gitignore --max-warnings=0 .",
+    "prepare": "husky",
+    "lint": "eslint --cache",
+    "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
     "format:ci": "prettier --check ."
   },
   "keywords": [],
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
+    "@eslint/compat": "^1.2.9",
+    "@eslint/js": "^9.27.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@vitest/eslint-plugin": "^1.2.1",
     "eslint": "^9.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-n": "17.17.0",
     "husky": "^9.0.0",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "typescript-eslint": "^8.33.0"
   }
 }
