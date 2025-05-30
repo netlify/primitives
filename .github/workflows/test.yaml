@@ -17,11 +17,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
         node-version: ['*']
-        deno-version: ['v1.37.0', 'v1.44.4']
         include:
           - os: ubuntu-latest
             node-version: '18.14.0'
-            deno-version: 'v1.44.4'
       fail-fast: false
     steps:
       # Increasing the maximum number of open files. See:
@@ -41,7 +39,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: ${{ matrix.deno-version }}
+          deno-version: 2.2.4
       - name: Setup Deno dependencies
         run: deno cache https://deno.land/x/eszip@v0.55.2/eszip.ts
       - name: Install dependencies

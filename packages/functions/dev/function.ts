@@ -2,7 +2,7 @@ import { basename, extname } from 'node:path'
 import { version as nodeVersion } from 'node:process'
 
 import { EnvironmentContext } from '@netlify/blobs'
-import { headers as netlifyHeaders, MemoizeCache } from '@netlify/dev-utils'
+import { headers as netlifyHeaders, MemoizeCache, renderFunctionErrorPage } from '@netlify/dev-utils'
 import type { ExtendedRoute, FunctionResult, Route } from '@netlify/zip-it-and-ship-it'
 import CronParser from 'cron-parser'
 import semver from 'semver'
@@ -27,6 +27,12 @@ const getNextRun = function (schedule: string) {
   return cron.next().toDate()
 }
 
+export interface InvocationError {
+  errorMessage: string
+  errorType: string
+  stackTrace: string[]
+}
+
 export const getBlobsEventProperty = (context: EnvironmentContext) => ({
   primary_region: context.primaryRegion,
   url: context.edgeURL,
@@ -46,13 +52,13 @@ interface NetlifyFunctionOptions {
   routes?: ExtendedRoute[]
   runtime: Runtime
   settings: any
-  targetDirectory: string
   timeoutBackground: number
   timeoutSynchronous: number
 }
 
 interface InvokeFunctionOptions {
   buildCache?: FunctionBuildCache
+  buildDirectory?: string
   clientContext?: HandlerContext['clientContext']
   request: Request
   route?: string
@@ -70,7 +76,6 @@ export class NetlifyFunction {
   private readonly directory: string
   private readonly projectRoot: string
   private readonly settings: any
-  private readonly targetDirectory: string
   private readonly timeoutBackground: number
   private readonly timeoutSynchronous: number
 
@@ -101,7 +106,6 @@ export class NetlifyFunction {
     routes,
     runtime,
     settings,
-    targetDirectory,
     timeoutBackground,
     timeoutSynchronous,
   }: NetlifyFunctionOptions) {
@@ -115,7 +119,6 @@ export class NetlifyFunction {
     this.projectRoot = projectRoot
     this.routes = routes
     this.runtime = runtime
-    this.targetDirectory = targetDirectory
     this.timeoutBackground = timeoutBackground
     this.timeoutSynchronous = timeoutSynchronous
     this.settings = settings
@@ -193,14 +196,14 @@ export class NetlifyFunction {
   //
   // - `srcFilesDiff`: Files that were added and removed since the last time
   //    the function was built.
-  async build({ cache }: { cache: MemoizeCache<FunctionResult> }) {
+  async build({ buildDirectory, cache }: { buildDirectory: string; cache: MemoizeCache<FunctionResult> }) {
     this.buildQueue = this.runtime
       .getBuildFunction({
         config: this.config,
         directory: this.directory,
         func: this,
         projectRoot: this.projectRoot,
-        targetDirectory: this.targetDirectory,
+        targetDirectory: buildDirectory,
       })
       .then((buildFunction) => buildFunction({ cache }))
 
@@ -240,6 +243,20 @@ export class NetlifyFunction {
     }
   }
 
+  private formatError(rawError: Error | InvocationError, acceptsHTML: boolean): string {
+    const error = this.normalizeError(rawError)
+
+    if (acceptsHTML) {
+      return JSON.stringify({
+        ...error,
+        stackTrace: undefined,
+        trace: error.stackTrace,
+      })
+    }
+
+    return `${error.errorType}: ${error.errorMessage}\n ${error.stackTrace.join('\n')}`
+  }
+
   async getBuildData() {
     await this.buildQueue
 
@@ -258,14 +275,33 @@ export class NetlifyFunction {
     }
   }
 
-  // Invokes the function and returns its response object.
-  async invoke({ buildCache = {}, clientContext = {}, request, route }: InvokeFunctionOptions) {
-    // If we haven't started building the function, do it now.
-    if (!this.buildQueue) {
-      this.build({ cache: buildCache })
+  private async handleError(rawError: Error | InvocationError | string, acceptsHTML: boolean): Promise<Response> {
+    const errorString = typeof rawError === 'string' ? rawError : this.formatError(rawError, acceptsHTML)
+    const status = 500
+
+    if (acceptsHTML) {
+      const body = await renderFunctionErrorPage(errorString, 'function')
+
+      return new Response(body, {
+        headers: {
+          'Content-Type': 'text/html',
+        },
+        status,
+      })
     }
 
-    await this.buildQueue
+    return new Response(errorString, { status })
+  }
+
+  // Invokes the function and returns its response object.
+  async invoke({ buildCache = {}, buildDirectory, clientContext = {}, request, route }: InvokeFunctionOptions) {
+    // If a `buildDirectory` has been supplied, it means we need to run a build
+    // specifically for this invocation. Otherwise, we use the build queue.
+    if (buildDirectory) {
+      await this.build({ buildDirectory, cache: buildCache })
+    } else {
+      await this.buildQueue
+    }
 
     if (this.buildError) {
       throw this.buildError
@@ -280,14 +316,20 @@ export class NetlifyFunction {
       request.headers.set(netlifyHeaders.BlobsInfo, Buffer.from(payload).toString('base64'))
     }
 
-    return await this.runtime.invokeFunction({
-      context: clientContext,
-      environment,
-      func: this,
-      request,
-      route,
-      timeout,
-    })
+    try {
+      return await this.runtime.invokeFunction({
+        context: clientContext,
+        environment,
+        func: this,
+        request,
+        route,
+        timeout,
+      })
+    } catch (error) {
+      const acceptsHTML = request.headers.get('accept')?.includes('text/html')
+
+      return await this.handleError(error as Error | InvocationError | string, Boolean(acceptsHTML))
+    }
   }
 
   /**
@@ -340,6 +382,35 @@ export class NetlifyFunction {
     }
 
     return matchingRoute
+  }
+
+  private normalizeError(error: Error | InvocationError): InvocationError {
+    if (error instanceof Error) {
+      const normalizedError: InvocationError = {
+        errorMessage: error.message,
+        errorType: error.name,
+        stackTrace: error.stack ? error.stack.split('\n') : [],
+      }
+
+      if ('code' in error && error.code === 'ERR_REQUIRE_ESM') {
+        return {
+          ...normalizedError,
+          errorMessage:
+            'a CommonJS file cannot import ES modules. Consider switching your function to ES modules. For more information, refer to https://ntl.fyi/functions-runtime.',
+        }
+      }
+
+      return normalizedError
+    }
+
+    // Formatting stack trace lines in the same way that Node.js formats native errors.
+    const stackTrace = error.stackTrace.map((line) => `    at ${line}`)
+
+    return {
+      errorType: error.errorType,
+      errorMessage: error.errorMessage,
+      stackTrace,
+    }
   }
 
   get runtimeAPIVersion() {
