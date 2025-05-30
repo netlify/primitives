@@ -48,18 +48,19 @@ describe('Plugin constructor', () => {
 
     expect(netlify()).toEqual([])
   })
+})
 
-  describe('configureServer', { timeout: 15_000 }, () => {
-    const originalEnv = { ...process.env }
-    beforeEach(() => {
-      process.env = { ...originalEnv }
-    })
+describe('configureServer', { timeout: 15_000 }, () => {
+  const originalEnv = { ...process.env }
+  beforeEach(() => {
+    process.env = { ...originalEnv }
+  })
 
-    test('Populates Netlify runtime environment (globals and env vars)', async () => {
-      const fixture = new Fixture()
-        .withFile(
-          'vite.config.js',
-          `import { defineConfig } from 'vite';
+  test('Populates Netlify runtime environment (globals and env vars)', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'vite.config.js',
+        `import { defineConfig } from 'vite';
            import netlify from '@netlify/vite-plugin';
 
            export default defineConfig({
@@ -67,15 +68,69 @@ describe('Plugin constructor', () => {
                netlify({ middleware: false })
              ]
            });`,
-        )
-        .withFile(
-          'index.html',
-          `<!DOCTYPE html>
+      )
+      .withFile(
+        'index.html',
+        `<!DOCTYPE html>
            <html>
              <head><title>Hello World</title></head>
              <body><h1>Hello from the browser</h1></body>
            </html>`,
+      )
+    const directory = await fixture.create()
+    await fixture
+      .withPackages({
+        vite: '6.0.0',
+        '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+      })
+      .create()
+
+    const { server } = await startTestServer({
+      root: directory,
+    })
+
+    expect((globalThis as Record<string, unknown>).Netlify).toBeInstanceOf(Object)
+    expect(process.env).toHaveProperty('NETLIFY_LOCAL', 'true')
+    expect(process.env).toHaveProperty('CONTEXT', 'dev')
+
+    await server.close()
+    await fixture.destroy()
+  })
+
+  describe('Middleware enabled', () => {
+    test('Returns static files from project dir', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'vite.config.js',
+          `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
+
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                   middleware: true
+                 })
+               ]
+             });`,
         )
+        .withFile(
+          'index.html',
+          `<!doctype html>
+            <html>
+              <head><title>Hello World</title></head>
+              <body>Hello from the static index.html file</body>
+              <script type="module" src="/js/main.js"></script>
+            </html>`,
+        )
+        .withFile(
+          'contact/email.html',
+          `<!doctype html>
+             <html>
+               <head><title>Contact us via email</title></head>
+               <body>Hello from another static file</body>
+             </html>`,
+        )
+        .withFile('js/main.js', `console.log('Hello from the browser')`)
       const directory = await fixture.create()
       await fixture
         .withPackages({
@@ -84,88 +139,32 @@ describe('Plugin constructor', () => {
         })
         .create()
 
-      const { server } = await startTestServer({
+      const { server, url } = await startTestServer({
         root: directory,
       })
 
-      expect((globalThis as Record<string, unknown>).Netlify).toBeInstanceOf(Object)
-      expect(process.env).toHaveProperty('NETLIFY_LOCAL', 'true')
-      expect(process.env).toHaveProperty('CONTEXT', 'dev')
+      const response = await fetch(url)
+      expect(response).toHaveProperty('status', 200)
+      expect(await response.text()).toContain('Hello from the static index.html file')
+
+      expect(await fetch(`${url}/js/main.js`).then((r) => r.text())).toContain('console.log(')
+
+      expect(await fetch(`${url}/contact/email.html`).then((r) => r.text())).toContain('Hello from another static file')
+
+      // This is Vite's behavior in dev for "404s"
+      const notFoundResponse = await fetch(`${url}/wp-admin.php`)
+      expect(notFoundResponse).toHaveProperty('status', 200)
+      expect(await notFoundResponse.text()).toContain('Hello from the static index.html file')
 
       await server.close()
       await fixture.destroy()
     })
 
-    describe('Middleware enabled', () => {
-      test('Returns static files from project dir', async () => {
-        const fixture = new Fixture()
-          .withFile(
-            'vite.config.js',
-            `import { defineConfig } from 'vite';
-             import netlify from '@netlify/vite-plugin';
-
-             export default defineConfig({
-               plugins: [
-                 netlify({
-                   middleware: true
-                 })
-               ]
-             });`,
-          )
-          .withFile(
-            'index.html',
-            `<!doctype html>
-            <html>
-              <head><title>Hello World</title></head>
-              <body>Hello from the static index.html file</body>
-              <script type="module" src="/js/main.js"></script>
-            </html>`,
-          )
-          .withFile(
-            'contact/email.html',
-            `<!doctype html>
-             <html>
-               <head><title>Contact us via email</title></head>
-               <body>Hello from another static file</body>
-             </html>`,
-          )
-          .withFile('js/main.js', `console.log('Hello from the browser')`)
-        const directory = await fixture.create()
-        await fixture
-          .withPackages({
-            vite: '6.0.0',
-            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
-          })
-          .create()
-
-        const { server, url } = await startTestServer({
-          root: directory,
-        })
-
-        const response = await fetch(url)
-        expect(response).toHaveProperty('status', 200)
-        expect(await response.text()).toContain('Hello from the static index.html file')
-
-        expect(await fetch(`${url}/js/main.js`).then((r) => r.text())).toContain('console.log(')
-
-        expect(await fetch(`${url}/contact/email.html`).then((r) => r.text())).toContain(
-          'Hello from another static file',
-        )
-
-        // This is Vite's behavior in dev for "404s"
-        const notFoundResponse = await fetch(`${url}/wp-admin.php`)
-        expect(notFoundResponse).toHaveProperty('status', 200)
-        expect(await notFoundResponse.text()).toContain('Hello from the static index.html file')
-
-        await server.close()
-        await fixture.destroy()
-      })
-
-      test('Returns static files with configured Netlify headers', async () => {
-        const fixture = new Fixture()
-          .withFile(
-            'netlify.toml',
-            `[[headers]]
+    test('Returns static files with configured Netlify headers', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[[headers]]
              for = "/contact/*"
              [headers.values]
              "Cache-Control" = "public, max-age=90"
@@ -173,10 +172,10 @@ describe('Plugin constructor', () => {
              for = "/*"
              [headers.values]
              "X-NF-Hello" = "world"`,
-          )
-          .withFile(
-            'vite.config.js',
-            `import { defineConfig } from 'vite';
+        )
+        .withFile(
+          'vite.config.js',
+          `import { defineConfig } from 'vite';
              import netlify from '@netlify/vite-plugin';
 
              export default defineConfig({
@@ -186,87 +185,22 @@ describe('Plugin constructor', () => {
                  })
                ]
              });`,
-          )
-          .withFile(
-            'index.html',
-            `<!doctype html>
+        )
+        .withFile(
+          'index.html',
+          `<!doctype html>
             <html>
               <head><title>Hello World</title></head>
               <body>Hello from the static index.html file</body>
             </html>`,
-          )
-          .withFile(
-            'contact/email.html',
-            `<!doctype html>
-             <html>
-               <head><title>Contact us via email</title></head>
-               <body>Hello from another static file</body>
-             </html>`,
-          )
-        const directory = await fixture.create()
-        await fixture
-          .withPackages({
-            vite: '6.0.0',
-            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
-          })
-          .create()
-
-        const { server, url } = await startTestServer({
-          root: directory,
-        })
-
-        expect((await fetch(`${url}/contact/email`)).headers.get('X-NF-Hello')).toBe('world')
-        expect((await fetch(url)).headers.get('X-NF-Hello')).toBe('world')
-        expect((await fetch(`${url}/contact/email`)).headers.get('Cache-Control')).toBe('public, max-age=90')
-        // Default Cache-Control
-        expect((await fetch(url)).headers.get('Cache-Control')).toBe('public, max-age=0, must-revalidate')
-
-        await server.close()
-        await fixture.destroy()
-      })
-    })
-
-    test('Respects configured Netlify redirects and rewrites', async () => {
-      const fixture = new Fixture()
-        .withFile(
-          'netlify.toml',
-          `[[redirects]]
-           status = 301
-           from = "/contact/e-mail"
-           to = "/contact/email"
-           [[redirects]]
-           status = 200
-           from = "/beta/*"
-           to = "/nextgenv3/:splat"`,
-        )
-        .withFile(
-          'vite.config.js',
-          `import { defineConfig } from 'vite';
-           import netlify from '@netlify/vite-plugin';
-
-           export default defineConfig({
-             plugins: [
-               netlify({
-                 middleware: true
-               })
-             ]
-           });`,
         )
         .withFile(
           'contact/email.html',
           `<!doctype html>
-           <html>
-             <head><title>Contact us via email</title></head>
-             <body>Hello from the redirect target</body>
-           </html>`,
-        )
-        .withFile(
-          'nextgenv3/pricing.html',
-          `<!doctype html>
-           <html>
-             <head><title>Pricing</title></head>
-             <body>Hello from the rewrite target</body>
-           </html>`,
+             <html>
+               <head><title>Contact us via email</title></head>
+               <body>Hello from another static file</body>
+             </html>`,
         )
       const directory = await fixture.create()
       await fixture
@@ -280,14 +214,78 @@ describe('Plugin constructor', () => {
         root: directory,
       })
 
-      expect(await fetch(`${url}/contact/email`).then((r) => r.text())).toContain('Hello from the redirect target')
-      expect(await fetch(`${url}/contact/e-mail`, { redirect: 'follow' }).then((r) => r.text())).toContain(
-        'Hello from the redirect target',
-      )
-      expect(await fetch(`${url}/beta/pricing`).then((r) => r.text())).toContain('Hello from the rewrite target')
+      expect((await fetch(`${url}/contact/email`)).headers.get('X-NF-Hello')).toBe('world')
+      expect((await fetch(url)).headers.get('X-NF-Hello')).toBe('world')
+      expect((await fetch(`${url}/contact/email`)).headers.get('Cache-Control')).toBe('public, max-age=90')
+      // Default Cache-Control
+      expect((await fetch(url)).headers.get('Cache-Control')).toBe('public, max-age=0, must-revalidate')
 
       await server.close()
       await fixture.destroy()
     })
+  })
+
+  test('Respects configured Netlify redirects and rewrites', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[[redirects]]
+           status = 301
+           from = "/contact/e-mail"
+           to = "/contact/email"
+           [[redirects]]
+           status = 200
+           from = "/beta/*"
+           to = "/nextgenv3/:splat"`,
+      )
+      .withFile(
+        'vite.config.js',
+        `import { defineConfig } from 'vite';
+           import netlify from '@netlify/vite-plugin';
+
+           export default defineConfig({
+             plugins: [
+               netlify({
+                 middleware: true
+               })
+             ]
+           });`,
+      )
+      .withFile(
+        'contact/email.html',
+        `<!doctype html>
+           <html>
+             <head><title>Contact us via email</title></head>
+             <body>Hello from the redirect target</body>
+           </html>`,
+      )
+      .withFile(
+        'nextgenv3/pricing.html',
+        `<!doctype html>
+           <html>
+             <head><title>Pricing</title></head>
+             <body>Hello from the rewrite target</body>
+           </html>`,
+      )
+    const directory = await fixture.create()
+    await fixture
+      .withPackages({
+        vite: '6.0.0',
+        '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+      })
+      .create()
+
+    const { server, url } = await startTestServer({
+      root: directory,
+    })
+
+    expect(await fetch(`${url}/contact/email`).then((r) => r.text())).toContain('Hello from the redirect target')
+    expect(await fetch(`${url}/contact/e-mail`, { redirect: 'follow' }).then((r) => r.text())).toContain(
+      'Hello from the redirect target',
+    )
+    expect(await fetch(`${url}/beta/pricing`).then((r) => r.text())).toContain('Hello from the rewrite target')
+
+    await server.close()
+    await fixture.destroy()
   })
 })
