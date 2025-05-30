@@ -1,4 +1,5 @@
 // @ts-check
+import { promises as fs } from 'node:fs'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { includeIgnoreFile } from '@eslint/compat'
@@ -13,9 +14,14 @@ import temporarySuppressions from './eslint_temporary_suppressions.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+const packagesPath = path.join(__dirname, 'packages')
+const packages = await fs.readdir(packagesPath)
+const packageIgnores = packages.map((name) => includeIgnoreFile(path.resolve(packagesPath, name, '.gitignore')))
+
 export default tseslint.config(
   // Global rules and configuration
   includeIgnoreFile(path.resolve(__dirname, '.gitignore')),
+  ...packageIgnores,
   {
     linterOptions: {
       reportUnusedDisableDirectives: true,

@@ -206,7 +206,7 @@ export class NetlifyDev {
     }
 
     // 2. Check if the request matches Image CDN.
-    const imageMatch = await images?.match(request)
+    const imageMatch = images?.match(request)
     if (imageMatch) {
       return imageMatch.handle()
     }

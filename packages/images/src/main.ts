@@ -14,16 +14,6 @@ export interface ImageMatch {
 
 const IMAGE_CDN_ENDPOINTS = ['/.netlify/images', '/.netlify/images/']
 
-interface IpxParams {
-  w?: string | null
-  h?: string | null
-  s?: string | null
-  quality?: string | null
-  format?: string | null
-  fit?: string | null
-  position?: string | null
-}
-
 export class ImageHandler {
   private allowedRemoteUrlPatterns: RegExp[]
 
@@ -35,35 +25,44 @@ export class ImageHandler {
   }
 
   private generateIPXRequestURL(imageURL: URL, netlifyImageCdnParams: URLSearchParams): URL {
-    const params: IpxParams = {}
+    const ipxParams: string[] = []
 
-    const width = netlifyImageCdnParams.get('w') || netlifyImageCdnParams.get('width') || null
-    const height = netlifyImageCdnParams.get('h') || netlifyImageCdnParams.get('height') || null
+    const width = netlifyImageCdnParams.get('w') ?? netlifyImageCdnParams.get('width')
+    const height = netlifyImageCdnParams.get('h') ?? netlifyImageCdnParams.get('height')
 
     if (width && height) {
-      params.s = `${width}x${height}`
-    } else {
-      params.w = width
-      params.h = height
+      ipxParams.push(`resize_${width}x${height}`)
+    } else if (width) {
+      ipxParams.push(`width_${width}`)
+    } else if (height) {
+      ipxParams.push(`height_${height}`)
     }
 
-    params.quality = netlifyImageCdnParams.get('q') || netlifyImageCdnParams.get('quality') || null
-    params.format = netlifyImageCdnParams.get('fm') || null
+    const quality = netlifyImageCdnParams.get('q') ?? netlifyImageCdnParams.get('quality')
+    if (quality) {
+      ipxParams.push(`quality_${quality}`)
+    }
+    const format = netlifyImageCdnParams.get('fm')
+    if (format) {
+      ipxParams.push(`format_${format}`)
+    }
 
-    const fit = netlifyImageCdnParams.get('fit') || null
-    params.fit = fit === 'contain' ? 'inside' : fit
+    const fit = netlifyImageCdnParams.get('fit')
+    if (fit) {
+      ipxParams.push(`fit_${fit === 'contain' ? 'inside' : fit}`)
+    }
 
-    params.position = netlifyImageCdnParams.get('position') || null
+    const position = netlifyImageCdnParams.get('position')
+    if (position) {
+      ipxParams.push(`position_${position}`)
+    }
 
-    const ipxModifiers = Object.entries(params)
-      .filter(([, value]) => value !== null)
-      .map(([key, value]) => `${key}_${value}`)
-      .join(',')
+    const ipxModifiers = ipxParams.join(',')
 
     return new URL(`/${ipxModifiers || `_`}/${encodeURIComponent(imageURL.href)}`, imageURL.origin)
   }
 
-  async match(request: Request): Promise<ImageMatch | undefined> {
+  match(request: Request): ImageMatch | undefined {
     const url = new URL(request.url)
 
     if (IMAGE_CDN_ENDPOINTS.includes(url.pathname)) {

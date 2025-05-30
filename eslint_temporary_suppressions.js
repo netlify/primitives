@@ -735,6 +735,12 @@ export default [
     },
   },
   {
+    files: ['packages/images/src/main.ts'],
+    rules: {
+      'n/no-unsupported-features/node-builtins': 'off',
+    },
+  },
+  {
     files: ['packages/otel/src/bootstrap/main.ts'],
     rules: {
       'n/no-unsupported-features/node-builtins': 'off',
