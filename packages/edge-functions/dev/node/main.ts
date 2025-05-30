@@ -193,8 +193,10 @@ export class EdgeFunctionsHandler {
     request.headers.set(headers.PassthroughHost, `localhost:${originURL.port}`)
     request.headers.set(headers.PassthroughProtocol, 'http:')
 
-    const site: { code?: string; name?: string } = {
+    const site = {
+      id: this.siteID,
       name: this.siteName,
+      url: this.originServerAddress,
     }
 
     request.headers.set(headers.Site, base64Encode(site))

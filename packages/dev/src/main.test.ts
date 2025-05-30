@@ -124,14 +124,14 @@ describe('Handling requests', () => {
       await dev.stop()
 
       expect(await matchRes?.text()).toBe('Hello from hello.txt')
-      expect(Object.fromEntries(matchRes?.headers?.entries() ?? [])).toMatchObject({
+      expect(Object.fromEntries(matchRes?.headers.entries() ?? [])).toMatchObject({
         'cache-control': 'max-age=42',
         vary: 'User-Agent',
       })
 
       const noMatchRes = await dev.handle(new Request('https://site.netlify/another-path.txt'))
       expect(await noMatchRes?.text()).toBe('Hello from another-path.txt')
-      expect(Object.fromEntries(noMatchRes?.headers?.entries() ?? [])).not.toMatchObject({
+      expect(Object.fromEntries(noMatchRes?.headers.entries() ?? [])).not.toMatchObject({
         'cache-control': 'max-age=42',
         vary: 'User-Agent',
       })
@@ -206,7 +206,7 @@ describe('Handling requests', () => {
 
       const res = await dev.handle(req)
       expect(await res?.text()).toBe('Hello from the static file')
-      expect(Object.fromEntries(res?.headers?.entries() ?? [])).toMatchObject({
+      expect(Object.fromEntries(res?.headers.entries() ?? [])).toMatchObject({
         'x-custom-header': 'custom-value',
       })
 
