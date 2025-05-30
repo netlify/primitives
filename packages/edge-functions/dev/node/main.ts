@@ -65,7 +65,7 @@ export class EdgeFunctionsHandler {
    * which are then returned by this method.
    */
   private async getFunctionConfigs(denoPort: number, functions: Record<string, string>) {
-    const url = new URL(`http://${LOCAL_HOST}:${denoPort}`)
+    const url = new URL(`http://${LOCAL_HOST}:${denoPort.toString()}`)
     url.searchParams.set('functions', encodeURIComponent(JSON.stringify(functions)))
 
     const res = await fetch(url, {
@@ -81,7 +81,7 @@ export class EdgeFunctionsHandler {
    * It computes both the names of the edge functions that should run as well
    * as the invocation metadata object that must be included in the request.
    */
-  private async getFunctionsForRequest(
+  private getFunctionsForRequest(
     req: Request,
     availableFunctions: EdgeFunction[],
     functionConfigs: Record<string, FunctionConfig>,
@@ -167,7 +167,7 @@ export class EdgeFunctionsHandler {
     }
 
     const iscDeclarations = await this.getFunctionConfigs(denoPort, functionsMap)
-    const { functionNames, invocationMetadata } = await this.getFunctionsForRequest(request, functions, iscDeclarations)
+    const { functionNames, invocationMetadata } = this.getFunctionsForRequest(request, functions, iscDeclarations)
     if (functionNames.length === 0) {
       return
     }
@@ -261,8 +261,8 @@ export class EdgeFunctionsHandler {
   private async renderError(errorBuffer: string, acceptsHTML: boolean): Promise<Response> {
     const status = 500
     const {
-      error: { message, name, stack },
-    } = JSON.parse(errorBuffer.toString())
+      error: { message, name, stack = '' },
+    } = JSON.parse(errorBuffer.toString()) as { error: Error }
 
     if (!acceptsHTML) {
       return new Response(`${name}: ${message}\n ${stack}`, { status })
@@ -285,7 +285,7 @@ export class EdgeFunctionsHandler {
 
   private async waitForDenoServer(port: number, count = 1): Promise<void> {
     try {
-      await fetch(`http://${LOCAL_HOST}:${port}`, {
+      await fetch(`http://${LOCAL_HOST}:${port.toString()}`, {
         method: 'HEAD',
       })
     } catch {
