@@ -77,6 +77,7 @@ export class ImageHandler {
             return new Response('Bad Request: Missing "url" query parameter', { status: 400 })
           }
 
+          // TODO: use serverAddress instead of url.origin once https://github.com/netlify/primitives/pull/233 is merged
           const sourceImageUrl = new URL(sourceImageUrlParam, url.origin)
 
           // if it's not local image, check if it it's allowed
