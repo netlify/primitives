@@ -154,7 +154,8 @@ export class NetlifyDev {
     //
     // https://docs.netlify.com/platform/request-chain/
 
-    // 1. Check if the request matches an edge function.
+    // 1. Check if the request matches an edge function. Handles edge functions
+    //    with both modes of cache (manual and off) by running them serially.
     const edgeFunctionResponse = await this.#edgeFunctionsHandler?.handle(request.clone())
     if (edgeFunctionResponse) {
       return edgeFunctionResponse
