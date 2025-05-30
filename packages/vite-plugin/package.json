@@ -39,6 +39,6 @@
     "chalk": "^5.4.1"
   },
   "peerDependencies": {
-    "vite": "^6.2"
+    "vite": "^6"
   }
 }
