@@ -8,6 +8,7 @@ import { Handler } from '../lib/handler.js'
  * A Node.js HTTP server with support for middleware.
  */
 export class HTTPServer {
+  private url?: string
   private handler: Handler
   private nodeServer?: http.Server
 
@@ -16,6 +17,10 @@ export class HTTPServer {
   }
 
   async start(port = 0) {
+    if (this.url) {
+      return this.url
+    }
+
     const adapter = createServerAdapter((request: Request) => this.handler(request))
     const server = http.createServer(adapter)
 
@@ -29,7 +34,10 @@ export class HTTPServer {
           return reject(new Error('Server cannot be started on a pipe or Unix socket'))
         }
 
-        resolve(`http://localhost:${address.port}`)
+        const url = `http://localhost:${address.port}`
+        this.url = url
+
+        resolve(url)
       })
     })
   }
