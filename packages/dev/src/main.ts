@@ -299,7 +299,7 @@ export class NetlifyDev {
 
     let envVariables: Record<string, InjectedEnvironmentVariable> = {}
 
-    if (this.#features.environmentVariables && siteID) {
+    if (this.#features.environmentVariables) {
       // TODO: Use proper types for this.
       envVariables = await injectEnvVariables({
         accountSlug: config?.siteInfo?.account_slug,
