@@ -37,7 +37,10 @@
     "dev": "tsup-node --watch",
     "publint": "npx -y publint --strict"
   },
-  "keywords": ["netlify", "edge functions"],
+  "keywords": [
+    "netlify",
+    "edge functions"
+  ],
   "license": "MIT",
   "repository": "netlify/primitives",
   "bugs": {

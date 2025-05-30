@@ -125,7 +125,7 @@ describe('`fetchWithCache`', () => {
             expect(body).toBe('<h1>Hello world</h1>')
           },
           headers: async (reqHeaders) => {
-            const headers = decodeHeaders((reqHeaders)['netlify-programmable-headers'])
+            const headers = decodeHeaders(reqHeaders['netlify-programmable-headers'])
 
             expect(headers.get('netlify-cache-tag')).toBe(cacheOptions.tags.join(', '))
             expect(headers.get('netlify-cdn-cache-control')).toBe(`s-maxage=${cacheOptions.ttl}`)
