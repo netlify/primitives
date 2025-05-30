@@ -1,3 +1,4 @@
+import type { Logger } from '@netlify/dev-utils'
 import { createIPX, createIPXWebServer, ipxFSStorage, ipxHttpStorage } from 'ipx'
 
 interface ImagesConfig {
@@ -6,6 +7,7 @@ interface ImagesConfig {
 
 interface ImageHandlerOptions {
   imagesConfig?: ImagesConfig
+  logger: Logger
 }
 
 export interface ImageMatch {
@@ -15,13 +17,20 @@ export interface ImageMatch {
 const IMAGE_CDN_ENDPOINTS = ['/.netlify/images', '/.netlify/images/']
 
 export class ImageHandler {
-  private allowedRemoteUrlPatterns: RegExp[]
+  #allowedRemoteUrlPatterns: RegExp[]
+  #logger: Logger
 
-  constructor(options: ImageHandlerOptions) {
-    // TODO: handle invalid patterns
-    this.allowedRemoteUrlPatterns = (options.imagesConfig?.remote_images ?? []).map(
-      (stringPattern) => new RegExp(stringPattern),
-    )
+  constructor({ logger, imagesConfig }: ImageHandlerOptions) {
+    this.#logger = logger
+    this.#allowedRemoteUrlPatterns = (imagesConfig?.remote_images ?? []).reduce<RegExp[]>((acc, stringPattern) => {
+      try {
+        acc.push(new RegExp(stringPattern))
+      } catch (maybeError) {
+        const error = maybeError instanceof Error ? maybeError : new Error(String(maybeError))
+        this.#logger.warn(`Malformed remote image pattern: "${stringPattern}": ${error.message}. Skipping it.`)
+      }
+      return acc
+    }, [])
   }
 
   private generateIPXRequestURL(imageURL: URL, netlifyImageCdnParams: URLSearchParams): URL {
@@ -83,7 +92,7 @@ export class ImageHandler {
           // if it's not local image, check if it it's allowed
           if (
             sourceImageUrl.origin !== url.origin &&
-            !this.allowedRemoteUrlPatterns.some((allowedRemoteUrlPattern) =>
+            !this.#allowedRemoteUrlPatterns.some((allowedRemoteUrlPattern) =>
               allowedRemoteUrlPattern.test(sourceImageUrl.href),
             )
           ) {

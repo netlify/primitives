@@ -161,6 +161,7 @@ export class NetlifyDev {
     const images = this.#features.images
       ? new ImageHandler({
           imagesConfig: this.#config?.config.images,
+          logger: this.#logger,
         })
       : null
 
