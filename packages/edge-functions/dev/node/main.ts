@@ -83,7 +83,7 @@ export class EdgeFunctionsHandler {
    */
   private async getFunctionsForRequest(
     req: Request,
-    functions: EdgeFunction[],
+    availableFunctions: EdgeFunction[],
     functionConfigs: Record<string, FunctionConfig>,
   ) {
     const url = new URL(req.url)
@@ -91,9 +91,9 @@ export class EdgeFunctionsHandler {
     const { manifest } = generateManifest({
       declarations,
       userFunctionConfig: functionConfigs,
-      functions,
+      functions: availableFunctions,
     })
-    const functionNames: string[] = []
+    const matchingFunctionNames: string[] = []
     const routeIndexes: number[] = []
     const routes = [...manifest.routes, ...manifest.post_cache_routes]
 
@@ -119,7 +119,7 @@ export class EdgeFunctionsHandler {
         return
       }
 
-      functionNames.push(route.function)
+      matchingFunctionNames.push(route.function)
       routeIndexes.push(index)
     })
 
@@ -133,7 +133,7 @@ export class EdgeFunctionsHandler {
       })),
     }
 
-    return { functionNames, invocationMetadata }
+    return { functionNames: matchingFunctionNames, invocationMetadata }
   }
 
   /**
