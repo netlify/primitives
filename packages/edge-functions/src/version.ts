@@ -12,7 +12,7 @@ const packageJsonPath = path.resolve(fileURLToPath(import.meta.url), '../../pack
 export const getURL = async () => {
   try {
     const data = await fs.readFile(packageJsonPath, 'utf8')
-    const { version } = JSON.parse(data)
+    const { version } = JSON.parse(data) as { version: string }
 
     // Releasing version 1.2.3 of the `@netlify/edge-functions` module will
     // make release-please create a GitHub release and corresponding tag of

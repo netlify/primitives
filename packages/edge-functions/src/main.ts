@@ -1,1 +1,1 @@
-export { Config, IntegrationsConfig, Manifest, ManifestFunction } from './lib/config.js'
+export type { Config, IntegrationsConfig, Manifest, ManifestFunction } from './lib/config.js'

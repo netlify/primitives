@@ -79,7 +79,7 @@ export class EdgeFunctionsHandler {
   /**
    * Returns the list of edge functions that should run for a given request.
    * It computes both the names of the edge functions that should run as well
-   * as the invocation metadata object that musto be included in the request.
+   * as the invocation metadata object that must be included in the request.
    */
   private async getFunctionsForRequest(
     req: Request,

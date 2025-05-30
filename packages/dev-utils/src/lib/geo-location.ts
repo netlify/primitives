@@ -1,4 +1,4 @@
-import { Context } from '@netlify/types'
+import type { Context } from '@netlify/types'
 
 export type Geolocation = Context['geo']
 

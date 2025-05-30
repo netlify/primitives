@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { Geolocation } from '@netlify/dev-utils'
+import type { Geolocation } from '@netlify/dev-utils'
 import type { FunctionBuildCache, NetlifyFunction } from './function.js'
 import { FunctionsRegistry, type FunctionRegistryOptions } from './registry.js'
 import { headersObjectFromWebHeaders } from './runtimes/nodejs/lambda.js'

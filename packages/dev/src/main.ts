@@ -154,10 +154,10 @@ export class NetlifyDev {
     //
     // https://docs.netlify.com/platform/request-chain/
 
-    // 1. Check if the request matches a function.
-    const edgeFunctionMatch = await this.#edgeFunctionsHandler?.handle(request.clone())
-    if (edgeFunctionMatch) {
-      return edgeFunctionMatch
+    // 1. Check if the request matches an edge function.
+    const edgeFunctionResponse = await this.#edgeFunctionsHandler?.handle(request.clone())
+    if (edgeFunctionResponse) {
+      return edgeFunctionResponse
     }
 
     // 2. Check if the request matches a function.
@@ -332,7 +332,7 @@ export class NetlifyDev {
 
       this.#edgeFunctionsHandler = new EdgeFunctionsHandler({
         configDeclarations: this.#config?.config.edge_functions ?? [],
-        directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
+        directories: this.#config?.config.build.edge_functions ? this.#config.config.build.edge_functions : [],
         env,
         geolocation: mockLocation,
         originServerAddress: serverAddress,
