@@ -259,6 +259,8 @@ export class NetlifyDev {
   }
 
   async start() {
+    this.#logger.log('Netlify dev environment booting...')
+
     await ensureNetlifyIgnore(this.#projectRoot, this.#logger)
 
     this.#apiToken = this.#apiToken ?? (await getAPIToken())
@@ -382,6 +384,8 @@ export class NetlifyDev {
         directory: this.#config?.config.build.publish ?? this.#projectRoot,
       })
     }
+
+    this.#logger.log('Netlify dev environment booted')
 
     return {
       serverAddress,
