@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@netlify/dev-utils": "3.0.0",
-    "@netlify/edge-bundler": "^14.0.4",
+    "@netlify/edge-bundler": "^14.0.5",
     "@netlify/edge-functions-bootstrap": "^2.13.0",
     "@netlify/runtime-utils": "2.0.0",
     "get-port": "^7.1.0"
