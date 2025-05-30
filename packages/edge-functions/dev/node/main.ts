@@ -1,4 +1,4 @@
-import { resolve } from 'node:path'
+import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import { renderFunctionErrorPage, type Geolocation } from '@netlify/dev-utils'
@@ -28,7 +28,7 @@ interface EdgeFunctionsHandlerOptions {
   siteName?: string
 }
 
-const denoRunPath = resolve(fileURLToPath(import.meta.url), '../../dev/deno/run.ts')
+const denoRunPath = path.resolve(fileURLToPath(import.meta.url), '../../deno/server.ts')
 const DENO_SERVER_POLL_INTERVAL = 50
 const DENO_SERVER_POLL_TIMEOUT = 3000
 const LOCAL_HOST = '127.0.0.1'
@@ -193,10 +193,8 @@ export class EdgeFunctionsHandler {
     request.headers.set(headers.PassthroughHost, `localhost:${originURL.port}`)
     request.headers.set(headers.PassthroughProtocol, 'http:')
 
-    const site = {
-      id: this.siteID,
+    const site: { code?: string; name?: string } = {
       name: this.siteName,
-      url: this.originServerAddress,
     }
 
     request.headers.set(headers.Site, base64Encode(site))
@@ -234,10 +232,11 @@ export class EdgeFunctionsHandler {
       bootstrapURL: await getBootstrapURL(),
       denoPort,
     }
-    const denoFlags: string[] = ['--allow-all', '--no-config', '--quiet']
+    const denoFlags: string[] = ['--allow-scripts', '--quiet', '--no-lock']
+    const script = `import('${denoRunPath}?options=${encodeURIComponent(JSON.stringify(runOptions))}');`
 
     try {
-      await denoBridge.runInBackground(['run', ...denoFlags, denoRunPath, JSON.stringify(runOptions)], processRef, {
+      await denoBridge.runInBackground(['eval', ...denoFlags, script], processRef, {
         env,
         extendEnv: false,
         pipeOutput: true,
