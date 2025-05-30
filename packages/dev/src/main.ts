@@ -329,7 +329,7 @@ export class NetlifyDev {
 
       this.#edgeFunctionsHandler = new EdgeFunctionsHandler({
         configDeclarations: this.#config?.config.edge_functions ?? [],
-        directories: this.#config?.config.build.edge_functions ? this.#config.config.build.edge_functions : [],
+        directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
         env,
         geolocation: mockLocation,
         originServerAddress: serverAddress,
