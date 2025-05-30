@@ -43,7 +43,7 @@ interface InjectEnvironmentVariablesOptions {
   baseVariables: Record<string, EnvironmentVariable>
   envAPI: EnvironmentVariables
   netlifyAPI?: NetlifyAPI
-  siteID: string
+  siteID?: string
 }
 
 export const injectEnvVariables = async ({
@@ -57,7 +57,7 @@ export const injectEnvVariables = async ({
 
   let variables = baseVariables
 
-  if (netlifyAPI && accountSlug) {
+  if (netlifyAPI && siteID && accountSlug) {
     variables = await getEnvelopeEnv({
       accountId: accountSlug,
       api: netlifyAPI,
