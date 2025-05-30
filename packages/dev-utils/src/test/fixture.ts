@@ -34,6 +34,7 @@ export class Fixture {
     const packageJSON = {
       name: 'fixture',
       version: '0.0.0',
+      type: 'module',
       dependencies: this.npmDependencies,
     }
     const packageJSONPath = join(directory, 'package.json')
