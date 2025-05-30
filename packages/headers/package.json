@@ -37,6 +37,6 @@
     "vitest": "^3.1.4"
   },
   "dependencies": {
-    "@netlify/headers-parser": "^9.0.0"
+    "@netlify/headers-parser": "^9.0.1"
   }
 }
