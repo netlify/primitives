@@ -85,7 +85,7 @@ describe('`EdgeFunctionsHandler`', () => {
       },
       params: {},
       server: { region: 'dev' },
-      site: { name: 'test' },
+      site: { id: '123', name: 'test', url: serverAddress },
       url: `${serverAddress}/echo`,
     })
 
