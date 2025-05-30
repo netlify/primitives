@@ -279,13 +279,13 @@ export class NetlifyDev {
 
     this.#cleanupJobs.push(() => runtime.stop())
 
-    let serverAddress: string
+    let serverAddress: string | undefined
 
     // If a custom server has been provided, use it. If not, we must stand up
     // a new one, since it's required for communication with edge functions.
     if (typeof this.#server === 'string') {
       serverAddress = this.#server
-    } else {
+    } else if (this.#features.edgeFunctions) {
       const passthroughServer = new HTTPServer(async (req) => {
         const res = await this.handle(req)
 
@@ -310,7 +310,7 @@ export class NetlifyDev {
       })
     }
 
-    if (this.#features.edgeFunctions) {
+    if (this.#features.edgeFunctions && serverAddress !== undefined) {
       const env = Object.entries(envVariables).reduce<Record<string, string>>((acc, [key, variable]) => {
         if (
           variable.usedSource === 'account' ||
