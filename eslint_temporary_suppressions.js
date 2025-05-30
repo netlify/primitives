@@ -895,4 +895,55 @@ export default [
       '@typescript-eslint/no-unsafe-argument': 'off',
     },
   },
+  {
+    files: ['packages/blobs/src/store.ts'],
+    rules: {
+      'n/no-unsupported-features/node-builtins': 'off',
+    },
+  },
+  {
+    files: ['packages/blobs/src/types.ts'],
+    rules: {
+      'n/no-unsupported-features/node-builtins': 'off',
+    },
+  },
+  {
+    files: ['packages/cache/src/fetchwithcache.ts'],
+    rules: {
+      '@typescript-eslint/no-unnecessary-condition': 'off',
+    },
+  },
+  {
+    files: ['packages/edge-functions/dev/node/main.test.ts'],
+    rules: {
+      '@typescript-eslint/require-await': 'off',
+    },
+  },
+  {
+    files: ['packages/edge-functions/dev/node/main.ts'],
+    rules: {
+      '@typescript-eslint/no-unnecessary-condition': 'off',
+    },
+  },
+  {
+    files: ['packages/edge-functions/src/version.test.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+    },
+  },
+  {
+    files: ['packages/edge-functions/src/version.ts'],
+    rules: {
+      '@typescript-eslint/restrict-template-expressions': 'off',
+    },
+  },
+  {
+    files: ['packages/vite-plugin/src/main.ts'],
+    rules: {
+      '@typescript-eslint/restrict-template-expressions': 'off',
+    },
+  },
 ]
