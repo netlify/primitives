@@ -80,6 +80,9 @@ export class Fixture {
   }
 
   async destroy() {
+    // There's not much use in cleaning up in CI, plus this fails in some case on Windows images
+    if (process.env.CI) return
+
     await fs.rm(this.directory!.path, { force: true, recursive: true })
   }
 
