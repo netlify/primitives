@@ -32,6 +32,7 @@ export interface RunRequestMessage {
     functions: Record<string, string>
     headers: Record<string, string>
     method: string
+    timeout: number
     url: string
   }
 }
