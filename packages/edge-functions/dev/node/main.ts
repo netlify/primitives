@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { renderFunctionErrorPage, type Geolocation } from '@netlify/dev-utils'
+import { Logger, renderFunctionErrorPage, type Geolocation } from '@netlify/dev-utils'
 import {
   find,
   generateManifest,
@@ -23,6 +23,7 @@ interface EdgeFunctionsHandlerOptions {
   directories: string[]
   env: Record<string, string>
   geolocation: Geolocation
+  logger: Logger
   originServerAddress: string
   siteID?: string
   siteName?: string
@@ -38,6 +39,8 @@ export class EdgeFunctionsHandler {
   private directories: string[]
   private geolocation: Geolocation
   private initialization: ReturnType<typeof this.initialize>
+  private initialized: boolean
+  private logger: Logger
   private originServerAddress: string
   private siteID?: string
   private siteName?: string
@@ -50,6 +53,8 @@ export class EdgeFunctionsHandler {
       ...options.env,
       DENO_REGION: 'dev',
     })
+    this.initialized = false
+    this.logger = options.logger
     this.originServerAddress = options.originServerAddress
     this.siteID = options.siteID
     this.siteName = options.siteName
@@ -159,10 +164,21 @@ export class EdgeFunctionsHandler {
       }),
       {},
     )
-    const { denoPort, success } = await this.initialization
 
-    // TODO: Log error
+    const initMessage = setTimeout(() => {
+      if (this.initialized) {
+        return
+      }
+
+      this.logger.log(
+        'Setting up the Netlify Edge Functions environment. This may take up to a couple of minutes, depending on your internet connection.',
+      )
+    }, 1_500)
+
+    const { denoPort, success } = await this.initialization
     if (!success) {
+      clearTimeout(initMessage)
+
       return
     }
 
@@ -245,12 +261,15 @@ export class EdgeFunctionsHandler {
       })
     } catch (error) {
       success = false
-      console.error(error)
+
+      this.logger.error('An error occurred while setting up the Netlify Edge Functions environment:', error)
     }
 
     // The Promise above will resolve as soon as we start the command, but we
     // must wait for it to actually listen for requests.
     await this.waitForDenoServer(denoPort)
+
+    this.initialized = true
 
     return {
       denoPort,
@@ -290,7 +309,7 @@ export class EdgeFunctionsHandler {
       })
     } catch {
       if ((count + 1) * DENO_SERVER_POLL_INTERVAL > DENO_SERVER_POLL_TIMEOUT) {
-        throw new Error('Could not start local development server for Netlify Edge Functions')
+        throw new Error('Could not establish a connection to the Netlify Edge Functions local development server')
       }
 
       await new Promise((resolve) => setTimeout(resolve, DENO_SERVER_POLL_INTERVAL))

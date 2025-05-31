@@ -333,6 +333,7 @@ export class NetlifyDev {
         directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
         env,
         geolocation: mockLocation,
+        logger: this.#logger,
         originServerAddress: serverAddress,
         siteID,
         siteName: config?.siteInfo.name,
