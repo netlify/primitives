@@ -223,69 +223,69 @@ describe('configureServer', { timeout: 15_000 }, () => {
       await server.close()
       await fixture.destroy()
     })
-  })
 
-  test('Respects configured Netlify redirects and rewrites', async () => {
-    const fixture = new Fixture()
-      .withFile(
-        'netlify.toml',
-        `[[redirects]]
-           status = 301
-           from = "/contact/e-mail"
-           to = "/contact/email"
-           [[redirects]]
-           status = 200
-           from = "/beta/*"
-           to = "/nextgenv3/:splat"`,
-      )
-      .withFile(
-        'vite.config.js',
-        `import { defineConfig } from 'vite';
-           import netlify from '@netlify/vite-plugin';
+    test('Respects configured Netlify redirects and rewrites', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[[redirects]]
+             status = 301
+             from = "/contact/e-mail"
+             to = "/contact/email"
+             [[redirects]]
+             status = 200
+             from = "/beta/*"
+             to = "/nextgenv3/:splat"`,
+        )
+        .withFile(
+          'vite.config.js',
+          `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
 
-           export default defineConfig({
-             plugins: [
-               netlify({
-                 middleware: true
-               })
-             ]
-           });`,
-      )
-      .withFile(
-        'contact/email.html',
-        `<!doctype html>
-           <html>
-             <head><title>Contact us via email</title></head>
-             <body>Hello from the redirect target</body>
-           </html>`,
-      )
-      .withFile(
-        'nextgenv3/pricing.html',
-        `<!doctype html>
-           <html>
-             <head><title>Pricing</title></head>
-             <body>Hello from the rewrite target</body>
-           </html>`,
-      )
-    const directory = await fixture.create()
-    await fixture
-      .withPackages({
-        vite: '6.0.0',
-        '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                   middleware: true
+                 })
+               ]
+             });`,
+        )
+        .withFile(
+          'contact/email.html',
+          `<!doctype html>
+             <html>
+               <head><title>Contact us via email</title></head>
+               <body>Hello from the redirect target</body>
+             </html>`,
+        )
+        .withFile(
+          'nextgenv3/pricing.html',
+          `<!doctype html>
+             <html>
+               <head><title>Pricing</title></head>
+               <body>Hello from the rewrite target</body>
+             </html>`,
+        )
+      const directory = await fixture.create()
+      await fixture
+        .withPackages({
+          vite: '6.0.0',
+          '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+        })
+        .create()
+
+      const { server, url } = await startTestServer({
+        root: directory,
       })
-      .create()
 
-    const { server, url } = await startTestServer({
-      root: directory,
+      expect(await fetch(`${url}/contact/email`).then((r) => r.text())).toContain('Hello from the redirect target')
+      expect(await fetch(`${url}/contact/e-mail`, { redirect: 'follow' }).then((r) => r.text())).toContain(
+        'Hello from the redirect target',
+      )
+      expect(await fetch(`${url}/beta/pricing`).then((r) => r.text())).toContain('Hello from the rewrite target')
+
+      await server.close()
+      await fixture.destroy()
     })
-
-    expect(await fetch(`${url}/contact/email`).then((r) => r.text())).toContain('Hello from the redirect target')
-    expect(await fetch(`${url}/contact/e-mail`, { redirect: 'follow' }).then((r) => r.text())).toContain(
-      'Hello from the redirect target',
-    )
-    expect(await fetch(`${url}/beta/pricing`).then((r) => r.text())).toContain('Hello from the rewrite target')
-
-    await server.close()
-    await fixture.destroy()
   })
 })
