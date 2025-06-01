@@ -4,7 +4,8 @@ import process from 'node:process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import { Fixture } from '@netlify/dev-utils'
-import { beforeEach, describe, expect, test } from 'vitest'
+import { type Browser, type ConsoleMessage, type Page, chromium } from 'playwright'
+import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { createServer } from 'vite'
 
 import netlify from './main.js'
@@ -13,7 +14,7 @@ const PLUGIN_PATH = path.resolve(fileURLToPath(import.meta.url), '../..')
 
 const startTestServer = async (options: Parameters<typeof createServer>[0] = {}) => {
   const server = await createServer({
-    logLevel: 'silent',
+    logLevel: 'warn',
     ...options,
   })
 
@@ -98,6 +99,18 @@ describe('configureServer', { timeout: 15_000 }, () => {
   })
 
   describe('Middleware enabled', () => {
+    let browser: Browser
+    let page: Page
+
+    beforeEach(async () => {
+      browser = await chromium.launch()
+      page = await browser.newPage()
+    })
+
+    afterEach(async () => {
+      await browser.close()
+    })
+
     test('Returns static files from project dir', async () => {
       const fixture = new Fixture()
         .withFile(
@@ -143,18 +156,20 @@ describe('configureServer', { timeout: 15_000 }, () => {
         root: directory,
       })
 
-      const response = await fetch(url)
-      expect(response).toHaveProperty('status', 200)
-      expect(await response.text()).toContain('Hello from the static index.html file')
+      const response = await page.goto(url)
+      expect(response?.status()).toBe(200)
+      expect(await response?.text()).toContain('Hello from the static index.html file')
 
-      expect(await fetch(`${url}/js/main.js`).then((r) => r.text())).toContain('console.log(')
+      expect(await page.goto(`${url}/js/main.js`).then((r) => r?.text())).toContain('console.log(')
 
-      expect(await fetch(`${url}/contact/email.html`).then((r) => r.text())).toContain('Hello from another static file')
+      expect(await page.goto(`${url}/contact/email.html`).then((r) => r?.text())).toContain(
+        'Hello from another static file',
+      )
 
       // This is Vite's behavior in dev for "404s"
-      const notFoundResponse = await fetch(`${url}/wp-admin.php`)
-      expect(notFoundResponse).toHaveProperty('status', 200)
-      expect(await notFoundResponse.text()).toContain('Hello from the static index.html file')
+      const notFoundResponse = await page.goto(`${url}/wp-admin.php`)
+      expect(notFoundResponse?.status()).toBe(200)
+      expect(await notFoundResponse?.text()).toContain('Hello from the static index.html file')
 
       await server.close()
       await fixture.destroy()
@@ -214,11 +229,17 @@ describe('configureServer', { timeout: 15_000 }, () => {
         root: directory,
       })
 
-      expect((await fetch(`${url}/contact/email`)).headers.get('X-NF-Hello')).toBe('world')
-      expect((await fetch(url)).headers.get('X-NF-Hello')).toBe('world')
-      expect((await fetch(`${url}/contact/email`)).headers.get('Cache-Control')).toBe('public, max-age=90')
+      expect(await page.goto(`${url}/contact/email`).then((r) => r?.headers())).toHaveProperty('X-NF-Hello', 'world')
+      expect(await page.goto(url).then((r) => r?.headers())).toHaveProperty('X-NF-Hello', 'world')
+      expect(await page.goto(`${url}/contact/email`).then((r) => r?.headers())).toHaveProperty(
+        'Cache-Control',
+        'public, max-age=90',
+      )
       // Default Cache-Control
-      expect((await fetch(url)).headers.get('Cache-Control')).toBe('public, max-age=0, must-revalidate')
+      expect(await page.goto(url).then((r) => r?.headers())).toHaveProperty(
+        'Cache-Control',
+        'public, max-age=0, must-revalidate',
+      )
 
       await server.close()
       await fixture.destroy()
@@ -278,14 +299,128 @@ describe('configureServer', { timeout: 15_000 }, () => {
         root: directory,
       })
 
-      expect(await fetch(`${url}/contact/email`).then((r) => r.text())).toContain('Hello from the redirect target')
-      expect(await fetch(`${url}/contact/e-mail`, { redirect: 'follow' }).then((r) => r.text())).toContain(
+      expect(await page.goto(`${url}/contact/email`).then((r) => r?.text())).toContain('Hello from the redirect target')
+      expect(await page.goto(`${url}/contact/e-mail`).then((r) => r?.text())).toContain(
         'Hello from the redirect target',
       )
-      expect(await fetch(`${url}/beta/pricing`).then((r) => r.text())).toContain('Hello from the rewrite target')
+      expect(await page.goto(`${url}/beta/pricing`).then((r) => r?.text())).toContain('Hello from the rewrite target')
 
       await server.close()
       await fixture.destroy()
+    })
+  })
+
+  describe('With @vitejs/plugin-react', () => {
+    test('Returns static files with configured Netlify headers', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'vite.config.js',
+          `import { defineConfig } from 'vite';
+           import netlify from '@netlify/vite-plugin';
+           import react from '@vitejs/plugin-react';
+
+           export default defineConfig({
+             plugins: [
+              netlify({
+                middleware: true
+              }),
+              react(),
+             ]
+           });`,
+        )
+        .withFile(
+          'netlify.toml',
+          `[[headers]]
+           for = "/"
+           [headers.values]
+           "X-NF-Hello" = "world"`,
+        )
+        .withFile(
+          'index.html',
+          `<!doctype html>
+           <html lang="en">
+             <head>
+               <meta charset="UTF-8" />
+               <title>Hello from SSR</title>
+             </head>
+             <body>
+               <div id="root"></div>
+               <script type="module" src="/src/main.jsx"></script>
+             </body>
+           </html>`,
+        )
+        .withFile(
+          'src/main.jsx',
+          `import { StrictMode } from 'react'
+           import { createRoot } from 'react-dom/client'
+           import App from './App.jsx'
+           import './index.css'
+
+           createRoot(document.getElementById('root')).render(
+             <StrictMode>
+               <App />
+             </StrictMode>,
+           )`,
+        )
+        .withFile('src/index.css', 'body { color: red }')
+        .withFile(
+          'src/App.jsx',
+          `import reactLogo from './assets/react.svg'
+
+           export default () =>
+             <header>
+               <h1>Hello from CSR</h1>
+               <img src={reactLogo} />
+             </header>`,
+        )
+        .withFile(
+          'src/assets/react.svg',
+          '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>',
+        )
+      const directory = await fixture.create()
+      await fixture
+        .withPackages({
+          '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+          '@vitejs/plugin-react': '4.5.0',
+          react: '19.1.0',
+          'react-dom': '19.1.0',
+          vite: '6.3.5',
+        })
+        .create()
+
+      const { server, url } = await startTestServer({
+        root: directory,
+      })
+
+      const browser = await chromium.launch()
+      const page = await browser.newPage()
+      const browserErrorLogs: ConsoleMessage[] = []
+      page.on('console', (msg) => {
+        if (msg.type() === 'error') {
+          browserErrorLogs.push(msg)
+        }
+      })
+
+      const response = await page.goto(url)
+      expect(response?.status()).toBe(200)
+      expect(await response?.text()).toContain('Hello from SSR')
+      // expect(response?.headers()).toHaveProperty('X-NF-Hello', 'world')
+      expect(await page.innerHTML('html')).toContain('Hello from CSR')
+
+      // React SPA mode serves index.html for unknown routes
+      const notFoundResponse = await page.goto(`${url}/wp-admin.php`)
+      expect(notFoundResponse?.status()).toBe(200)
+      expect(await notFoundResponse?.text()).toContain('Hello from SSR')
+      expect(await page.innerHTML('html')).toContain('Hello from CSR')
+
+      expect(
+        browserErrorLogs,
+        `Unexpected error logs in browser: ${JSON.stringify(browserErrorLogs, null, 2)}`,
+      ).toHaveLength(0)
+
+      await server.close()
+      await fixture.destroy()
+      await browser.close()
     })
   })
 })

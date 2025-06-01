@@ -171,6 +171,8 @@ export class NetlifyDev {
 
         if (staticMatch) {
           const response = await staticMatch.handle()
+          // XXX(serhalp): We won't even get here when `staticHandler` is disabled, but we need to somehow
+          // have Vite return the static file without continuing our request chain.
           return this.#headersHandler.handle(request, response)
         }
       }
@@ -198,8 +200,12 @@ export class NetlifyDev {
 
           if (!staticMatch) return
 
+          // XXX(serhalp): We won't even get here when `staticHandler` is disabled, but we need to somehow
+          // have Vite return the static file without continuing our request chain while still applying our
+          // headers.
           return async () => {
             const response = await staticMatch.handle()
+            // XXX(serhalp): Somehow return metadata saying "rewrite to `target` and continue"
             return this.#headersHandler.handle(new Request(redirectMatch.target), response)
           }
         },
@@ -213,6 +219,8 @@ export class NetlifyDev {
     const staticMatch = await this.#staticHandler?.match(request)
     if (staticMatch) {
       const response = await staticMatch.handle()
+      // XXX(serhalp): We won't even get here when `staticHandler` is disabled, but we need to somehow
+      // have Vite return the static file while still applying our headers.
       return this.#headersHandler.handle(request, response)
     }
   }

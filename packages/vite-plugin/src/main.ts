@@ -25,7 +25,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
     name: 'vite-plugin-netlify',
     async configureServer(viteDevServer) {
       const { port } = viteDevServer.config.server
-      const { blobs, edgeFunctions, functions, middleware = true, redirects, staticFiles } = options
+      const { blobs, edgeFunctions, functions, middleware = true, redirects, staticFiles = { enabled: false } } = options
       const netlifyDev = new NetlifyDev({
         blobs,
         edgeFunctions,
