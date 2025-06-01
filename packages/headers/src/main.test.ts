@@ -13,6 +13,7 @@ describe('constructor', () => {
     const projectDir = await fixture.create()
 
     const handler = new HeadersHandler({
+      logger: console,
       projectDir,
       publishDir: '.', // resolves to the same path as `projectDir`
       configHeaders: [{ for: '/test-*', values: { 'X-Config-Header': 'config-value' } }],
@@ -24,12 +25,13 @@ describe('constructor', () => {
   })
 })
 
-describe('handle', () => {
+describe('apply', () => {
   test('sets response headers matching rules in provided `configHeaders`', async () => {
     const fixture = new Fixture()
     const projectDir = await fixture.create()
 
     const handler = new HeadersHandler({
+      logger: console,
       projectDir,
       configHeaders: [{ for: '/test-*', values: { 'X-Config-Header': 'config-value' } }],
     })
@@ -39,10 +41,11 @@ describe('handle', () => {
         'Existing-Header': 'existing-value',
       },
     })
-    const result = await handler.handle(request, response)
+    const result = await handler.apply(request, response)
 
-    expect(result.headers.get('X-Config-Header')).toBe('config-value')
-    expect(result.headers.get('Existing-Header')).toBe('existing-value')
+    expect(result).toStrictEqual({ 'X-Config-Header': 'config-value' })
+    expect(response.headers.get('X-Config-Header')).toBe('config-value')
+    expect(response.headers.get('Existing-Header')).toBe('existing-value')
 
     await fixture.destroy()
   })
@@ -53,6 +56,7 @@ describe('handle', () => {
     })
     const projectDir = await fixture.create()
     const handler = new HeadersHandler({
+      logger: console,
       projectDir,
       configHeaders: undefined,
     })
@@ -63,10 +67,11 @@ describe('handle', () => {
         'Existing-Header': 'existing-value',
       },
     })
-    const result = await handler.handle(request, response)
+    const result = await handler.apply(request, response)
 
-    expect(result.headers.get('X-Project-Dir-Header')).toBe('project-dir-value')
-    expect(result.headers.get('Existing-Header')).toBe('existing-value')
+    expect(result).toStrictEqual({ 'X-Project-Dir-Header': 'project-dir-value' })
+    expect(response.headers.get('X-Project-Dir-Header')).toBe('project-dir-value')
+    expect(response.headers.get('Existing-Header')).toBe('existing-value')
 
     await fixture.destroy()
   })
@@ -79,6 +84,7 @@ describe('handle', () => {
     const projectDir = await fixture.create()
 
     const handler = new HeadersHandler({
+      logger: console,
       projectDir,
       publishDir: 'my-dist',
       configHeaders: undefined,
@@ -89,10 +95,11 @@ describe('handle', () => {
         'Existing-Header': 'existing-value',
       },
     })
-    const result = await handler.handle(request, response)
+    const result = await handler.apply(request, response)
 
-    expect(result.headers.get('X-Publish-Dir-Header')).toBe('publish-dir-value')
-    expect(result.headers.get('Existing-Header')).toBe('existing-value')
+    expect(result).toStrictEqual({ 'X-Publish-Dir-Header': 'publish-dir-value' })
+    expect(response.headers.get('X-Publish-Dir-Header')).toBe('publish-dir-value')
+    expect(response.headers.get('Existing-Header')).toBe('existing-value')
 
     await fixture.destroy()
   })
@@ -108,6 +115,7 @@ describe('handle', () => {
       })
     const projectDir = await fixture.create()
     const handler = new HeadersHandler({
+      logger: console,
       projectDir,
       publishDir: 'my-dist',
       configHeaders: [{ for: '/test-pa*', values: { 'X-Config-Header': 'config-value' } }],
@@ -119,12 +127,22 @@ describe('handle', () => {
         'Existing-Header': 'existing-value',
       },
     })
-    const result = await handler.handle(request, response)
+    const expected = {
+      'X-Project-Dir-Header': 'project-dir-value',
+      'X-Publish-Dir-Header': 'publish-dir-value',
+      'X-Config-Header': 'config-value',
+    }
+    const collected: Record<string, string> = {}
+    const result = await handler.apply(request, response, (key, value) => {
+      collected[key] = value
+    })
 
-    expect(result.headers.get('X-Project-Dir-Header')).toBe('project-dir-value')
-    expect(result.headers.get('X-Publish-Dir-Header')).toBe('publish-dir-value')
-    expect(result.headers.get('X-Config-Header')).toBe('config-value')
-    expect(result.headers.get('Existing-Header')).toBe('existing-value')
+    expect(result).toStrictEqual(expected)
+    expect(collected).toStrictEqual(expected)
+    expect(response.headers.get('X-Project-Dir-Header')).toBe('project-dir-value')
+    expect(response.headers.get('X-Publish-Dir-Header')).toBe('publish-dir-value')
+    expect(response.headers.get('X-Config-Header')).toBe('config-value')
+    expect(response.headers.get('Existing-Header')).toBe('existing-value')
 
     await fixture.destroy()
   })
@@ -135,6 +153,7 @@ describe('handle', () => {
     })
     const projectDir = await fixture.create()
     const handler = new HeadersHandler({
+      logger: console,
       projectDir,
       configHeaders: [{ for: '/no-match', values: { 'X-Config-Header': 'no-match-value' } }],
     })
@@ -146,9 +165,10 @@ describe('handle', () => {
       },
     })
     const originalHeaders = new Headers(response.headers)
-    const result = await handler.handle(request, response)
+    const result = await handler.apply(request, response)
 
-    expect(result.headers).toEqual(originalHeaders)
+    expect(result).toStrictEqual({})
+    expect(response.headers).toEqual(originalHeaders)
 
     await fixture.destroy()
   })

@@ -6,6 +6,10 @@ import * as vite from 'vite'
 import { logger } from './lib/logger.js'
 import { fromWebResponse, toWebRequest } from './lib/reqres.js'
 
+const netlifyHeaders = Symbol('Netlify headers')
+
+type NetlifyRequest = vite.Connect.IncomingMessage & { [netlifyHeaders]?: Record<string, string> }
+
 export interface NetlifyPluginOptions extends Features {
   /**
    * Attach a Vite middleware that intercepts requests and handles them in the
@@ -44,16 +48,35 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       }
 
       if (middleware) {
-        return () => {
-          viteDevServer.middlewares.use(async (nodeReq, nodeRes, next) => {
-            const req = toWebRequest(nodeReq, nodeReq.originalUrl)
-            const res = await netlifyDev.handle(req)
+        viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
+          const req = toWebRequest(nodeReq, nodeReq.originalUrl)
+          const headers: Record<string, string> = {}
+          const result = await netlifyDev.handleAndIntrospect(req, {
+            headersCollector: (key, value) => {
+              headers[key] = value
+            },
+          })
 
-            if (res) {
-              fromWebResponse(res, nodeRes)
-            } else {
-              next()
+          ;(nodeReq as NetlifyRequest)[netlifyHeaders] = headers
+
+          if (!result || result.type === 'static') {
+            next()
+
+            return
+          }
+
+          fromWebResponse(result.response, nodeRes)
+        })
+
+        return () => {
+          viteDevServer.middlewares.use(function netlifyPostMiddleware(nodeReq, nodeRes, next) {
+            const headers = (nodeReq as NetlifyRequest)[netlifyHeaders] ?? {}
+
+            for (const key in headers) {
+              nodeRes.setHeader(key, headers[key])
             }
+
+            next()
           })
         }
       }

@@ -7,6 +7,8 @@ import { headersForPath } from './lib/headersForPath.js'
 
 const HEADERS_FILE_NAME = '_headers'
 
+export type HeadersCollector = (key: string, value: string) => void
+
 interface HeadersHandlerOptions {
   configPath?: string | undefined
   configHeaders?: ConfigHeader[] | undefined
@@ -45,7 +47,7 @@ export class HeadersHandler {
     return this.#headersFiles
   }
 
-  async handle(request: Request, response: Response) {
+  async apply(request: Request, response?: Response, collector?: HeadersCollector) {
     const headerRules = await parseHeaders({
       headersFiles: this.#headersFiles,
       configPath: this.#configPath,
@@ -55,9 +57,11 @@ export class HeadersHandler {
     const matchingHeaderRules = headersForPath(headerRules, new URL(request.url).pathname)
 
     for (const [key, value] of Object.entries(matchingHeaderRules)) {
-      response.headers.set(key, value)
+      response?.headers.set(key, value)
+
+      collector?.(key, value)
     }
 
-    return response
+    return matchingHeaderRules
   }
 }
