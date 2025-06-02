@@ -310,7 +310,9 @@ describe('configureServer', { timeout: 15_000 }, () => {
   })
 
   describe('With @vitejs/plugin-react', () => {
-    test('Returns static files with configured Netlify headers', async () => {
+    // TODO(serhalp): Skipping on Windows for now. There's an issue on the GitHub Actions
+    // Windows image with resolving the `src/main.jsx` path for some reason.
+    test.skipIf(process.platform === 'win32')('Returns static files with configured Netlify headers', async () => {
       const fixture = new Fixture()
         .withFile(
           'vite.config.js',
@@ -403,7 +405,7 @@ describe('configureServer', { timeout: 15_000 }, () => {
       const response = await page.goto(url)
       expect(response?.status()).toBe(200)
       expect(await response?.text()).toContain('Hello from SSR')
-      // expect(response?.headers()).toHaveProperty('X-NF-Hello', 'world')
+      expect(response?.headers()).toHaveProperty('x-nf-hello', 'world')
       expect(await page.innerHTML('html')).toContain('Hello from CSR')
 
       // React SPA mode serves index.html for unknown routes
