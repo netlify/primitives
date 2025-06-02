@@ -41,7 +41,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
       if (!netlifyDev.siteIsLinked) {
         logger.log(
-          'Linking this project to a Netlify site lets you use any environment variables defined on your team and site, deploy the site and much more. Run `npx netlify init` and restart your dev server to get started.',
+          'Linking this project to a Netlify site lets you use any environment variables defined on your team and site, deploy the site and much more. Run `npx netlify init` to get started.',
         )
       }
 
