@@ -3,6 +3,7 @@
   "packages/cache": "2.0.0",
   "packages/dev": "3.0.0",
   "packages/dev-utils": "3.0.0",
+  "packages/edge-functions": "2.12.0",
   "packages/functions": "4.0.0",
   "packages/headers": "1.0.0",
   "packages/otel": "2.0.0",
