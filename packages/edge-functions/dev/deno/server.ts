@@ -1,4 +1,4 @@
-import { getErrorResponse } from '../shared/errors.ts'
+import { getErrorResponse } from './errors.ts'
 import type { RunOptions } from '../shared/types.ts'
 
 import { getConfigs } from './config.ts'
