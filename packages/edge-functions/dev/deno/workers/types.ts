@@ -1,3 +1,5 @@
+import type { SerializedError } from '../../shared/types.ts'
+
 /**
  * A message that asks a worker to retrieve the configuration objects for a set
  * of functions.
@@ -17,6 +19,7 @@ export interface ConfigResponseMessage {
   type: 'configResponse'
   data: {
     configs: Record<string, object>
+    errors: Record<string, SerializedError>
   }
 }
 
@@ -32,6 +35,7 @@ export interface RunRequestMessage {
     functions: Record<string, string>
     headers: Record<string, string>
     method: string
+    timeout: number
     url: string
   }
 }
