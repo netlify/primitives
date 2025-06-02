@@ -1,11 +1,18 @@
 // @ts-check
 
+/**
+ * @typedef {import('./types.js').Message} Message
+ * @typedef {import('./types.js').RunResponseStartMessage} RunResponseStartMessage
+ * @typedef {import('./types.js').RunResponseChunkMessage} RunResponseChunkMessage
+ * @typedef {import('./types.js').RunResponseEndMessage} RunResponseEndMessage
+ */
+
 const consoleLog = globalThis.console.log
 /** @type {Map<string, string>} */
 const fetchRewrites = new Map()
 
 self.onmessage = async (e) => {
-  const message = e.data
+  const message = /** @type {Message} */ (e.data)
 
   if (message.type === 'request') {
     const { handleRequest } = await import(message.data.bootstrapURL)
@@ -33,13 +40,15 @@ self.onmessage = async (e) => {
       requestTimeout: message.data.timeout,
     })
 
-    self.postMessage({
-      type: 'responseStart',
-      data: {
-        headers: Object.fromEntries(res.headers.entries()),
-        status: res.status,
-      },
-    })
+    self.postMessage(
+      /** @type {RunResponseStartMessage} */ ({
+        type: 'responseStart',
+        data: {
+          headers: Object.fromEntries(res.headers.entries()),
+          status: res.status,
+        },
+      }),
+    )
 
     const reader = res.body?.getReader()
     if (reader) {
@@ -50,16 +59,16 @@ self.onmessage = async (e) => {
         }
 
         self.postMessage(
-          {
+          /** @type {RunResponseChunkMessage} */ ({
             type: 'responseChunk',
             data: { chunk: value },
-          },
+          }),
           [value.buffer],
         )
       }
     }
 
-    self.postMessage({ type: 'responseEnd' })
+    self.postMessage(/** @type {RunResponseEndMessage} */ ({ type: 'responseEnd' }))
 
     return
   }

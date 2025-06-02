@@ -51,7 +51,7 @@ export function invoke(req, bootstrapURL, functions, requestTimeout) {
     })
 
     worker.onmessage = (e) => {
-      const message = e.data
+      const message = /** @type {Message} */ (e.data)
 
       switch (message.type) {
         case 'responseChunk': {

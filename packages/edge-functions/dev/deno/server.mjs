@@ -1,16 +1,13 @@
 // @ts-check
 
+/**
+ * @typedef {import('../shared/types.ts').RunOptions} RunOptions
+ */
+
 import { getErrorResponse } from './errors.mjs'
 
 import { getConfigs } from './config.mjs'
 import { invoke } from './invoke.mjs'
-
-/**
- * @typedef {Object} RunOptions
- * @property {string} bootstrapURL
- * @property {number} denoPort
- * @property {number} requestTimeout
- */
 
 /**
  * Starts an HTTP server on the provided port. The server acts as a proxy that
@@ -41,6 +38,7 @@ export const serveLocal = ({ bootstrapURL, denoPort: port, requestTimeout }) => 
     // configs.
     if (method === 'NETLIFYCONFIG') {
       // This is the list of all the functions found in the project.
+      /** @type {Record<string, string>} */
       const availableFunctions = url.searchParams.has('functions')
         ? JSON.parse(decodeURIComponent(url.searchParams.get('functions')))
         : {}

@@ -1,14 +1,13 @@
 // @ts-check
 
 /**
- * @typedef {Object} SerializedError
- * @property {string} message
- * @property {string} [name]
- * @property {string} [stack]
+ * @typedef {import('../../shared/types.ts').SerializedError} SerializedError
+ * @typedef {import('./types.js').ConfigResponseMessage} ConfigResponseMessage
+ * @typedef {import('./types.ts').Message} Message
  */
 
 self.onmessage = async (e) => {
-  const message = e.data
+  const message = /** @type {Message} */ (e.data)
 
   if (message.type === 'configRequest') {
     /** @type {Record<string, object>} */
@@ -39,7 +38,7 @@ self.onmessage = async (e) => {
 
     await Promise.allSettled(imports)
 
-    self.postMessage({ type: 'configResponse', data: { configs, errors } })
+    self.postMessage(/** @type {ConfigResponseMessage} */ ({ type: 'configResponse', data: { configs, errors } }))
 
     return
   }

@@ -1,6 +1,11 @@
 // @ts-check
 
 /**
+ * @typedef {import('./workers/types.js').ConfigRequestMessage} ConfigRequestMessage
+ * @typedef {import('./workers/types.js').Message} Message
+ */
+
+/**
  * @param {Record<string, string>} functions
  */
 export function getConfigs(functions) {
@@ -9,13 +14,15 @@ export function getConfigs(functions) {
       type: 'module',
     })
 
-    worker.postMessage({
-      type: 'configRequest',
-      data: { functions },
-    })
+    worker.postMessage(
+      /** @type {ConfigRequestMessage} */ ({
+        type: 'configRequest',
+        data: { functions },
+      }),
+    )
 
     worker.onmessage = (e) => {
-      const message = e.data
+      const message = /** @type {Message} */ (e.data)
 
       if (message.type === 'configResponse') {
         const { configs, errors } = message.data
