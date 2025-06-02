@@ -231,13 +231,13 @@ describe('configureServer', { timeout: 15_000 }, () => {
         root: directory,
       })
 
-      expect(await page.goto(`${url}/contact/email`).then((r) => r?.headers())).toHaveProperty('X-NF-Hello', 'world')
-      expect(await page.goto(url).then((r) => r?.headers())).toHaveProperty('X-NF-Hello', 'world')
+      expect(await page.goto(`${url}/contact/email`).then((r) => r?.headers())).toHaveProperty('x-nf-hello', 'world')
+      expect(await page.goto(url).then((r) => r?.headers())).toHaveProperty('x-nf-hello', 'world')
       expect(await page.goto(`${url}/contact/email`).then((r) => r?.headers())).toHaveProperty(
-        'X-Contact-Type',
+        'x-contact-type',
         'email',
       )
-      expect(await page.goto(url).then((r) => r?.headers())).toHaveProperty('X-Contact-Type', 'email')
+      expect(await page.goto(url).then((r) => r?.headers())).not.toHaveProperty('x-contact-type')
 
       await server.close()
       await fixture.destroy()
