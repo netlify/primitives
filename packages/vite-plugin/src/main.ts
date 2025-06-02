@@ -57,9 +57,15 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
             },
           })
 
-          ;(nodeReq as NetlifyRequest)[netlifyHeaders] = headers
+          if (!result) {
+            next()
 
-          if (!result || result.type === 'static') {
+            return
+          }
+
+          if (result.type === 'static') {
+            ;(nodeReq as NetlifyRequest)[netlifyHeaders] = headers
+
             next()
 
             return
