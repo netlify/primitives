@@ -43,7 +43,7 @@
   "author": "Netlify Inc.",
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.9",
-    "@types/node": "^20.5.1",
+    "@types/node": "^18.19.104",
     "@types/parse-gitignore": "^1.0.2",
     "@types/write-file-atomic": "^4.0.3",
     "tmp-promise": "^3.0.3",
