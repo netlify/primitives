@@ -96,6 +96,12 @@ const notFoundHandler = async () => new Response('Not found', { status: 404 })
 type Config = Awaited<ReturnType<typeof resolveConfig>>
 
 interface HandleOptions {
+  /**
+   * An optional callback that will be called with every header (key and value)
+   * coming from header rules.
+   *
+   * {@link} https://docs.netlify.com/routing/headers/
+   */
   headersCollector?: HeadersCollector
 }
 
