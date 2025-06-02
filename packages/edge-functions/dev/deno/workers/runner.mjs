@@ -1,10 +1,18 @@
-import type { Message, RunResponseStartMessage, RunResponseChunkMessage, RunResponseEndMessage } from './types.ts'
+// @ts-check
+
+/**
+ * @typedef {import('./types.js').Message} Message
+ * @typedef {import('./types.js').RunResponseStartMessage} RunResponseStartMessage
+ * @typedef {import('./types.js').RunResponseChunkMessage} RunResponseChunkMessage
+ * @typedef {import('./types.js').RunResponseEndMessage} RunResponseEndMessage
+ */
 
 const consoleLog = globalThis.console.log
-const fetchRewrites = new Map<string, string>()
+/** @type {Map<string, string>} */
+const fetchRewrites = new Map()
 
 self.onmessage = async (e) => {
-  const message = e.data as Message
+  const message = /** @type {Message} */ (e.data)
 
   if (message.type === 'request') {
     const { handleRequest } = await import(message.data.bootstrapURL)
@@ -14,7 +22,9 @@ self.onmessage = async (e) => {
       headers: message.data.headers,
       method: message.data.method,
     })
-    const functions: Record<string, string> = {}
+
+    /** @type {Record<string, string>} */
+    const functions = {}
 
     const imports = Object.entries(message.data.functions).map(async ([name, path]) => {
       const func = await import(path)
@@ -30,13 +40,15 @@ self.onmessage = async (e) => {
       requestTimeout: message.data.timeout,
     })
 
-    self.postMessage({
-      type: 'responseStart',
-      data: {
-        headers: Object.fromEntries(res.headers.entries()),
-        status: res.status,
-      },
-    } as RunResponseStartMessage)
+    self.postMessage(
+      /** @type {RunResponseStartMessage} */ ({
+        type: 'responseStart',
+        data: {
+          headers: Object.fromEntries(res.headers.entries()),
+          status: res.status,
+        },
+      }),
+    )
 
     const reader = res.body?.getReader()
     if (reader) {
@@ -47,16 +59,16 @@ self.onmessage = async (e) => {
         }
 
         self.postMessage(
-          {
+          /** @type {RunResponseChunkMessage} */ ({
             type: 'responseChunk',
             data: { chunk: value },
-          } as RunResponseChunkMessage,
+          }),
           [value.buffer],
         )
       }
     }
 
-    self.postMessage({ type: 'responseEnd' } as RunResponseEndMessage)
+    self.postMessage(/** @type {RunResponseEndMessage} */ ({ type: 'responseEnd' }))
 
     return
   }

@@ -30,7 +30,7 @@ interface EdgeFunctionsHandlerOptions {
   siteName?: string
 }
 
-const denoRunPath = path.resolve(fileURLToPath(import.meta.url), '../../deno/server.ts')
+const denoRunPath = path.resolve(fileURLToPath(import.meta.url), '../../deno/server.mjs')
 const DENO_SERVER_POLL_INTERVAL = 50
 const DENO_SERVER_POLL_TIMEOUT = 3000
 const LOCAL_HOST = '127.0.0.1'

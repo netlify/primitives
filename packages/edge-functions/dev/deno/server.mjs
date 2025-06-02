@@ -1,36 +1,46 @@
-import { getErrorResponse } from './errors.ts'
-import type { RunOptions } from '../shared/types.ts'
+// @ts-check
 
-import { getConfigs } from './config.ts'
-import { invoke } from './invoke.ts'
+/**
+ * @typedef {import('../shared/types.ts').RunOptions} RunOptions
+ */
 
-type AvailableFunctions = Record<string, string>
+import { getErrorResponse } from './errors.mjs'
+
+import { getConfigs } from './config.mjs'
+import { invoke } from './invoke.mjs'
 
 /**
  * Starts an HTTP server on the provided port. The server acts as a proxy that
  * handles edge function invocations.
+ *
+ * @param {RunOptions} options
  */
-export const serveLocal = ({ bootstrapURL, denoPort: port, requestTimeout }: RunOptions) => {
-  const serveOptions: Deno.ServeTcpOptions = {
+export const serveLocal = ({ bootstrapURL, denoPort: port, requestTimeout }) => {
+  const serveOptions = {
     // Adding a no-op listener to avoid the default one, which prints a message
     // we don't want.
     onListen() {},
     port,
   }
 
-  let functions: Record<string, string> = {}
+  /** @type {Record<string, string>} */
+  let functions = {}
 
-  const server = Deno.serve(serveOptions, async (req: Request) => {
-    const url = new URL(req.url)
-    const method = req.method.toUpperCase()
+  /**
+   * @param {Request} request
+   */
+  const server = Deno.serve(serveOptions, async (/** @type {Request} */ request) => {
+    const url = new URL(request.url)
+    const method = request.method.toUpperCase()
 
     // This custom method represents an introspection request that will make
     // the Deno server take a list of functions, import them, and return their
     // configs.
     if (method === 'NETLIFYCONFIG') {
       // This is the list of all the functions found in the project.
-      const availableFunctions: AvailableFunctions = url.searchParams.has('functions')
-        ? JSON.parse(decodeURIComponent(url.searchParams.get('functions')!))
+      /** @type {Record<string, string>} */
+      const availableFunctions = url.searchParams.has('functions')
+        ? JSON.parse(decodeURIComponent(url.searchParams.get('functions')))
         : {}
 
       functions = availableFunctions
@@ -49,7 +59,7 @@ export const serveLocal = ({ bootstrapURL, denoPort: port, requestTimeout }: Run
     }
 
     try {
-      return await invoke(req, bootstrapURL, functions, requestTimeout)
+      return await invoke(request, bootstrapURL, functions, requestTimeout)
     } catch (error) {
       return getErrorResponse(error)
     }
@@ -59,7 +69,7 @@ export const serveLocal = ({ bootstrapURL, denoPort: port, requestTimeout }: Run
 }
 
 const url = new URL(import.meta.url)
-const rawOptions = url.searchParams.get('options')!
-const options = JSON.parse(decodeURIComponent(rawOptions)) as RunOptions
+const rawOptions = url.searchParams.get('options')
+const options = JSON.parse(decodeURIComponent(rawOptions))
 
 await serveLocal(options)

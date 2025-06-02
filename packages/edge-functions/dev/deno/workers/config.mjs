@@ -1,18 +1,27 @@
-import type { SerializedError } from '../../shared/types.ts'
-import type { ConfigResponseMessage, Message } from './types.ts'
+// @ts-check
+
+/**
+ * @typedef {import('../../shared/types.ts').SerializedError} SerializedError
+ * @typedef {import('./types.js').ConfigResponseMessage} ConfigResponseMessage
+ * @typedef {import('./types.ts').Message} Message
+ */
 
 self.onmessage = async (e) => {
-  const message = e.data as Message
+  const message = /** @type {Message} */ (e.data)
 
   if (message.type === 'configRequest') {
-    const configs: Record<string, object> = {}
-    const errors: Record<string, SerializedError> = {}
+    /** @type {Record<string, object>} */
+    const configs = {}
+
+    /** @type {Record<string, SerializedError>} */
+    const errors = {}
+
     const imports = Object.entries(message.data.functions).map(async ([name, path]) => {
       try {
         const func = await import(path)
 
         configs[name] = func.config ?? {}
-      } catch (error: unknown) {
+      } catch (error) {
         if (error instanceof Error) {
           errors[name] = {
             message: error.message,
@@ -29,7 +38,7 @@ self.onmessage = async (e) => {
 
     await Promise.allSettled(imports)
 
-    self.postMessage({ type: 'configResponse', data: { configs, errors } } as ConfigResponseMessage)
+    self.postMessage(/** @type {ConfigResponseMessage} */ ({ type: 'configResponse', data: { configs, errors } }))
 
     return
   }

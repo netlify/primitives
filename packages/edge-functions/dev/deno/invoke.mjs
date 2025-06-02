@@ -1,18 +1,25 @@
-import type { Message, RunRequestMessage } from './workers/types.ts'
+// @ts-check
 
 /**
  * Spawns a `Worker` to invoke a chain of edge functions. It serializes the
  * `Request` into a worker message and uses the messages it receives back to
  * construct a `Response`.
+ *
+ * @param {Request} req
+ * @param {string} bootstrapURL
+ * @param {Record<string, string>} functions
+ * @param {number} requestTimeout
  */
-export function invoke(req: Request, bootstrapURL: string, functions: Record<string, string>, requestTimeout: number) {
-  return new Promise<Response>((resolve, reject) => {
-    const worker = new Worker(new URL('./workers/runner.ts', import.meta.url).href, {
+export function invoke(req, bootstrapURL, functions, requestTimeout) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL('./workers/runner.mjs', import.meta.url).href, {
       type: 'module',
     })
 
-    let response: Response | null = null
-    let streamController: ReadableStreamDefaultController<Uint8Array> | null = null
+    /** @type {Response | null} */
+    let response = null
+    /** @type {ReadableStreamDefaultController<Uint8Array> | null} */
+    let streamController = null
 
     const timeoutCheck = setTimeout(() => {
       if (!response) {
@@ -24,7 +31,7 @@ export function invoke(req: Request, bootstrapURL: string, functions: Record<str
       }
     }, requestTimeout)
 
-    const stream = new ReadableStream<Uint8Array>({
+    const stream = new ReadableStream({
       async start(controller) {
         streamController = controller
 
@@ -39,16 +46,16 @@ export function invoke(req: Request, bootstrapURL: string, functions: Record<str
             timeout: requestTimeout,
             url: req.url,
           },
-        } as RunRequestMessage)
+        })
       },
     })
 
     worker.onmessage = (e) => {
-      const message = e.data as Message
+      const message = /** @type {Message} */ (e.data)
 
       switch (message.type) {
         case 'responseChunk': {
-          streamController!.enqueue(message.data.chunk)
+          streamController && streamController.enqueue(message.data.chunk)
 
           break
         }

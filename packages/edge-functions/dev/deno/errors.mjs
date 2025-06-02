@@ -1,4 +1,9 @@
-export const getErrorResponse = (error: unknown) => {
+// @ts-check
+
+/**
+ * @param {unknown} error
+ */
+export const getErrorResponse = (error) => {
   const errorData =
     error instanceof Error
       ? {
