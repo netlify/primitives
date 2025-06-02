@@ -189,7 +189,7 @@ export class EdgeFunctionsHandler {
       this.logger.log(
         'Setting up the Netlify Edge Functions environment. This may take up to a couple of minutes, depending on your internet connection.',
       )
-    }, 1_500)
+    }, 5_000)
 
     const { denoPort, success } = await this.initialization
     if (!success) {
