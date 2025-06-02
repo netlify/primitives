@@ -35,7 +35,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
         serverAddress: `http://localhost:${port}`,
         staticFiles: {
           ...staticFiles,
-          directories: [viteDevServer.config.publicDir],
+          directories: [viteDevServer.config.root, viteDevServer.config.publicDir],
         },
         projectRoot: viteDevServer.config.root,
       })
