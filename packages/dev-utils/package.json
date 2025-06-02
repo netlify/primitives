@@ -60,6 +60,6 @@
     "lodash.debounce": "^4.0.8",
     "parse-gitignore": "^2.0.0",
     "uuid": "^11.1.0",
-    "write-file-atomic": "^6.0.0"
+    "write-file-atomic": "^5.0.1"
   }
 }
