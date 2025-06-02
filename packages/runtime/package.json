@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@netlify/dev-utils": "^3.0.0",
-    "@types/node": "^22.15.29",
+    "@types/node": "^20.17.57",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   }
