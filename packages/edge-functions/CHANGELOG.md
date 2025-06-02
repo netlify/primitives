@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.1](https://github.com/netlify/primitives/compare/edge-functions-v2.13.0...edge-functions-v2.13.1) (2025-06-02)
+
+
+### Bug Fixes
+
+* move deno typescript files to mjs + jsdoc ([#260](https://github.com/netlify/primitives/issues/260)) ([32fd66a](https://github.com/netlify/primitives/commit/32fd66a28f3cac321fd24fbab0b59fd46e126920))
+
 ## [2.13.0](https://github.com/netlify/primitives/compare/edge-functions-v2.12.0...edge-functions-v2.13.0) (2025-06-02)
 
 
