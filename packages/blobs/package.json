@@ -67,7 +67,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "@types/node": "^18.19.104",
+    "@types/node": "^22.0.0",
     "node-fetch": "^3.3.1",
     "npm-run-all2": "^8.0.4",
     "semver": "^7.5.3",
