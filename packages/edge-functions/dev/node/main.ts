@@ -15,7 +15,7 @@ import { getURL as getBootstrapURL } from '@netlify/edge-functions-bootstrap/ver
 import { base64Encode } from '@netlify/runtime-utils'
 import getAvailablePort from 'get-port'
 
-import type { RunOptions } from '../shared/types.js'
+import type { RunOptions, SerializedError } from '../shared/types.js'
 import { headers } from './headers.js'
 
 interface EdgeFunctionsHandlerOptions {
@@ -25,6 +25,7 @@ interface EdgeFunctionsHandlerOptions {
   geolocation: Geolocation
   logger: Logger
   originServerAddress: string
+  requestTimeout?: number
   siteID?: string
   siteName?: string
 }
@@ -34,6 +35,15 @@ const DENO_SERVER_POLL_INTERVAL = 50
 const DENO_SERVER_POLL_TIMEOUT = 3000
 const LOCAL_HOST = '127.0.0.1'
 
+// The timeout imposed by the edge nodes. It's important to keep this in place
+// as a fallback in case we're unable to patch `fetch` to add our own here.
+// https://github.com/netlify/stargate/blob/b5bc0eeb79bbbad3a8a6f41c7c73f1bcbcb8a9c8/proxy/deno/edge.go#L77
+const UPSTREAM_REQUEST_TIMEOUT = 37_000
+
+// The overall timeout should be at most the limit imposed by the edge nodes
+// minus a buffer that gives us enough time to send back a response.
+const REQUEST_TIMEOUT = UPSTREAM_REQUEST_TIMEOUT - 1_000
+
 export class EdgeFunctionsHandler {
   private configDeclarations: Declaration[]
   private directories: string[]
@@ -42,6 +52,7 @@ export class EdgeFunctionsHandler {
   private initialized: boolean
   private logger: Logger
   private originServerAddress: string
+  private requestTimeout: number
   private siteID?: string
   private siteName?: string
 
@@ -56,6 +67,7 @@ export class EdgeFunctionsHandler {
     this.initialized = false
     this.logger = options.logger
     this.originServerAddress = options.originServerAddress
+    this.requestTimeout = options.requestTimeout ?? REQUEST_TIMEOUT
     this.siteID = options.siteID
     this.siteName = options.siteName
   }
@@ -76,9 +88,13 @@ export class EdgeFunctionsHandler {
     const res = await fetch(url, {
       method: 'NETLIFYCONFIG',
     })
-    const configs = (await res.json()) as Record<string, FunctionConfig>
+    const data = (await res.json()) as unknown
 
-    return configs
+    if (res.ok) {
+      return { configs: data as Record<string, FunctionConfig> }
+    }
+
+    return { error: (data as { error: SerializedError }).error }
   }
 
   /**
@@ -182,8 +198,13 @@ export class EdgeFunctionsHandler {
       return
     }
 
-    const iscDeclarations = await this.getFunctionConfigs(denoPort, functionsMap)
-    const { functionNames, invocationMetadata } = this.getFunctionsForRequest(request, functions, iscDeclarations)
+    const acceptsHTML = Boolean(request.headers.get('accept')?.includes('text/html'))
+    const { configs, error } = await this.getFunctionConfigs(denoPort, functionsMap)
+    if (error) {
+      return await this.renderError(JSON.stringify({ error }), acceptsHTML)
+    }
+
+    const { functionNames, invocationMetadata } = this.getFunctionsForRequest(request, functions, configs)
     if (functionNames.length === 0) {
       return
     }
@@ -222,8 +243,6 @@ export class EdgeFunctionsHandler {
 
     const isUncaughtError = response.headers.has(headers.UncaughtError)
     if (isUncaughtError) {
-      const acceptsHTML = Boolean(request.headers.get('accept')?.includes('text/html'))
-
       return await this.renderError(await response.text(), acceptsHTML)
     }
 
@@ -249,6 +268,7 @@ export class EdgeFunctionsHandler {
     const runOptions: RunOptions = {
       bootstrapURL: await getBootstrapURL(),
       denoPort,
+      requestTimeout: this.requestTimeout,
     }
     const denoFlags: string[] = ['--allow-scripts', '--quiet', '--no-lock']
     const script = `import('${pathToFileURL(denoRunPath).toString()}?options=${encodeURIComponent(JSON.stringify(runOptions))}');`

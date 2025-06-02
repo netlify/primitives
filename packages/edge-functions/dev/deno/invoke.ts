@@ -1,20 +1,11 @@
 import type { Message, RunRequestMessage } from './workers/types.ts'
 
-// The timeout imposed by the edge nodes. It's important to keep this in place
-// as a fallback in case we're unable to patch `fetch` to add our own here.
-// https://github.com/netlify/stargate/blob/b5bc0eeb79bbbad3a8a6f41c7c73f1bcbcb8a9c8/proxy/deno/edge.go#L77
-const UPSTREAM_REQUEST_TIMEOUT = 37_000
-
-// The overall timeout should be at most the limit imposed by the edge nodes
-// minus a buffer that gives us enough time to send back a response.
-const REQUEST_TIMEOUT = UPSTREAM_REQUEST_TIMEOUT - 1_000
-
 /**
  * Spawns a `Worker` to invoke a chain of edge functions. It serializes the
  * `Request` into a worker message and uses the messages it receives back to
  * construct a `Response`.
  */
-export function invoke(req: Request, bootstrapURL: string, functions: Record<string, string>) {
+export function invoke(req: Request, bootstrapURL: string, functions: Record<string, string>, requestTimeout: number) {
   return new Promise<Response>((resolve, reject) => {
     const worker = new Worker(new URL('./workers/runner.ts', import.meta.url).href, {
       type: 'module',
@@ -25,9 +16,13 @@ export function invoke(req: Request, bootstrapURL: string, functions: Record<str
 
     const timeoutCheck = setTimeout(() => {
       if (!response) {
-        reject(new Error('The edge function has timed out'))
+        reject(
+          new Error(
+            'An edge function took too long to produce a response. Refer to https://ntl.fyi/ef-limits for information about limits.',
+          ),
+        )
       }
-    }, REQUEST_TIMEOUT)
+    }, requestTimeout)
 
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
@@ -41,7 +36,7 @@ export function invoke(req: Request, bootstrapURL: string, functions: Record<str
             functions,
             headers: Object.fromEntries(req.headers.entries()),
             method: req.method,
-            timeout: REQUEST_TIMEOUT,
+            timeout: requestTimeout,
             url: req.url,
           },
         } as RunRequestMessage)

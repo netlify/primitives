@@ -1,3 +1,4 @@
+import type { SerializedError } from '../../shared/types.ts'
 import type { ConfigResponseMessage, Message } from './types.ts'
 
 self.onmessage = async (e) => {
@@ -5,15 +6,30 @@ self.onmessage = async (e) => {
 
   if (message.type === 'configRequest') {
     const configs: Record<string, object> = {}
+    const errors: Record<string, SerializedError> = {}
     const imports = Object.entries(message.data.functions).map(async ([name, path]) => {
-      const func = await import(path)
+      try {
+        const func = await import(path)
 
-      configs[name] = func.config ?? {}
+        configs[name] = func.config ?? {}
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          errors[name] = {
+            message: error.message,
+            name: error.name,
+            stack: error.stack,
+          }
+        } else {
+          errors[name] = {
+            message: String(error),
+          }
+        }
+      }
     })
 
     await Promise.allSettled(imports)
 
-    self.postMessage({ type: 'configResponse', data: { configs } } as ConfigResponseMessage)
+    self.postMessage({ type: 'configResponse', data: { configs, errors } } as ConfigResponseMessage)
 
     return
   }
