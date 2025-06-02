@@ -6,10 +6,6 @@ import * as vite from 'vite'
 import { logger } from './lib/logger.js'
 import { fromWebResponse, toWebRequest } from './lib/reqres.js'
 
-const netlifyHeaders = Symbol('Netlify headers')
-
-type NetlifyRequest = vite.Connect.IncomingMessage & { [netlifyHeaders]?: Record<string, string> }
-
 export interface NetlifyPluginOptions extends Features {
   /**
    * Attach a Vite middleware that intercepts requests and handles them in the
@@ -66,24 +62,12 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
             return
           }
 
-          if (isStaticFile) {
-            ;(nodeReq as NetlifyRequest)[netlifyHeaders] = headers
+          for (const key in headers) {
+            nodeRes.setHeader(key, headers[key])
           }
 
           next()
         })
-
-        return () => {
-          viteDevServer.middlewares.use(function netlifyPostMiddleware(nodeReq, nodeRes, next) {
-            const headers = (nodeReq as NetlifyRequest)[netlifyHeaders] ?? {}
-
-            for (const key in headers) {
-              nodeRes.setHeader(key, headers[key])
-            }
-
-            next()
-          })
-        }
       }
     },
   }
