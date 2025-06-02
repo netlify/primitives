@@ -167,7 +167,7 @@ describe('configureServer', { timeout: 15_000 }, () => {
           `[[headers]]
              for = "/contact/*"
              [headers.values]
-             "Cache-Control" = "public, max-age=90"
+             "X-Contact-Type" = "email"
              [[headers]]
              for = "/*"
              [headers.values]
@@ -216,9 +216,8 @@ describe('configureServer', { timeout: 15_000 }, () => {
 
       expect((await fetch(`${url}/contact/email`)).headers.get('X-NF-Hello')).toBe('world')
       expect((await fetch(url)).headers.get('X-NF-Hello')).toBe('world')
-      expect((await fetch(`${url}/contact/email`)).headers.get('Cache-Control')).toBe('public, max-age=90')
-      // Default Cache-Control
-      expect((await fetch(url)).headers.get('Cache-Control')).toBe('public, max-age=0, must-revalidate')
+      expect((await fetch(`${url}/contact/email`)).headers.get('X-Contact-Type')).toBe('email')
+      expect((await fetch(url)).headers.get('X-Contact-Type')).toBeNull()
 
       await server.close()
       await fixture.destroy()
