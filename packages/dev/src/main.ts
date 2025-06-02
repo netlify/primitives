@@ -6,7 +6,7 @@ import { resolveConfig } from '@netlify/config'
 import { ensureNetlifyIgnore, getAPIToken, mockLocation, LocalState, type Logger, HTTPServer } from '@netlify/dev-utils'
 import { EdgeFunctionsHandler } from '@netlify/edge-functions/dev'
 import { FunctionsHandler } from '@netlify/functions/dev'
-import { HeadersHandler } from '@netlify/headers'
+import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 
@@ -22,7 +22,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/blobs/overview/
    */
   blobs?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -31,7 +31,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/edge-functions/overview/
    */
   edgeFunctions?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -40,7 +40,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/environment-variables/overview/
    */
   environmentVariables?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -49,7 +49,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/functions/overview/
    */
   functions?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -58,7 +58,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/routing/headers/
    */
   headers?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -67,7 +67,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/routing/redirects/
    */
   redirects?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -80,7 +80,13 @@ export interface Features {
    * Configuration options for serving static files.
    */
   staticFiles?: {
-    enabled: boolean
+    enabled?: boolean
+
+    /**
+     * Additional list of directories where static files can be found. The
+     * `publish` directory configured on your site will be used automatically.
+     */
+    directories?: string[]
   }
 }
 
@@ -94,6 +100,18 @@ interface NetlifyDevOptions extends Features {
 const notFoundHandler = async () => new Response('Not found', { status: 404 })
 
 type Config = Awaited<ReturnType<typeof resolveConfig>>
+
+interface HandleOptions {
+  /**
+   * An optional callback that will be called with every header (key and value)
+   * coming from header rules.
+   *
+   * {@link} https://docs.netlify.com/routing/headers/
+   */
+  headersCollector?: HeadersCollector
+}
+
+export type ResponseType = 'edge-function' | 'function' | 'redirect' | 'static'
 
 export class NetlifyDev {
   #apiHost?: string
@@ -113,13 +131,14 @@ export class NetlifyDev {
     redirects: boolean
     static: boolean
   }
-  #headersHandler: { handle: HeadersHandler['handle'] }
+  #headersHandler?: HeadersHandler
   #logger: Logger
   #projectRoot: string
   #redirectsHandler?: RedirectsHandler
   #server?: string | HTTPServer
   #siteID?: string
   #staticHandler?: StaticHandler
+  #staticHandlerAdditionalDirectories: string[]
 
   constructor(options: NetlifyDevOptions) {
     if (options.apiURL) {
@@ -143,13 +162,17 @@ export class NetlifyDev {
       static: options.staticFiles?.enabled !== false,
     }
     this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')
-    this.#headersHandler = { handle: async (_request: Request, response: Response) => response }
     this.#logger = options.logger ?? globalThis.console
     this.#server = options.serverAddress
     this.#projectRoot = projectRoot
+    this.#staticHandlerAdditionalDirectories = options.staticFiles?.directories ?? []
   }
 
-  private async handleInEphemeralDirectory(request: Request, destPath: string) {
+  private async handleInEphemeralDirectory(
+    request: Request,
+    destPath: string,
+    options: HandleOptions = {},
+  ): Promise<{ response: Response; type: ResponseType } | undefined> {
     // Try to match the request against the different steps in our request chain.
     //
     // https://docs.netlify.com/platform/request-chain/
@@ -158,7 +181,7 @@ export class NetlifyDev {
     //    with both modes of cache (manual and off) by running them serially.
     const edgeFunctionResponse = await this.#edgeFunctionsHandler?.handle(request.clone())
     if (edgeFunctionResponse) {
-      return edgeFunctionResponse
+      return { response: edgeFunctionResponse, type: 'edge-function' }
     }
 
     // 2. Check if the request matches a function.
@@ -171,14 +194,15 @@ export class NetlifyDev {
 
         if (staticMatch) {
           const response = await staticMatch.handle()
-          // XXX(serhalp): We won't even get here when `staticHandler` is disabled, but we need to somehow
-          // have Vite return the static file without continuing our request chain.
-          return this.#headersHandler.handle(request, response)
+
+          await this.#headersHandler?.apply(request, response, options.headersCollector)
+
+          return { response, type: 'static' }
         }
       }
 
       // Let the function handle the request.
-      return functionMatch.handle(request)
+      return { response: await functionMatch.handle(request), type: 'function' }
     }
 
     // 3. Check if the request matches a redirect rule.
@@ -189,7 +213,7 @@ export class NetlifyDev {
       // we'll follow the redirect rule.
       const functionMatch = await this.#functionsHandler?.match(new Request(redirectMatch.target), destPath)
       if (functionMatch && !functionMatch.preferStatic) {
-        return functionMatch.handle(request)
+        return { response: await functionMatch.handle(request), type: 'function' }
       }
 
       const response = await this.#redirectsHandler?.handle(
@@ -197,31 +221,41 @@ export class NetlifyDev {
         redirectMatch,
         async (maybeStaticFile: Request) => {
           const staticMatch = await this.#staticHandler?.match(maybeStaticFile)
+          if (!staticMatch) {
+            return
+          }
 
-          if (!staticMatch) return
-
-          // XXX(serhalp): We won't even get here when `staticHandler` is disabled, but we need to somehow
-          // have Vite return the static file without continuing our request chain while still applying our
-          // headers.
           return async () => {
             const response = await staticMatch.handle()
-            // XXX(serhalp): Somehow return metadata saying "rewrite to `target` and continue"
-            return this.#headersHandler.handle(new Request(redirectMatch.target), response)
+
+            await this.#headersHandler?.apply(new Request(redirectMatch.target), response, options.headersCollector)
+
+            return response
           }
         },
       )
       if (response) {
-        return response
+        return { response, type: 'redirect' }
       }
+    }
+
+    const { pathname } = new URL(request.url)
+    if (pathname.startsWith('/.netlify/images')) {
+      this.#logger.error(
+        'The Netlify Image CDN is currently only supported in the Netlify CLI. Run `npx netlify dev` to get started.',
+      )
+
+      return
     }
 
     // 4. Check if the request matches a static file.
     const staticMatch = await this.#staticHandler?.match(request)
     if (staticMatch) {
       const response = await staticMatch.handle()
-      // XXX(serhalp): We won't even get here when `staticHandler` is disabled, but we need to somehow
-      // have Vite return the static file while still applying our headers.
-      return this.#headersHandler.handle(request, response)
+
+      await this.#headersHandler?.apply(request, response, options.headersCollector)
+
+      return { response, type: 'static' }
     }
   }
 
@@ -244,7 +278,13 @@ export class NetlifyDev {
     return config
   }
 
-  async handle(request: Request) {
+  async handle(request: Request, options: HandleOptions = {}) {
+    const result = await this.handleAndIntrospect(request, options)
+
+    return result?.response
+  }
+
+  async handleAndIntrospect(request: Request, options: HandleOptions = {}) {
     const requestID = generateRequestID()
 
     request.headers.set('x-nf-request-id', requestID)
@@ -254,7 +294,7 @@ export class NetlifyDev {
     const destPath = await fs.mkdtemp(path.join(this.#functionsServePath, `${requestID}_`))
 
     try {
-      return await this.handleInEphemeralDirectory(request, destPath)
+      return await this.handleInEphemeralDirectory(request, destPath, options)
     } finally {
       try {
         await fs.rm(destPath, { force: true, recursive: true })
@@ -343,6 +383,7 @@ export class NetlifyDev {
         directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
         env,
         geolocation: mockLocation,
+        logger: this.#logger,
         originServerAddress: serverAddress,
         siteID,
         siteName: config?.siteInfo.name,
@@ -389,7 +430,10 @@ export class NetlifyDev {
 
     if (this.#features.static) {
       this.#staticHandler = new StaticHandler({
-        directory: this.#config?.config.build.publish ?? this.#projectRoot,
+        directory: [
+          this.#config?.config.build.publish ?? this.#projectRoot,
+          ...this.#staticHandlerAdditionalDirectories,
+        ],
       })
     }
 

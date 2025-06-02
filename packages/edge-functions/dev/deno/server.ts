@@ -1,3 +1,4 @@
+import { getErrorResponse } from './errors.ts'
 import type { RunOptions } from '../shared/types.ts'
 
 import { getConfigs } from './config.ts'
@@ -9,7 +10,7 @@ type AvailableFunctions = Record<string, string>
  * Starts an HTTP server on the provided port. The server acts as a proxy that
  * handles edge function invocations.
  */
-export const serveLocal = ({ bootstrapURL, denoPort: port }: RunOptions) => {
+export const serveLocal = ({ bootstrapURL, denoPort: port, requestTimeout }: RunOptions) => {
   const serveOptions: Deno.ServeTcpOptions = {
     // Adding a no-op listener to avoid the default one, which prints a message
     // we don't want.
@@ -38,8 +39,8 @@ export const serveLocal = ({ bootstrapURL, denoPort: port }: RunOptions) => {
         const configs = await getConfigs(availableFunctions)
 
         return Response.json(configs)
-      } catch {
-        return new Response(null, { status: 500 })
+      } catch (error) {
+        return getErrorResponse(error)
       }
     }
 
@@ -47,7 +48,11 @@ export const serveLocal = ({ bootstrapURL, denoPort: port }: RunOptions) => {
       return new Response(null, { status: 404 })
     }
 
-    return await invoke(req, bootstrapURL, functions)
+    try {
+      return await invoke(req, bootstrapURL, functions, requestTimeout)
+    } catch (error) {
+      return getErrorResponse(error)
+    }
   })
 
   return server.finished

@@ -9,7 +9,7 @@ import { fromWebResponse, toWebRequest } from './lib/reqres.js'
 export interface NetlifyPluginOptions extends Features {
   /**
    * Attach a Vite middleware that intercepts requests and handles them in the
-   * same way as the Netlify production environment.
+   * same way as the Netlify production environment (default: true).
    */
   middleware?: boolean
 }
@@ -33,29 +33,46 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
         logger,
         redirects,
         serverAddress: `http://localhost:${port}`,
-        staticFiles,
+        staticFiles: {
+          ...staticFiles,
+          directories: [viteDevServer.config.root, viteDevServer.config.publicDir],
+        },
         projectRoot: viteDevServer.config.root,
       })
 
       await netlifyDev.start()
 
       if (!netlifyDev.siteIsLinked) {
-        logger.log('Your project is not linked to a Netlify site. Run `npx netlify link` to get started.')
+        logger.log(
+          'Linking this project to a Netlify site lets you deploy your site, use any environment variables defined on your team and site and much more. Run `npx netlify init` to get started.',
+        )
       }
 
       if (middleware) {
-        return () => {
-          viteDevServer.middlewares.use(async (nodeReq, nodeRes, next) => {
-            const req = toWebRequest(nodeReq, nodeReq.originalUrl)
-            const res = await netlifyDev.handle(req)
-
-            if (res) {
-              fromWebResponse(res, nodeRes)
-            } else {
-              next()
-            }
+        viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
+          const req = toWebRequest(nodeReq, nodeReq.originalUrl)
+          const headers: Record<string, string> = {}
+          const result = await netlifyDev.handleAndIntrospect(req, {
+            headersCollector: (key, value) => {
+              headers[key] = value
+            },
           })
-        }
+
+          const isStaticFile = result?.type === 'static'
+
+          // Don't serve static matches. Let the Vite server handle them.
+          if (result && !isStaticFile) {
+            fromWebResponse(result.response, nodeRes)
+
+            return
+          }
+
+          for (const key in headers) {
+            nodeRes.setHeader(key, headers[key])
+          }
+
+          next()
+        })
       }
     },
   }

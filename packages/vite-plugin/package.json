@@ -4,7 +4,7 @@
   "description": "Vite plugin with a local emulation of the Netlify environment",
   "type": "module",
   "engines": {
-    "node": "^18.14.0 || >=20"
+    "node": "^20.6.1 || >=22"
   },
   "main": "./dist/main.js",
   "exports": "./dist/main.js",
@@ -29,7 +29,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@types/node": "^20.5.1",
+    "@types/node": "^20.17.57",
     "playwright": "^1.52.0",
     "tsup": "^8.0.0",
     "vite": "^6.3.4",
