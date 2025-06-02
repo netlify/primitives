@@ -102,6 +102,7 @@ export class ImageHandler {
           const ipx = createIPX({
             storage: ipxFSStorage(),
             httpStorage: ipxHttpStorage({
+              // checking if url is allowed is done above, so we disable IPX checking
               allowAllDomains: true,
             }),
           })

@@ -1,7 +1,8 @@
 import type { Logger } from '@netlify/dev-utils'
 import { imageSize } from 'image-size'
-import { describe, expect, test, vi } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { ImageHandler } from './main.js'
+import { createIPXWebServer } from 'ipx'
 
 function getMockLogger(): Logger {
   return {
@@ -10,6 +11,21 @@ function getMockLogger(): Logger {
     log: vi.fn<Logger['log']>(),
   }
 }
+
+const mockedIpxResponseBody = 'Response from IPX'
+
+vi.mock('ipx', async () => {
+  return {
+    ...(await vi.importActual('ipx')),
+    createIPXWebServer: vi.fn(() => () => Promise.resolve(new Response(mockedIpxResponseBody))), //.mockImplementation(),
+  }
+})
+
+const mockCreateIPXWebServer = vi.mocked(createIPXWebServer)
+
+beforeEach(() => {
+  mockCreateIPXWebServer.mockReset()
+})
 
 describe('`ImageHandler`', () => {
   describe('constructor', () => {
@@ -30,8 +46,101 @@ describe('`ImageHandler`', () => {
   })
 
   describe('match', () => {
+    describe('image endpoints', () => {
+      test('matches on `/.netlify/images', async () => {
+        const imageHandler = new ImageHandler({
+          logger: getMockLogger(),
+        })
+
+        const url = new URL('/.netlify/images', 'https://netlify.com')
+        url.searchParams.set('url', 'image.png')
+
+        const match = imageHandler.match(new Request(url))
+
+        expect(match).toBeDefined()
+
+        const response = await match!.handle()
+
+        expect(response.ok).toBe(true)
+        expect(await response.text()).toBe(mockedIpxResponseBody)
+      })
+
+      test('matches on `/.netlify/images/', async () => {
+        const imageHandler = new ImageHandler({
+          logger: getMockLogger(),
+        })
+
+        const url = new URL('/.netlify/images/', 'https://netlify.com')
+        url.searchParams.set('url', 'image.png')
+
+        const match = imageHandler.match(new Request(url))
+
+        expect(match).toBeDefined()
+
+        const response = await match!.handle()
+
+        expect(response.ok).toBe(true)
+        expect(await response.text()).toBe(mockedIpxResponseBody)
+      })
+
+      test('does not match on `/.netlify/foo', async () => {
+        const imageHandler = new ImageHandler({
+          logger: getMockLogger(),
+        })
+
+        const url = new URL('/.netlify/foo', 'https://netlify.com')
+        url.searchParams.set('url', 'image.png')
+
+        const match = imageHandler.match(new Request(url))
+
+        expect(match).not.toBeDefined()
+      })
+    })
+
+    describe('request methods', () => {
+      test('allows GET requests', async () => {
+        const imageHandler = new ImageHandler({
+          logger: getMockLogger(),
+        })
+
+        const url = new URL('/.netlify/images', 'https://netlify.com')
+        url.searchParams.set('url', 'image.png')
+
+        const match = imageHandler.match(new Request(url))
+
+        expect(match).toBeDefined()
+
+        const response = await match!.handle()
+
+        expect(response.ok).toBe(true)
+        expect(await response.text()).toBe(mockedIpxResponseBody)
+      })
+
+      test('does not allow POST requests', async () => {
+        const imageHandler = new ImageHandler({
+          logger: getMockLogger(),
+        })
+
+        const url = new URL('/.netlify/images', 'https://netlify.com')
+        url.searchParams.set('url', 'image.png')
+
+        const match = imageHandler.match(new Request(url, { method: 'POST' }))
+
+        expect(match).toBeDefined()
+
+        const response = await match!.handle()
+
+        expect(response.ok).toBe(false)
+        expect(await response.text()).toBe('Method Not Allowed')
+      })
+    })
+
     describe('remote images', () => {
       test('allow remote images matching configured patterns', async () => {
+        mockCreateIPXWebServer.mockImplementation(
+          (await vi.importActual<typeof import('ipx')>('ipx')).createIPXWebServer,
+        )
+
         const imageHandler = new ImageHandler({
           logger: getMockLogger(),
           imagesConfig: {
@@ -39,7 +148,7 @@ describe('`ImageHandler`', () => {
           },
         })
 
-        const url = new URL('https://netlify.com/.netlify/images')
+        const url = new URL('/.netlify/images', 'https://netlify.com')
         url.searchParams.set('url', 'https://images.unsplash.com/photo-1517849845537-4d257902454a')
         url.searchParams.set('w', '100')
 
@@ -64,7 +173,7 @@ describe('`ImageHandler`', () => {
           },
         })
 
-        const url = new URL('https://netlify.com/.netlify/images')
+        const url = new URL('/.netlify/images', 'https://netlify.com')
         url.searchParams.set('url', 'https://images.unsplash.com/photo-1517849845537-4d257902454a')
         url.searchParams.set('w', '100')
 
