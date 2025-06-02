@@ -702,13 +702,13 @@ describe('Handling requests', () => {
         const req1 = new Request('https://site.netlify/hi')
         const res1 = await dev.handleAndIntrospect(req1)
 
-        expect(await res1?.response?.text()).toBe('hi, friend!')
+        expect(await res1?.response.text()).toBe('hi, friend!')
         expect(res1?.type).toBe('function')
 
         const req2 = new Request('https://site.netlify/hello')
         const res2 = await dev.handleAndIntrospect(req2)
 
-        expect(await res2?.response?.text()).toBe('<html>Hello</html>')
+        expect(await res2?.response.text()).toBe('<html>Hello</html>')
         expect(res2?.type).toBe('static')
 
         await dev.stop()
