@@ -5,7 +5,7 @@ import type { Message, RunRequestMessage } from './workers/types.ts'
  * `Request` into a worker message and uses the messages it receives back to
  * construct a `Response`.
  */
-export function invoke(req: Request, bootstrapURL: string, functions: Record<string, string>) {
+export function invoke(req: Request, bootstrapURL: string, functions: Record<string, string>, requestTimeout: number) {
   return new Promise<Response>((resolve, reject) => {
     const worker = new Worker(new URL('./workers/runner.ts', import.meta.url).href, {
       type: 'module',
@@ -13,6 +13,16 @@ export function invoke(req: Request, bootstrapURL: string, functions: Record<str
 
     let response: Response | null = null
     let streamController: ReadableStreamDefaultController<Uint8Array> | null = null
+
+    const timeoutCheck = setTimeout(() => {
+      if (!response) {
+        reject(
+          new Error(
+            'An edge function took too long to produce a response. Refer to https://ntl.fyi/ef-limits for information about limits.',
+          ),
+        )
+      }
+    }, requestTimeout)
 
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
@@ -26,6 +36,7 @@ export function invoke(req: Request, bootstrapURL: string, functions: Record<str
             functions,
             headers: Object.fromEntries(req.headers.entries()),
             method: req.method,
+            timeout: requestTimeout,
             url: req.url,
           },
         } as RunRequestMessage)
@@ -48,6 +59,8 @@ export function invoke(req: Request, bootstrapURL: string, functions: Record<str
             status: message.data.status,
           })
 
+          clearTimeout(timeoutCheck)
+
           resolve(response)
 
           break
@@ -56,6 +69,8 @@ export function invoke(req: Request, bootstrapURL: string, functions: Record<str
         case 'responseEnd': {
           streamController?.close()
           worker.terminate()
+
+          clearTimeout(timeoutCheck)
 
           if (!response) {
             reject(new Error('There was an error in producing the edge function response'))
@@ -69,6 +84,8 @@ export function invoke(req: Request, bootstrapURL: string, functions: Record<str
     }
 
     worker.onerror = (e) => {
+      clearTimeout(timeoutCheck)
+
       reject(e)
     }
   })
