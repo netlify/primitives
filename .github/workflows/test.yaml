@@ -19,7 +19,10 @@ jobs:
         node-version: ['*']
         include:
           - os: ubuntu-latest
-            node-version: '18.14.0'
+            # Many of our dependencies require 20.6.0, so we use the same minimum.
+            # But there is a blocking bug in 20.6.0, fixed in 20.6.1:
+            # https://github.com/nuxt/nuxt/issues/23020#issuecomment-1719828889
+            node-version: '20.6.1'
       fail-fast: false
     steps:
       # Increasing the maximum number of open files. See:
@@ -48,3 +51,38 @@ jobs:
         run: npm run build --workspaces=true
       - name: Tests
         run: npm run test --workspaces=true
+  test-node18:
+    name: Test Node.js 18 for specific packages
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+      fail-fast: false
+    steps:
+      - run: git config --global core.symlinks true
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Node.js 18.14.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.14.0
+          cache: 'npm'
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: 2.2.4
+      - name: Setup Deno dependencies
+        run: deno cache https://deno.land/x/eszip@v0.55.2/eszip.ts
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        # NOTE: These are run in the specified order, so they must be in topological order
+        run: |
+          npm run build -w ./packages/types -w ./packages/dev-utils -w ./packages/runtime-utils \
+          -w ./packages/blobs -w ./packages/edge-functions -w ./packages/functions
+      - name: Tests
+        run: |
+          npm run test -w ./packages/types -w ./packages/dev-utils -w ./packages/runtime-utils \
+          -w ./packages/blobs -w ./packages/edge-functions -w ./packages/functions
