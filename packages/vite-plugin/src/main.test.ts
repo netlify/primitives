@@ -164,7 +164,9 @@ describe('configureServer', { timeout: 15_000 }, () => {
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
-          `[[headers]]
+          `[build]
+             publish = "dist"
+             [[headers]]
              for = "/contact/*"
              [headers.values]
              "X-Contact-Type" = "email"
