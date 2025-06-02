@@ -22,7 +22,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/blobs/overview/
    */
   blobs?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -31,7 +31,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/edge-functions/overview/
    */
   edgeFunctions?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -40,7 +40,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/environment-variables/overview/
    */
   environmentVariables?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -49,7 +49,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/functions/overview/
    */
   functions?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -58,7 +58,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/routing/headers/
    */
   headers?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -67,7 +67,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/routing/redirects/
    */
   redirects?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -80,7 +80,13 @@ export interface Features {
    * Configuration options for serving static files.
    */
   staticFiles?: {
-    enabled: boolean
+    enabled?: boolean
+
+    /**
+     * Additional list of directories where static files can be found. The
+     * `publish` directory configured on your site will be used automatically.
+     */
+    directories?: string[]
   }
 }
 
@@ -132,6 +138,7 @@ export class NetlifyDev {
   #server?: string | HTTPServer
   #siteID?: string
   #staticHandler?: StaticHandler
+  #staticHandlerAdditionalDirectories: string[]
 
   constructor(options: NetlifyDevOptions) {
     if (options.apiURL) {
@@ -158,6 +165,7 @@ export class NetlifyDev {
     this.#logger = options.logger ?? globalThis.console
     this.#server = options.serverAddress
     this.#projectRoot = projectRoot
+    this.#staticHandlerAdditionalDirectories = options.staticFiles?.directories ?? []
   }
 
   private async handleInEphemeralDirectory(
@@ -411,7 +419,10 @@ export class NetlifyDev {
 
     if (this.#features.static) {
       this.#staticHandler = new StaticHandler({
-        directory: this.#config?.config.build.publish ?? this.#projectRoot,
+        directory: [
+          this.#config?.config.build.publish ?? this.#projectRoot,
+          ...this.#staticHandlerAdditionalDirectories,
+        ],
       })
     }
 
