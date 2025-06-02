@@ -13,7 +13,7 @@ const PLUGIN_PATH = path.resolve(fileURLToPath(import.meta.url), '../..')
 
 const startTestServer = async (options: Parameters<typeof createServer>[0] = {}) => {
   const server = await createServer({
-    logLevel: 'silent',
+    logLevel: 'warn',
     ...options,
   })
 
