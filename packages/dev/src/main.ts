@@ -239,6 +239,15 @@ export class NetlifyDev {
       }
     }
 
+    const { pathname } = new URL(request.url)
+    if (pathname.startsWith('/.netlify/images')) {
+      this.#logger.error(
+        'The Netlify Image CDN is currently only supported in the Netlify CLI. Run `npx netlify dev` to get started.',
+      )
+
+      return
+    }
+
     // 4. Check if the request matches a static file.
     const staticMatch = await this.#staticHandler?.match(request)
     if (staticMatch) {
