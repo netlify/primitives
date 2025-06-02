@@ -63,6 +63,7 @@ describe('`EdgeFunctionsHandler`', () => {
         VAR_2: 'value2',
       },
       geolocation,
+      logger: console,
       originServerAddress: serverAddress,
       siteID: '123',
       siteName: 'test',
@@ -121,6 +122,7 @@ describe('`EdgeFunctionsHandler`', () => {
         VAR_2: 'value2',
       },
       geolocation,
+      logger: console,
       originServerAddress: serverAddress,
       siteID: '123',
       siteName: 'test',
@@ -170,6 +172,7 @@ describe('`EdgeFunctionsHandler`', () => {
         VAR_2: 'value2',
       },
       geolocation,
+      logger: console,
       originServerAddress: serverAddress,
       siteID: '123',
       siteName: 'test',
@@ -183,6 +186,89 @@ describe('`EdgeFunctionsHandler`', () => {
     expect(await res?.json()).toStrictEqual({
       slug: 'hello-world',
     })
+
+    await fixture.destroy()
+  })
+
+  test('Throws an error when the edge function has unparseable code', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/unparseable.mjs',
+        `export default async () => new Response("Hello");
+           
+        // This is the problem!
+        export const config = { path: "/unparseable };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      requestTimeout: 1_000,
+      originServerAddress: serverAddress,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const req = new Request('https://site.netlify/unparseable')
+    req.headers.set('x-nf-request-id', 'req-id')
+
+    const res = await handler.handle(req)
+
+    expect(res?.status).toBe(500)
+    expect(await res?.text()).toContain('Failed to parse edge function `unparseable`')
+
+    await fixture.destroy()
+  })
+
+  test('Aborts an invocation if the function takes too long to produce a response', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/slow.mjs',
+        `export default async () => {
+          await new Promise(resolve => setTimeout(resolve, 2_000));
+
+          return new Response("Done");
+        };
+           
+        export const config = { path: "/slow" };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      requestTimeout: 1_000,
+      originServerAddress: serverAddress,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const req = new Request('https://site.netlify/slow')
+    req.headers.set('x-nf-request-id', 'req-id')
+
+    const res = await handler.handle(req)
+
+    expect(res?.status).toBe(500)
+    expect(await res?.text()).toContain('An edge function took too long to produce a response')
 
     await fixture.destroy()
   })
