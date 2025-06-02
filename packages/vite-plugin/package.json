@@ -29,7 +29,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@types/node": "^20.5.1",
+    "@types/node": "^18.19.104",
     "tsup": "^8.0.0",
     "vite": "^6.3.4",
     "vitest": "^3.0.0"
@@ -39,6 +39,6 @@
     "chalk": "^5.4.1"
   },
   "peerDependencies": {
-    "vite": "^6.2"
+    "vite": "^6"
   }
 }

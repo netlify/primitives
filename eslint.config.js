@@ -1,4 +1,5 @@
 // @ts-check
+import { promises as fs } from 'node:fs'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { includeIgnoreFile } from '@eslint/compat'
@@ -13,13 +14,23 @@ import temporarySuppressions from './eslint_temporary_suppressions.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+const packagesPath = path.join(__dirname, 'packages')
+const packages = await fs.readdir(packagesPath)
+const packageIgnores = packages.map((name) => includeIgnoreFile(path.resolve(packagesPath, name, '.gitignore')))
+
 export default tseslint.config(
   // Global rules and configuration
   includeIgnoreFile(path.resolve(__dirname, '.gitignore')),
+  ...packageIgnores,
   {
     linterOptions: {
       reportUnusedDisableDirectives: true,
     },
+  },
+
+  // TODO: Move this to `edge-functions` package.
+  {
+    ignores: ['packages/**/deno'],
   },
 
   // JavaScript-specific rules
@@ -73,12 +84,18 @@ export default tseslint.config(
           varsIgnorePattern: '^_',
         },
       ],
+
+      // Empty functions and blocks are useful (e.g `noop() {}`, `catch {}`) but can mask unintentionally omitted
+      // implementation. We should add explanatory comments like `// intentionally empty` and `// ignore error` in these
+      // scenarios to communicate intent.
+      'no-empty': 'off',
+      '@typescript-eslint/no-empty-function': 'off',
     },
   },
 
   // Tests
   {
-    files: ['**/*.test.?(c|m)[jt]s?(x)'],
+    files: ['**/*.test.?(c|m)[jt]s?(x)', '**/test/*'],
     plugins: { vitest },
     rules: {
       ...vitest.configs.recommended.rules,
@@ -101,6 +118,15 @@ export default tseslint.config(
           ],
         },
       ],
+      'n/no-unsupported-features/node-builtins': 'off',
+    },
+  },
+
+  // Config files
+  {
+    files: ['**/tsup.config.ts'],
+    rules: {
+      'n/no-unsupported-features/node-builtins': 'off',
     },
   },
 

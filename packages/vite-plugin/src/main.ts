@@ -24,12 +24,15 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
   const plugin: vite.Plugin = {
     name: 'vite-plugin-netlify',
     async configureServer(viteDevServer) {
-      const { blobs, functions, middleware = true, redirects, staticFiles } = options
+      const { port } = viteDevServer.config.server
+      const { blobs, edgeFunctions, functions, middleware = true, redirects, staticFiles } = options
       const netlifyDev = new NetlifyDev({
         blobs,
+        edgeFunctions,
         functions,
         logger,
         redirects,
+        serverAddress: `http://localhost:${port}`,
         staticFiles,
         projectRoot: viteDevServer.config.root,
       })

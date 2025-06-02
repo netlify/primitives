@@ -152,7 +152,11 @@ export class FunctionsRegistry {
       this.handleEvent({ function: func, name: 'FunctionReloadingEvent' } as FunctionReloadingEvent)
     }
 
-    const { error: buildError, includedFiles, srcFilesDiff } = await func.build({ cache: this.buildCache })
+    const {
+      error: buildError,
+      includedFiles,
+      srcFilesDiff,
+    } = await func.build({ buildDirectory: this.destPath, cache: this.buildCache })
 
     if (buildError) {
       this.handleEvent({ function: func, name: 'FunctionBuildErrorEvent' } as FunctionBuildErrorEvent)
@@ -422,7 +426,6 @@ export class FunctionsRegistry {
           routes,
           runtime,
           settings: this.settings,
-          targetDirectory: this.destPath,
           timeoutBackground: this.timeouts.backgroundFunctions,
           timeoutSynchronous: this.timeouts.syncFunctions,
         })
