@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/netlify/primitives/compare/types-v2.0.0...types-v2.0.1) (2025-06-02)
+
+
+### Bug Fixes
+
+* ensure valid 18.14.0+ dependencies ([#254](https://github.com/netlify/primitives/issues/254)) ([09dd0d8](https://github.com/netlify/primitives/commit/09dd0d8e1ab0c028eee8715b05307d8961b28463))
+
 ## [2.0.0](https://github.com/netlify/primitives/compare/types-v1.2.0...types-v2.0.0) (2025-05-28)
 
 

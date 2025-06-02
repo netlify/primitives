@@ -1,6 +1,6 @@
 {
   "name": "@netlify/redirects",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "TypeScript implementation of Netlify's rewrites and redirects engine",
   "type": "module",
   "engines": {
@@ -33,7 +33,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "3.0.0",
+    "@netlify/dev-utils": "3.1.0",
     "@types/jsonwebtoken": "9.0.9",
     "tsup": "^8.5.0",
     "vitest": "^3.1.4"

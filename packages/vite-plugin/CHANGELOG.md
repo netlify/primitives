@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.0.0](https://github.com/netlify/primitives/compare/vite-plugin-v1.0.0...vite-plugin-v2.0.0) (2025-06-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop EOL'd node 18 support in new packages ([#252](https://github.com/netlify/primitives/issues/252))
+
+### Features
+
+* add support for edge functions ([#233](https://github.com/netlify/primitives/issues/233)) ([c80d77d](https://github.com/netlify/primitives/commit/c80d77ddf59e394f9d8a84a96275c25c1b9aefc0))
+* support multiple directories to serve static files ([#253](https://github.com/netlify/primitives/issues/253)) ([153f6ef](https://github.com/netlify/primitives/commit/153f6efda2e681d98753ebd7a1cb487ffc55560b))
+
+
+### Bug Fixes
+
+* drop EOL'd node 18 support in new packages ([#252](https://github.com/netlify/primitives/issues/252)) ([38791ab](https://github.com/netlify/primitives/commit/38791ab91dcbf1f05093ba123eaccdf960a2d6e7))
+* improve static file handler ([#248](https://github.com/netlify/primitives/issues/248)) ([eb6c134](https://github.com/netlify/primitives/commit/eb6c134965a1653b3f3bebd9ec44df334589551e))
+* loosen vite 6 peer dependency ([#239](https://github.com/netlify/primitives/issues/239)) ([38b89fd](https://github.com/netlify/primitives/commit/38b89fd509830431e33f1051abb64a6c37a96f13))
+* mention `middleware` option default in docstring ([#240](https://github.com/netlify/primitives/issues/240)) ([4b004de](https://github.com/netlify/primitives/commit/4b004dee96dacc220de5bdaea7b9ef16f7bea507))
+* support publish dir being set to not root directory ([#256](https://github.com/netlify/primitives/issues/256)) ([4987223](https://github.com/netlify/primitives/commit/4987223d8850d4a724eb6f9bdbc855edbe463e50))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 3.0.0 to 4.0.0
+
 ## [1.0.0](https://github.com/netlify/primitives/compare/vite-plugin-v0.3.1...vite-plugin-v1.0.0) (2025-05-28)
 
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/netlify/primitives/compare/runtime-utils-v2.0.0...runtime-utils-v2.1.0) (2025-06-02)
+
+
+### Features
+
+* add support for edge functions ([#233](https://github.com/netlify/primitives/issues/233)) ([c80d77d](https://github.com/netlify/primitives/commit/c80d77ddf59e394f9d8a84a96275c25c1b9aefc0))
+
+
+### Bug Fixes
+
+* ensure valid 18.14.0+ dependencies ([#254](https://github.com/netlify/primitives/issues/254)) ([09dd0d8](https://github.com/netlify/primitives/commit/09dd0d8e1ab0c028eee8715b05307d8961b28463))
+
 ## [2.0.0](https://github.com/netlify/primitives/compare/runtime-utils-v1.3.1...runtime-utils-v2.0.0) (2025-05-28)
 
 

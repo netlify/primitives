@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/netlify/primitives/compare/otel-v2.0.0...otel-v3.0.0) (2025-06-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop EOL'd node 18 support in new packages ([#252](https://github.com/netlify/primitives/issues/252))
+
+### Bug Fixes
+
+* drop EOL'd node 18 support in new packages ([#252](https://github.com/netlify/primitives/issues/252)) ([38791ab](https://github.com/netlify/primitives/commit/38791ab91dcbf1f05093ba123eaccdf960a2d6e7))
+
 ## [2.0.0](https://github.com/netlify/primitives/compare/otel-v1.1.0...otel-v2.0.0) (2025-05-28)
 
 
