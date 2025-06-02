@@ -57,21 +57,20 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
             },
           })
 
-          if (!result) {
-            next()
+          const isStaticFile = result?.type === 'static'
+
+          // Don't serve static matches. Let the Vite server handle them.
+          if (result && !isStaticFile) {
+            fromWebResponse(result.response, nodeRes)
 
             return
           }
 
-          if (result.type === 'static') {
+          if (isStaticFile) {
             ;(nodeReq as NetlifyRequest)[netlifyHeaders] = headers
-
-            next()
-
-            return
           }
 
-          fromWebResponse(result.response, nodeRes)
+          next()
         })
 
         return () => {
