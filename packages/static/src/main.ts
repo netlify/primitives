@@ -22,7 +22,7 @@ export class StaticHandler {
   private publicDirectories: string[]
 
   constructor(options: StaticHandlerOptions) {
-    this.publicDirectories = Array.isArray(options.directory) ? options.directory : [options.directory]
+    this.publicDirectories = [...new Set(Array.isArray(options.directory) ? options.directory : [options.directory])]
   }
 
   async match(request: Request): Promise<StaticMatch | undefined> {
