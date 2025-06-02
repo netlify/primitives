@@ -1,18 +1,21 @@
-import type { ConfigRequestMessage, Message } from './workers/types.ts'
+// @ts-check
 
-export function getConfigs(functions: Record<string, string>) {
+/**
+ * @param {Record<string, string>} functions
+ */
+export function getConfigs(functions) {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('./workers/config.ts', import.meta.url).href, {
+    const worker = new Worker(new URL('./workers/config.mjs', import.meta.url).href, {
       type: 'module',
     })
 
     worker.postMessage({
       type: 'configRequest',
       data: { functions },
-    } as ConfigRequestMessage)
+    })
 
     worker.onmessage = (e) => {
-      const message = e.data as Message
+      const message = e.data
 
       if (message.type === 'configResponse') {
         const { configs, errors } = message.data
