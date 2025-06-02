@@ -6,7 +6,7 @@ import { resolveConfig } from '@netlify/config'
 import { ensureNetlifyIgnore, getAPIToken, mockLocation, LocalState, type Logger, HTTPServer } from '@netlify/dev-utils'
 import { EdgeFunctionsHandler } from '@netlify/edge-functions/dev'
 import { FunctionsHandler } from '@netlify/functions/dev'
-import { HeadersHandler } from '@netlify/headers'
+import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 
@@ -95,6 +95,18 @@ const notFoundHandler = async () => new Response('Not found', { status: 404 })
 
 type Config = Awaited<ReturnType<typeof resolveConfig>>
 
+interface HandleOptions {
+  /**
+   * An optional callback that will be called with every header (key and value)
+   * coming from header rules.
+   *
+   * {@link} https://docs.netlify.com/routing/headers/
+   */
+  headersCollector?: HeadersCollector
+}
+
+export type ResponseType = 'edge-function' | 'function' | 'redirect' | 'static'
+
 export class NetlifyDev {
   #apiHost?: string
   #apiScheme?: string
@@ -113,7 +125,7 @@ export class NetlifyDev {
     redirects: boolean
     static: boolean
   }
-  #headersHandler: { handle: HeadersHandler['handle'] }
+  #headersHandler?: HeadersHandler
   #logger: Logger
   #projectRoot: string
   #redirectsHandler?: RedirectsHandler
@@ -143,13 +155,16 @@ export class NetlifyDev {
       static: options.staticFiles?.enabled !== false,
     }
     this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')
-    this.#headersHandler = { handle: async (_request: Request, response: Response) => response }
     this.#logger = options.logger ?? globalThis.console
     this.#server = options.serverAddress
     this.#projectRoot = projectRoot
   }
 
-  private async handleInEphemeralDirectory(request: Request, destPath: string) {
+  private async handleInEphemeralDirectory(
+    request: Request,
+    destPath: string,
+    options: HandleOptions = {},
+  ): Promise<{ response: Response; type: ResponseType } | undefined> {
     // Try to match the request against the different steps in our request chain.
     //
     // https://docs.netlify.com/platform/request-chain/
@@ -158,7 +173,7 @@ export class NetlifyDev {
     //    with both modes of cache (manual and off) by running them serially.
     const edgeFunctionResponse = await this.#edgeFunctionsHandler?.handle(request.clone())
     if (edgeFunctionResponse) {
-      return edgeFunctionResponse
+      return { response: edgeFunctionResponse, type: 'edge-function' }
     }
 
     // 2. Check if the request matches a function.
@@ -171,12 +186,15 @@ export class NetlifyDev {
 
         if (staticMatch) {
           const response = await staticMatch.handle()
-          return this.#headersHandler.handle(request, response)
+
+          await this.#headersHandler?.apply(request, response, options.headersCollector)
+
+          return { response, type: 'static' }
         }
       }
 
       // Let the function handle the request.
-      return functionMatch.handle(request)
+      return { response: await functionMatch.handle(request), type: 'function' }
     }
 
     // 3. Check if the request matches a redirect rule.
@@ -187,7 +205,7 @@ export class NetlifyDev {
       // we'll follow the redirect rule.
       const functionMatch = await this.#functionsHandler?.match(new Request(redirectMatch.target), destPath)
       if (functionMatch && !functionMatch.preferStatic) {
-        return functionMatch.handle(request)
+        return { response: await functionMatch.handle(request), type: 'function' }
       }
 
       const response = await this.#redirectsHandler?.handle(
@@ -195,17 +213,21 @@ export class NetlifyDev {
         redirectMatch,
         async (maybeStaticFile: Request) => {
           const staticMatch = await this.#staticHandler?.match(maybeStaticFile)
-
-          if (!staticMatch) return
+          if (!staticMatch) {
+            return
+          }
 
           return async () => {
             const response = await staticMatch.handle()
-            return this.#headersHandler.handle(new Request(redirectMatch.target), response)
+
+            await this.#headersHandler?.apply(new Request(redirectMatch.target), response, options.headersCollector)
+
+            return response
           }
         },
       )
       if (response) {
-        return response
+        return { response, type: 'redirect' }
       }
     }
 
@@ -213,7 +235,10 @@ export class NetlifyDev {
     const staticMatch = await this.#staticHandler?.match(request)
     if (staticMatch) {
       const response = await staticMatch.handle()
-      return this.#headersHandler.handle(request, response)
+
+      await this.#headersHandler?.apply(request, response, options.headersCollector)
+
+      return { response, type: 'static' }
     }
   }
 
@@ -236,7 +261,13 @@ export class NetlifyDev {
     return config
   }
 
-  async handle(request: Request) {
+  async handle(request: Request, options: HandleOptions = {}) {
+    const result = await this.handleAndIntrospect(request, options)
+
+    return result?.response
+  }
+
+  async handleAndIntrospect(request: Request, options: HandleOptions = {}) {
     const requestID = generateRequestID()
 
     request.headers.set('x-nf-request-id', requestID)
@@ -246,7 +277,7 @@ export class NetlifyDev {
     const destPath = await fs.mkdtemp(path.join(this.#functionsServePath, `${requestID}_`))
 
     try {
-      return await this.handleInEphemeralDirectory(request, destPath)
+      return await this.handleInEphemeralDirectory(request, destPath, options)
     } finally {
       try {
         await fs.rm(destPath, { force: true, recursive: true })

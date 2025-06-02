@@ -46,18 +46,30 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       }
 
       if (middleware) {
-        return () => {
-          viteDevServer.middlewares.use(async (nodeReq, nodeRes, next) => {
-            const req = toWebRequest(nodeReq, nodeReq.originalUrl)
-            const res = await netlifyDev.handle(req)
-
-            if (res) {
-              fromWebResponse(res, nodeRes)
-            } else {
-              next()
-            }
+        viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
+          const req = toWebRequest(nodeReq, nodeReq.originalUrl)
+          const headers: Record<string, string> = {}
+          const result = await netlifyDev.handleAndIntrospect(req, {
+            headersCollector: (key, value) => {
+              headers[key] = value
+            },
           })
-        }
+
+          const isStaticFile = result?.type === 'static'
+
+          // Don't serve static matches. Let the Vite server handle them.
+          if (result && !isStaticFile) {
+            fromWebResponse(result.response, nodeRes)
+
+            return
+          }
+
+          for (const key in headers) {
+            nodeRes.setHeader(key, headers[key])
+          }
+
+          next()
+        })
       }
     },
   }

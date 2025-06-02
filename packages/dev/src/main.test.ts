@@ -671,5 +671,50 @@ describe('Handling requests', () => {
 
       await fixture.destroy()
     })
+
+    test('Invoking a function that shadows a static file and introspecting the result', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+        publish = "public"
+        `,
+        )
+        .withFile(
+          'netlify/functions/greeting.mjs',
+          `export default async (req, context) => new Response(context.params.greeting + ", friend!");
+           
+           export const config = { path: "/:greeting", preferStatic: true };`,
+        )
+        .withFile('public/hello.html', '<html>Hello</html>')
+        .withStateFile({ siteId: 'site_id' })
+      const directory = await fixture.create()
+
+      await withMockApi(routes, async (context) => {
+        const dev = new NetlifyDev({
+          apiURL: context.apiUrl,
+          apiToken: 'token',
+          projectRoot: directory,
+        })
+
+        await dev.start()
+
+        const req1 = new Request('https://site.netlify/hi')
+        const res1 = await dev.handleAndIntrospect(req1)
+
+        expect(await res1?.response.text()).toBe('hi, friend!')
+        expect(res1?.type).toBe('function')
+
+        const req2 = new Request('https://site.netlify/hello')
+        const res2 = await dev.handleAndIntrospect(req2)
+
+        expect(await res2?.response.text()).toBe('<html>Hello</html>')
+        expect(res2?.type).toBe('static')
+
+        await dev.stop()
+      })
+
+      await fixture.destroy()
+    })
   })
 })
