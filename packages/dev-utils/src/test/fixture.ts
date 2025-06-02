@@ -2,8 +2,9 @@ import { exec } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import { EOL } from 'node:os'
 import { dirname, join } from 'node:path'
-import { promisify } from 'node:util'
+import { promisify, inspect } from 'node:util'
 
+import dirTree from 'directory-tree'
 import tmp from 'tmp-promise'
 
 const run = promisify(exec)
@@ -64,6 +65,8 @@ export class Fixture {
     }
 
     await this.installNpmDependencies()
+
+    console.log(inspect(dirTree(this.directory.path, { exclude: /node_modules/ }), { depth: null }))
 
     return this.directory.path
   }
