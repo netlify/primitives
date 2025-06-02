@@ -37,7 +37,9 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
         projectRoot: viteDevServer.config.root,
       })
 
+      logger.log('netlifyDev.start() pre')
       await netlifyDev.start()
+      logger.log('netlifyDev.start() post')
 
       if (!netlifyDev.siteIsLinked) {
         logger.log('Your project is not linked to a Netlify site. Run `npx netlify link` to get started.')
