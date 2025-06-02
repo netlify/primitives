@@ -13,7 +13,7 @@ type NetlifyRequest = vite.Connect.IncomingMessage & { [netlifyHeaders]?: Record
 export interface NetlifyPluginOptions extends Features {
   /**
    * Attach a Vite middleware that intercepts requests and handles them in the
-   * same way as the Netlify production environment.
+   * same way as the Netlify production environment (default: true).
    */
   middleware?: boolean
 }
