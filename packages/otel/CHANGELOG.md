@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2](https://github.com/netlify/primitives/compare/otel-v3.0.1...otel-v3.0.2) (2025-06-03)
+
+
+### Bug Fixes
+
+* bring back node 18.14 support by using older version of the @opentelemetry/otlp-transformer package ([#276](https://github.com/netlify/primitives/issues/276)) ([78d156c](https://github.com/netlify/primitives/commit/78d156cdc520a2b53a5d1830b95a4a58cae445f2))
+
 ## [3.0.1](https://github.com/netlify/primitives/compare/otel-v3.0.0...otel-v3.0.1) (2025-06-03)
 
 

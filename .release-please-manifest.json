@@ -6,7 +6,7 @@
   "packages/edge-functions": "2.14.1",
   "packages/functions": "4.1.2",
   "packages/headers": "2.0.1",
-  "packages/otel": "3.0.1",
+  "packages/otel": "3.0.2",
   "packages/redirects": "3.0.1",
   "packages/runtime": "4.0.1",
   "packages/runtime-utils": "2.1.0",
