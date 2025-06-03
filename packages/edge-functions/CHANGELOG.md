@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.2](https://github.com/netlify/primitives/compare/edge-functions-v2.13.1...edge-functions-v2.13.2) (2025-06-03)
+
+
+### Bug Fixes
+
+* pass run options to Deno script as arg ([#263](https://github.com/netlify/primitives/issues/263)) ([ec414cc](https://github.com/netlify/primitives/commit/ec414ccae9e40585b0cf5aa3bfe26992499fe47c))
+
 ## [2.13.1](https://github.com/netlify/primitives/compare/edge-functions-v2.13.0...edge-functions-v2.13.1) (2025-06-02)
 
 
