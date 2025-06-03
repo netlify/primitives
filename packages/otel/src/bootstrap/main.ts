@@ -16,12 +16,12 @@ export const createTracerProvider = async (options: {
   // remove the v prefix from the version to match the spec
   const runtimeVersion = nodeVersion.slice(1)
 
-  const { resourceFromAttributes } = await import('@opentelemetry/resources')
+  const { Resource } = await import('@opentelemetry/resources')
   const { NodeTracerProvider, BatchSpanProcessor } = await import('@opentelemetry/sdk-trace-node')
 
   const { NetlifySpanExporter } = await import('./netlify_span_exporter.js')
 
-  const resource = resourceFromAttributes({
+  const resource = new Resource({
     'service.name': options.serviceName,
     'service.version': options.serviceVersion,
     'process.runtime.name': 'nodejs',
