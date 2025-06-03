@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@whatwg-node/server": "^0.10.0",
+    "ansis": "^4.1.0",
     "chokidar": "^4.0.1",
     "decache": "^4.6.2",
     "dot-prop": "9.0.0",

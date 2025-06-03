@@ -1,10 +1,9 @@
-import chalk from 'chalk'
+import { type Logger as ViteLogger } from 'vite'
+import type { Logger } from '@netlify/dev-utils'
+import { netlifyBanner } from '@netlify/dev-utils'
 
-const NETLIFY_CYAN = chalk.rgb(40, 180, 170)
-const banner = NETLIFY_CYAN('⬥ Netlify ⬥')
-
-export const logger = {
-  error: (...data: any[]) => (data.length === 0 ? console.error(...data) : console.error(banner, ...data)),
-  log: (...data: any[]) => (data.length === 0 ? console.log(...data) : console.log(banner, ...data)),
-  warn: (...data: any[]) => (data.length === 0 ? console.warn(...data) : console.warn(banner, ...data)),
-}
+export const createLoggerFromViteLogger = (viteLogger: ViteLogger): Logger => ({
+  error: (msg?: string) => viteLogger.error(msg ?? '', { timestamp: true, environment: netlifyBanner }),
+  log: (msg?: string) => viteLogger.info(msg ?? '', { timestamp: true, environment: netlifyBanner }),
+  warn: (msg?: string) => viteLogger.warn(msg ?? '', { timestamp: true, environment: netlifyBanner }),
+})
