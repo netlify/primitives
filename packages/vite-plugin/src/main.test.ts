@@ -115,13 +115,13 @@ describe('configureServer', { timeout: 15_000 }, () => {
       .withFile(
         'vite.config.js',
         `import { defineConfig } from 'vite';
-           import netlify from '@netlify/vite-plugin';
+         import netlify from '@netlify/vite-plugin';
 
-           export default defineConfig({
-             plugins: [
-               netlify({ middleware: false })
-             ]
-           });`,
+         export default defineConfig({
+           plugins: [
+             netlify({ middleware: false })
+           ]
+         });`,
       )
       .withFile(
         'index.html',
@@ -180,16 +180,16 @@ defined on your team and site and much more. Run npx netlify init to get started
         .withFile(
           'vite.config.js',
           `import { defineConfig } from 'vite';
-             import netlify from '@netlify/vite-plugin';
-  
-             export default defineConfig({
-               plugins: [
-                 netlify({
-                  middleware: true,
-                  edgeFunctions: { enabled: false },
-                })
-               ]
-             });`,
+           import netlify from '@netlify/vite-plugin';
+
+           export default defineConfig({
+             plugins: [
+               netlify({
+                middleware: true,
+                edgeFunctions: { enabled: false },
+              })
+             ]
+           });`,
         )
         .withFile(
           'index.html',
