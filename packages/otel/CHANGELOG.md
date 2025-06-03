@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/netlify/primitives/compare/otel-v3.0.0...otel-v3.0.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* bring back node18 support by using older versions of the otel packages ([#271](https://github.com/netlify/primitives/issues/271)) ([e8ddc2e](https://github.com/netlify/primitives/commit/e8ddc2e8ed8378d5ca162ed3f681aa9b409db6d1))
+
 ## [3.0.0](https://github.com/netlify/primitives/compare/otel-v2.0.0...otel-v3.0.0) (2025-06-02)
 
 

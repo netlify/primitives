@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.0](https://github.com/netlify/primitives/compare/edge-functions-v2.13.2...edge-functions-v2.14.0) (2025-06-03)
+
+
+### Features
+
+* accept `IncomingMessage` in handler ([#267](https://github.com/netlify/primitives/issues/267)) ([aa84022](https://github.com/netlify/primitives/commit/aa84022cf9ecb2258dce39b87b0a21ec73524914))
+
 ## [2.13.2](https://github.com/netlify/primitives/compare/edge-functions-v2.13.1...edge-functions-v2.13.2) (2025-06-03)
 
 

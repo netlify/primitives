@@ -1,5 +1,33 @@
 # Changelog
 
+## [4.1.1](https://github.com/netlify/primitives/compare/dev-v4.1.0...dev-v4.1.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* add guard against query param handling ([#272](https://github.com/netlify/primitives/issues/272)) ([14dc44c](https://github.com/netlify/primitives/commit/14dc44c2d7ff97a6ed90c1afcc92d28ae7d6979d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions bumped from 4.1.0 to 4.1.1
+
+## [4.1.0](https://github.com/netlify/primitives/compare/dev-v4.0.2...dev-v4.1.0) (2025-06-03)
+
+
+### Features
+
+* accept `IncomingMessage` in handler ([#267](https://github.com/netlify/primitives/issues/267)) ([aa84022](https://github.com/netlify/primitives/commit/aa84022cf9ecb2258dce39b87b0a21ec73524914))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.13.2 to 2.14.0
+
 ## [4.0.2](https://github.com/netlify/primitives/compare/dev-v4.0.1...dev-v4.0.2) (2025-06-03)
 
 

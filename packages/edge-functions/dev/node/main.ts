@@ -44,6 +44,8 @@ const UPSTREAM_REQUEST_TIMEOUT = 37_000
 // minus a buffer that gives us enough time to send back a response.
 const REQUEST_TIMEOUT = UPSTREAM_REQUEST_TIMEOUT - 1_000
 
+export type EdgeFunctionsMatch = Awaited<ReturnType<EdgeFunctionsHandler['getFunctionsForRequest']>>
+
 export class EdgeFunctionsHandler {
   private configDeclarations: Declaration[]
   private directories: string[]
@@ -163,7 +165,7 @@ export class EdgeFunctionsHandler {
    * the request and returns the corresponding response; if it doesn't, the
    * method returns `undefined`.
    */
-  async handle(request: Request) {
+  async match(request: Request) {
     if (request.headers.has(headers.Passthrough)) {
       return
     }
@@ -201,7 +203,7 @@ export class EdgeFunctionsHandler {
     const acceptsHTML = Boolean(request.headers.get('accept')?.includes('text/html'))
     const { configs, error } = await this.getFunctionConfigs(denoPort, functionsMap)
     if (error) {
-      return await this.renderError(JSON.stringify({ error }), acceptsHTML)
+      return { handle: () => this.renderError(JSON.stringify({ error }), acceptsHTML) }
     }
 
     const { functionNames, invocationMetadata } = this.getFunctionsForRequest(request, functions, configs)
@@ -209,44 +211,48 @@ export class EdgeFunctionsHandler {
       return
     }
 
-    const originURL = new URL(this.originServerAddress)
+    return {
+      handle: async (request: Request) => {
+        const originURL = new URL(this.originServerAddress)
 
-    const url = new URL(request.url)
-    url.hostname = LOCAL_HOST
-    url.port = denoPort.toString()
-    url.protocol = 'http:'
+        const url = new URL(request.url)
+        url.hostname = LOCAL_HOST
+        url.port = denoPort.toString()
+        url.protocol = 'http:'
 
-    request.headers.set(headers.AcceptEncoding, 'identity')
-    request.headers.set(headers.AvailableFunctions, JSON.stringify(functionsMap))
-    request.headers.set(headers.DeployContext, 'dev')
-    request.headers.set(headers.DeployID, '0')
-    request.headers.set(headers.ForwardedHost, `localhost:${originURL.port}`)
-    request.headers.set(headers.ForwardedProtocol, `http:`)
-    request.headers.set(headers.Functions, functionNames.join(','))
-    request.headers.set(headers.Geo, base64Encode(this.geolocation))
-    request.headers.set(headers.InvocationMetadata, base64Encode(invocationMetadata))
-    request.headers.set(headers.IP, LOCAL_HOST)
-    request.headers.set(headers.Passthrough, 'passthrough')
-    request.headers.set(headers.PassthroughHost, `localhost:${originURL.port}`)
-    request.headers.set(headers.PassthroughProtocol, 'http:')
+        request.headers.set(headers.AcceptEncoding, 'identity')
+        request.headers.set(headers.AvailableFunctions, JSON.stringify(functionsMap))
+        request.headers.set(headers.DeployContext, 'dev')
+        request.headers.set(headers.DeployID, '0')
+        request.headers.set(headers.ForwardedHost, `localhost:${originURL.port}`)
+        request.headers.set(headers.ForwardedProtocol, `http:`)
+        request.headers.set(headers.Functions, functionNames.join(','))
+        request.headers.set(headers.Geo, base64Encode(this.geolocation))
+        request.headers.set(headers.InvocationMetadata, base64Encode(invocationMetadata))
+        request.headers.set(headers.IP, LOCAL_HOST)
+        request.headers.set(headers.Passthrough, 'passthrough')
+        request.headers.set(headers.PassthroughHost, `localhost:${originURL.port}`)
+        request.headers.set(headers.PassthroughProtocol, 'http:')
 
-    const site = {
-      id: this.siteID,
-      name: this.siteName,
-      url: this.originServerAddress,
+        const site = {
+          id: this.siteID,
+          name: this.siteName,
+          url: this.originServerAddress,
+        }
+
+        request.headers.set(headers.Site, base64Encode(site))
+
+        // Proxying the request to the Deno server.
+        const response = await fetch(url, request)
+
+        const isUncaughtError = response.headers.has(headers.UncaughtError)
+        if (isUncaughtError) {
+          return await this.renderError(await response.text(), acceptsHTML)
+        }
+
+        return response
+      },
     }
-
-    request.headers.set(headers.Site, base64Encode(site))
-
-    // Proxying the request to the Deno server.
-    const response = await fetch(url, request)
-
-    const isUncaughtError = response.headers.has(headers.UncaughtError)
-    if (isUncaughtError) {
-      return await this.renderError(await response.text(), acceptsHTML)
-    }
-
-    return response
   }
 
   /**

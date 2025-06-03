@@ -15,12 +15,13 @@ Functions, Blobs, Static files, and Redirects.
 | Feature                | Supported |
 | ---------------------- | --------- |
 | Functions              | ✅ Yes    |
-| Edge Functions         | ❌ No     |
+| Edge Functions         | ✅ Yes    |
 | Blobs                  | ✅ Yes    |
 | Cache API              | ✅ Yes    |
 | Redirects and Rewrites | ✅ Yes    |
-| Headers                | ❌ No     |
+| Headers                | ✅ Yes    |
 | Environment Variables  | ✅ Yes    |
+| Image CDN              | ❌ No     |
 
 > Note: Missing features will be added incrementally. This module is **not** intended to be a full replacement for the
 > Netlify CLI.
@@ -45,15 +46,32 @@ You can use `@netlify/dev` to emulate the Netlify runtime in your own developmen
 import { NetlifyDev } from '@netlify/dev'
 
 const devServer = new NetlifyDev({
-  functions: { enabled: true },
   blobs: { enabled: true },
+  edgeFunctions: { enabled: true },
+  environmentVariables: { enabled: true },
+  functions: { enabled: true },
   redirects: { enabled: true },
-  staticFiles: { enabled: true },
+  staticFiles: {
+    enabled: true,
+    // OPTIONAL: additional directories containing static files to serve
+    // Your `projectRoot` (see below) and your site's `publish` dir are served by default
+    directories: ['public'],
+  },
+
+  // OPTIONAL: base dir (https://docs.netlify.com/configure-builds/overview/#definitions)
+  // Defaults to current working directory
+  projectRoot: 'site',
+  // OPTIONAL: if your local dev setup has its own HTTP server (e.g. Vite), set its address here
+  serverAddress: 'http://localhost:1234',
 })
 
 await devServer.start()
 
-const response = await devServer.handle(new Request('http://localhost:8888/path'))
+const response = await devServer.handle(new Request('http://localhost:8888/path'), {
+  // An optional callback that will be called with every header (key and value) coming from header rules.
+  // See https://docs.netlify.com/routing/headers/
+  headersCollector: (key: string, value: string) => console.log(key, value),
+})
 
 console.log(await response.text())
 

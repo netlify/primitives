@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.1.1](https://github.com/netlify/primitives/compare/vite-plugin-v2.1.0...vite-plugin-v2.1.1) (2025-06-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.1.0 to 4.1.1
+
+## [2.1.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.0.2...vite-plugin-v2.1.0) (2025-06-03)
+
+
+### Features
+
+* accept `IncomingMessage` in handler ([#267](https://github.com/netlify/primitives/issues/267)) ([aa84022](https://github.com/netlify/primitives/commit/aa84022cf9ecb2258dce39b87b0a21ec73524914))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.0.2 to 4.1.0
+
 ## [2.0.2](https://github.com/netlify/primitives/compare/vite-plugin-v2.0.1...vite-plugin-v2.0.2) (2025-06-03)
 
 
