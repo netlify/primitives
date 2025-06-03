@@ -17,24 +17,29 @@ export const normalizeHeaders = (headers: IncomingHttpHeaders): HeadersInit => {
 
 export const getNormalizedRequest = (input: Request | IncomingMessage, requestID: string, removeBody?: boolean) => {
   if (input instanceof Request) {
+    const method = input.method.toUpperCase()
     const headers = input.headers
     headers.set('x-nf-request-id', requestID)
 
     return new Request(input.url, {
-      body: removeBody ? null : input.body,
+      body: method === 'GET' || method === 'HEAD' || removeBody ? null : input.body,
       headers,
-      method: input.method,
+      method,
     })
   }
 
-  const { method, headers, url = '' } = input
+  const { headers, url = '' } = input
   const origin = `http://${headers.host ?? 'localhost'}`
   const fullUrl = new URL(url, origin)
-  const body = removeBody ? null : (Readable.toWeb(input) as unknown as ReadableStream<unknown>)
+  const method = input.method?.toUpperCase() ?? 'GET'
+  const body =
+    input.method === 'GET' || input.method === 'HEAD' || removeBody
+      ? null
+      : (Readable.toWeb(input) as unknown as ReadableStream<unknown>)
 
   return new Request(fullUrl, {
     body,
     headers: normalizeHeaders({ ...input.headers, 'x-nf-request-id': requestID }),
-    method: method ?? 'get',
+    method,
   })
 }
