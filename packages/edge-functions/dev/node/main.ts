@@ -288,7 +288,7 @@ export class EdgeFunctionsHandler {
     } catch (error) {
       success = false
 
-      this.logger.error('An error occurred while setting up the Netlify Edge Functions environment:', error)
+      this.logger.error(`An error occurred while setting up the Netlify Edge Functions environment: ${String(error)}`)
     }
 
     // The Promise above will resolve as soon as we start the command, but we
