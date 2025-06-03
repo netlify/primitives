@@ -23,6 +23,8 @@ export const getNormalizedRequest = (input: Request | IncomingMessage, requestID
 
     return new Request(input.url, {
       body: method === 'GET' || method === 'HEAD' || removeBody ? null : input.body,
+      // @ts-expect-error Not typed!
+      duplex: 'half',
       headers,
       method,
     })
@@ -39,6 +41,8 @@ export const getNormalizedRequest = (input: Request | IncomingMessage, requestID
 
   return new Request(fullUrl, {
     body,
+    // @ts-expect-error Not typed!
+    duplex: 'half',
     headers: normalizeHeaders({ ...input.headers, 'x-nf-request-id': requestID }),
     method,
   })
