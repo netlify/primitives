@@ -42,6 +42,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
+    "@netlify/types": "2.0.1",
     "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^18.19.110",
     "@types/parse-gitignore": "^1.0.2",

@@ -443,6 +443,7 @@ export default [
     files: ['packages/functions/dev/runtimes/nodejs/builder.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
+      'n/no-missing-import': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
@@ -471,6 +472,12 @@ export default [
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/require-await': 'off',
+    },
+  },
+  {
+    files: ['packages/functions/internal.d.ts'],
+    rules: {
+      'n/no-missing-import': 'off',
     },
   },
   {
@@ -506,6 +513,7 @@ export default [
   {
     files: ['packages/functions/src/lib/builder.test.ts'],
     rules: {
+      'n/no-missing-import': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       'vitest/expect-expect': 'off',
@@ -524,6 +532,7 @@ export default [
   {
     files: ['packages/functions/src/lib/purge_cache.test.ts'],
     rules: {
+      'n/no-missing-import': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
     },
@@ -635,7 +644,6 @@ export default [
       '@typescript-eslint/unbound-method': 'off',
       '@typescript-eslint/require-await': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
     },
   },
