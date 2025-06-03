@@ -487,20 +487,12 @@ export default [
   {
     files: ['packages/functions/src/function/handler_context.ts'],
     rules: {
-      '@typescript-eslint/consistent-indexed-object-style': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
-    },
-  },
-  {
-    files: ['packages/functions/src/function/handler_event.ts'],
-    rules: {
-      '@typescript-eslint/consistent-indexed-object-style': 'off',
     },
   },
   {
     files: ['packages/functions/src/function/handler_response.ts'],
     rules: {
-      '@typescript-eslint/consistent-indexed-object-style': 'off',
       '@typescript-eslint/array-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
     },

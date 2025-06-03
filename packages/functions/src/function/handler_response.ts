@@ -2,12 +2,8 @@ import type { PipelineSource } from 'node:stream'
 
 export interface HandlerResponse {
   statusCode: number
-  headers?: {
-    [header: string]: boolean | number | string
-  }
-  multiValueHeaders?: {
-    [header: string]: ReadonlyArray<boolean | number | string>
-  }
+  headers?: Record<string, boolean | number | string>
+  multiValueHeaders?: Record<string, ReadonlyArray<boolean | number | string>>
   body?: string
   isBase64Encoded?: boolean
 }
