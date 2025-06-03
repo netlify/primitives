@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "type": "module",
   "engines": {
-    "node": ">=18"
+    "node": ""^18.14.0 || >=20.6.1""
   },
   "main": "./dist/main.cjs",
   "module": "./dist/main.js",
