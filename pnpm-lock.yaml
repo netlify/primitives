@@ -42,6 +42,9 @@ importers:
       typescript-eslint:
         specifier: ^8.33.0
         version: 8.33.1(eslint@9.28.0)(typescript@5.8.3)
+      vitest:
+        specifier: ^3.2.1
+        version: 3.2.1(@types/node@22.15.29)
 
   packages/blobs:
     dependencies:
@@ -4359,22 +4362,6 @@ snapshots:
       chai: 5.2.0
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.2.1(vite@6.3.5(@types/node@18.19.110))':
-    dependencies:
-      '@vitest/spy': 3.2.1
-      estree-walker: 3.0.3
-      magic-string: 0.30.17
-    optionalDependencies:
-      vite: 6.3.5(@types/node@18.19.110)
-
-  '@vitest/mocker@3.2.1(vite@6.3.5(@types/node@20.17.57))':
-    dependencies:
-      '@vitest/spy': 3.2.1
-      estree-walker: 3.0.3
-      magic-string: 0.30.17
-    optionalDependencies:
-      vite: 6.3.5(@types/node@20.17.57)
-
   '@vitest/mocker@3.2.1(vite@6.3.5(@types/node@22.15.29))':
     dependencies:
       '@vitest/spy': 3.2.1
@@ -6505,7 +6492,7 @@ snapshots:
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.1
-      '@vitest/mocker': 3.2.1(vite@6.3.5(@types/node@18.19.110))
+      '@vitest/mocker': 3.2.1(vite@6.3.5(@types/node@22.15.29))
       '@vitest/pretty-format': 3.2.1
       '@vitest/runner': 3.2.1
       '@vitest/snapshot': 3.2.1
@@ -6546,7 +6533,7 @@ snapshots:
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.1
-      '@vitest/mocker': 3.2.1(vite@6.3.5(@types/node@20.17.57))
+      '@vitest/mocker': 3.2.1(vite@6.3.5(@types/node@22.15.29))
       '@vitest/pretty-format': 3.2.1
       '@vitest/runner': 3.2.1
       '@vitest/snapshot': 3.2.1
