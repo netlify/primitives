@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.14.1](https://github.com/netlify/primitives/compare/edge-functions-v2.14.0...edge-functions-v2.14.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* revamp dev and vite plugin logging ([#269](https://github.com/netlify/primitives/issues/269)) ([de9b46c](https://github.com/netlify/primitives/commit/de9b46c1cb1c7b2bf6437ab516134e44203d83b7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.1.0 to 3.1.1
+
 ## [2.14.0](https://github.com/netlify/primitives/compare/edge-functions-v2.13.2...edge-functions-v2.14.0) (2025-06-03)
 
 

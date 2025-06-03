@@ -1,5 +1,14 @@
 # Changelog
 
+## [9.1.5](https://github.com/netlify/primitives/compare/blobs-v9.1.4...blobs-v9.1.5) (2025-06-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.1.0 to 3.1.1
+
 ## [9.1.4](https://github.com/netlify/primitives/compare/blobs-v9.1.3...blobs-v9.1.4) (2025-06-02)
 
 
