@@ -65,7 +65,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "tsup": "^8.0.0",
+    "tsup": "^8.5.0",
     "vitest": "^3.0.0"
   },
   "dependencies": {
