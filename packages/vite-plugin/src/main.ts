@@ -4,7 +4,7 @@ import { NetlifyDev, type Features } from '@netlify/dev'
 import * as vite from 'vite'
 
 import { logger } from './lib/logger.js'
-import { fromWebResponse, toWebRequest } from './lib/reqres.js'
+import { fromWebResponse } from './lib/reqres.js'
 
 export interface NetlifyPluginOptions extends Features {
   /**
@@ -50,9 +50,8 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
       if (middleware) {
         viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
-          const req = toWebRequest(nodeReq, nodeReq.originalUrl)
           const headers: Record<string, string> = {}
-          const result = await netlifyDev.handleAndIntrospect(req, {
+          const result = await netlifyDev.handleAndIntrospect(nodeReq, {
             headersCollector: (key, value) => {
               headers[key] = value
             },
