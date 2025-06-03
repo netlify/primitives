@@ -170,9 +170,22 @@ export class NetlifyDev {
     this.#staticHandlerAdditionalDirectories = options.staticFiles?.directories ?? []
   }
 
+  /**
+   * Runs a request through the Netlify request chain and returns a `Response`
+   * if there's a match. We must not disturb the incoming request unless we
+   * know we will be returning a response, so this method takes a read-only
+   * request that is safe to access (used for matching) and a getter for the
+   * actual request (used for handling matches).
+   *
+   * @param readRequest Read-only version of the request (without a body)
+   * @param getWriteRequest Getter for the actual request (with a body)
+   * @param destPath Destination directory for compiled files
+   * @param options Options object
+   * @returns
+   */
   private async handleInEphemeralDirectory(
-    matchRequest: Request,
-    getHandleRequest: () => Request,
+    readRequest: Request,
+    getWriteRequest: () => Request,
     destPath: string,
     options: HandleOptions = {},
   ): Promise<{ response: Response; type: ResponseType } | undefined> {
@@ -182,37 +195,37 @@ export class NetlifyDev {
 
     // 1. Check if the request matches an edge function. Handles edge functions
     //    with both modes of cache (manual and off) by running them serially.
-    const edgeFunctionMatch = await this.#edgeFunctionsHandler?.match(matchRequest)
+    const edgeFunctionMatch = await this.#edgeFunctionsHandler?.match(readRequest)
     if (edgeFunctionMatch) {
       return {
-        response: await edgeFunctionMatch.handle(getHandleRequest()),
+        response: await edgeFunctionMatch.handle(getWriteRequest()),
         type: 'edge-function',
       }
     }
 
     // 2. Check if the request matches a function.
-    const functionMatch = await this.#functionsHandler?.match(matchRequest, destPath)
+    const functionMatch = await this.#functionsHandler?.match(readRequest, destPath)
     if (functionMatch) {
       // If the function prefers static files, check if there is a static match
       // and, if so, return that
       if (functionMatch.preferStatic) {
-        const staticMatch = await this.#staticHandler?.match(matchRequest)
+        const staticMatch = await this.#staticHandler?.match(readRequest)
 
         if (staticMatch) {
           const response = await staticMatch.handle()
 
-          await this.#headersHandler?.apply(matchRequest, response, options.headersCollector)
+          await this.#headersHandler?.apply(readRequest, response, options.headersCollector)
 
           return { response, type: 'static' }
         }
       }
 
       // Let the function handle the request.
-      return { response: await functionMatch.handle(getHandleRequest()), type: 'function' }
+      return { response: await functionMatch.handle(getWriteRequest()), type: 'function' }
     }
 
     // 3. Check if the request matches a redirect rule.
-    const redirectMatch = await this.#redirectsHandler?.match(matchRequest)
+    const redirectMatch = await this.#redirectsHandler?.match(readRequest)
     if (redirectMatch) {
       // If the redirect rule matches a function, we'll serve it. The exception
       // is if the function prefers static files, which in this case means that
@@ -220,13 +233,13 @@ export class NetlifyDev {
       const functionMatch = await this.#functionsHandler?.match(new Request(redirectMatch.target), destPath)
       if (functionMatch && !functionMatch.preferStatic) {
         return {
-          response: await functionMatch.handle(getHandleRequest()),
+          response: await functionMatch.handle(getWriteRequest()),
           type: 'function',
         }
       }
 
       const response = await this.#redirectsHandler?.handle(
-        getHandleRequest(),
+        getWriteRequest(),
         redirectMatch,
         async (maybeStaticFile: Request) => {
           const staticMatch = await this.#staticHandler?.match(maybeStaticFile)
@@ -248,7 +261,7 @@ export class NetlifyDev {
       }
     }
 
-    const { pathname } = new URL(matchRequest.url)
+    const { pathname } = new URL(readRequest.url)
     if (pathname.startsWith('/.netlify/images')) {
       this.#logger.error(
         'The Netlify Image CDN is currently only supported in the Netlify CLI. Run `npx netlify dev` to get started.',
@@ -258,11 +271,11 @@ export class NetlifyDev {
     }
 
     // 4. Check if the request matches a static file.
-    const staticMatch = await this.#staticHandler?.match(matchRequest)
+    const staticMatch = await this.#staticHandler?.match(readRequest)
     if (staticMatch) {
       const response = await staticMatch.handle()
 
-      await this.#headersHandler?.apply(matchRequest, response, options.headersCollector)
+      await this.#headersHandler?.apply(readRequest, response, options.headersCollector)
 
       return { response, type: 'static' }
     }
@@ -287,12 +300,21 @@ export class NetlifyDev {
     return config
   }
 
+  /**
+   * Runs a `Request` through the Netlify request chain. If there is a match,
+   * it returns the resulting `Response` object; if not, it returns `undefined`.
+   */
   async handle(request: Request, options: HandleOptions = {}) {
     const result = await this.handleAndIntrospect(request, options)
 
     return result?.response
   }
 
+  /**
+   * Runs a `Request` through the Netlify request chain. If there is a match,
+   * it returns an object with the resulting `Response` object and information
+   * about the match; if not, it returns `undefined`.
+   */
   async handleAndIntrospect(request: Request, options: HandleOptions = {}) {
     await fs.mkdir(this.#functionsServePath, { recursive: true })
 
@@ -310,6 +332,11 @@ export class NetlifyDev {
     }
   }
 
+  /**
+   * Runs a Node.js `IncomingMessage` through the Netlify request chain. If
+   * there is a match, it returns an object with the resulting `Response`
+   * object and information about the match; if not, it returns `undefined`.
+   */
   async handleAndIntrospectNodeRequest(request: IncomingMessage, options: HandleOptions = {}) {
     await fs.mkdir(this.#functionsServePath, { recursive: true })
 
