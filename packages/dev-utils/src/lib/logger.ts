@@ -1,4 +1,4 @@
-type logFunction = (...message: unknown[]) => void
+type logFunction = (message?: string) => void
 
 export type Logger = {
   error: logFunction

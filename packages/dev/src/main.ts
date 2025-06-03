@@ -468,4 +468,10 @@ export class NetlifyDev {
   async stop() {
     await Promise.allSettled(this.#cleanupJobs.map((task) => task()))
   }
+
+  public getEnabledFeatures(): string[] {
+    return Object.entries(this.#features)
+      .filter(([_, enabled]) => enabled)
+      .map(([feature]) => feature)
+  }
 }

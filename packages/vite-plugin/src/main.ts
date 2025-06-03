@@ -3,7 +3,7 @@ import process from 'node:process'
 import { NetlifyDev, type Features } from '@netlify/dev'
 import * as vite from 'vite'
 
-import { logger } from './lib/logger.js'
+import { createLoggerFromViteLogger } from './lib/logger.js'
 import { fromWebResponse } from './lib/reqres.js'
 
 export interface NetlifyPluginOptions extends Features {
@@ -24,6 +24,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
   const plugin: vite.Plugin = {
     name: 'vite-plugin-netlify',
     async configureServer(viteDevServer) {
+      const logger = createLoggerFromViteLogger(viteDevServer.config.logger)
       const { port } = viteDevServer.config.server
       const { blobs, edgeFunctions, functions, middleware = true, redirects, staticFiles } = options
       const netlifyDev = new NetlifyDev({
@@ -41,12 +42,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       })
 
       await netlifyDev.start()
-
-      if (!netlifyDev.siteIsLinked) {
-        logger.log(
-          'Linking this project to a Netlify site lets you deploy your site, use any environment variables defined on your team and site and much more. Run `npx netlify init` to get started.',
-        )
-      }
+      logger.log('Netlify environment loaded')
 
       if (middleware) {
         viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
@@ -72,6 +68,13 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
           next()
         })
+        logger.log(`Netlify middleware loaded. Emulating features: ${netlifyDev.getEnabledFeatures().join(', ')}.`)
+      }
+
+      if (!netlifyDev.siteIsLinked) {
+        logger.log(
+          '💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables defined on your team and site and much more. Run `npx netlify init` to get started.',
+        )
       }
     },
   }

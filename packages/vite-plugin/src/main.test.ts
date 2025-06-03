@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import { Fixture } from '@netlify/dev-utils'
 import { type Browser, type ConsoleMessage, type Page, chromium } from 'playwright'
-import { afterEach, beforeEach, describe, expect, test } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { createServer } from 'vite'
 
 import netlify from './main.js'
@@ -41,6 +41,18 @@ const startTestServer = async (options: Parameters<typeof createServer>[0] = {})
 
   const port = typeof address === 'object' && address ? address.port : 5173
   return { server, url: `http://localhost:${port.toString()}` }
+}
+
+const createMockViteLogger = () => {
+  return {
+    info: vi.fn(),
+    warn: vi.fn(),
+    warnOnce: vi.fn(),
+    error: vi.fn(),
+    clearScreen: vi.fn(),
+    hasErrorLogged: vi.fn(),
+    hasWarned: false,
+  }
 }
 
 describe('Plugin constructor', () => {
@@ -98,6 +110,58 @@ describe('configureServer', { timeout: 15_000 }, () => {
     await fixture.destroy()
   })
 
+  test('Prints a basic message on server start', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'vite.config.js',
+        `import { defineConfig } from 'vite';
+           import netlify from '@netlify/vite-plugin';
+
+           export default defineConfig({
+             plugins: [
+               netlify({ middleware: false })
+             ]
+           });`,
+      )
+      .withFile(
+        'index.html',
+        `<!DOCTYPE html>
+           <html>
+             <head><title>Hello World</title></head>
+             <body><h1>Hello from the browser</h1></body>
+           </html>`,
+      )
+    const directory = await fixture.create()
+    await fixture
+      .withPackages({
+        vite: '6.0.0',
+        '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+      })
+      .create()
+
+    const mockLogger = createMockViteLogger()
+    const { server } = await startTestServer({
+      root: directory,
+      logLevel: 'info',
+      customLogger: mockLogger,
+    })
+
+    expect(mockLogger.error).not.toHaveBeenCalled()
+    expect(mockLogger.warn).not.toHaveBeenCalled()
+    expect(mockLogger.warnOnce).not.toHaveBeenCalled()
+    expect(mockLogger.info).toHaveBeenCalledTimes(2)
+    expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Netlify environment loaded', expect.objectContaining({}))
+    expect(mockLogger.info).toHaveBeenNthCalledWith(
+      2,
+      '💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables \
+defined on your team and site and much more. Run `npx netlify init` to get started.',
+      expect.objectContaining({}),
+    )
+
+    await server.close()
+    await fixture.destroy()
+  })
+
   describe('Middleware enabled', () => {
     let browser: Browser
     let page: Page
@@ -109,6 +173,65 @@ describe('configureServer', { timeout: 15_000 }, () => {
 
     afterEach(async () => {
       await browser.close()
+    })
+
+    test('Prints a message listing emulated features on server start', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'vite.config.js',
+          `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
+  
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                  middleware: true,
+                  edgeFunctions: { enabled: false },
+                })
+               ]
+             });`,
+        )
+        .withFile(
+          'index.html',
+          `<!DOCTYPE html>
+             <html>
+               <head><title>Hello World</title></head>
+               <body><h1>Hello from the browser</h1></body>
+             </html>`,
+        )
+      const directory = await fixture.create()
+      await fixture
+        .withPackages({
+          vite: '6.0.0',
+          '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+        })
+        .create()
+
+      const mockLogger = createMockViteLogger()
+      const { server } = await startTestServer({
+        root: directory,
+        logLevel: 'info',
+        customLogger: mockLogger,
+      })
+
+      expect(mockLogger.error).not.toHaveBeenCalled()
+      expect(mockLogger.warn).not.toHaveBeenCalled()
+      expect(mockLogger.warnOnce).not.toHaveBeenCalled()
+      expect(mockLogger.info).toHaveBeenCalledTimes(3)
+      expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Netlify environment loaded', expect.objectContaining({}))
+      expect(mockLogger.info).toHaveBeenNthCalledWith(
+        2,
+        'Netlify middleware loaded. Emulating features: blobs, environmentVariables, functions, headers, redirects, static.',
+        expect.objectContaining({}),
+      )
+      expect(mockLogger.info).toHaveBeenNthCalledWith(
+        3,
+        expect.stringContaining('Linking this project to a Netlify site'),
+        expect.objectContaining({}),
+      )
+
+      await server.close()
+      await fixture.destroy()
     })
 
     test('Returns static files from project dir', async () => {
