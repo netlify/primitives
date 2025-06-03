@@ -36,7 +36,7 @@ export const lambdaEventFromWebRequest = async (request: Request, route?: string
 
   url.searchParams.forEach((value, key) => {
     queryStringParameters[key] = queryStringParameters[key] ? `${queryStringParameters[key]},${value}` : value
-    multiValueQueryStringParameters[key] = [...multiValueQueryStringParameters[key], value]
+    multiValueQueryStringParameters[key] = [...(multiValueQueryStringParameters[key] ?? []), value]
   })
 
   const { headers, multiValueHeaders } = headersObjectFromWebHeaders(request.headers)

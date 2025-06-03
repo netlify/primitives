@@ -265,7 +265,7 @@ describe('Handling requests', () => {
           `export default async () => new Response("Hello from function"); export const config = { path: "/hello" };`,
         )
       const directory = await fixture.create()
-      const req = new Request('https://site.netlify/hello')
+      const req = new Request('https://site.netlify/hello?param1=value1')
       const dev = new NetlifyDev({
         projectRoot: directory,
       })
