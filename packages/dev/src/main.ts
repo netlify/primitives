@@ -13,7 +13,7 @@ import { StaticHandler } from '@netlify/static'
 
 import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
-import { getNormalizedRequest } from './lib/reqres.js'
+import { getNormalizedRequest, getNormalizedRequestFromNodeRequest } from './lib/reqres.js'
 import { generateRequestID } from './lib/request_id.js'
 import { getRuntime } from './lib/runtime.js'
 
@@ -171,13 +171,11 @@ export class NetlifyDev {
   }
 
   private async handleInEphemeralDirectory(
-    request: Request | IncomingMessage,
+    matchRequest: Request,
+    getHandleRequest: () => Request,
     destPath: string,
     options: HandleOptions = {},
   ): Promise<{ response: Response; type: ResponseType } | undefined> {
-    const requestID = generateRequestID()
-    const matchRequest = getNormalizedRequest(request, requestID, true)
-
     // Try to match the request against the different steps in our request chain.
     //
     // https://docs.netlify.com/platform/request-chain/
@@ -187,7 +185,7 @@ export class NetlifyDev {
     const edgeFunctionMatch = await this.#edgeFunctionsHandler?.match(matchRequest)
     if (edgeFunctionMatch) {
       return {
-        response: await edgeFunctionMatch.handle(getNormalizedRequest(request, requestID, false)),
+        response: await edgeFunctionMatch.handle(getHandleRequest()),
         type: 'edge-function',
       }
     }
@@ -210,7 +208,7 @@ export class NetlifyDev {
       }
 
       // Let the function handle the request.
-      return { response: await functionMatch.handle(getNormalizedRequest(request, requestID, false)), type: 'function' }
+      return { response: await functionMatch.handle(getHandleRequest()), type: 'function' }
     }
 
     // 3. Check if the request matches a redirect rule.
@@ -222,13 +220,13 @@ export class NetlifyDev {
       const functionMatch = await this.#functionsHandler?.match(new Request(redirectMatch.target), destPath)
       if (functionMatch && !functionMatch.preferStatic) {
         return {
-          response: await functionMatch.handle(getNormalizedRequest(request, requestID, false)),
+          response: await functionMatch.handle(getHandleRequest()),
           type: 'function',
         }
       }
 
       const response = await this.#redirectsHandler?.handle(
-        getNormalizedRequest(request, requestID, false),
+        getHandleRequest(),
         redirectMatch,
         async (maybeStaticFile: Request) => {
           const staticMatch = await this.#staticHandler?.match(maybeStaticFile)
@@ -289,19 +287,39 @@ export class NetlifyDev {
     return config
   }
 
-  async handle(request: Request | IncomingMessage, options: HandleOptions = {}) {
+  async handle(request: Request, options: HandleOptions = {}) {
     const result = await this.handleAndIntrospect(request, options)
 
     return result?.response
   }
 
-  async handleAndIntrospect(request: Request | IncomingMessage, options: HandleOptions = {}) {
+  async handleAndIntrospect(request: Request, options: HandleOptions = {}) {
     await fs.mkdir(this.#functionsServePath, { recursive: true })
 
     const destPath = await fs.mkdtemp(path.join(this.#functionsServePath, `_`))
+    const requestID = generateRequestID()
+    const matchRequest = getNormalizedRequest(request, requestID, true)
+    const getHandleRequest = () => getNormalizedRequest(request, requestID, false)
 
     try {
-      return await this.handleInEphemeralDirectory(request, destPath, options)
+      return await this.handleInEphemeralDirectory(matchRequest, getHandleRequest, destPath, options)
+    } finally {
+      try {
+        await fs.rm(destPath, { force: true, recursive: true })
+      } catch {}
+    }
+  }
+
+  async handleAndIntrospectNodeRequest(request: IncomingMessage, options: HandleOptions = {}) {
+    await fs.mkdir(this.#functionsServePath, { recursive: true })
+
+    const destPath = await fs.mkdtemp(path.join(this.#functionsServePath, `_`))
+    const requestID = generateRequestID()
+    const matchRequest = getNormalizedRequestFromNodeRequest(request, requestID, true)
+    const getHandleRequest = () => getNormalizedRequestFromNodeRequest(request, requestID, false)
+
+    try {
+      return await this.handleInEphemeralDirectory(matchRequest, getHandleRequest, destPath, options)
     } finally {
       try {
         await fs.rm(destPath, { force: true, recursive: true })

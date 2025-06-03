@@ -51,7 +51,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       if (middleware) {
         viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
           const headers: Record<string, string> = {}
-          const result = await netlifyDev.handleAndIntrospect(nodeReq, {
+          const result = await netlifyDev.handleAndIntrospectNodeRequest(nodeReq, {
             headersCollector: (key, value) => {
               headers[key] = value
             },
