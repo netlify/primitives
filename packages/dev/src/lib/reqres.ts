@@ -16,34 +16,34 @@ export const normalizeHeaders = (headers: IncomingHttpHeaders): HeadersInit => {
 }
 
 export const getNormalizedRequest = (input: Request | IncomingMessage, requestID: string, removeBody?: boolean) => {
-  if (input instanceof Request) {
-    const method = input.method.toUpperCase()
-    const headers = input.headers
-    headers.set('x-nf-request-id', requestID)
+  if (input instanceof IncomingMessage) {
+    const { headers, url = '' } = input
+    const origin = `http://${headers.host ?? 'localhost'}`
+    const fullUrl = new URL(url, origin)
+    const method = input.method?.toUpperCase() ?? 'GET'
+    const body =
+      input.method === 'GET' || input.method === 'HEAD' || removeBody
+        ? null
+        : (Readable.toWeb(input) as unknown as ReadableStream<unknown>)
 
-    return new Request(input.url, {
-      body: method === 'GET' || method === 'HEAD' || removeBody ? null : input.body,
+    return new Request(fullUrl, {
+      body,
       // @ts-expect-error Not typed!
       duplex: 'half',
-      headers,
+      headers: normalizeHeaders({ ...input.headers, 'x-nf-request-id': requestID }),
       method,
     })
   }
 
-  const { headers, url = '' } = input
-  const origin = `http://${headers.host ?? 'localhost'}`
-  const fullUrl = new URL(url, origin)
-  const method = input.method?.toUpperCase() ?? 'GET'
-  const body =
-    input.method === 'GET' || input.method === 'HEAD' || removeBody
-      ? null
-      : (Readable.toWeb(input) as unknown as ReadableStream<unknown>)
+  const method = input.method.toUpperCase()
+  const headers = input.headers
+  headers.set('x-nf-request-id', requestID)
 
-  return new Request(fullUrl, {
-    body,
+  return new Request(input.url, {
+    body: method === 'GET' || method === 'HEAD' || removeBody ? null : input.body,
     // @ts-expect-error Not typed!
     duplex: 'half',
-    headers: normalizeHeaders({ ...input.headers, 'x-nf-request-id': requestID }),
+    headers,
     method,
   })
 }
