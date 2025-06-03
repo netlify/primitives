@@ -43,7 +43,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       })
 
       await netlifyDev.start()
-      logger.log('Netlify environment loaded')
+      logger.log('Environment loaded')
 
       if (middleware) {
         viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
@@ -69,7 +69,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
           next()
         })
-        logger.log(`Netlify middleware loaded. Emulating features: ${netlifyDev.getEnabledFeatures().join(', ')}.`)
+        logger.log(`Middleware loaded. Emulating features: ${netlifyDev.getEnabledFeatures().join(', ')}.`)
       }
 
       if (!netlifyDev.siteIsLinked) {

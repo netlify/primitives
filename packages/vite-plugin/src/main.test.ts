@@ -150,7 +150,7 @@ describe('configureServer', { timeout: 15_000 }, () => {
     expect(mockLogger.warn).not.toHaveBeenCalled()
     expect(mockLogger.warnOnce).not.toHaveBeenCalled()
     expect(mockLogger.info).toHaveBeenCalledTimes(2)
-    expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Netlify environment loaded', expect.objectContaining({}))
+    expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
     expect(mockLogger.info).toHaveBeenNthCalledWith(
       2,
       '💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables \
@@ -218,10 +218,10 @@ defined on your team and site and much more. Run npx netlify init to get started
       expect(mockLogger.warn).not.toHaveBeenCalled()
       expect(mockLogger.warnOnce).not.toHaveBeenCalled()
       expect(mockLogger.info).toHaveBeenCalledTimes(3)
-      expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Netlify environment loaded', expect.objectContaining({}))
+      expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
       expect(mockLogger.info).toHaveBeenNthCalledWith(
         2,
-        'Netlify middleware loaded. Emulating features: blobs, environmentVariables, functions, headers, redirects, static.',
+        'Middleware loaded. Emulating features: blobs, environmentVariables, functions, headers, redirects, static.',
         expect.objectContaining({}),
       )
       expect(mockLogger.info).toHaveBeenNthCalledWith(
