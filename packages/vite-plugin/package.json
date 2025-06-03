@@ -14,10 +14,10 @@
   ],
   "scripts": {
     "build": "tsup-node",
-    "prepack": "npm run build",
+    "prepack": "pnpm run build",
     "test": "vitest run",
     "test:dev": "vitest",
-    "test:ci": "npm run build && vitest run",
+    "test:ci": "pnpm run build && vitest run",
     "dev": "tsup-node --watch",
     "publint": "npx -y publint --strict"
   },
@@ -36,8 +36,8 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/dev": "4.1.2",
-    "@netlify/dev-utils": "^3.1.1",
+    "@netlify/dev": "workspace:*",
+    "@netlify/dev-utils": "workspace:*",
     "chalk": "^5.4.1"
   },
   "peerDependencies": {

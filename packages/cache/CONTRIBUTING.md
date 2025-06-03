@@ -25,13 +25,13 @@ First fork and clone the repository. If you're not sure how to do this, please w
 Run:
 
 ```bash
-npm install
+pnpm install
 ```
 
 Make sure everything is correctly setup with:
 
 ```bash
-npm test
+pnpm test
 ```
 
 After submitting the pull request, please make sure the Continuous Integration checks are passing.
@@ -41,4 +41,4 @@ After submitting the pull request, please make sure the Continuous Integration c
 1. Merge the release PR
 2. Switch to the default branch `git checkout main`
 3. Pull latest changes `git pull`
-4. Publish the package `npm publish`
+4. Publish the package `pnpm publish`

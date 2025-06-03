@@ -13,10 +13,10 @@
   ],
   "scripts": {
     "build": "tsup-node",
-    "prepack": "npm run build",
-    "test": "npm run types && vitest run",
+    "prepack": "pnpm run build",
+    "test": "pnpm run types && vitest run",
     "test:dev": "vitest",
-    "test:ci": "npm run build && npm run test",
+    "test:ci": "pnpm run build && pnpm run test",
     "dev": "tsup-node --watch",
     "types": "tsc --noEmit",
     "publint": "npx -y publint --strict"

@@ -30,10 +30,10 @@
   ],
   "scripts": {
     "build": "tsup-node",
-    "prepack": "npm run build",
+    "prepack": "pnpm run build",
     "test": "vitest run",
     "test:dev": "vitest",
-    "test:ci": "npm run build && vitest run",
+    "test:ci": "pnpm run build && vitest run",
     "dev": "tsup-node --watch",
     "publint": "npx -y publint --strict"
   },
@@ -51,13 +51,14 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/types": "2.0.1"
+    "@netlify/types": "workspace:*",
+    "tsup": "^8.0.0"
   },
   "dependencies": {
-    "@netlify/dev-utils": "3.1.1",
+    "@netlify/dev-utils": "workspace:*",
     "@netlify/edge-bundler": "^14.0.5",
     "@netlify/edge-functions-bootstrap": "^2.13.0",
-    "@netlify/runtime-utils": "2.1.0",
+    "@netlify/runtime-utils": "workspace:*",
     "get-port": "^7.1.0"
   }
 }

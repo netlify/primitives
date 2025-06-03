@@ -47,10 +47,10 @@
   "scripts": {
     "build": "tsup-node",
     "dev": "tsup-node --watch",
-    "prepack": "npm run build",
-    "test": "run-s build test:ci",
-    "test:dev": "run-s build test:dev:*",
-    "test:ci": "run-s build test:ci:*",
+    "prepack": "pnpm build",
+    "test": "pnpm run /^(build|test:ci)$/",
+    "test:dev": "pnpm run /^(build|test:dev:.*)/",
+    "test:ci": "pnpm run /^(build|test:ci:.*)/",
     "test:dev:vitest": "vitest",
     "test:dev:vitest:watch": "vitest watch",
     "test:ci:vitest": "vitest run",
@@ -69,14 +69,13 @@
   "devDependencies": {
     "@types/node": "^18.19.110",
     "node-fetch": "^3.3.1",
-    "npm-run-all2": "^8.0.4",
     "semver": "^7.5.3",
     "tmp-promise": "^3.0.3",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/dev-utils": "3.1.1",
-    "@netlify/runtime-utils": "2.1.0"
+    "@netlify/dev-utils": "workspace:*",
+    "@netlify/runtime-utils": "workspace:*"
   }
 }

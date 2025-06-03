@@ -34,11 +34,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Node.js ${{ matrix.node-version }}
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+      - name: Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          node-version: lts/*
+          cache: 'pnpm'
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
@@ -46,13 +48,13 @@ jobs:
       - name: Setup Deno dependencies
         run: deno cache https://deno.land/x/eszip@v0.55.2/eszip.ts
       - name: Install dependencies
-        run: npm ci
+        run: pnpm build
       - name: Install playwright browsers
         run: npx playwright install --with-deps
       - name: Build
-        run: npm run build --workspaces=true
+        run: pnpm build
       - name: Tests
-        run: npm run test --workspaces=true
+        run: pnpm -r run test
   test-node18:
     name: Test Node.js 18 for specific packages
     runs-on: ${{ matrix.os }}
@@ -66,11 +68,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Node.js 18.14.0
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+      - name: Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.14.0
-          cache: 'npm'
+          node-version: lts/*
+          cache: 'pnpm'
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
@@ -78,13 +82,10 @@ jobs:
       - name: Setup Deno dependencies
         run: deno cache https://deno.land/x/eszip@v0.55.2/eszip.ts
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
       - name: Build
-        # NOTE: These are run in the specified order, so they must be in topological order
         run: >-
-          npm run build -w ./packages/types -w ./packages/dev-utils -w ./packages/runtime-utils -w ./packages/blobs -w
-          ./packages/edge-functions -w ./packages/functions
+          pnpm build
       - name: Tests
         run: >-
-          npm run test -w ./packages/types -w ./packages/dev-utils -w ./packages/runtime-utils -w ./packages/blobs -w
-          ./packages/edge-functions -w ./packages/functions
+          pnpm test

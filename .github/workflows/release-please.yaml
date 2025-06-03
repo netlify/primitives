@@ -24,73 +24,73 @@ jobs:
         if: ${{ steps.release.outputs.releases_created }}
         with:
           token: ${{ steps.get-token.outputs.token }}
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+      - name: Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '*'
-          cache: 'npm'
-          check-latest: true
-          registry-url: 'https://registry.npmjs.org'
+          node-version: lts/*
+          cache: 'pnpm'
         if: ${{ steps.release.outputs.releases_created }}
-      - run: npm ci
+      - run: pnpm install
         if: ${{ steps.release.outputs.releases_created }}
       - name: Build packages
         if: ${{ steps.release.outputs.releases_created }}
-        run: npm run build --workspaces=true
-
+        run: pnpm build
       # Publishing packages in topological order, as defined in `package.json`.
-      - run: npm publish packages/types/ --provenance --access=public
+      - run: pnpm publish packages/types/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/types--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/dev-utils/ --provenance --access=public
+      - run: pnpm publish packages/dev-utils/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/dev-utils--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/runtime-utils/ --provenance --access=public
+      - run: pnpm publish packages/runtime-utils/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/runtime-utils--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/blobs/ --provenance --access=public
+      - run: pnpm publish packages/blobs/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/blobs--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/cache/ --provenance --access=public
+      - run: pnpm publish packages/cache/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/cache--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/edge-functions/ --provenance --access=public
+      - run: pnpm publish packages/edge-functions/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/edge-functions--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/functions/ --provenance --access=public
+      - run: pnpm publish packages/functions/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/functions--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/headers/ --provenance --access=public
+      - run: pnpm publish packages/headers/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/headers--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/redirects/ --provenance --access=public
+      - run: pnpm publish packages/redirects/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/redirects--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/runtime/ --provenance --access=public
+      - run: pnpm publish packages/runtime/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/runtime--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/static/ --provenance --access=public
+      - run: pnpm publish packages/static/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/static--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/dev/ --provenance --access=public
+      - run: pnpm publish packages/dev/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/dev--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/vite-plugin/ --provenance --access=public
+      - run: pnpm publish packages/vite-plugin/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/vite-plugin--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish packages/otel/ --provenance --access=public
+      - run: pnpm publish packages/otel/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/otel--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

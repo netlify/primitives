@@ -118,7 +118,7 @@ describe('Functions with the v2 API syntax', () => {
     const fixture = new Fixture().withFile(
       'netlify/functions/hello.mjs',
       `export default async () => new Response("Hello world")
-      
+
        export const config = {
          path: "/hello"
        }`,
@@ -151,7 +151,7 @@ describe('Functions with the v2 API syntax', () => {
     await fixture.writeFile(
       'netlify/functions/hello.mjs',
       `export default async () => new Response("Goodbye world")
-      
+
        export const config = {
          path: "/hello",
          preferStatic: true

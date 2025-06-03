@@ -45,10 +45,10 @@
   "scripts": {
     "build": "tsup-node",
     "dev": "tsup-node --watch",
-    "prepack": "npm run build",
-    "test": "run-s build test:ci",
-    "test:dev": "run-s build test:dev:*",
-    "test:ci": "run-s build test:ci:*",
+    "prepack": "pnpm run build",
+    "test": "pnpm run /^(build|test:ci)$/",
+    "test:dev": "pnpm run /^(build|test:dev:.*)$/",
+    "test:ci": "pnpm run /^(build|test:ci:.*)$/",
     "test:dev:vitest": "vitest",
     "test:dev:vitest:watch": "vitest watch",
     "test:ci:vitest": "vitest run",
@@ -65,7 +65,6 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "npm-run-all2": "^7.0.2",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   },

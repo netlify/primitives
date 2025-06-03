@@ -25,13 +25,13 @@ First fork and clone the repository. If you're not sure how to do this, please w
 Run:
 
 ```bash
-npm install
+pnpm install
 ```
 
 Make sure everything is correctly setup with:
 
 ```bash
-npm test
+pnpm test
 ```
 
 After submitting the pull request, please make sure the Continuous Integration checks are passing.

@@ -5,18 +5,18 @@ required for the local emulation of each primitive to aid local development work
 
 ## Installation
 
-This monorepo uses [npm workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces/).
+This monorepo uses [pnpm workspaces](https://pnpm.io/workspaces).
 
 Start by installing the dependencies:
 
 ```sh
-npm install
+pnpm install
 ```
 
 You can then build all the packages:
 
 ```sh
-npm run build --workspaces=true
+pnpm build
 ```
 
 ## Packages
