@@ -301,8 +301,7 @@ describe('configureServer', { timeout: 15_000 }, () => {
       expect(await page.goto(`${url}/contact/e-mail`).then((r) => r?.text())).toContain(
         'Hello from the redirect target',
       )
-      // FIXME(serhalp): This regressed in https://github.com/netlify/primitives/pull/248. Reimplement.
-      // expect(await page.goto(`${url}/beta/pricing`).then((r) => r?.text())).toContain('Hello from the rewrite target')
+      expect(await page.goto(`${url}/beta/pricing`).then((r) => r?.text())).toContain('Hello from the rewrite target')
 
       await server.close()
       await fixture.destroy()
