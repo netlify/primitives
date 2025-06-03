@@ -23,6 +23,7 @@ describe('Functions with the v2 API syntax', () => {
         events.handleEvent(event)
       },
       destPath,
+      geolocation: {},
       projectRoot: directory,
       settings: {},
       timeouts: {},
@@ -86,6 +87,7 @@ describe('Functions with the v2 API syntax', () => {
       accountId: 'account-123',
       config: {},
       destPath,
+      geolocation: {},
       projectRoot: directory,
       settings: {},
       timeouts: {},
@@ -132,6 +134,7 @@ describe('Functions with the v2 API syntax', () => {
         events.handleEvent(event)
       },
       destPath,
+      geolocation: {},
       projectRoot: directory,
       settings: {},
       timeouts: {},
