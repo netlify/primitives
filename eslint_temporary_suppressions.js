@@ -296,7 +296,6 @@ export default [
   {
     files: ['packages/dev-utils/src/test/fetch.ts'],
     rules: {
-      '@typescript-eslint/no-unnecessary-type-arguments': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/restrict-plus-operands': 'off',
@@ -473,7 +472,6 @@ export default [
       '@typescript-eslint/prefer-function-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-invalid-void-type': 'off',
-      '@typescript-eslint/no-unnecessary-type-arguments': 'off',
     },
   },
   {
@@ -503,7 +501,6 @@ export default [
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
-      '@typescript-eslint/no-unnecessary-type-arguments': 'off',
       '@typescript-eslint/no-confusing-void-expression': 'off',
     },
   },
@@ -663,7 +660,6 @@ export default [
     files: ['packages/vite-plugin/src/lib/reqres.ts'],
     rules: {
       '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-unnecessary-type-arguments': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-confusing-void-expression': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',

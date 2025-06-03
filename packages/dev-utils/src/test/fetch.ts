@@ -92,7 +92,7 @@ export class MockFetch {
           if (typeof options.body === 'string') {
             requestBody = options.body
           } else {
-            requestBody = await readAsString(Readable.fromWeb(options.body as ReadableStream<any>))
+            requestBody = await readAsString(Readable.fromWeb(options.body as ReadableStream))
           }
         }
 

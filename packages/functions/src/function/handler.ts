@@ -17,8 +17,8 @@ export interface BackgroundHandler<C extends HandlerContext = HandlerContext> {
   (event: HandlerEvent, context: C): void | Promise<void>
 }
 
-export type Handler = BaseHandler<HandlerResponse, HandlerContext>
-export type BuilderHandler = BaseHandler<BuilderResponse, HandlerContext>
+export type Handler = BaseHandler
+export type BuilderHandler = BaseHandler<BuilderResponse>
 
 export interface StreamingHandler {
   (event: HandlerEvent, context: HandlerContext): Promise<StreamingResponse>
