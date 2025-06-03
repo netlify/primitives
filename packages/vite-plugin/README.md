@@ -5,6 +5,22 @@
 
 A Vite plugin that integrates with Netlify's platform features.
 
+## 🚧 Feature Support
+
+| Feature                | Supported |
+| ---------------------- | --------- |
+| Functions              | ✅ Yes    |
+| Edge Functions         | ✅ Yes    |
+| Blobs                  | ✅ Yes    |
+| Cache API              | ✅ Yes    |
+| Redirects and Rewrites | ✅ Yes    |
+| Headers                | ✅ Yes    |
+| Environment Variables  | ✅ Yes    |
+| Image CDN              | ❌ No     |
+
+> Note: Missing features will be added incrementally. This module is **not** intended to be a full replacement for the
+> Netlify CLI.
+
 ## Installation
 
 ```bash
@@ -18,6 +34,7 @@ The plugin accepts the following options:
 - `middleware` (boolean, default: `true`): Attach a Vite middleware that intercepts requests and handles them in the
   same way as the Netlify production environment
 - `blobs`: Configure blob storage functionality
+- `edgeFunctions`: Configure edge functions
 - `functions`: Configure serverless functions
 - `headers`: Configure response headers
 - `redirects`: Configure URL redirects
