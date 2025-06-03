@@ -125,8 +125,8 @@ export class NetlifyFunction {
 
     this.isBackground = name.endsWith(BACKGROUND_FUNCTION_SUFFIX)
 
-    const functionConfig = config.functions && config.functions[name]
-    this.schedule = functionConfig && functionConfig.schedule
+    const functionConfig = config.functions?.[name]
+    this.schedule = functionConfig?.schedule
 
     this.srcFiles = new Set()
   }

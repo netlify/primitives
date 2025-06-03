@@ -23,7 +23,7 @@ export const encodeMetadata = (metadata?: Metadata) => {
 }
 
 export const decodeMetadata = (header: string | null): Metadata => {
-  if (!header || !header.startsWith(BASE64_PREFIX)) {
+  if (!header?.startsWith(BASE64_PREFIX)) {
     return {}
   }
 

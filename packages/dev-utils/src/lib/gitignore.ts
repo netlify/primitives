@@ -36,7 +36,7 @@ export const ensureNetlifyIgnore = async (dir: string, logger?: Logger) => {
     // ignore
   }
   /* Not ignoring .netlify folder. Add to .gitignore */
-  if (!ignorePatterns || !ignorePatterns.patterns.some((pattern) => /(^|\/|\\)\.netlify($|\/|\\)/.test(pattern))) {
+  if (!ignorePatterns?.patterns.some((pattern) => /(^|\/|\\)\.netlify($|\/|\\)/.test(pattern))) {
     logger?.log()
     logger?.log('Adding local .netlify folder to .gitignore file...')
     const newContents = `${gitIgnoreContents}\n${ignoreContent}`

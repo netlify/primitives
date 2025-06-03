@@ -67,7 +67,6 @@ export default [
   {
     files: ['packages/blobs/src/metadata.ts'],
     rules: {
-      '@typescript-eslint/prefer-optional-chain': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
@@ -241,7 +240,6 @@ export default [
   {
     files: ['packages/dev-utils/src/lib/gitignore.ts'],
     rules: {
-      '@typescript-eslint/prefer-optional-chain': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
     },
   },
@@ -391,7 +389,6 @@ export default [
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/prefer-optional-chain': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
