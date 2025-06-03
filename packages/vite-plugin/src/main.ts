@@ -1,6 +1,7 @@
 import process from 'node:process'
 
 import { NetlifyDev, type Features } from '@netlify/dev'
+import { netlifyCommand } from '@netlify/dev-utils'
 import * as vite from 'vite'
 
 import { createLoggerFromViteLogger } from './lib/logger.js'
@@ -73,7 +74,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
       if (!netlifyDev.siteIsLinked) {
         logger.log(
-          '💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables defined on your team and site and much more. Run `npx netlify init` to get started.',
+          `💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables defined on your team and site and much more. Run ${netlifyCommand('npx netlify init')} to get started.`,
         )
       }
     },

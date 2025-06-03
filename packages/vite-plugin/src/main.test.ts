@@ -154,7 +154,7 @@ describe('configureServer', { timeout: 15_000 }, () => {
     expect(mockLogger.info).toHaveBeenNthCalledWith(
       2,
       '💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables \
-defined on your team and site and much more. Run `npx netlify init` to get started.',
+defined on your team and site and much more. Run npx netlify init to get started.',
       expect.objectContaining({}),
     )
 
