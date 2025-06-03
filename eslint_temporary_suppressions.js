@@ -134,7 +134,6 @@ export default [
   {
     files: ['packages/blobs/test/util.ts'],
     rules: {
-      '@typescript-eslint/array-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
@@ -214,7 +213,6 @@ export default [
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/require-await': 'off',
-      '@typescript-eslint/array-type': 'off',
     },
   },
   {
@@ -250,12 +248,6 @@ export default [
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-deprecated': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-    },
-  },
-  {
-    files: ['packages/dev-utils/src/lib/headers.ts'],
-    rules: {
-      '@typescript-eslint/array-type': 'off',
     },
   },
   {
@@ -493,7 +485,6 @@ export default [
   {
     files: ['packages/functions/src/function/handler_response.ts'],
     rules: {
-      '@typescript-eslint/array-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
