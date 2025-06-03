@@ -271,10 +271,10 @@ export class EdgeFunctionsHandler {
       requestTimeout: this.requestTimeout,
     }
     const denoFlags: string[] = ['--allow-scripts', '--quiet', '--no-lock']
-    const script = `import('${pathToFileURL(denoRunPath).toString()}?options=${encodeURIComponent(JSON.stringify(runOptions))}');`
+    const script = `import('${pathToFileURL(denoRunPath).toString()}');`
 
     try {
-      await denoBridge.runInBackground(['eval', ...denoFlags, script], processRef, {
+      await denoBridge.runInBackground(['eval', ...denoFlags, script, JSON.stringify(runOptions)], processRef, {
         env,
         extendEnv: false,
         pipeOutput: true,

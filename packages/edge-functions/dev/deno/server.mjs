@@ -68,8 +68,6 @@ export const serveLocal = ({ bootstrapURL, denoPort: port, requestTimeout }) => 
   return server.finished
 }
 
-const url = new URL(import.meta.url)
-const rawOptions = url.searchParams.get('options')
-const options = JSON.parse(decodeURIComponent(rawOptions))
+const runOptions = JSON.parse(Deno.args[0])
 
-await serveLocal(options)
+await serveLocal(runOptions)
