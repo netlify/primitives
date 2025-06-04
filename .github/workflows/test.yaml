@@ -85,7 +85,7 @@ jobs:
         run: pnpm install
       - name: Build
         run: >-
-          pnpm build
+          pnpm --filter "./packages/{types,dev-utils,runtime-utils,blobs,edge-functions,functions}" --sort run build
       - name: Tests
         run: >-
-          pnpm test
+          pnpm --filter "./packages/{types,dev-utils,runtime-utils,blobs,edge-functions,functions}" --sort run test
