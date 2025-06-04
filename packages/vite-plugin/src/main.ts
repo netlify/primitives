@@ -1,15 +1,16 @@
 import process from 'node:process'
 
 import { NetlifyDev, type Features } from '@netlify/dev'
+import { netlifyCommand } from '@netlify/dev-utils'
 import * as vite from 'vite'
 
-import { logger } from './lib/logger.js'
-import { fromWebResponse, toWebRequest } from './lib/reqres.js'
+import { createLoggerFromViteLogger } from './lib/logger.js'
+import { fromWebResponse } from './lib/reqres.js'
 
 export interface NetlifyPluginOptions extends Features {
   /**
    * Attach a Vite middleware that intercepts requests and handles them in the
-   * same way as the Netlify production environment.
+   * same way as the Netlify production environment (default: true).
    */
   middleware?: boolean
 }
@@ -24,35 +25,57 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
   const plugin: vite.Plugin = {
     name: 'vite-plugin-netlify',
     async configureServer(viteDevServer) {
-      const { blobs, functions, middleware = true, redirects, staticFiles } = options
+      const logger = createLoggerFromViteLogger(viteDevServer.config.logger)
+      const { port } = viteDevServer.config.server
+      const { blobs, edgeFunctions, functions, middleware = true, redirects, staticFiles } = options
       const netlifyDev = new NetlifyDev({
         blobs,
+        edgeFunctions,
         functions,
         logger,
         redirects,
-        staticFiles,
+        serverAddress: `http://localhost:${port}`,
+        staticFiles: {
+          ...staticFiles,
+          directories: [viteDevServer.config.root, viteDevServer.config.publicDir],
+        },
         projectRoot: viteDevServer.config.root,
       })
 
       await netlifyDev.start()
-
-      if (!netlifyDev.siteIsLinked) {
-        logger.log('Your project is not linked to a Netlify site. Run `npx netlify link` to get started.')
-      }
+      logger.log('Environment loaded')
 
       if (middleware) {
-        return () => {
-          viteDevServer.middlewares.use(async (nodeReq, nodeRes, next) => {
-            const req = toWebRequest(nodeReq, nodeReq.originalUrl)
-            const res = await netlifyDev.handle(req)
-
-            if (res) {
-              fromWebResponse(res, nodeRes)
-            } else {
-              next()
-            }
+        viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
+          const headers: Record<string, string> = {}
+          const result = await netlifyDev.handleAndIntrospectNodeRequest(nodeReq, {
+            headersCollector: (key, value) => {
+              headers[key] = value
+            },
           })
-        }
+
+          const isStaticFile = result?.type === 'static'
+
+          // Don't serve static matches. Let the Vite server handle them.
+          if (result && !isStaticFile) {
+            fromWebResponse(result.response, nodeRes)
+
+            return
+          }
+
+          for (const key in headers) {
+            nodeRes.setHeader(key, headers[key])
+          }
+
+          next()
+        })
+        logger.log(`Middleware loaded. Emulating features: ${netlifyDev.getEnabledFeatures().join(', ')}.`)
+      }
+
+      if (!netlifyDev.siteIsLinked) {
+        logger.log(
+          `💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables defined on your team and site and much more. Run ${netlifyCommand('npx netlify init')} to get started.`,
+        )
       }
     },
   }

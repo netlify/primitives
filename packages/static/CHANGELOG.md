@@ -1,5 +1,38 @@
 # Changelog
 
+## [3.0.1](https://github.com/netlify/primitives/compare/static-v3.0.0...static-v3.0.1) (2025-06-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^3.1.0 to ^3.1.1
+
+## [3.0.0](https://github.com/netlify/primitives/compare/static-v2.0.0...static-v3.0.0) (2025-06-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop EOL'd node 18 support in new packages ([#252](https://github.com/netlify/primitives/issues/252))
+
+### Features
+
+* support multiple directories to serve static files ([#253](https://github.com/netlify/primitives/issues/253)) ([153f6ef](https://github.com/netlify/primitives/commit/153f6efda2e681d98753ebd7a1cb487ffc55560b))
+
+
+### Bug Fixes
+
+* drop EOL'd node 18 support in new packages ([#252](https://github.com/netlify/primitives/issues/252)) ([38791ab](https://github.com/netlify/primitives/commit/38791ab91dcbf1f05093ba123eaccdf960a2d6e7))
+* support publish dir being set to not root directory ([#256](https://github.com/netlify/primitives/issues/256)) ([4987223](https://github.com/netlify/primitives/commit/4987223d8850d4a724eb6f9bdbc855edbe463e50))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^3.0.0 to ^3.1.0
+
 ## [2.0.0](https://github.com/netlify/primitives/compare/static-v1.1.4...static-v2.0.0) (2025-05-28)
 
 

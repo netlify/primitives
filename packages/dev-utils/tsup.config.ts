@@ -7,7 +7,7 @@ export default defineConfig([
     clean: true,
     entry: ['src/main.ts'],
     outDir: 'dist',
-    format: ['cjs', 'esm'],
+    format: ['esm'],
     dts: true,
     splitting: false,
     watch: argv.includes('--watch'),

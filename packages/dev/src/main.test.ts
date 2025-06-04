@@ -31,6 +31,8 @@ describe('Handling requests', () => {
 
       const res = await dev.handle(req)
 
+      await dev.stop()
+
       expect(await res?.text()).toBe('to.html')
 
       await fixture.destroy()
@@ -57,6 +59,8 @@ describe('Handling requests', () => {
 
       const res = await dev.handle(req)
 
+      await dev.stop()
+
       expect(await res?.text()).toBe('from.html')
 
       await fixture.destroy()
@@ -82,6 +86,8 @@ describe('Handling requests', () => {
       await dev.start()
 
       const res = await dev.handle(req)
+
+      await dev.stop()
 
       expect(await res?.text()).toBe('to.html')
 
@@ -115,15 +121,17 @@ describe('Handling requests', () => {
 
       const matchRes = await dev.handle(req)
 
+      await dev.stop()
+
       expect(await matchRes?.text()).toBe('Hello from hello.txt')
-      expect(Object.fromEntries(matchRes?.headers?.entries() ?? [])).toMatchObject({
+      expect(Object.fromEntries(matchRes?.headers.entries() ?? [])).toMatchObject({
         'cache-control': 'max-age=42',
         vary: 'User-Agent',
       })
 
       const noMatchRes = await dev.handle(new Request('https://site.netlify/another-path.txt'))
       expect(await noMatchRes?.text()).toBe('Hello from another-path.txt')
-      expect(Object.fromEntries(noMatchRes?.headers?.entries() ?? [])).not.toMatchObject({
+      expect(Object.fromEntries(noMatchRes?.headers.entries() ?? [])).not.toMatchObject({
         'cache-control': 'max-age=42',
         vary: 'User-Agent',
       })
@@ -166,6 +174,7 @@ describe('Handling requests', () => {
       expect(rewriteRes?.headers.get('X-Custom')).toBe('value for to rule')
       expect(rewriteRes?.headers.get('X-Custom-From')).toBeNull()
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -197,10 +206,11 @@ describe('Handling requests', () => {
 
       const res = await dev.handle(req)
       expect(await res?.text()).toBe('Hello from the static file')
-      expect(Object.fromEntries(res?.headers?.entries() ?? [])).toMatchObject({
+      expect(Object.fromEntries(res?.headers.entries() ?? [])).toMatchObject({
         'x-custom-header': 'custom-value',
       })
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -234,6 +244,7 @@ describe('Handling requests', () => {
       expect(await res?.text()).toBe('Hello from the function')
       expect(res?.headers.get('x-custom-header')).toBeNull()
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -254,7 +265,7 @@ describe('Handling requests', () => {
           `export default async () => new Response("Hello from function"); export const config = { path: "/hello" };`,
         )
       const directory = await fixture.create()
-      const req = new Request('https://site.netlify/hello')
+      const req = new Request('https://site.netlify/hello?param1=value1')
       const dev = new NetlifyDev({
         projectRoot: directory,
       })
@@ -276,6 +287,7 @@ describe('Handling requests', () => {
 
       expect(await res2?.text()).toBe('A new hello from function')
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -304,6 +316,7 @@ describe('Handling requests', () => {
 
       expect(await res?.text()).toBe('hello.html')
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -333,6 +346,7 @@ describe('Handling requests', () => {
 
       expect(await res?.text()).toBe('Hello from function')
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -395,6 +409,7 @@ describe('Handling requests', () => {
       expect(gitIgnoresPost).toContain('# Local Netlify folder')
       expect(gitIgnoresPost).toContain('.netlify')
 
+      await dev.stop()
       await fixture.destroy()
     })
 
@@ -429,6 +444,7 @@ describe('Handling requests', () => {
 
       expect(await res?.text()).toBe('Hello world')
 
+      await dev.stop()
       await fixture.destroy()
     })
   })
@@ -512,6 +528,8 @@ describe('Handling requests', () => {
 
         const res = await dev.handle(req)
 
+        await dev.stop()
+
         expect(await res?.json()).toStrictEqual({
           env: {
             WITH_DEV_OVERRIDE: 'value from dev context',
@@ -545,6 +563,155 @@ describe('Handling requests', () => {
           },
           url: 'https://site.netlify/hello/one/two/three',
         })
+      })
+
+      await fixture.destroy()
+    })
+
+    test('Invoking an edge function', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+        publish = "public"
+        `,
+        )
+        .withFile(
+          'netlify/functions/hello.mjs',
+          `export default async (req, context) => new Response("Hello from function");
+           
+           export const config = { path: "/hello/:a/*" };`,
+        )
+        .withFile(
+          'netlify/edge-functions/passthrough.mjs',
+          `export default async (req, context) => {
+            const res = await context.next();
+            const text = await res.text();
+
+            return new Response(text.toUpperCase(), res);
+          };
+           
+           export const config = { path: "/hello/passthrough/*" };`,
+        )
+        .withFile(
+          'netlify/edge-functions/terminate.mjs',
+          `export default async (req, context) => Response.json({
+             env: {
+               WITH_DEV_OVERRIDE: Netlify.env.get("WITH_DEV_OVERRIDE"),
+               WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE")             
+             },
+             geo: context.geo,
+             params: context.params,
+             path: context.path,
+             server: context.server,
+             site: context.site,
+             url: context.url
+           });
+           
+           export const config = { path: "/hello/terminate/*" };`,
+        )
+        .withStateFile({ siteId: 'site_id' })
+      const directory = await fixture.create()
+
+      await withMockApi(routes, async (context) => {
+        const dev = new NetlifyDev({
+          apiURL: context.apiUrl,
+          apiToken: 'token',
+          projectRoot: directory,
+        })
+
+        const { serverAddress } = await dev.start()
+
+        const req1 = new Request('https://site.netlify/hello/passthrough/two/three')
+        const res1 = await dev.handle(req1)
+
+        expect(await res1?.text()).toBe('HELLO FROM FUNCTION')
+
+        const req2 = new Request('https://site.netlify/hello/terminate/two/three')
+        const res2 = await dev.handle(req2)
+        const req2URL = new URL('/hello/terminate/two/three', serverAddress)
+
+        expect(await res2?.json()).toStrictEqual({
+          env: {
+            WITH_DEV_OVERRIDE: 'value from dev context',
+            WITHOUT_DEV_OVERRIDE: 'value from all context',
+          },
+          geo: {
+            city: 'San Francisco',
+            country: {
+              code: 'US',
+              name: 'United States',
+            },
+            latitude: 0,
+            longitude: 0,
+            subdivision: {
+              code: 'CA',
+              name: 'California',
+            },
+            timezone: 'UTC',
+          },
+          params: {
+            '0': 'two/three',
+          },
+          // TODO: This doesn't exist in edge functions but it should.
+          // path: '/hello/terminate/*',
+          server: {
+            region: 'dev',
+          },
+          site: {
+            id: 'site_id',
+            name: 'site-name',
+            url: serverAddress,
+          },
+          url: req2URL.toString(),
+        })
+
+        await dev.stop()
+      })
+
+      await fixture.destroy()
+    })
+
+    test('Invoking a function that shadows a static file and introspecting the result', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+        publish = "public"
+        `,
+        )
+        .withFile(
+          'netlify/functions/greeting.mjs',
+          `export default async (req, context) => new Response(context.params.greeting + ", friend!");
+           
+           export const config = { path: "/:greeting", preferStatic: true };`,
+        )
+        .withFile('public/hello.html', '<html>Hello</html>')
+        .withStateFile({ siteId: 'site_id' })
+      const directory = await fixture.create()
+
+      await withMockApi(routes, async (context) => {
+        const dev = new NetlifyDev({
+          apiURL: context.apiUrl,
+          apiToken: 'token',
+          projectRoot: directory,
+        })
+
+        await dev.start()
+
+        const req1 = new Request('https://site.netlify/hi')
+        const res1 = await dev.handleAndIntrospect(req1)
+
+        expect(await res1?.response.text()).toBe('hi, friend!')
+        expect(res1?.type).toBe('function')
+
+        const req2 = new Request('https://site.netlify/hello')
+        const res2 = await dev.handleAndIntrospect(req2)
+
+        expect(await res2?.response.text()).toBe('<html>Hello</html>')
+        expect(res2?.type).toBe('static')
+
+        await dev.stop()
       })
 
       await fixture.destroy()

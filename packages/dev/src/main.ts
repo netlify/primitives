@@ -1,17 +1,29 @@
 import { promises as fs } from 'node:fs'
+import { IncomingMessage } from 'node:http'
 import path from 'node:path'
 import process from 'node:process'
 
 import { resolveConfig } from '@netlify/config'
-import { ensureNetlifyIgnore, getAPIToken, LocalState, type Logger } from '@netlify/dev-utils'
+import {
+  ensureNetlifyIgnore,
+  getAPIToken,
+  mockLocation,
+  LocalState,
+  type Logger,
+  HTTPServer,
+  netlifyCommand,
+} from '@netlify/dev-utils'
+import { EdgeFunctionsHandler } from '@netlify/edge-functions/dev'
 import { FunctionsHandler } from '@netlify/functions/dev'
-import { HeadersHandler } from '@netlify/headers'
+import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
 import { ImageHandler } from '@netlify/images'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 
-import { injectEnvVariables } from './lib/env.js'
+import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
+import { getNormalizedRequest, getNormalizedRequestFromNodeRequest } from './lib/reqres.js'
+import { generateRequestID } from './lib/request_id.js'
 import { getRuntime } from './lib/runtime.js'
 
 export interface Features {
@@ -21,7 +33,16 @@ export interface Features {
    * {@link} https://docs.netlify.com/blobs/overview/
    */
   blobs?: {
-    enabled: boolean
+    enabled?: boolean
+  }
+
+  /**
+   * Configuration options for environment variables.
+   *
+   * {@link} https://docs.netlify.com/edge-functions/overview/
+   */
+  edgeFunctions?: {
+    enabled?: boolean
   }
 
   /**
@@ -30,7 +51,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/environment-variables/overview/
    */
   environmentVariables?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -39,7 +60,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/functions/overview/
    */
   functions?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -48,7 +69,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/routing/headers/
    */
   headers?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -57,7 +78,7 @@ export interface Features {
    * {@link} https://docs.netlify.com/image-cdn/overview/
    */
   images?: {
-    enabled: boolean
+    enabled?: boolean
   }
 
   /**
@@ -66,14 +87,26 @@ export interface Features {
    * {@link} https://docs.netlify.com/routing/redirects/
    */
   redirects?: {
-    enabled: boolean
+    enabled?: boolean
   }
+
+  /**
+   * If your local development setup has its own HTTP server (e.g. Vite), set
+   * its address here.
+   */
+  serverAddress?: string
 
   /**
    * Configuration options for serving static files.
    */
   staticFiles?: {
-    enabled: boolean
+    enabled?: boolean
+
+    /**
+     * Additional list of directories where static files can be found. The
+     * `publish` directory configured on your site will be used automatically.
+     */
+    directories?: string[]
   }
 }
 
@@ -87,15 +120,31 @@ interface NetlifyDevOptions extends Features {
 const notFoundHandler = async () => new Response('Not found', { status: 404 })
 
 type Config = Awaited<ReturnType<typeof resolveConfig>>
-type Runtime = { stop: () => Promise<void> }
+
+interface HandleOptions {
+  /**
+   * An optional callback that will be called with every header (key and value)
+   * coming from header rules.
+   *
+   * {@link} https://docs.netlify.com/routing/headers/
+   */
+  headersCollector?: HeadersCollector
+}
+
+export type ResponseType = 'edge-function' | 'function' | 'redirect' | 'static'
 
 export class NetlifyDev {
   #apiHost?: string
   #apiScheme?: string
   #apiToken?: string
+  #cleanupJobs: (() => Promise<void>)[]
+  #edgeFunctionsHandler?: EdgeFunctionsHandler
+  #functionsHandler?: FunctionsHandler
+  #functionsServePath: string
   #config?: Config
   #features: {
     blobs: boolean
+    edgeFunctions: boolean
     environmentVariables: boolean
     functions: boolean
     headers: boolean
@@ -103,10 +152,15 @@ export class NetlifyDev {
     redirects: boolean
     static: boolean
   }
+  #headersHandler?: HeadersHandler
+  #imageHandler?: ImageHandler
   #logger: Logger
   #projectRoot: string
-  #runtime?: Runtime
+  #redirectsHandler?: RedirectsHandler
+  #server?: string | HTTPServer
   #siteID?: string
+  #staticHandler?: StaticHandler
+  #staticHandlerAdditionalDirectories: string[]
 
   constructor(options: NetlifyDevOptions) {
     if (options.apiURL) {
@@ -116,9 +170,13 @@ export class NetlifyDev {
       this.#apiScheme = apiURL.protocol.slice(0, -1)
     }
 
+    const projectRoot = options.projectRoot ?? process.cwd()
+
     this.#apiToken = options.apiToken
+    this.#cleanupJobs = []
     this.#features = {
       blobs: options.blobs?.enabled !== false,
+      edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
       headers: options.headers?.enabled !== false,
@@ -126,123 +184,105 @@ export class NetlifyDev {
       redirects: options.redirects?.enabled !== false,
       static: options.staticFiles?.enabled !== false,
     }
+    this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')
     this.#logger = options.logger ?? globalThis.console
-    this.#projectRoot = options.projectRoot ?? process.cwd()
+    this.#server = options.serverAddress
+    this.#projectRoot = projectRoot
+    this.#staticHandlerAdditionalDirectories = options.staticFiles?.directories ?? []
   }
 
-  private async handleInEphemeralDirectory(request: Request, destPath: string) {
-    // Functions
-    const userFunctionsPath =
-      this.#config?.config.functionsDirectory ?? path.join(this.#projectRoot, 'netlify/functions')
-    const userFunctionsPathExists = await isDirectory(userFunctionsPath)
-    const functions = this.#features.functions
-      ? new FunctionsHandler({
-          config: this.#config,
-          destPath: destPath,
-          projectRoot: this.#projectRoot,
-          settings: {},
-          siteId: this.#siteID,
-          timeouts: {},
-          userFunctionsPath: userFunctionsPathExists ? userFunctionsPath : undefined,
-        })
-      : null
-
-    // Headers
-    const headers = this.#features.headers
-      ? new HeadersHandler({
-          configPath: this.#config?.configPath,
-          configHeaders: this.#config?.config.headers,
-          projectDir: this.#projectRoot,
-          publishDir: this.#config?.config.build.publish ?? undefined,
-          logger: this.#logger,
-        })
-      : { handle: async (_request: Request, response: Response) => response }
-
-    const images = this.#features.images
-      ? new ImageHandler({
-          imagesConfig: this.#config?.config.images,
-          logger: this.#logger,
-        })
-      : null
-
-    // Redirects
-    const redirects = this.#features.redirects
-      ? new RedirectsHandler({
-          configPath: this.#config?.configPath,
-          configRedirects: this.#config?.config.redirects,
-          jwtRoleClaim: '',
-          jwtSecret: '',
-          notFoundHandler,
-          projectDir: this.#projectRoot,
-        })
-      : null
-
-    // Static files
-    const staticFiles = this.#features.static
-      ? new StaticHandler({
-          directory: this.#config?.config.build.publish ?? this.#projectRoot,
-        })
-      : null
-
+  private async handleInEphemeralDirectory(
+    matchRequest: Request,
+    getHandleRequest: () => Request,
+    destPath: string,
+    options: HandleOptions = {},
+  ): Promise<{ response: Response; type: ResponseType } | undefined> {
     // Try to match the request against the different steps in our request chain.
     //
     // https://docs.netlify.com/platform/request-chain/
 
-    // 1. Check if the request matches a function.
-    const functionMatch = await functions?.match(request)
+    // 1. Check if the request matches an edge function. Handles edge functions
+    //    with both modes of cache (manual and off) by running them serially.
+    const edgeFunctionMatch = await this.#edgeFunctionsHandler?.match(matchRequest)
+    if (edgeFunctionMatch) {
+      return {
+        response: await edgeFunctionMatch.handle(getHandleRequest()),
+        type: 'edge-function',
+      }
+    }
+
+    // 2. Check if the request matches a function.
+    const functionMatch = await this.#functionsHandler?.match(matchRequest, destPath)
     if (functionMatch) {
       // If the function prefers static files, check if there is a static match
       // and, if so, return that
       if (functionMatch.preferStatic) {
-        const staticMatch = await staticFiles?.match(request)
+        const staticMatch = await this.#staticHandler?.match(matchRequest)
 
         if (staticMatch) {
           const response = await staticMatch.handle()
-          return headers.handle(request, response)
+
+          await this.#headersHandler?.apply(matchRequest, response, options.headersCollector)
+
+          return { response, type: 'static' }
         }
       }
 
       // Let the function handle the request.
-      return functionMatch.handle(request)
-    }
-
-    // 2. Check if the request matches Image CDN.
-    const imageMatch = images?.match(request)
-    if (imageMatch) {
-      return imageMatch.handle()
+      return { response: await functionMatch.handle(getHandleRequest()), type: 'function' }
     }
 
     // 3. Check if the request matches a redirect rule.
-    const redirectMatch = await redirects?.match(request)
+    const redirectMatch = await this.#redirectsHandler?.match(matchRequest)
     if (redirectMatch) {
       // If the redirect rule matches a function, we'll serve it. The exception
       // is if the function prefers static files, which in this case means that
       // we'll follow the redirect rule.
-      const functionMatch = await functions?.match(new Request(redirectMatch.target))
+      const functionMatch = await this.#functionsHandler?.match(new Request(redirectMatch.target), destPath)
       if (functionMatch && !functionMatch.preferStatic) {
-        return functionMatch.handle(request)
+        return {
+          response: await functionMatch.handle(getHandleRequest()),
+          type: 'function',
+        }
       }
 
-      const response = await redirects?.handle(request, redirectMatch, async (maybeStaticFile: Request) => {
-        const staticMatch = await staticFiles?.match(maybeStaticFile)
+      const response = await this.#redirectsHandler?.handle(
+        getHandleRequest(),
+        redirectMatch,
+        async (maybeStaticFile: Request) => {
+          const staticMatch = await this.#staticHandler?.match(maybeStaticFile)
+          if (!staticMatch) {
+            return
+          }
 
-        if (!staticMatch) return
+          return async () => {
+            const response = await staticMatch.handle()
 
-        return async () => {
-          const response = await staticMatch.handle()
-          return headers.handle(new Request(redirectMatch.target), response)
-        }
-      })
+            await this.#headersHandler?.apply(new Request(redirectMatch.target), response, options.headersCollector)
+
+            return response
+          }
+        },
+      )
       if (response) {
-        return response
+        return { response, type: 'redirect' }
       }
     }
 
-    // 4. Check if the request matches a static file.
-    const staticMatch = await staticFiles?.match(request)
+    // 4. Check if the request matches an image.
+    const imageMatch = this.#imageHandler?.match(matchRequest)
+    if (imageMatch) {
+      return imageMatch.handle()
+    }
+
+    // 5. Check if the request matches a static file.
+    const staticMatch = await this.#staticHandler?.match(matchRequest)
     if (staticMatch) {
       const response = await staticMatch.handle()
-      return headers.handle(request, response)
+
+      await this.#headersHandler?.apply(matchRequest, response, options.headersCollector)
+
+      return { response, type: 'static' }
     }
   }
 
@@ -265,15 +305,39 @@ export class NetlifyDev {
     return config
   }
 
-  async handle(request: Request) {
-    const servePath = path.join(this.#projectRoot, '.netlify', 'functions-serve')
+  async handle(request: Request, options: HandleOptions = {}) {
+    const result = await this.handleAndIntrospect(request, options)
 
-    await fs.mkdir(servePath, { recursive: true })
+    return result?.response
+  }
 
-    const destPath = await fs.mkdtemp(path.join(servePath, '_'))
+  async handleAndIntrospect(request: Request, options: HandleOptions = {}) {
+    await fs.mkdir(this.#functionsServePath, { recursive: true })
+
+    const destPath = await fs.mkdtemp(path.join(this.#functionsServePath, `_`))
+    const requestID = generateRequestID()
+    const matchRequest = getNormalizedRequest(request, requestID, true)
+    const getHandleRequest = () => getNormalizedRequest(request, requestID, false)
 
     try {
-      return await this.handleInEphemeralDirectory(request, destPath)
+      return await this.handleInEphemeralDirectory(matchRequest, getHandleRequest, destPath, options)
+    } finally {
+      try {
+        await fs.rm(destPath, { force: true, recursive: true })
+      } catch {}
+    }
+  }
+
+  async handleAndIntrospectNodeRequest(request: IncomingMessage, options: HandleOptions = {}) {
+    await fs.mkdir(this.#functionsServePath, { recursive: true })
+
+    const destPath = await fs.mkdtemp(path.join(this.#functionsServePath, `_`))
+    const requestID = generateRequestID()
+    const matchRequest = getNormalizedRequestFromNodeRequest(request, requestID, true)
+    const getHandleRequest = () => getNormalizedRequestFromNodeRequest(request, requestID, false)
+
+    try {
+      return await this.handleInEphemeralDirectory(matchRequest, getHandleRequest, destPath, options)
     } finally {
       try {
         await fs.rm(destPath, { force: true, recursive: true })
@@ -303,11 +367,32 @@ export class NetlifyDev {
       projectRoot: this.#projectRoot,
       siteID: siteID ?? '0',
     })
-    this.#runtime = runtime
 
-    if (this.#features.environmentVariables && siteID) {
+    this.#cleanupJobs.push(() => runtime.stop())
+
+    let serverAddress: string | undefined
+
+    // If a custom server has been provided, use it. If not, we must stand up
+    // a new one, since it's required for communication with edge functions.
+    if (typeof this.#server === 'string') {
+      serverAddress = this.#server
+    } else if (this.#features.edgeFunctions) {
+      const passthroughServer = new HTTPServer(async (req) => {
+        const res = await this.handle(req)
+
+        return res ?? new Response(null, { status: 404 })
+      })
+
+      this.#cleanupJobs.push(() => passthroughServer.stop())
+
+      serverAddress = await passthroughServer.start()
+    }
+
+    let envVariables: Record<string, InjectedEnvironmentVariable> = {}
+
+    if (this.#features.environmentVariables) {
       // TODO: Use proper types for this.
-      await injectEnvVariables({
+      envVariables = await injectEnvVariables({
         accountSlug: config?.siteInfo?.account_slug,
         baseVariables: config?.env || {},
         envAPI: runtime.env,
@@ -315,9 +400,103 @@ export class NetlifyDev {
         siteID,
       })
     }
+
+    if (this.#features.edgeFunctions && serverAddress !== undefined) {
+      const env = Object.entries(envVariables).reduce<Record<string, string>>((acc, [key, variable]) => {
+        if (
+          variable.usedSource === 'account' ||
+          variable.usedSource === 'addons' ||
+          variable.usedSource === 'internal' ||
+          variable.usedSource === 'ui' ||
+          variable.usedSource.startsWith('.env')
+        ) {
+          return {
+            ...acc,
+            [key]: variable.value,
+          }
+        }
+
+        return acc
+      }, {})
+
+      this.#edgeFunctionsHandler = new EdgeFunctionsHandler({
+        configDeclarations: this.#config?.config.edge_functions ?? [],
+        directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
+        env,
+        geolocation: mockLocation,
+        logger: this.#logger,
+        originServerAddress: serverAddress,
+        siteID,
+        siteName: config?.siteInfo.name,
+      })
+    }
+
+    if (this.#features.functions) {
+      const userFunctionsPath =
+        this.#config?.config.functionsDirectory ?? path.join(this.#projectRoot, 'netlify/functions')
+      const userFunctionsPathExists = await isDirectory(userFunctionsPath)
+
+      this.#functionsHandler = new FunctionsHandler({
+        config: this.#config,
+        destPath: this.#functionsServePath,
+        geolocation: mockLocation,
+        projectRoot: this.#projectRoot,
+        settings: {},
+        siteId: this.#siteID,
+        timeouts: {},
+        userFunctionsPath: userFunctionsPathExists ? userFunctionsPath : undefined,
+      })
+    }
+
+    if (this.#features.headers) {
+      this.#headersHandler = new HeadersHandler({
+        configPath: this.#config?.configPath,
+        configHeaders: this.#config?.config.headers,
+        projectDir: this.#projectRoot,
+        publishDir: this.#config?.config.build.publish ?? undefined,
+        logger: this.#logger,
+      })
+    }
+
+    if (this.#features.redirects) {
+      this.#redirectsHandler = new RedirectsHandler({
+        configPath: this.#config?.configPath,
+        configRedirects: this.#config?.config.redirects,
+        jwtRoleClaim: '',
+        jwtSecret: '',
+        notFoundHandler,
+        projectDir: this.#projectRoot,
+      })
+    }
+
+    if (this.#features.static) {
+      this.#staticHandler = new StaticHandler({
+        directory: [
+          this.#config?.config.build.publish ?? this.#projectRoot,
+          ...this.#staticHandlerAdditionalDirectories,
+        ],
+      })
+    }
+
+    if (this.#features.images) {
+      this.#imageHandler = new ImageHandler({
+        imagesConfig: this.#config?.config.images,
+        logger: this.#logger,
+      })
+    }
+
+    return {
+      serverAddress,
+    }
   }
 
   async stop() {
-    await this.#runtime?.stop()
+    await Promise.allSettled(this.#cleanupJobs.map((task) => task()))
+  }
+
+  public getEnabledFeatures(): string[] {
+    return Object.entries(this.#features)
+      .filter(([_, enabled]) => enabled)
+      .map(([feature]) => feature)
   }
 }

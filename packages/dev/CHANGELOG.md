@@ -1,5 +1,110 @@
 # Changelog
 
+## [4.1.2](https://github.com/netlify/primitives/compare/dev-v4.1.1...dev-v4.1.2) (2025-06-03)
+
+
+### Bug Fixes
+
+* revamp dev and vite plugin logging ([#269](https://github.com/netlify/primitives/issues/269)) ([de9b46c](https://github.com/netlify/primitives/commit/de9b46c1cb1c7b2bf6437ab516134e44203d83b7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.1.4 to 9.1.5
+    * @netlify/dev-utils bumped from 3.1.0 to 3.1.1
+    * @netlify/edge-functions bumped from 2.14.0 to 2.14.1
+    * @netlify/functions bumped from 4.1.1 to 4.1.2
+    * @netlify/headers bumped from 2.0.0 to 2.0.1
+    * @netlify/redirects bumped from 3.0.0 to 3.0.1
+    * @netlify/runtime bumped from 4.0.0 to 4.0.1
+    * @netlify/static bumped from 3.0.0 to 3.0.1
+
+## [4.1.1](https://github.com/netlify/primitives/compare/dev-v4.1.0...dev-v4.1.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* add guard against query param handling ([#272](https://github.com/netlify/primitives/issues/272)) ([14dc44c](https://github.com/netlify/primitives/commit/14dc44c2d7ff97a6ed90c1afcc92d28ae7d6979d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions bumped from 4.1.0 to 4.1.1
+
+## [4.1.0](https://github.com/netlify/primitives/compare/dev-v4.0.2...dev-v4.1.0) (2025-06-03)
+
+
+### Features
+
+* accept `IncomingMessage` in handler ([#267](https://github.com/netlify/primitives/issues/267)) ([aa84022](https://github.com/netlify/primitives/commit/aa84022cf9ecb2258dce39b87b0a21ec73524914))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.13.2 to 2.14.0
+
+## [4.0.2](https://github.com/netlify/primitives/compare/dev-v4.0.1...dev-v4.0.2) (2025-06-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.13.1 to 2.13.2
+
+## [4.0.1](https://github.com/netlify/primitives/compare/dev-v4.0.0...dev-v4.0.1) (2025-06-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.13.0 to 2.13.1
+
+## [4.0.0](https://github.com/netlify/primitives/compare/dev-v3.0.0...dev-v4.0.0) (2025-06-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop EOL'd node 18 support in new packages ([#252](https://github.com/netlify/primitives/issues/252))
+
+### Features
+
+* add support for edge functions ([#233](https://github.com/netlify/primitives/issues/233)) ([c80d77d](https://github.com/netlify/primitives/commit/c80d77ddf59e394f9d8a84a96275c25c1b9aefc0))
+* improve error handling in edge functions ([#246](https://github.com/netlify/primitives/issues/246)) ([c0be696](https://github.com/netlify/primitives/commit/c0be6963c8bd9a49bb967040c29580e7facaae03))
+* print alert when using the Netlify Image CDN ([#255](https://github.com/netlify/primitives/issues/255)) ([e17dd37](https://github.com/netlify/primitives/commit/e17dd375b5aa2631b1bd10e63a7cfa9b2ec9aa96))
+* support multiple directories to serve static files ([#253](https://github.com/netlify/primitives/issues/253)) ([153f6ef](https://github.com/netlify/primitives/commit/153f6efda2e681d98753ebd7a1cb487ffc55560b))
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#236](https://github.com/netlify/primitives/issues/236)) ([630e675](https://github.com/netlify/primitives/commit/630e675822ece3d4bca58673b0a899f5a6c06bd9))
+* drop EOL'd node 18 support in new packages ([#252](https://github.com/netlify/primitives/issues/252)) ([38791ab](https://github.com/netlify/primitives/commit/38791ab91dcbf1f05093ba123eaccdf960a2d6e7))
+* improve static file handler ([#248](https://github.com/netlify/primitives/issues/248)) ([eb6c134](https://github.com/netlify/primitives/commit/eb6c134965a1653b3f3bebd9ec44df334589551e))
+* inject env vars even when unlinked ([#244](https://github.com/netlify/primitives/issues/244)) ([b19d790](https://github.com/netlify/primitives/commit/b19d7901f65360ae2ab72da0f4a56c77b03460da))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.1.3 to 9.1.4
+    * @netlify/dev-utils bumped from 3.0.0 to 3.1.0
+    * @netlify/edge-functions bumped from 2.12.0 to 2.13.0
+    * @netlify/functions bumped from 4.0.0 to 4.1.0
+    * @netlify/headers bumped from 1.0.0 to 2.0.0
+    * @netlify/redirects bumped from 2.0.0 to 3.0.0
+    * @netlify/runtime bumped from 3.0.0 to 4.0.0
+    * @netlify/static bumped from 2.0.0 to 3.0.0
+  * devDependencies
+    * @netlify/types bumped from 2.0.0 to 2.0.1
+
 ## [3.0.0](https://github.com/netlify/primitives/compare/dev-v2.3.1...dev-v3.0.0) (2025-05-28)
 
 

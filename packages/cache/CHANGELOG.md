@@ -1,5 +1,40 @@
 # Changelog
 
+## [3.0.1](https://github.com/netlify/primitives/compare/cache-v3.0.0...cache-v3.0.1) (2025-06-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 3.1.0 to 3.1.1
+
+## [3.0.0](https://github.com/netlify/primitives/compare/cache-v2.0.0...cache-v3.0.0) (2025-06-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop EOL'd node 18 support in new packages ([#252](https://github.com/netlify/primitives/issues/252))
+
+### Features
+
+* add support for edge functions ([#233](https://github.com/netlify/primitives/issues/233)) ([c80d77d](https://github.com/netlify/primitives/commit/c80d77ddf59e394f9d8a84a96275c25c1b9aefc0))
+
+
+### Bug Fixes
+
+* drop EOL'd node 18 support in new packages ([#252](https://github.com/netlify/primitives/issues/252)) ([38791ab](https://github.com/netlify/primitives/commit/38791ab91dcbf1f05093ba123eaccdf960a2d6e7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 2.0.0 to 2.1.0
+  * devDependencies
+    * @netlify/dev-utils bumped from 3.0.0 to 3.1.0
+    * @netlify/types bumped from 2.0.0 to 2.0.1
+
 ## [2.0.0](https://github.com/netlify/primitives/compare/cache-v1.11.2...cache-v2.0.0) (2025-05-28)
 
 

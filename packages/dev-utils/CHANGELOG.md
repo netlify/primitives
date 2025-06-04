@@ -1,5 +1,24 @@
 # Changelog
 
+## [3.1.1](https://github.com/netlify/primitives/compare/dev-utils-v3.1.0...dev-utils-v3.1.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* revamp dev and vite plugin logging ([#269](https://github.com/netlify/primitives/issues/269)) ([de9b46c](https://github.com/netlify/primitives/commit/de9b46c1cb1c7b2bf6437ab516134e44203d83b7))
+
+## [3.1.0](https://github.com/netlify/primitives/compare/dev-utils-v3.0.0...dev-utils-v3.1.0) (2025-06-02)
+
+
+### Features
+
+* add support for edge functions ([#233](https://github.com/netlify/primitives/issues/233)) ([c80d77d](https://github.com/netlify/primitives/commit/c80d77ddf59e394f9d8a84a96275c25c1b9aefc0))
+
+
+### Bug Fixes
+
+* ensure valid 18.14.0+ dependencies ([#254](https://github.com/netlify/primitives/issues/254)) ([09dd0d8](https://github.com/netlify/primitives/commit/09dd0d8e1ab0c028eee8715b05307d8961b28463))
+
 ## [3.0.0](https://github.com/netlify/primitives/compare/dev-utils-v2.2.0...dev-utils-v3.0.0) (2025-05-28)
 
 

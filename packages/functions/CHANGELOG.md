@@ -1,5 +1,43 @@
 # Changelog
 
+## [4.1.2](https://github.com/netlify/primitives/compare/functions-v4.1.1...functions-v4.1.2) (2025-06-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.1.4 to 9.1.5
+    * @netlify/dev-utils bumped from 3.1.0 to 3.1.1
+
+## [4.1.1](https://github.com/netlify/primitives/compare/functions-v4.1.0...functions-v4.1.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* add guard against query param handling ([#272](https://github.com/netlify/primitives/issues/272)) ([14dc44c](https://github.com/netlify/primitives/commit/14dc44c2d7ff97a6ed90c1afcc92d28ae7d6979d))
+
+## [4.1.0](https://github.com/netlify/primitives/compare/functions-v4.0.0...functions-v4.1.0) (2025-06-02)
+
+
+### Features
+
+* add support for edge functions ([#233](https://github.com/netlify/primitives/issues/233)) ([c80d77d](https://github.com/netlify/primitives/commit/c80d77ddf59e394f9d8a84a96275c25c1b9aefc0))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/serverless-functions-api to v2.1.0 ([#237](https://github.com/netlify/primitives/issues/237)) ([5e7a805](https://github.com/netlify/primitives/commit/5e7a805077fad030494bc84a6a7495f20c48b8a5))
+* **deps:** update netlify packages ([#236](https://github.com/netlify/primitives/issues/236)) ([630e675](https://github.com/netlify/primitives/commit/630e675822ece3d4bca58673b0a899f5a6c06bd9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.1.3 to 9.1.4
+    * @netlify/dev-utils bumped from 3.0.0 to 3.1.0
+
 ## [4.0.0](https://github.com/netlify/primitives/compare/functions-v3.1.10...functions-v4.0.0) (2025-05-28)
 
 

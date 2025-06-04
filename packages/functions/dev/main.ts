@@ -1,5 +1,6 @@
 import { Buffer } from 'node:buffer'
 
+import type { Geolocation } from '@netlify/dev-utils'
 import type { FunctionBuildCache, NetlifyFunction } from './function.js'
 import { FunctionsRegistry, type FunctionRegistryOptions } from './registry.js'
 import { headersObjectFromWebHeaders } from './runtimes/nodejs/lambda.js'
@@ -8,16 +9,6 @@ import { buildClientContext } from './server/client-context.js'
 const CLOCKWORK_USERAGENT = 'Netlify Clockwork'
 const UNLINKED_SITE_MOCK_ID = 'unlinked'
 
-// TODO: Integrate CLI mock geo location logic.
-const mockLocation = {
-  city: 'San Francisco',
-  country: { code: 'US', name: 'United States' },
-  subdivision: { code: 'CA', name: 'California' },
-  longitude: 0,
-  latitude: 0,
-  timezone: 'UTC',
-}
-
 export interface FunctionMatch {
   handle: (req: Request) => Promise<Response>
   preferStatic: boolean
@@ -25,6 +16,7 @@ export interface FunctionMatch {
 
 type FunctionsHandlerOptions = FunctionRegistryOptions & {
   accountId?: string
+  geolocation: Geolocation
   siteId?: string
   userFunctionsPath?: string
 }
@@ -32,22 +24,26 @@ type FunctionsHandlerOptions = FunctionRegistryOptions & {
 export class FunctionsHandler {
   private accountID?: string
   private buildCache: FunctionBuildCache
+  private geolocation: Geolocation
+  private globalBuildDirectory: string
   private registry: FunctionsRegistry
   private scan: Promise<void>
   private siteID?: string
 
-  constructor({ accountId, siteId, userFunctionsPath, ...registryOptions }: FunctionsHandlerOptions) {
+  constructor({ accountId, geolocation, siteId, userFunctionsPath, ...registryOptions }: FunctionsHandlerOptions) {
     const registry = new FunctionsRegistry(registryOptions)
 
     this.accountID = accountId
     this.buildCache = {}
+    this.geolocation = geolocation
+    this.globalBuildDirectory = registryOptions.destPath
     this.registry = registry
     this.scan = registry.scan([userFunctionsPath])
     this.siteID = siteId
   }
 
-  private async invoke(request: Request, route: string | undefined, func: NetlifyFunction) {
-    // TODO: Wtf?
+  private async invoke(request: Request, route: string | undefined, func: NetlifyFunction, buildDirectory?: string) {
+    // TODO: Revisit this logic that was copied over from the CLI.
     let remoteAddress = request.headers.get('x-forwarded-for') || ''
     remoteAddress =
       remoteAddress
@@ -62,7 +58,7 @@ export class FunctionsHandler {
     }
 
     request.headers.set('x-nf-site-id', this.siteID ?? UNLINKED_SITE_MOCK_ID)
-    request.headers.set('x-nf-geo', Buffer.from(JSON.stringify(mockLocation)).toString('base64'))
+    request.headers.set('x-nf-geo', Buffer.from(JSON.stringify(this.geolocation)).toString('base64'))
 
     const { headers: headersObject } = headersObjectFromWebHeaders(request.headers)
     const clientContext = buildClientContext(headersObject) || {}
@@ -71,6 +67,7 @@ export class FunctionsHandler {
       // Background functions do not receive a clientContext
       await func.invoke({
         buildCache: this.buildCache,
+        buildDirectory: buildDirectory ?? this.globalBuildDirectory,
         request,
         route,
       })
@@ -93,6 +90,7 @@ export class FunctionsHandler {
 
       return await func.invoke({
         buildCache: this.buildCache,
+        buildDirectory: buildDirectory ?? this.globalBuildDirectory,
         clientContext,
         request: newRequest,
         route,
@@ -101,13 +99,14 @@ export class FunctionsHandler {
 
     return await func.invoke({
       buildCache: this.buildCache,
+      buildDirectory: buildDirectory ?? this.globalBuildDirectory,
       clientContext,
       request,
       route,
     })
   }
 
-  async match(request: Request): Promise<FunctionMatch | undefined> {
+  async match(request: Request, buildDirectory?: string): Promise<FunctionMatch | undefined> {
     await this.scan
 
     const url = new URL(request.url)
@@ -145,7 +144,7 @@ export class FunctionsHandler {
     }
 
     return {
-      handle: (request: Request) => this.invoke(request, matchingRoute, func),
+      handle: (request: Request) => this.invoke(request, matchingRoute, func, buildDirectory),
       preferStatic: match.route?.prefer_static ?? false,
     }
   }

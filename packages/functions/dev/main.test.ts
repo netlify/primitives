@@ -14,12 +14,16 @@ describe('Functions with the v2 API syntax', () => {
     )
 
     const directory = await fixture.create()
+    const destPath = join(directory, 'functions-serve')
     const events = new EventInspector()
     const functions = new FunctionsHandler({
       accountId: 'account-123',
       config: {},
-      eventHandler: (event) => events.handleEvent(event),
-      destPath: join(directory, 'functions-serve'),
+      eventHandler: (event) => {
+        events.handleEvent(event)
+      },
+      destPath,
+      geolocation: {},
       projectRoot: directory,
       settings: {},
       timeouts: {},
@@ -27,11 +31,11 @@ describe('Functions with the v2 API syntax', () => {
     })
 
     const req1 = new Request('https://site.netlify/.netlify/functions/foo')
-    const match1 = await functions.match(req1)
+    const match1 = await functions.match(req1, destPath)
     expect(match1).toBeUndefined()
 
     const req2 = new Request('https://site.netlify/.netlify/functions/hello')
-    const match2 = await functions.match(req2)
+    const match2 = await functions.match(req2, destPath)
     const res2 = await match2!.handle(req2)
     expect(res2?.status).toBe(200)
     expect(await res2?.text()).toBe('Hello world')
@@ -40,7 +44,7 @@ describe('Functions with the v2 API syntax', () => {
     await events.waitFor((event) => event.name === 'FunctionLoadedEvent' && !(event as FunctionLoadedEvent).firstLoad)
 
     const req3 = new Request('https://site.netlify/.netlify/functions/hello')
-    const match3 = await functions.match(req3)
+    const match3 = await functions.match(req3, destPath)
     const res3 = await match3!.handle(req3)
     expect(res3?.status).toBe(200)
     expect(await res3?.text()).toBe('Goodbye world')
@@ -49,7 +53,7 @@ describe('Functions with the v2 API syntax', () => {
     await events.waitFor((event) => event.name === 'FunctionRemovedEvent')
 
     const req4 = new Request('https://site.netlify/.netlify/functions/hello')
-    const match4 = await functions.match(req4)
+    const match4 = await functions.match(req4, destPath)
     expect(match4).toBeUndefined()
 
     await fixture.destroy()
@@ -78,10 +82,12 @@ describe('Functions with the v2 API syntax', () => {
     const fixture = new Fixture().withFile('netlify/functions/streamer.mjs', source)
 
     const directory = await fixture.create()
+    const destPath = join(directory, 'functions-serve')
     const functions = new FunctionsHandler({
       accountId: 'account-123',
       config: {},
-      destPath: join(directory, 'functions-serve'),
+      destPath,
+      geolocation: {},
       projectRoot: directory,
       settings: {},
       timeouts: {},
@@ -89,7 +95,7 @@ describe('Functions with the v2 API syntax', () => {
     })
 
     const req = new Request('https://site.netlify/streamer')
-    const match = await functions.match(req)
+    const match = await functions.match(req, destPath)
     expect(match).not.toBeUndefined()
     const res = await match!.handle(req)
     expect(res.status).toBe(200)
@@ -119,12 +125,16 @@ describe('Functions with the v2 API syntax', () => {
     )
 
     const directory = await fixture.create()
+    const destPath = join(directory, 'functions-serve')
     const events = new EventInspector()
     const functions = new FunctionsHandler({
       accountId: 'account-123',
       config: {},
-      eventHandler: (event) => events.handleEvent(event),
-      destPath: join(directory, 'functions-serve'),
+      eventHandler: (event) => {
+        events.handleEvent(event)
+      },
+      destPath,
+      geolocation: {},
       projectRoot: directory,
       settings: {},
       timeouts: {},
@@ -132,7 +142,7 @@ describe('Functions with the v2 API syntax', () => {
     })
 
     const req1 = new Request('https://site.netlify/hello')
-    const match1 = await functions.match(req1)
+    const match1 = await functions.match(req1, destPath)
     expect(match1?.preferStatic).toBe(false)
     const res1 = await match1!.handle(req1)
     expect(res1?.status).toBe(200)
@@ -150,7 +160,7 @@ describe('Functions with the v2 API syntax', () => {
     await events.waitFor((event) => event.name === 'FunctionLoadedEvent' && !(event as FunctionLoadedEvent).firstLoad)
 
     const req2 = new Request('https://site.netlify/hello')
-    const match2 = await functions.match(req2)
+    const match2 = await functions.match(req2, destPath)
     expect(match2?.preferStatic).toBe(true)
     const res2 = await match2!.handle(req2)
     expect(res2?.status).toBe(200)
