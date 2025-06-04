@@ -1,8 +1,12 @@
+import http from 'node:http'
+
 import { createMockLogger } from '@netlify/dev-utils'
 import { imageSize } from 'image-size'
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
-import { ImageHandler } from './main.js'
 import { createIPXWebServer } from 'ipx'
+import { generateImage } from 'js-image-generator'
+
+import { ImageHandler } from './main.js'
 
 const mockedIpxResponse = new Response('Mocked response from IPX')
 
@@ -127,6 +131,81 @@ describe('`ImageHandler`', () => {
 
         expect(response.ok).toBe(false)
         expect(await response.text()).toBe('Method Not Allowed')
+      })
+    })
+
+    describe('local images', () => {
+      let originServer: http.Server
+      let originServerAddress: string
+      const LOCAL_IMAGE_PATH = '/local/image.jpg'
+      const LOCAL_IMAGE_WIDTH = 800
+      const LOCAL_IMAGE_HEIGHT = 600
+
+      beforeAll(async () => {
+        ;[originServer, originServerAddress] = await new Promise<[http.Server, string]>((resolve, reject) => {
+          const originServer = http.createServer(function originHandler(req, res) {
+            if (req.url !== LOCAL_IMAGE_PATH) {
+              res.writeHead(404, { 'Content-Type': 'text/plain' })
+              res.end('Not Found')
+              return
+            }
+
+            generateImage(LOCAL_IMAGE_WIDTH, LOCAL_IMAGE_HEIGHT, 50, (err, imageData) => {
+              if (err) {
+                console.error('Error generating image:', err)
+                res.writeHead(500, { 'Content-Type': 'text/plain' })
+                res.end('Internal Server Error')
+                return
+              }
+
+              res.writeHead(200, { 'Content-Type': 'image/jpeg' })
+
+              res.end(imageData.data)
+            })
+          })
+          originServer.listen(() => {
+            const address = originServer.address()
+
+            if (!address || typeof address === 'string') {
+              reject(new Error('Server cannot be started on a pipe or Unix socket'))
+              return
+            }
+
+            resolve([originServer, `http://localhost:${address.port.toString()}`])
+          })
+        })
+      })
+
+      afterAll(() => {
+        originServer.close()
+      })
+
+      beforeEach(async () => {
+        mockCreateIPXWebServer.mockImplementation(
+          (await vi.importActual<typeof import('ipx')>('ipx')).createIPXWebServer,
+        )
+      })
+
+      test('preserves original width if width param is not used', async () => {
+        const imageHandler = new ImageHandler({
+          logger: createMockLogger(),
+          originServerAddress,
+        })
+
+        const url = new URL('/.netlify/images', originServerAddress)
+        url.searchParams.set('url', LOCAL_IMAGE_PATH)
+
+        const match = imageHandler.match(new Request(url))
+
+        expect(match).toBeDefined()
+
+        const response = await match!.handle()
+
+        expect(response.ok).toBe(true)
+
+        const { width } = imageSize(new Uint8Array(await response.arrayBuffer()))
+
+        expect(width).toBe(LOCAL_IMAGE_WIDTH)
       })
     })
 
