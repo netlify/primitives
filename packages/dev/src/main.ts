@@ -131,7 +131,7 @@ interface HandleOptions {
   headersCollector?: HeadersCollector
 }
 
-export type ResponseType = 'edge-function' | 'function' | 'redirect' | 'static'
+export type ResponseType = 'edge-function' | 'function' | 'image' | 'redirect' | 'static'
 
 export class NetlifyDev {
   #apiHost?: string
@@ -272,7 +272,8 @@ export class NetlifyDev {
     // 4. Check if the request matches an image.
     const imageMatch = this.#imageHandler?.match(matchRequest)
     if (imageMatch) {
-      return imageMatch.handle()
+      const response = await imageMatch.handle()
+      return { response, type: 'image' }
     }
 
     // 5. Check if the request matches a static file.
