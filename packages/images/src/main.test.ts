@@ -139,7 +139,7 @@ describe('`ImageHandler`', () => {
       let originServerAddress: string
       const LOCAL_IMAGE_PATH = '/local/image.jpg'
       const LOCAL_IMAGE_WIDTH = 800
-      const LOCAL_IMAGE_HEIGHT = 600
+      const LOCAL_IMAGE_HEIGHT = 400
 
       beforeAll(async () => {
         ;[originServer, originServerAddress] = await new Promise<[http.Server, string]>((resolve, reject) => {
@@ -206,6 +206,87 @@ describe('`ImageHandler`', () => {
         const { width } = imageSize(new Uint8Array(await response.arrayBuffer()))
 
         expect(width).toBe(LOCAL_IMAGE_WIDTH)
+      })
+
+      test('resizes image to specified width preserving aspect ratio', async () => {
+        const imageHandler = new ImageHandler({
+          logger: createMockLogger(),
+          originServerAddress,
+        })
+
+        const requestedWidth = 200
+
+        const url = new URL('/.netlify/images', originServerAddress)
+        url.searchParams.set('url', LOCAL_IMAGE_PATH)
+        url.searchParams.set('w', requestedWidth.toString())
+
+        const match = imageHandler.match(new Request(url))
+
+        expect(match).toBeDefined()
+
+        const response = await match!.handle()
+
+        expect(response.ok).toBe(true)
+
+        const { width, height } = imageSize(new Uint8Array(await response.arrayBuffer()))
+
+        expect(width).toBe(requestedWidth)
+        expect(width / height).toBe(LOCAL_IMAGE_WIDTH / LOCAL_IMAGE_HEIGHT)
+      })
+
+      test('resizes image to specified height preserving aspect ratio', async () => {
+        const imageHandler = new ImageHandler({
+          logger: createMockLogger(),
+          originServerAddress,
+        })
+
+        const requestedHeight = 200
+
+        const url = new URL('/.netlify/images', originServerAddress)
+        url.searchParams.set('url', LOCAL_IMAGE_PATH)
+        url.searchParams.set('h', requestedHeight.toString())
+
+        const match = imageHandler.match(new Request(url))
+
+        expect(match).toBeDefined()
+
+        const response = await match!.handle()
+
+        expect(response.ok).toBe(true)
+
+        const { width, height } = imageSize(new Uint8Array(await response.arrayBuffer()))
+
+        expect(height).toBe(requestedHeight)
+        expect(width / height).toBe(LOCAL_IMAGE_WIDTH / LOCAL_IMAGE_HEIGHT)
+      })
+
+      test('resizes image to specified width and height ignoring original aspect ratio', async () => {
+        const imageHandler = new ImageHandler({
+          logger: createMockLogger(),
+          originServerAddress,
+        })
+
+        const requestedWidth = 200
+        const requestedHeight = 200
+
+        const url = new URL('/.netlify/images', originServerAddress)
+        url.searchParams.set('url', LOCAL_IMAGE_PATH)
+        url.searchParams.set('w', requestedWidth.toString())
+        url.searchParams.set('h', requestedHeight.toString())
+
+        const match = imageHandler.match(new Request(url))
+
+        expect(match).toBeDefined()
+
+        const response = await match!.handle()
+
+        expect(response.ok).toBe(true)
+
+        const { width, height } = imageSize(new Uint8Array(await response.arrayBuffer()))
+
+        expect(width).toBe(requestedWidth)
+        expect(height).toBe(requestedHeight)
+        expect(width / height).not.toBe(LOCAL_IMAGE_WIDTH / LOCAL_IMAGE_HEIGHT)
       })
     })
 
