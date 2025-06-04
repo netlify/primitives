@@ -83,7 +83,7 @@ describe('`ImageHandler`', () => {
         expect(await response.text()).toBe(mockedIpxResponseBody)
       })
 
-      test('does not match on `/.netlify/foo', async () => {
+      test('does not match on `/.netlify/foo', () => {
         const imageHandler = new ImageHandler({
           logger: getMockLogger(),
         })
