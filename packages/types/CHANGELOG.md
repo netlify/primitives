@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/netlify/primitives/compare/types-v2.0.1...types-v2.0.2) (2025-06-04)
+
+
+### Bug Fixes
+
+* reinstate missing edge functions types ([#280](https://github.com/netlify/primitives/issues/280)) ([f4360c9](https://github.com/netlify/primitives/commit/f4360c955812e7b96dfb1b0f8112d70496488ee2))
+
 ## [2.0.1](https://github.com/netlify/primitives/compare/types-v2.0.0...types-v2.0.1) (2025-06-02)
 
 
