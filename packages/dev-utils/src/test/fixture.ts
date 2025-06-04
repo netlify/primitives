@@ -40,7 +40,7 @@ export class Fixture {
     const packageJSONPath = join(directory, 'package.json')
 
     await fs.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2))
-    await run('npm install', { cwd: directory })
+    await run('pnpm install', { cwd: directory })
   }
 
   async create() {
