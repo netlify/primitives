@@ -50,6 +50,7 @@ describe('`ImageHandler`', () => {
       test('matches on `/.netlify/images', async () => {
         const imageHandler = new ImageHandler({
           logger: getMockLogger(),
+          originServerAddress: 'http://localhost:5173',
         })
 
         const url = new URL('/.netlify/images', 'https://netlify.com')
@@ -68,6 +69,7 @@ describe('`ImageHandler`', () => {
       test('matches on `/.netlify/images/', async () => {
         const imageHandler = new ImageHandler({
           logger: getMockLogger(),
+          originServerAddress: 'http://localhost:5173',
         })
 
         const url = new URL('/.netlify/images/', 'https://netlify.com')
@@ -101,6 +103,7 @@ describe('`ImageHandler`', () => {
       test('allows GET requests', async () => {
         const imageHandler = new ImageHandler({
           logger: getMockLogger(),
+          originServerAddress: 'http://localhost:5173',
         })
 
         const url = new URL('/.netlify/images', 'https://netlify.com')

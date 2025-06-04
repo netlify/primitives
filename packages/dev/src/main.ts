@@ -475,6 +475,7 @@ export class NetlifyDev {
       this.#imageHandler = new ImageHandler({
         imagesConfig: this.#config?.config.images,
         logger: this.#logger,
+        originServerAddress: serverAddress,
       })
     }
 

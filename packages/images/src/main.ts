@@ -8,6 +8,7 @@ interface ImagesConfig {
 interface ImageHandlerOptions {
   imagesConfig?: ImagesConfig
   logger: Logger
+  originServerAddress?: string
 }
 
 export interface ImageMatch {
@@ -19,8 +20,9 @@ const IMAGE_CDN_ENDPOINTS = ['/.netlify/images', '/.netlify/images/']
 export class ImageHandler {
   #allowedRemoteUrlPatterns: RegExp[]
   #logger: Logger
+  #originServerURL?: URL
 
-  constructor({ logger, imagesConfig }: ImageHandlerOptions) {
+  constructor({ logger, imagesConfig, originServerAddress }: ImageHandlerOptions) {
     this.#logger = logger
     this.#allowedRemoteUrlPatterns = (imagesConfig?.remote_images ?? []).reduce<RegExp[]>((acc, stringPattern) => {
       try {
@@ -31,6 +33,7 @@ export class ImageHandler {
       }
       return acc
     }, [])
+    this.#originServerURL = originServerAddress ? new URL(originServerAddress) : undefined
   }
 
   private generateIPXRequestURL(imageURL: URL, netlifyImageCdnParams: URLSearchParams): URL {
@@ -86,12 +89,22 @@ export class ImageHandler {
             return new Response('Bad Request: Missing "url" query parameter', { status: 400 })
           }
 
-          // TODO: use serverAddress instead of url.origin once https://github.com/netlify/primitives/pull/233 is merged
-          const sourceImageUrl = new URL(sourceImageUrlParam, url.origin)
+          let sourceImageUrl: URL
+          try {
+            sourceImageUrl = new URL(sourceImageUrlParam, this.#originServerURL)
+          } catch (error) {
+            throw new Error(
+              `Failed to construct source image URL from "${sourceImageUrlParam}".` +
+                (!this.#originServerURL && !sourceImageUrlParam.startsWith('http')
+                  ? '\nLooks like source image is local and `originServerAddress` was not provided.'
+                  : ''),
+              { cause: error },
+            )
+          }
 
           // if it's not local image, check if it it's allowed
           if (
-            sourceImageUrl.origin !== url.origin &&
+            sourceImageUrl.origin !== this.#originServerURL?.origin &&
             !this.#allowedRemoteUrlPatterns.some((allowedRemoteUrlPattern) =>
               allowedRemoteUrlPattern.test(sourceImageUrl.href),
             )
