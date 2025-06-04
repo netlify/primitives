@@ -58,7 +58,7 @@
     "test:dev:vitest": "vitest",
     "test:ci": "pnpm run '/test:ci:.*/'",
     "test:ci:vitest": "pnpm run build && vitest run",
-    "publint": "npx -y publint --strict"
+    "publint": "publint --strict"
   },
   "ava": {
     "files": [

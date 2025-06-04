@@ -53,7 +53,7 @@
     "test:dev:vitest": "vitest",
     "test:dev:vitest:watch": "vitest watch",
     "test:ci:vitest": "vitest run",
-    "publint": "npx -y publint --strict"
+    "publint": "publint --strict"
   },
   "keywords": [
     "netlify",

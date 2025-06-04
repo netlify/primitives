@@ -19,7 +19,7 @@
     "test:dev": "vitest",
     "test:ci": "pnpm run build && vitest run",
     "dev": "tsup-node --watch",
-    "publint": "npx -y publint --strict"
+    "publint": "publint --strict"
   },
   "keywords": [],
   "license": "MIT",
