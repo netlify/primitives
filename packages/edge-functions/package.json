@@ -1,6 +1,6 @@
 {
   "name": "@netlify/edge-functions",
-  "version": "2.14.1",
+  "version": "2.14.2",
   "description": "TypeScript utilities for interacting with Netlify Edge Functions",
   "type": "module",
   "engines": {
@@ -25,8 +25,7 @@
   "files": [
     "dist/**/*",
     "dist-dev/**/*",
-    "deno/**/*",
-    "server.d.ts"
+    "deno/**/*"
   ],
   "scripts": {
     "build": "tsup-node",
@@ -51,7 +50,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/types": "2.0.1"
+    "@netlify/types": "2.0.2"
   },
   "dependencies": {
     "@netlify/dev-utils": "3.1.1",

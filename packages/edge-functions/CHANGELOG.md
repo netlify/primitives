@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.14.2](https://github.com/netlify/primitives/compare/edge-functions-v2.14.1...edge-functions-v2.14.2) (2025-06-04)
+
+
+### Bug Fixes
+
+* reinstate missing edge functions types ([#280](https://github.com/netlify/primitives/issues/280)) ([f4360c9](https://github.com/netlify/primitives/commit/f4360c955812e7b96dfb1b0f8112d70496488ee2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.0.1 to 2.0.2
+
 ## [2.14.1](https://github.com/netlify/primitives/compare/edge-functions-v2.14.0...edge-functions-v2.14.1) (2025-06-03)
 
 
