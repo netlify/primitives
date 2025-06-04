@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/netlify/primitives/compare/dev-utils-v3.1.0...dev-utils-v3.1.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* revamp dev and vite plugin logging ([#269](https://github.com/netlify/primitives/issues/269)) ([de9b46c](https://github.com/netlify/primitives/commit/de9b46c1cb1c7b2bf6437ab516134e44203d83b7))
+
 ## [3.1.0](https://github.com/netlify/primitives/compare/dev-utils-v3.0.0...dev-utils-v3.1.0) (2025-06-02)
 
 

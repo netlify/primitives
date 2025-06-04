@@ -72,7 +72,10 @@ describe('`EdgeFunctionsHandler`', () => {
     const req = new Request('https://site.netlify/echo')
     req.headers.set('x-nf-request-id', 'req-id')
 
-    const res = await handler.handle(req)
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req)
 
     expect(await res?.json()).toStrictEqual({
       env: { VAR_1: 'value1', VAR_2: 'value2' },
@@ -131,7 +134,10 @@ describe('`EdgeFunctionsHandler`', () => {
     const req = new Request('https://site.netlify/yell')
     req.headers.set('x-nf-request-id', 'req-id')
 
-    const res = await handler.handle(req)
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req)
 
     expect(await res?.text()).toStrictEqual('FROM ORIGIN')
 
@@ -181,7 +187,10 @@ describe('`EdgeFunctionsHandler`', () => {
     const req = new Request('https://site.netlify/slugify?text=Hello World')
     req.headers.set('x-nf-request-id', 'req-id')
 
-    const res = await handler.handle(req)
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req)
 
     expect(await res?.json()).toStrictEqual({
       slug: 'hello-world',
@@ -222,7 +231,10 @@ describe('`EdgeFunctionsHandler`', () => {
     const req = new Request('https://site.netlify/unparseable')
     req.headers.set('x-nf-request-id', 'req-id')
 
-    const res = await handler.handle(req)
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req)
 
     expect(res?.status).toBe(500)
     expect(await res?.text()).toContain('Failed to parse edge function `unparseable`')
@@ -265,7 +277,10 @@ describe('`EdgeFunctionsHandler`', () => {
     const req = new Request('https://site.netlify/slow')
     req.headers.set('x-nf-request-id', 'req-id')
 
-    const res = await handler.handle(req)
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req)
 
     expect(res?.status).toBe(500)
     expect(await res?.text()).toContain('An edge function took too long to produce a response')

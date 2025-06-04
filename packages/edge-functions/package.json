@@ -1,6 +1,6 @@
 {
   "name": "@netlify/edge-functions",
-  "version": "2.13.2",
+  "version": "2.14.1",
   "description": "TypeScript utilities for interacting with Netlify Edge Functions",
   "type": "module",
   "engines": {
@@ -54,7 +54,7 @@
     "@netlify/types": "2.0.1"
   },
   "dependencies": {
-    "@netlify/dev-utils": "3.1.0",
+    "@netlify/dev-utils": "3.1.1",
     "@netlify/edge-bundler": "^14.0.5",
     "@netlify/edge-functions-bootstrap": "^2.13.0",
     "@netlify/runtime-utils": "2.1.0",
