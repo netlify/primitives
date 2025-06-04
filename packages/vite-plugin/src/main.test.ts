@@ -55,6 +55,11 @@ const createMockViteLogger = () => {
   }
 }
 
+const originalEnv = { ...process.env }
+beforeEach(() => {
+  process.env = { ...originalEnv }
+})
+
 describe('Plugin constructor', () => {
   test('Is a no-op when running in the Netlify CLI', () => {
     process.env.NETLIFY_DEV = 'true'
@@ -64,11 +69,6 @@ describe('Plugin constructor', () => {
 })
 
 describe('configureServer', { timeout: 15_000 }, () => {
-  const originalEnv = { ...process.env }
-  beforeEach(() => {
-    process.env = { ...originalEnv }
-  })
-
   test('Populates Netlify runtime environment (globals and env vars)', async () => {
     const fixture = new Fixture()
       .withFile(
@@ -546,4 +546,62 @@ defined on your team and site and much more. Run npx netlify init to get started
       await browser.close()
     })
   })
+})
+
+test('Works with Vite 5', { timeout: 15_000 }, async () => {
+  const fixture = new Fixture()
+    .withFile(
+      'vite.config.js',
+      `import { defineConfig } from 'vite';
+       import netlify from '@netlify/vite-plugin';
+
+       export default defineConfig({
+         plugins: [netlify()],
+       });`,
+    )
+    .withFile(
+      'index.html',
+      `<!DOCTYPE html>
+         <html>
+           <head><title>Vite 5 Compatibility Test</title></head>
+           <body><h1>Testing with Vite 5</h1></body>
+         </html>`,
+    )
+  const directory = await fixture.create()
+  await fixture
+    .withPackages({
+      vite: '5.0.0',
+      '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+    })
+    .create()
+
+  const mockLogger = createMockViteLogger()
+  const { server, url } = await startTestServer({
+    root: directory,
+    logLevel: 'warn',
+    customLogger: mockLogger,
+  })
+
+  const browser = await chromium.launch()
+  const page = await browser.newPage()
+  const browserErrorLogs: ConsoleMessage[] = []
+  page.on('console', (msg) => {
+    if (msg.type() === 'error') {
+      browserErrorLogs.push(msg)
+    }
+  })
+
+  expect((globalThis as Record<string, unknown>).Netlify).toBeInstanceOf(Object)
+  expect(process.env).toHaveProperty('NETLIFY_LOCAL', 'true')
+  expect(process.env).toHaveProperty('CONTEXT', 'dev')
+  const response = await page.goto(`${url}/index.html`)
+  expect(response?.status()).toBe(200)
+  expect(await page.getByRole('heading').textContent()).toBe('Testing with Vite 5')
+  expect(mockLogger.error).not.toHaveBeenCalled()
+  expect(mockLogger.warn).not.toHaveBeenCalled()
+  expect(mockLogger.warnOnce).not.toHaveBeenCalled()
+  expect(browserErrorLogs).toHaveLength(0)
+
+  await server.close()
+  await fixture.destroy()
 })
