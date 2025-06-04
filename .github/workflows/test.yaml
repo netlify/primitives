@@ -41,14 +41,14 @@ jobs:
         with:
           node-version: lts/*
           cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
           deno-version: 2.2.4
       - name: Setup Deno dependencies
         run: deno cache https://deno.land/x/eszip@v0.55.2/eszip.ts
-      - name: Install dependencies
-        run: pnpm build
       - name: Install playwright browsers
         run: npx playwright install --with-deps
       - name: Build
@@ -75,14 +75,14 @@ jobs:
         with:
           node-version: lts/*
           cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
           deno-version: 2.2.4
       - name: Setup Deno dependencies
         run: deno cache https://deno.land/x/eszip@v0.55.2/eszip.ts
-      - name: Install dependencies
-        run: pnpm install
       - name: Build
         run: >-
           pnpm build
