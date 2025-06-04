@@ -34,7 +34,6 @@
   "devDependencies": {
     "@netlify/dev-utils": "^3.1.1",
     "image-size": "^2.0.2",
-    "js-image-generator": "^1.0.4",
     "tsup": "^8.5.0",
     "vitest": "^3.1.4"
   },

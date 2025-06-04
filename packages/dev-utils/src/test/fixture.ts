@@ -9,7 +9,7 @@ import tmp from 'tmp-promise'
 const run = promisify(exec)
 export class Fixture {
   directory?: tmp.DirectoryResult
-  files: Record<string, string>
+  files: Record<string, string | Buffer>
   npmDependencies: Record<string, string>
 
   constructor() {
@@ -87,7 +87,7 @@ export class Fixture {
     await fs.rm(this.directory!.path, { force: true, recursive: true })
   }
 
-  withFile(path: string, contents: string) {
+  withFile(path: string, contents: string | Buffer) {
     this.files[path] = contents
 
     return this

@@ -58,6 +58,7 @@
     "dot-prop": "9.0.0",
     "env-paths": "^3.0.0",
     "find-up": "7.0.0",
+    "js-image-generator": "^1.0.4",
     "lodash.debounce": "^4.0.8",
     "parse-gitignore": "^2.0.0",
     "uuid": "^11.1.0",

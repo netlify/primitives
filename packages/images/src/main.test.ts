@@ -1,10 +1,9 @@
 import http from 'node:http'
 
-import { createMockLogger } from '@netlify/dev-utils'
+import { createMockLogger, generateImage } from '@netlify/dev-utils'
 import { imageSize } from 'image-size'
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 import { createIPXWebServer } from 'ipx'
-import { generateImage } from 'js-image-generator'
 
 import { ImageHandler } from './main.js'
 
@@ -150,18 +149,17 @@ describe('`ImageHandler`', () => {
               return
             }
 
-            generateImage(LOCAL_IMAGE_WIDTH, LOCAL_IMAGE_HEIGHT, 50, (err, imageData) => {
-              if (err) {
-                console.error('Error generating image:', err)
+            generateImage(LOCAL_IMAGE_WIDTH, LOCAL_IMAGE_HEIGHT)
+              .then((imageData) => {
+                res.writeHead(200, { 'Content-Type': 'image/jpeg' })
+
+                res.end(imageData)
+              })
+              .catch((error: unknown) => {
+                console.error('Error generating image', error)
                 res.writeHead(500, { 'Content-Type': 'text/plain' })
                 res.end('Internal Server Error')
-                return
-              }
-
-              res.writeHead(200, { 'Content-Type': 'image/jpeg' })
-
-              res.end(imageData.data)
-            })
+              })
           })
           originServer.listen(() => {
             const address = originServer.address()
