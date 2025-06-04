@@ -10,8 +10,7 @@
   "exports": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "files": [
-    "dist/**/*",
-    "server.d.ts"
+    "dist/**/*"
   ],
   "scripts": {
     "build": "tsup-node",
