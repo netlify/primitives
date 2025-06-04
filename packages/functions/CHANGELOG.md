@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.1.2](https://github.com/netlify/primitives/compare/functions-v4.1.1...functions-v4.1.2) (2025-06-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.1.4 to 9.1.5
+    * @netlify/dev-utils bumped from 3.1.0 to 3.1.1
+
+## [4.1.1](https://github.com/netlify/primitives/compare/functions-v4.1.0...functions-v4.1.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* add guard against query param handling ([#272](https://github.com/netlify/primitives/issues/272)) ([14dc44c](https://github.com/netlify/primitives/commit/14dc44c2d7ff97a6ed90c1afcc92d28ae7d6979d))
+
 ## [4.1.0](https://github.com/netlify/primitives/compare/functions-v4.0.0...functions-v4.1.0) (2025-06-02)
 
 

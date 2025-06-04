@@ -1,16 +1,16 @@
 {
-  "packages/blobs": "9.1.4",
-  "packages/cache": "3.0.0",
-  "packages/dev": "4.1.0",
-  "packages/dev-utils": "3.1.0",
-  "packages/edge-functions": "2.14.0",
-  "packages/functions": "4.1.0",
-  "packages/headers": "2.0.0",
-  "packages/otel": "3.0.0",
-  "packages/redirects": "3.0.0",
-  "packages/runtime": "4.0.0",
+  "packages/blobs": "9.1.5",
+  "packages/cache": "3.0.1",
+  "packages/dev": "4.1.2",
+  "packages/dev-utils": "3.1.1",
+  "packages/edge-functions": "2.14.1",
+  "packages/functions": "4.1.2",
+  "packages/headers": "2.0.1",
+  "packages/otel": "3.0.2",
+  "packages/redirects": "3.0.1",
+  "packages/runtime": "4.0.1",
   "packages/runtime-utils": "2.1.0",
-  "packages/static": "3.0.0",
+  "packages/static": "3.0.1",
   "packages/types": "2.0.1",
-  "packages/vite-plugin": "2.1.0"
+  "packages/vite-plugin": "2.1.2"
 }

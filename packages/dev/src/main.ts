@@ -4,7 +4,15 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { resolveConfig } from '@netlify/config'
-import { ensureNetlifyIgnore, getAPIToken, mockLocation, LocalState, type Logger, HTTPServer } from '@netlify/dev-utils'
+import {
+  ensureNetlifyIgnore,
+  getAPIToken,
+  mockLocation,
+  LocalState,
+  type Logger,
+  HTTPServer,
+  netlifyCommand,
+} from '@netlify/dev-utils'
 import { EdgeFunctionsHandler } from '@netlify/edge-functions/dev'
 import { FunctionsHandler } from '@netlify/functions/dev'
 import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
@@ -264,7 +272,7 @@ export class NetlifyDev {
     const { pathname } = new URL(readRequest.url)
     if (pathname.startsWith('/.netlify/images')) {
       this.#logger.error(
-        'The Netlify Image CDN is currently only supported in the Netlify CLI. Run `npx netlify dev` to get started.',
+        `The Netlify Image CDN is currently only supported in the Netlify CLI. Run ${netlifyCommand('npx netlify dev')} to get started.`,
       )
 
       return
@@ -494,5 +502,11 @@ export class NetlifyDev {
 
   async stop() {
     await Promise.allSettled(this.#cleanupJobs.map((task) => task()))
+  }
+
+  public getEnabledFeatures(): string[] {
+    return Object.entries(this.#features)
+      .filter(([_, enabled]) => enabled)
+      .map(([feature]) => feature)
   }
 }

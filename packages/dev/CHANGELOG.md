@@ -1,5 +1,40 @@
 # Changelog
 
+## [4.1.2](https://github.com/netlify/primitives/compare/dev-v4.1.1...dev-v4.1.2) (2025-06-03)
+
+
+### Bug Fixes
+
+* revamp dev and vite plugin logging ([#269](https://github.com/netlify/primitives/issues/269)) ([de9b46c](https://github.com/netlify/primitives/commit/de9b46c1cb1c7b2bf6437ab516134e44203d83b7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.1.4 to 9.1.5
+    * @netlify/dev-utils bumped from 3.1.0 to 3.1.1
+    * @netlify/edge-functions bumped from 2.14.0 to 2.14.1
+    * @netlify/functions bumped from 4.1.1 to 4.1.2
+    * @netlify/headers bumped from 2.0.0 to 2.0.1
+    * @netlify/redirects bumped from 3.0.0 to 3.0.1
+    * @netlify/runtime bumped from 4.0.0 to 4.0.1
+    * @netlify/static bumped from 3.0.0 to 3.0.1
+
+## [4.1.1](https://github.com/netlify/primitives/compare/dev-v4.1.0...dev-v4.1.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* add guard against query param handling ([#272](https://github.com/netlify/primitives/issues/272)) ([14dc44c](https://github.com/netlify/primitives/commit/14dc44c2d7ff97a6ed90c1afcc92d28ae7d6979d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions bumped from 4.1.0 to 4.1.1
+
 ## [4.1.0](https://github.com/netlify/primitives/compare/dev-v4.0.2...dev-v4.1.0) (2025-06-03)
 
 
