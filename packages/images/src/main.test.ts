@@ -1,16 +1,8 @@
-import type { Logger } from '@netlify/dev-utils'
+import { createMockLogger } from '@netlify/dev-utils'
 import { imageSize } from 'image-size'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 import { ImageHandler } from './main.js'
 import { createIPXWebServer } from 'ipx'
-
-function getMockLogger(): Logger {
-  return {
-    error: vi.fn<Logger['error']>(),
-    warn: vi.fn<Logger['warn']>(),
-    log: vi.fn<Logger['log']>(),
-  }
-}
 
 const mockedIpxResponse = new Response('Mocked response from IPX')
 
@@ -30,7 +22,7 @@ beforeEach(() => {
 describe('`ImageHandler`', () => {
   describe('constructor', () => {
     test('warns about malformed remote image patterns', () => {
-      const logger = getMockLogger()
+      const logger = { ...createMockLogger(), warn: vi.fn() }
 
       new ImageHandler({
         logger,
@@ -49,7 +41,7 @@ describe('`ImageHandler`', () => {
     describe('image endpoints', () => {
       test('matches on `/.netlify/images', async () => {
         const imageHandler = new ImageHandler({
-          logger: getMockLogger(),
+          logger: createMockLogger(),
           originServerAddress: 'http://localhost:5173',
         })
 
@@ -68,7 +60,7 @@ describe('`ImageHandler`', () => {
 
       test('matches on `/.netlify/images/', async () => {
         const imageHandler = new ImageHandler({
-          logger: getMockLogger(),
+          logger: createMockLogger(),
           originServerAddress: 'http://localhost:5173',
         })
 
@@ -87,7 +79,7 @@ describe('`ImageHandler`', () => {
 
       test('does not match on `/.netlify/foo', () => {
         const imageHandler = new ImageHandler({
-          logger: getMockLogger(),
+          logger: createMockLogger(),
         })
 
         const url = new URL('/.netlify/foo', 'https://netlify.com')
@@ -102,7 +94,7 @@ describe('`ImageHandler`', () => {
     describe('request methods', () => {
       test('allows GET requests', async () => {
         const imageHandler = new ImageHandler({
-          logger: getMockLogger(),
+          logger: createMockLogger(),
           originServerAddress: 'http://localhost:5173',
         })
 
@@ -121,7 +113,7 @@ describe('`ImageHandler`', () => {
 
       test('does not allow POST requests', async () => {
         const imageHandler = new ImageHandler({
-          logger: getMockLogger(),
+          logger: createMockLogger(),
         })
 
         const url = new URL('/.netlify/images', 'https://netlify.com')
@@ -145,15 +137,17 @@ describe('`ImageHandler`', () => {
         )
 
         const imageHandler = new ImageHandler({
-          logger: getMockLogger(),
+          logger: createMockLogger(),
           imagesConfig: {
             remote_images: ['https://images.unsplash.com/.*'],
           },
         })
 
+        const requestedWidth = 100
+
         const url = new URL('/.netlify/images', 'https://netlify.com')
         url.searchParams.set('url', 'https://images.unsplash.com/photo-1517849845537-4d257902454a')
-        url.searchParams.set('w', '100')
+        url.searchParams.set('w', requestedWidth.toString())
 
         const match = imageHandler.match(new Request(url))
 
@@ -165,12 +159,12 @@ describe('`ImageHandler`', () => {
 
         const { width } = imageSize(new Uint8Array(await response.arrayBuffer()))
 
-        expect(width).toBe(100)
+        expect(width).toBe(requestedWidth)
       }, 30_000)
 
       test('does not allow remote images not matching configured patterns', async () => {
         const imageHandler = new ImageHandler({
-          logger: getMockLogger(),
+          logger: createMockLogger(),
           imagesConfig: {
             remote_images: [],
           },
