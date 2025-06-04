@@ -700,12 +700,6 @@ export default [
     },
   },
   {
-    files: ['packages/images/src/main.ts'],
-    rules: {
-      'n/no-unsupported-features/node-builtins': 'off',
-    },
-  },
-  {
     files: ['packages/images/src/main.test.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
