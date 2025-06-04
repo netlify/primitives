@@ -22,8 +22,7 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist/**/*",
-    "server.d.ts"
+    "dist/**/*"
   ],
   "scripts": {
     "build": "tsup-node",

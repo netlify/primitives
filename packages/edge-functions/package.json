@@ -25,8 +25,7 @@
   "files": [
     "dist/**/*",
     "dist-dev/**/*",
-    "deno/**/*",
-    "server.d.ts"
+    "deno/**/*"
   ],
   "scripts": {
     "build": "tsup-node",
