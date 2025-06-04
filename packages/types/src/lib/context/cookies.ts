@@ -1,4 +1,4 @@
-interface Cookie {
+export interface Cookie {
   /** Name of the cookie. */
   name: string
   /** Value of the cookie. */
