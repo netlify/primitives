@@ -393,10 +393,11 @@ export class NetlifyDev {
     let serverAddress: string | undefined
 
     // If a custom server has been provided, use it. If not, we must stand up
-    // a new one, since it's required for communication with edge functions.
+    // a new one, since it's required for communication with edge functions
+    // and local images support for Image CDN.
     if (typeof this.#server === 'string') {
       serverAddress = this.#server
-    } else if (this.#features.edgeFunctions) {
+    } else if (this.#features.edgeFunctions || this.#features.images) {
       const passthroughServer = new HTTPServer(async (req) => {
         const res = await this.handle(req)
 

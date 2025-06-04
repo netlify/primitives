@@ -1,3 +1,4 @@
+import { imageSize } from 'image-size'
 import { generateImage as generateImageCallback } from 'js-image-generator'
 
 /**
@@ -16,4 +17,8 @@ export async function generateImage(width: number, height: number): Promise<Buff
       }
     })
   })
+}
+
+export async function getImageResponseSize(response: Response) {
+  return imageSize(new Uint8Array(await response.arrayBuffer()))
 }

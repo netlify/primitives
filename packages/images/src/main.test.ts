@@ -1,7 +1,6 @@
 import http from 'node:http'
 
-import { createMockLogger, generateImage } from '@netlify/dev-utils'
-import { imageSize } from 'image-size'
+import { createMockLogger, generateImage, getImageResponseSize } from '@netlify/dev-utils'
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 import { createIPXWebServer } from 'ipx'
 
@@ -201,7 +200,7 @@ describe('`ImageHandler`', () => {
 
         expect(response.ok).toBe(true)
 
-        const { width } = imageSize(new Uint8Array(await response.arrayBuffer()))
+        const { width } = await getImageResponseSize(response)
 
         expect(width).toBe(LOCAL_IMAGE_WIDTH)
       })
@@ -226,7 +225,7 @@ describe('`ImageHandler`', () => {
 
         expect(response.ok).toBe(true)
 
-        const { width, height } = imageSize(new Uint8Array(await response.arrayBuffer()))
+        const { width, height } = await getImageResponseSize(response)
 
         expect(width).toBe(requestedWidth)
         expect(width / height).toBe(LOCAL_IMAGE_WIDTH / LOCAL_IMAGE_HEIGHT)
@@ -252,7 +251,7 @@ describe('`ImageHandler`', () => {
 
         expect(response.ok).toBe(true)
 
-        const { width, height } = imageSize(new Uint8Array(await response.arrayBuffer()))
+        const { width, height } = await getImageResponseSize(response)
 
         expect(height).toBe(requestedHeight)
         expect(width / height).toBe(LOCAL_IMAGE_WIDTH / LOCAL_IMAGE_HEIGHT)
@@ -280,7 +279,7 @@ describe('`ImageHandler`', () => {
 
         expect(response.ok).toBe(true)
 
-        const { width, height } = imageSize(new Uint8Array(await response.arrayBuffer()))
+        const { width, height } = await getImageResponseSize(response)
 
         expect(width).toBe(requestedWidth)
         expect(height).toBe(requestedHeight)
@@ -315,7 +314,7 @@ describe('`ImageHandler`', () => {
 
         expect(response.ok).toBe(true)
 
-        const { width } = imageSize(new Uint8Array(await response.arrayBuffer()))
+        const { width } = await getImageResponseSize(response)
 
         expect(width).toBe(requestedWidth)
       }, 30_000)

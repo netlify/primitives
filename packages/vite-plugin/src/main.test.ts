@@ -459,7 +459,7 @@ defined on your team and site and much more. Run npx netlify init to get started
                <head><title>Hello World</title></head>
                <body>
                  <h1>Hello from the browser</h1>
-                 <img id="local-image" src="/.netlify/images?url=local/image.jpg&w=100" />
+                 <img id="local-image" src="/.netlify/images?url=${encodeURIComponent('local/image.jpg')}&w=100" />
                  <img id="allowed-remote-image" src="/.netlify/images?url=${encodeURIComponent('https://images.unsplash.com/photo-1517849845537-4d257902454a')}&w=100" />
                  <img id="not-allowed-remote-image" src="/.netlify/images?url=${encodeURIComponent('https://images.unsplash.com/photo-1625316708582-7c38734be31d')}&w=100" />
                </body>
