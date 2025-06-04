@@ -20,5 +20,8 @@ export async function generateImage(width: number, height: number): Promise<Buff
 }
 
 export async function getImageResponseSize(response: Response) {
+  if (!response.headers.get('content-type')?.startsWith('image/')) {
+    throw new Error('Response is not an image')
+  }
   return imageSize(new Uint8Array(await response.arrayBuffer()))
 }
