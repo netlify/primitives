@@ -12,12 +12,12 @@ function getMockLogger(): Logger {
   }
 }
 
-const mockedIpxResponseBody = 'Response from IPX'
+const mockedIpxResponse = new Response('Mocked response from IPX')
 
 vi.mock('ipx', async () => {
   return {
     ...(await vi.importActual('ipx')),
-    createIPXWebServer: vi.fn(() => () => Promise.resolve(new Response(mockedIpxResponseBody))), //.mockImplementation(),
+    createIPXWebServer: vi.fn(() => () => Promise.resolve(mockedIpxResponse.clone())),
   }
 })
 
@@ -62,7 +62,7 @@ describe('`ImageHandler`', () => {
         const response = await match!.handle()
 
         expect(response.ok).toBe(true)
-        expect(await response.text()).toBe(mockedIpxResponseBody)
+        expect(response).toMatchObject(mockedIpxResponse)
       })
 
       test('matches on `/.netlify/images/', async () => {
@@ -80,7 +80,7 @@ describe('`ImageHandler`', () => {
         const response = await match!.handle()
 
         expect(response.ok).toBe(true)
-        expect(await response.text()).toBe(mockedIpxResponseBody)
+        expect(response).toMatchObject(mockedIpxResponse)
       })
 
       test('does not match on `/.netlify/foo', () => {
@@ -113,7 +113,7 @@ describe('`ImageHandler`', () => {
         const response = await match!.handle()
 
         expect(response.ok).toBe(true)
-        expect(await response.text()).toBe(mockedIpxResponseBody)
+        expect(response).toMatchObject(mockedIpxResponse)
       })
 
       test('does not allow POST requests', async () => {
@@ -160,7 +160,7 @@ describe('`ImageHandler`', () => {
 
         expect(response.ok).toBe(true)
 
-        const { width } = imageSize(await response.bytes())
+        const { width } = imageSize(new Uint8Array(await response.arrayBuffer()))
 
         expect(width).toBe(100)
       }, 30_000)
