@@ -1,10 +1,10 @@
 {
   "name": "@netlify/images",
   "version": "0.0.0",
-  "description": "TypeScript implementtion of Netlify's Image CDN",
+  "description": "TypeScript implementation of Netlify's Image CDN",
   "type": "module",
   "engines": {
-    "node": "^18.14.0 || >=20"
+    "node": ">=20.6.1"
   },
   "main": "./dist/main.js",
   "exports": "./dist/main.js",
