@@ -1,8 +1,8 @@
 // @ts-check
 
 /**
- * @typedef {import('./workers/types.js').ConfigRequestMessage} ConfigRequestMessage
- * @typedef {import('./workers/types.js').Message} Message
+ * @typedef {import('./workers/types.ts').ConfigRequestMessage} ConfigRequestMessage
+ * @typedef {import('./workers/types.ts').Message} Message
  */
 
 /**
