@@ -622,12 +622,6 @@ export default [
     },
   },
   {
-    files: ['packages/static/src/lib/paths.ts'],
-    rules: {
-      '@typescript-eslint/prefer-string-starts-ends-with': 'off',
-    },
-  },
-  {
     files: ['packages/static/src/main.ts'],
     rules: {
       '@typescript-eslint/require-await': 'off',
