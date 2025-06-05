@@ -464,9 +464,18 @@ describe('Handling requests', () => {
         .withFile(
           'netlify.toml',
           `[images]
-         remote_images = [
-           "^${remoteServerAddress}/allowed/.*"
-         ]`,
+            remote_images = [
+              "^${remoteServerAddress}/allowed/.*"
+            ]
+
+          [[redirects]]
+            from = "/image-cdn-rewrite"
+            to = "/.netlify/images?url=:url&w=:width"
+            status = 200
+
+          [redirects.query]
+            url = ":url"
+            w = ":width"`,
         )
         .withFile('local/image.jpg', await generateImage(IMAGE_WIDTH, IMAGE_HEIGHT))
 
@@ -509,6 +518,16 @@ describe('Handling requests', () => {
       )
       const notAllowedRemoteImageResponse = await dev.handle(notAllowedRemoteImageRequest)
       expect(notAllowedRemoteImageResponse?.status).toBe(403)
+
+      const rewriteImageRequest = new Request(
+        `https://site.netlify/image-cdn-rewrite?url=${encodeURIComponent('local/image.jpg')}&w=100`,
+      )
+      const rewriteImageResponse = await dev.handle(rewriteImageRequest)
+      expect(rewriteImageResponse?.ok).toBe(true)
+      expect(rewriteImageResponse?.headers.get('content-type')).toMatch(/^image\//)
+      expect(
+        await getImageResponseSize(rewriteImageResponse ?? new Response('No @netlify/dev response')),
+      ).toMatchObject({ width: 100, height: 50 })
 
       await remoteServer.stop()
       await dev.stop()

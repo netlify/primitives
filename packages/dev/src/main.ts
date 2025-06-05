@@ -247,10 +247,18 @@ export class NetlifyDev {
     // 4. Check if the request matches a redirect rule.
     const redirectMatch = await this.#redirectsHandler?.match(readRequest)
     if (redirectMatch) {
+      const redirectRequest = new Request(redirectMatch.target)
+      // If the redirect rule matches Image CDN, we'll serve it.
+      const imageMatch = this.#imageHandler?.match(redirectRequest)
+      if (imageMatch) {
+        const response = await imageMatch.handle()
+        return { response, type: 'image' }
+      }
+
       // If the redirect rule matches a function, we'll serve it. The exception
       // is if the function prefers static files, which in this case means that
       // we'll follow the redirect rule.
-      const functionMatch = await this.#functionsHandler?.match(new Request(redirectMatch.target), destPath)
+      const functionMatch = await this.#functionsHandler?.match(redirectRequest, destPath)
       if (functionMatch && !functionMatch.preferStatic) {
         return {
           response: await functionMatch.handle(getWriteRequest()),
