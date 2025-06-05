@@ -102,7 +102,7 @@ export class ImageHandler {
             )
           }
 
-          // if it's not local image, check if it it's allowed
+          // if it's not local image, check if it's allowed
           if (
             sourceImageUrl.origin !== this.#originServerURL?.origin &&
             !this.#allowedRemoteUrlPatterns.some((allowedRemoteUrlPattern) =>
