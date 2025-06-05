@@ -296,7 +296,6 @@ export default [
   {
     files: ['packages/dev-utils/src/test/fetch.ts'],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/restrict-plus-operands': 'off',
       '@typescript-eslint/prefer-promise-reject-errors': 'off',
@@ -651,16 +650,13 @@ export default [
   {
     files: ['packages/vite-plugin/src/lib/logger.ts'],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-confusing-void-expression': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
     },
   },
   {
     files: ['packages/vite-plugin/src/lib/reqres.ts'],
     rules: {
       '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-confusing-void-expression': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
