@@ -77,55 +77,57 @@ export class ImageHandler {
   match(request: Request): ImageMatch | undefined {
     const url = new URL(request.url)
 
-    if (IMAGE_CDN_ENDPOINTS.includes(url.pathname)) {
-      return {
-        handle: async () => {
-          if (request.method !== 'GET') {
-            return new Response('Method Not Allowed', { status: 405 })
-          }
+    if (!IMAGE_CDN_ENDPOINTS.includes(url.pathname)) {
+      return
+    }
 
-          const sourceImageUrlParam = url.searchParams.get('url')
-          if (!sourceImageUrlParam) {
-            return new Response('Bad Request: Missing "url" query parameter', { status: 400 })
-          }
+    return {
+      handle: async () => {
+        if (request.method !== 'GET') {
+          return new Response('Method Not Allowed', { status: 405 })
+        }
 
-          let sourceImageUrl: URL
-          try {
-            sourceImageUrl = new URL(sourceImageUrlParam, this.#originServerURL)
-          } catch (error) {
-            throw new Error(
-              `Failed to construct source image URL from "${sourceImageUrlParam}".` +
-                (!this.#originServerURL && !sourceImageUrlParam.startsWith('http')
-                  ? '\nLooks like source image is local and `originServerAddress` was not provided.'
-                  : ''),
-              { cause: error },
-            )
-          }
+        const sourceImageUrlParam = url.searchParams.get('url')
+        if (!sourceImageUrlParam) {
+          return new Response('Bad Request: Missing "url" query parameter', { status: 400 })
+        }
 
-          // if it's not local image, check if it's allowed
-          if (
-            sourceImageUrl.origin !== this.#originServerURL?.origin &&
-            !this.#allowedRemoteUrlPatterns.some((allowedRemoteUrlPattern) =>
-              allowedRemoteUrlPattern.test(sourceImageUrl.href),
-            )
-          ) {
-            return new Response('Forbidden: Remote image URL not allowed', { status: 403 })
-          }
+        let sourceImageUrl: URL
+        try {
+          sourceImageUrl = new URL(sourceImageUrlParam, this.#originServerURL)
+        } catch (error) {
+          throw new Error(
+            `Failed to construct source image URL from "${sourceImageUrlParam}".` +
+              (!this.#originServerURL && !sourceImageUrlParam.startsWith('http')
+                ? '\nLooks like source image is local and `originServerAddress` was not provided.'
+                : ''),
+            { cause: error },
+          )
+        }
 
-          const ipx = createIPX({
-            storage: ipxFSStorage(),
-            httpStorage: ipxHttpStorage({
-              // checking if url is allowed is done above, so we disable IPX checking
-              allowAllDomains: true,
-            }),
-          })
+        // if it's not local image, check if it's allowed
+        if (
+          sourceImageUrl.origin !== this.#originServerURL?.origin &&
+          !this.#allowedRemoteUrlPatterns.some((allowedRemoteUrlPattern) =>
+            allowedRemoteUrlPattern.test(sourceImageUrl.href),
+          )
+        ) {
+          return new Response('Forbidden: Remote image URL not allowed', { status: 403 })
+        }
 
-          const ipxHandler = createIPXWebServer(ipx)
+        const ipx = createIPX({
+          storage: ipxFSStorage(),
+          httpStorage: ipxHttpStorage({
+            // checking if url is allowed is done above, so we disable IPX checking
+            allowAllDomains: true,
+          }),
+        })
 
-          const ipxRequest = new Request(this.generateIPXRequestURL(sourceImageUrl, url.searchParams), request)
-          return ipxHandler(ipxRequest)
-        },
-      }
+        const ipxHandler = createIPXWebServer(ipx)
+
+        const ipxRequest = new Request(this.generateIPXRequestURL(sourceImageUrl, url.searchParams), request)
+        return ipxHandler(ipxRequest)
+      },
     }
   }
 }
