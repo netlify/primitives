@@ -1,4 +1,4 @@
-import { createMockLogger, generateImage, getImageResponseSize, HTTPServer } from '@netlify/dev-utils'
+import { createImageServerHandler, createMockLogger, getImageResponseSize, HTTPServer } from '@netlify/dev-utils'
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 import { createIPXWebServer } from 'ipx'
 
@@ -139,26 +139,14 @@ describe('`ImageHandler`', () => {
       const LOCAL_IMAGE_HEIGHT = 400
 
       beforeAll(async () => {
-        originServer = new HTTPServer(async (request: Request) => {
-          const url = new URL(request.url)
-          if (url.pathname !== LOCAL_IMAGE_PATH) {
-            return new Response('Not Found', { status: 404, headers: { 'Content-Type': 'text/plain' } })
-          }
-
-          try {
-            const imageBuffer = await generateImage(LOCAL_IMAGE_WIDTH, LOCAL_IMAGE_HEIGHT)
-
-            return new Response(imageBuffer, {
-              headers: {
-                'Content-Type': 'image/jpeg',
-                'Content-Length': imageBuffer.length.toString(),
-              },
-            })
-          } catch (error: unknown) {
-            console.error('Error generating image', error)
-            return new Response('Internal Server Error', { status: 500, headers: { 'Content-Type': 'text/plain' } })
-          }
-        })
+        originServer = new HTTPServer(
+          createImageServerHandler((url: URL) => {
+            if (url.pathname === LOCAL_IMAGE_PATH) {
+              return { width: LOCAL_IMAGE_WIDTH, height: LOCAL_IMAGE_HEIGHT }
+            }
+            return null
+          }),
+        )
 
         originServerAddress = await originServer.start()
       })

@@ -19,6 +19,33 @@ export async function generateImage(width: number, height: number): Promise<Buff
   })
 }
 
+/**
+ * Helper to create a server handler that responds with a random noise image.
+ */
+export function createImageServerHandler(imageConfigFromURL: (url: URL) => { width: number; height: number } | null) {
+  return async (request: Request): Promise<Response> => {
+    const url = new URL(request.url)
+
+    const imageConfig = imageConfigFromURL(url)
+
+    if (!imageConfig) {
+      return new Response('Not Found', { status: 404, headers: { 'Content-Type': 'text/plain' } })
+    }
+
+    try {
+      const imageBuffer = await generateImage(imageConfig.width, imageConfig.height)
+      return new Response(imageBuffer, {
+        headers: {
+          'Content-Type': 'image/jpeg',
+          'Content-Length': imageBuffer.length.toString(),
+        },
+      })
+    } catch (error) {
+      return new Response('Error generating image', { status: 500 })
+    }
+  }
+}
+
 export async function getImageResponseSize(response: Response) {
   if (!response.headers.get('content-type')?.startsWith('image/')) {
     throw new Error('Response is not an image')
