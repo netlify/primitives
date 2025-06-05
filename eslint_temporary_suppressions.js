@@ -26,6 +26,7 @@ export default [
             'Request',
             'fetch',
 
+            'Blob',
             'fs/promises.cp',
             'stream.Readable.toWeb',
           ],
@@ -103,7 +104,6 @@ export default [
     files: ['packages/blobs/src/store.ts'],
     rules: {
       '@typescript-eslint/unified-signatures': 'off',
-      'n/no-unsupported-features/node-builtins': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -116,12 +116,6 @@ export default [
     rules: {
       '@typescript-eslint/unified-signatures': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
-    },
-  },
-  {
-    files: ['packages/blobs/src/types.ts'],
-    rules: {
-      'n/no-unsupported-features/node-builtins': 'off',
     },
   },
   {
