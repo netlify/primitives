@@ -216,7 +216,14 @@ export class NetlifyDev {
       }
     }
 
-    // 2. Check if the request matches a function.
+    // 2. Check if the request matches an image.
+    const imageMatch = this.#imageHandler?.match(readRequest)
+    if (imageMatch) {
+      const response = await imageMatch.handle()
+      return { response, type: 'image' }
+    }
+
+    // 3. Check if the request matches a function.
     const functionMatch = await this.#functionsHandler?.match(readRequest, destPath)
     if (functionMatch) {
       // If the function prefers static files, check if there is a static match
@@ -237,7 +244,7 @@ export class NetlifyDev {
       return { response: await functionMatch.handle(getWriteRequest()), type: 'function' }
     }
 
-    // 3. Check if the request matches a redirect rule.
+    // 4. Check if the request matches a redirect rule.
     const redirectMatch = await this.#redirectsHandler?.match(readRequest)
     if (redirectMatch) {
       // If the redirect rule matches a function, we'll serve it. The exception
@@ -272,13 +279,6 @@ export class NetlifyDev {
       if (response) {
         return { response, type: 'redirect' }
       }
-    }
-
-    // 4. Check if the request matches an image.
-    const imageMatch = this.#imageHandler?.match(readRequest)
-    if (imageMatch) {
-      const response = await imageMatch.handle()
-      return { response, type: 'image' }
     }
 
     // 5. Check if the request matches a static file.
