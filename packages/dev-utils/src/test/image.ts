@@ -41,6 +41,7 @@ export function createImageServerHandler(imageConfigFromURL: (url: URL) => { wid
         },
       })
     } catch (error) {
+      console.log('Error generating image', error)
       return new Response('Error generating image', { status: 500 })
     }
   }
