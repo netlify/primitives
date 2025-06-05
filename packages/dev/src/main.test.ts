@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-import { Fixture, generateImage, getImageResponseSize } from '@netlify/dev-utils'
+import { createImageServerHandler, Fixture, generateImage, getImageResponseSize, HTTPServer } from '@netlify/dev-utils'
 import { describe, expect, test } from 'vitest'
 
 import { isFile } from './lib/fs.js'
@@ -449,15 +449,26 @@ describe('Handling requests', () => {
     })
 
     test('Image CDN requests are supported', async () => {
+      const IMAGE_WIDTH = 800
+      const IMAGE_HEIGHT = 400
+
+      const remoteServer = new HTTPServer(
+        createImageServerHandler(() => {
+          return { width: IMAGE_WIDTH, height: IMAGE_HEIGHT }
+        }),
+      )
+
+      const remoteServerAddress = await remoteServer.start()
+
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
           `[images]
          remote_images = [
-           "https://images.unsplash.com/photo-1517849845537.*"
+           "^${remoteServerAddress}/allowed/.*"
          ]`,
         )
-        .withFile('local/image.jpg', await generateImage(800, 400))
+        .withFile('local/image.jpg', await generateImage(IMAGE_WIDTH, IMAGE_HEIGHT))
 
       const directory = await fixture.create()
 
@@ -484,21 +495,22 @@ describe('Handling requests', () => {
       })
 
       const allowedRemoteImageRequest = new Request(
-        `https://site.netlify/.netlify/images?url=${encodeURIComponent('https://images.unsplash.com/photo-1517849845537-4d257902454a')}&w=100`,
+        `https://site.netlify/.netlify/images?url=${encodeURIComponent(`${remoteServerAddress}/allowed/image`)}&w=100`,
       )
       const allowedRemoteImageResponse = await dev.handle(allowedRemoteImageRequest)
       expect(allowedRemoteImageResponse?.ok).toBe(true)
       expect(allowedRemoteImageResponse?.headers.get('content-type')).toMatch(/^image\//)
       expect(
         await getImageResponseSize(allowedRemoteImageResponse ?? new Response('No @netlify/dev response')),
-      ).toMatchObject({ width: 100, height: 133 })
+      ).toMatchObject({ width: 100, height: 50 })
 
       const notAllowedRemoteImageRequest = new Request(
-        `https://site.netlify/.netlify/images?url=${encodeURIComponent('https://images.unsplash.com/photo-1625316708582-7c38734be31d')}&w=100`,
+        `https://site.netlify/.netlify/images?url=${encodeURIComponent(`${remoteServerAddress}/not-allowed/image`)}&w=100`,
       )
       const notAllowedRemoteImageResponse = await dev.handle(notAllowedRemoteImageRequest)
       expect(notAllowedRemoteImageResponse?.status).toBe(403)
 
+      await remoteServer.stop()
       await dev.stop()
       await fixture.destroy()
     })

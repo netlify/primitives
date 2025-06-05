@@ -3,7 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { Fixture, generateImage } from '@netlify/dev-utils'
+import { createImageServerHandler, Fixture, generateImage, HTTPServer } from '@netlify/dev-utils'
 import { type Browser, type ConsoleMessage, type Locator, type Page, chromium } from 'playwright'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { createServer } from 'vite'
@@ -431,12 +431,23 @@ defined on your team and site and much more. Run npx netlify init to get started
     })
 
     test('Handles Image CDN requests', async () => {
+      const IMAGE_WIDTH = 800
+      const IMAGE_HEIGHT = 400
+
+      const remoteServer = new HTTPServer(
+        createImageServerHandler(() => {
+          return { width: IMAGE_WIDTH, height: IMAGE_HEIGHT }
+        }),
+      )
+
+      const remoteServerAddress = await remoteServer.start()
+
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
           `[images]
            remote_images = [
-             "https://images.unsplash.com/photo-1517849845537.*"
+             "^${remoteServerAddress}/allowed/.*"
            ]`,
         )
         .withFile(
@@ -460,12 +471,12 @@ defined on your team and site and much more. Run npx netlify init to get started
                <body>
                  <h1>Hello from the browser</h1>
                  <img id="local-image" src="/.netlify/images?url=${encodeURIComponent('local/image.jpg')}&w=100" />
-                 <img id="allowed-remote-image" src="/.netlify/images?url=${encodeURIComponent('https://images.unsplash.com/photo-1517849845537-4d257902454a')}&w=100" />
-                 <img id="not-allowed-remote-image" src="/.netlify/images?url=${encodeURIComponent('https://images.unsplash.com/photo-1625316708582-7c38734be31d')}&w=100" />
+                 <img id="allowed-remote-image" src="/.netlify/images?url=${encodeURIComponent(`${remoteServerAddress}/allowed/image`)}&w=100" />
+                 <img id="not-allowed-remote-image" src="/.netlify/images?url=${encodeURIComponent(`${remoteServerAddress}/not-allowed/image`)}&w=100" />
                </body>
              </html>`,
         )
-        .withFile('local/image.jpg', await generateImage(800, 400))
+        .withFile('local/image.jpg', await generateImage(IMAGE_WIDTH, IMAGE_HEIGHT))
 
       const directory = await fixture.create()
       await fixture
@@ -498,7 +509,7 @@ defined on your team and site and much more. Run npx netlify init to get started
       }
 
       expect(await getImageSize(page.locator('#local-image'))).toEqual({ width: 100, height: 50 })
-      expect(await getImageSize(page.locator('#allowed-remote-image'))).toEqual({ width: 100, height: 133 })
+      expect(await getImageSize(page.locator('#allowed-remote-image'))).toEqual({ width: 100, height: 50 })
 
       await expect(
         async () => await getImageSize(page.locator('#not-allowed-remote-image')),

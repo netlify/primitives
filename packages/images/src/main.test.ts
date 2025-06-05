@@ -266,6 +266,26 @@ describe('`ImageHandler`', () => {
     })
 
     describe('remote images', () => {
+      let remoteServerAddress: string
+      let remoteServer: HTTPServer
+
+      const IMAGE_WIDTH = 800
+      const IMAGE_HEIGHT = 400
+
+      beforeAll(async () => {
+        remoteServer = new HTTPServer(
+          createImageServerHandler(() => {
+            return { width: IMAGE_WIDTH, height: IMAGE_HEIGHT }
+          }),
+        )
+
+        remoteServerAddress = await remoteServer.start()
+      })
+
+      afterAll(async () => {
+        await remoteServer.stop()
+      })
+
       test('allow remote images matching configured patterns', async () => {
         mockCreateIPXWebServer.mockImplementation(
           (await vi.importActual<typeof import('ipx')>('ipx')).createIPXWebServer,
@@ -274,14 +294,14 @@ describe('`ImageHandler`', () => {
         const imageHandler = new ImageHandler({
           logger: createMockLogger(),
           imagesConfig: {
-            remote_images: ['https://images.unsplash.com/.*'],
+            remote_images: [`^${remoteServerAddress}/.*`],
           },
         })
 
         const requestedWidth = 100
 
         const url = new URL('/.netlify/images', 'https://netlify.com')
-        url.searchParams.set('url', 'https://images.unsplash.com/photo-1517849845537-4d257902454a')
+        url.searchParams.set('url', remoteServerAddress)
         url.searchParams.set('w', requestedWidth.toString())
 
         const match = imageHandler.match(new Request(url))
@@ -292,9 +312,10 @@ describe('`ImageHandler`', () => {
 
         expect(response.ok).toBe(true)
 
-        const { width } = await getImageResponseSize(response)
+        const { width, height } = await getImageResponseSize(response)
 
         expect(width).toBe(requestedWidth)
+        expect(width / height).toBe(IMAGE_WIDTH / IMAGE_HEIGHT)
       }, 30_000)
 
       test('does not allow remote images not matching configured patterns', async () => {
@@ -306,7 +327,7 @@ describe('`ImageHandler`', () => {
         })
 
         const url = new URL('/.netlify/images', 'https://netlify.com')
-        url.searchParams.set('url', 'https://images.unsplash.com/photo-1517849845537-4d257902454a')
+        url.searchParams.set('url', remoteServerAddress)
         url.searchParams.set('w', '100')
 
         const match = imageHandler.match(new Request(url))
