@@ -389,6 +389,40 @@ describe('get', () => {
 
         expect(mockStore.fulfilled).toBeTruthy()
       })
+
+      test('When the context is not available when the store is created', async () => {
+        const token = 'some-token-1'
+        const mockStore = new MockFetch()
+          .get({
+            headers: { authorization: `Bearer ${token}` },
+            response: new Response(value),
+            url: `${edgeURL}/${siteID}/site:images/${key}`,
+          })
+          .get({
+            headers: { authorization: `Bearer ${token}` },
+            response: new Response(value),
+            url: `${edgeURL}/${siteID}/site:images/${key}`,
+          })
+          .inject()
+
+        const store = getStore('images')
+
+        globalThis.netlifyBlobsContext = Buffer.from(
+          JSON.stringify({
+            edgeURL,
+            siteID,
+            token,
+          }),
+        ).toString('base64')
+
+        const string = await store.get(key)
+        expect(string).toBe(value)
+
+        const stream = await store.get(key, { type: 'stream' })
+        expect(await streamToString(stream as unknown as NodeJS.ReadableStream)).toBe(value)
+
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
     })
   })
 })
@@ -1246,6 +1280,40 @@ describe('Deploy scope', () => {
     env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
 
     const deployStore = getStore({ deployID })
+
+    const string = await deployStore.get(key)
+    expect(string).toBe(value)
+
+    const stream = await deployStore.get(key, { type: 'stream' })
+    expect(await streamToString(stream as unknown as NodeJS.ReadableStream)).toBe(value)
+
+    expect(mockStore.fulfilled).toBeTruthy()
+  })
+
+  test('Reads the deploy ID from the environment even when not available when the store is created', async () => {
+    const mockToken = 'some-token'
+    const mockStore = new MockFetch()
+      .get({
+        headers: { authorization: `Bearer ${mockToken}` },
+        response: new Response(value),
+        url: `${edgeURL}/${siteID}/deploy:${deployID}/${key}`,
+      })
+      .get({
+        headers: { authorization: `Bearer ${mockToken}` },
+        response: new Response(value),
+        url: `${edgeURL}/${siteID}/deploy:${deployID}/${key}`,
+      })
+      .inject()
+
+    const deployStore = getStore({ deployID })
+
+    env.NETLIFY_BLOBS_CONTEXT = Buffer.from(
+      JSON.stringify({
+        edgeURL,
+        siteID,
+        token: mockToken,
+      }),
+    ).toString('base64')
 
     const string = await deployStore.get(key)
     expect(string).toBe(value)
