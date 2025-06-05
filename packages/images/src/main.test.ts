@@ -1,6 +1,4 @@
-import http from 'node:http'
-
-import { createMockLogger, generateImage, getImageResponseSize } from '@netlify/dev-utils'
+import { createMockLogger, generateImage, getImageResponseSize, HTTPServer } from '@netlify/dev-utils'
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 import { createIPXWebServer } from 'ipx'
 
@@ -133,48 +131,40 @@ describe('`ImageHandler`', () => {
     })
 
     describe('local images', () => {
-      let originServer: http.Server
       let originServerAddress: string
+      let originServer: HTTPServer
+
       const LOCAL_IMAGE_PATH = '/local/image.jpg'
       const LOCAL_IMAGE_WIDTH = 800
       const LOCAL_IMAGE_HEIGHT = 400
 
       beforeAll(async () => {
-        ;[originServer, originServerAddress] = await new Promise<[http.Server, string]>((resolve, reject) => {
-          const originServer = http.createServer(function originHandler(req, res) {
-            if (req.url !== LOCAL_IMAGE_PATH) {
-              res.writeHead(404, { 'Content-Type': 'text/plain' })
-              res.end('Not Found')
-              return
-            }
+        originServer = new HTTPServer(async (request: Request) => {
+          const url = new URL(request.url)
+          if (url.pathname !== LOCAL_IMAGE_PATH) {
+            return new Response('Not Found', { status: 404, headers: { 'Content-Type': 'text/plain' } })
+          }
 
-            generateImage(LOCAL_IMAGE_WIDTH, LOCAL_IMAGE_HEIGHT)
-              .then((imageData) => {
-                res.writeHead(200, { 'Content-Type': 'image/jpeg' })
+          try {
+            const imageBuffer = await generateImage(LOCAL_IMAGE_WIDTH, LOCAL_IMAGE_HEIGHT)
 
-                res.end(imageData)
-              })
-              .catch((error: unknown) => {
-                console.error('Error generating image', error)
-                res.writeHead(500, { 'Content-Type': 'text/plain' })
-                res.end('Internal Server Error')
-              })
-          })
-          originServer.listen(() => {
-            const address = originServer.address()
-
-            if (!address || typeof address === 'string') {
-              reject(new Error('Server cannot be started on a pipe or Unix socket'))
-              return
-            }
-
-            resolve([originServer, `http://localhost:${address.port.toString()}`])
-          })
+            return new Response(imageBuffer, {
+              headers: {
+                'Content-Type': 'image/jpeg',
+                'Content-Length': imageBuffer.length.toString(),
+              },
+            })
+          } catch (error: unknown) {
+            console.error('Error generating image', error)
+            return new Response('Internal Server Error', { status: 500, headers: { 'Content-Type': 'text/plain' } })
+          }
         })
+
+        originServerAddress = await originServer.start()
       })
 
-      afterAll(() => {
-        originServer.close()
+      afterAll(async () => {
+        await originServer.stop()
       })
 
       beforeEach(async () => {
