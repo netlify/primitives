@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.5](https://github.com/netlify/primitives/compare/edge-functions-v2.14.4...edge-functions-v2.14.5) (2025-06-06)
+
+
+### Bug Fixes
+
+* fix edge functions workers ([#298](https://github.com/netlify/primitives/issues/298)) ([0666593](https://github.com/netlify/primitives/commit/0666593a6d3d8cf85a0718025e5c0b11c120563c))
+
 ## [2.14.4](https://github.com/netlify/primitives/compare/edge-functions-v2.14.3...edge-functions-v2.14.4) (2025-06-06)
 
 
