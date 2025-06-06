@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-import { Fixture } from '@netlify/dev-utils'
+import { createImageServerHandler, Fixture, generateImage, getImageResponseSize, HTTPServer } from '@netlify/dev-utils'
 import { describe, expect, test } from 'vitest'
 
 import { isFile } from './lib/fs.js'
@@ -444,6 +444,92 @@ describe('Handling requests', () => {
 
       expect(await res?.text()).toBe('Hello world')
 
+      await dev.stop()
+      await fixture.destroy()
+    })
+
+    test('Image CDN requests are supported', async () => {
+      const IMAGE_WIDTH = 800
+      const IMAGE_HEIGHT = 400
+
+      const remoteServer = new HTTPServer(
+        createImageServerHandler(() => {
+          return { width: IMAGE_WIDTH, height: IMAGE_HEIGHT }
+        }),
+      )
+
+      const remoteServerAddress = await remoteServer.start()
+
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[images]
+            remote_images = [
+              "^${remoteServerAddress}/allowed/.*"
+            ]
+
+          [[redirects]]
+            from = "/image-cdn-rewrite"
+            to = "/.netlify/images?url=:url&w=:width"
+            status = 200
+
+          [redirects.query]
+            url = ":url"
+            w = ":width"`,
+        )
+        .withFile('local/image.jpg', await generateImage(IMAGE_WIDTH, IMAGE_HEIGHT))
+
+      const directory = await fixture.create()
+
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+        edgeFunctions: {
+          // disable edge functions to avoid relying on edge functions handling spinning up internal server
+          // for local images
+          enabled: false,
+        },
+      })
+
+      await dev.start()
+
+      const localImageRequest = new Request(
+        `https://site.netlify/.netlify/images?url=${encodeURIComponent('local/image.jpg')}&w=100`,
+      )
+      const localImageResponse = await dev.handle(localImageRequest)
+      expect(localImageResponse?.ok).toBe(true)
+      expect(localImageResponse?.headers.get('content-type')).toMatch(/^image\//)
+      expect(await getImageResponseSize(localImageResponse ?? new Response('No @netlify/dev response'))).toMatchObject({
+        width: 100,
+        height: 50,
+      })
+
+      const allowedRemoteImageRequest = new Request(
+        `https://site.netlify/.netlify/images?url=${encodeURIComponent(`${remoteServerAddress}/allowed/image`)}&w=100`,
+      )
+      const allowedRemoteImageResponse = await dev.handle(allowedRemoteImageRequest)
+      expect(allowedRemoteImageResponse?.ok).toBe(true)
+      expect(allowedRemoteImageResponse?.headers.get('content-type')).toMatch(/^image\//)
+      expect(
+        await getImageResponseSize(allowedRemoteImageResponse ?? new Response('No @netlify/dev response')),
+      ).toMatchObject({ width: 100, height: 50 })
+
+      const notAllowedRemoteImageRequest = new Request(
+        `https://site.netlify/.netlify/images?url=${encodeURIComponent(`${remoteServerAddress}/not-allowed/image`)}&w=100`,
+      )
+      const notAllowedRemoteImageResponse = await dev.handle(notAllowedRemoteImageRequest)
+      expect(notAllowedRemoteImageResponse?.status).toBe(403)
+
+      const rewriteImageRequest = new Request(
+        `https://site.netlify/image-cdn-rewrite?url=${encodeURIComponent('local/image.jpg')}&w=100`,
+      )
+      const rewriteImageResponse = await dev.handle(rewriteImageRequest)
+      expect(rewriteImageResponse?.ok).toBe(true)
+      expect(rewriteImageResponse?.headers.get('content-type')).toMatch(/^image\//)
+      expect(
+        await getImageResponseSize(rewriteImageResponse ?? new Response('No @netlify/dev response')),
+      ).toMatchObject({ width: 100, height: 50 })
+
+      await remoteServer.stop()
       await dev.stop()
       await fixture.destroy()
     })

@@ -11,6 +11,7 @@
     "packages/edge-functions",
     "packages/functions",
     "packages/headers",
+    "packages/images",
     "packages/redirects",
     "packages/runtime",
     "packages/static",

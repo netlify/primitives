@@ -540,6 +540,14 @@ export default [
     },
   },
   {
+    files: ['packages/images/src/main.test.ts'],
+    rules: {
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+    },
+  },
+  {
     files: ['packages/otel/src/bootstrap/main.ts'],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',

@@ -4,18 +4,11 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { resolveConfig } from '@netlify/config'
-import {
-  ensureNetlifyIgnore,
-  getAPIToken,
-  mockLocation,
-  LocalState,
-  type Logger,
-  HTTPServer,
-  netlifyCommand,
-} from '@netlify/dev-utils'
+import { ensureNetlifyIgnore, getAPIToken, mockLocation, LocalState, type Logger, HTTPServer } from '@netlify/dev-utils'
 import { EdgeFunctionsHandler } from '@netlify/edge-functions/dev'
 import { FunctionsHandler } from '@netlify/functions/dev'
 import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
+import { ImageHandler } from '@netlify/images'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 
@@ -72,6 +65,15 @@ export interface Features {
   }
 
   /**
+   * Configuration options for Netlify Image CDN.
+   *
+   * {@link} https://docs.netlify.com/image-cdn/overview/
+   */
+  images?: {
+    enabled?: boolean
+  }
+
+  /**
    * Configuration options for Netlify redirects and rewrites.
    *
    * {@link} https://docs.netlify.com/routing/redirects/
@@ -121,7 +123,7 @@ interface HandleOptions {
   headersCollector?: HeadersCollector
 }
 
-export type ResponseType = 'edge-function' | 'function' | 'redirect' | 'static'
+export type ResponseType = 'edge-function' | 'function' | 'image' | 'redirect' | 'static'
 
 export class NetlifyDev {
   #apiHost?: string
@@ -138,10 +140,12 @@ export class NetlifyDev {
     environmentVariables: boolean
     functions: boolean
     headers: boolean
+    images: boolean
     redirects: boolean
     static: boolean
   }
   #headersHandler?: HeadersHandler
+  #imageHandler?: ImageHandler
   #logger: Logger
   #projectRoot: string
   #redirectsHandler?: RedirectsHandler
@@ -168,6 +172,7 @@ export class NetlifyDev {
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
       headers: options.headers?.enabled !== false,
+      images: options.images?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
       static: options.staticFiles?.enabled !== false,
     }
@@ -211,7 +216,14 @@ export class NetlifyDev {
       }
     }
 
-    // 2. Check if the request matches a function.
+    // 2. Check if the request matches an image.
+    const imageMatch = this.#imageHandler?.match(readRequest)
+    if (imageMatch) {
+      const response = await imageMatch.handle()
+      return { response, type: 'image' }
+    }
+
+    // 3. Check if the request matches a function.
     const functionMatch = await this.#functionsHandler?.match(readRequest, destPath)
     if (functionMatch) {
       // If the function prefers static files, check if there is a static match
@@ -232,13 +244,21 @@ export class NetlifyDev {
       return { response: await functionMatch.handle(getWriteRequest()), type: 'function' }
     }
 
-    // 3. Check if the request matches a redirect rule.
+    // 4. Check if the request matches a redirect rule.
     const redirectMatch = await this.#redirectsHandler?.match(readRequest)
     if (redirectMatch) {
+      const redirectRequest = new Request(redirectMatch.target)
+      // If the redirect rule matches Image CDN, we'll serve it.
+      const imageMatch = this.#imageHandler?.match(redirectRequest)
+      if (imageMatch) {
+        const response = await imageMatch.handle()
+        return { response, type: 'image' }
+      }
+
       // If the redirect rule matches a function, we'll serve it. The exception
       // is if the function prefers static files, which in this case means that
       // we'll follow the redirect rule.
-      const functionMatch = await this.#functionsHandler?.match(new Request(redirectMatch.target), destPath)
+      const functionMatch = await this.#functionsHandler?.match(redirectRequest, destPath)
       if (functionMatch && !functionMatch.preferStatic) {
         return {
           response: await functionMatch.handle(getWriteRequest()),
@@ -269,16 +289,7 @@ export class NetlifyDev {
       }
     }
 
-    const { pathname } = new URL(readRequest.url)
-    if (pathname.startsWith('/.netlify/images')) {
-      this.#logger.error(
-        `The Netlify Image CDN is currently only supported in the Netlify CLI. Run ${netlifyCommand('npx netlify dev')} to get started.`,
-      )
-
-      return
-    }
-
-    // 4. Check if the request matches a static file.
+    // 5. Check if the request matches a static file.
     const staticMatch = await this.#staticHandler?.match(readRequest)
     if (staticMatch) {
       const response = await staticMatch.handle()
@@ -390,10 +401,11 @@ export class NetlifyDev {
     let serverAddress: string | undefined
 
     // If a custom server has been provided, use it. If not, we must stand up
-    // a new one, since it's required for communication with edge functions.
+    // a new one, since it's required for communication with edge functions
+    // and local images support for Image CDN.
     if (typeof this.#server === 'string') {
       serverAddress = this.#server
-    } else if (this.#features.edgeFunctions) {
+    } else if (this.#features.edgeFunctions || this.#features.images) {
       const passthroughServer = new HTTPServer(async (req) => {
         const res = await this.handle(req)
 
@@ -492,6 +504,14 @@ export class NetlifyDev {
           this.#config?.config.build.publish ?? this.#projectRoot,
           ...this.#staticHandlerAdditionalDirectories,
         ],
+      })
+    }
+
+    if (this.#features.images) {
+      this.#imageHandler = new ImageHandler({
+        imagesConfig: this.#config?.config.images,
+        logger: this.#logger,
+        originServerAddress: serverAddress,
       })
     }
 
