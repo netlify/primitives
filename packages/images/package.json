@@ -1,6 +1,6 @@
 {
   "name": "@netlify/images",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "TypeScript implementation of Netlify's Image CDN",
   "type": "module",
   "engines": {
@@ -32,7 +32,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "^3.1.1",
+    "@netlify/dev-utils": "^3.2.0",
     "tsup": "^8.5.0",
     "vitest": "^3.1.4"
   },
