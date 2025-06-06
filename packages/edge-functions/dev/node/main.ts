@@ -11,7 +11,6 @@ import {
   EdgeFunction,
   FunctionConfig,
 } from '@netlify/edge-bundler'
-import { getURL as getBootstrapURL } from '@netlify/edge-functions-bootstrap/version'
 import { base64Encode } from '@netlify/runtime-utils'
 import getAvailablePort from 'get-port'
 
@@ -272,7 +271,6 @@ export class EdgeFunctionsHandler {
       versionRange: '^2.2.4',
     })
     const runOptions: RunOptions = {
-      bootstrapURL: './bootstrap.mjs',
       denoPort,
       requestTimeout: this.requestTimeout,
     }

@@ -31,7 +31,6 @@ export interface RunRequestMessage {
   type: 'request'
   data: {
     body: ArrayBuffer
-    bootstrapURL: string
     functions: Record<string, string>
     headers: Record<string, string>
     method: string

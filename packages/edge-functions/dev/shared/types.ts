@@ -1,5 +1,4 @@
 export interface RunOptions {
-  bootstrapURL: string
   denoPort: number
   requestTimeout: number
 }
