@@ -272,7 +272,7 @@ export class EdgeFunctionsHandler {
       versionRange: '^2.2.4',
     })
     const runOptions: RunOptions = {
-      bootstrapURL: await getBootstrapURL(),
+      bootstrapURL: './bootstrap.mjs',
       denoPort,
       requestTimeout: this.requestTimeout,
     }
