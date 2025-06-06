@@ -19,6 +19,12 @@ You can then build all the packages:
 npm run build --workspaces=true
 ```
 
+When working on the packages, it can be helpful to have them rebuild on change:
+
+```sh
+npm run dev
+```
+
 ## Packages
 
 | Name                                                | Description                                                             | Version                                                                                                                         |
