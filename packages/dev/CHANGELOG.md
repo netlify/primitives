@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.1.4](https://github.com/netlify/primitives/compare/dev-v4.1.3...dev-v4.1.4) (2025-06-06)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#288](https://github.com/netlify/primitives/issues/288)) ([cdf9261](https://github.com/netlify/primitives/commit/cdf92610050cafb0c0967eee8bebe76f352ffdb5))
+* **deps:** update netlify packages ([#290](https://github.com/netlify/primitives/issues/290)) ([ca10da6](https://github.com/netlify/primitives/commit/ca10da69a916ef29bb6251822548f9dbefb58d06))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.14.2 to 2.14.3
+    * @netlify/functions bumped from 4.1.2 to 4.1.3
+
 ## [4.1.3](https://github.com/netlify/primitives/compare/dev-v4.1.2...dev-v4.1.3) (2025-06-04)
 
 
