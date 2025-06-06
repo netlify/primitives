@@ -1,13 +1,10 @@
 import { describe, expect, test } from 'vitest'
 
-import packageJSON from '../package.json' with { type: 'json' }
+import * as bootstrap from '@netlify/edge-functions-bootstrap/version'
 import { getURL } from './version.js'
 
 describe('`getURL`', () => {
   test('Returns the URL of the bootstrap entry point', async () => {
-    const { version } = packageJSON
-    const branch = `v${version.split('.').join('-')}`
-
-    expect(await getURL()).toBe(`https://${branch}--edge.netlify.com/bootstrap/index-combined.ts`)
+    expect(await getURL()).toBe(await bootstrap.getURL())
   })
 })

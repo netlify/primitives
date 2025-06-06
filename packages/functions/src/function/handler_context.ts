@@ -8,8 +8,8 @@ export interface HandlerContext {
   awsRequestId: string
   logGroupName: string
   logStreamName: string
-  identity?: { [key: string]: any }
-  clientContext?: { [key: string]: any }
+  identity?: Record<string, any>
+  clientContext?: Record<string, any>
 
   getRemainingTimeInMillis(): number
 

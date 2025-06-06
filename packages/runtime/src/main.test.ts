@@ -3,8 +3,7 @@ import { MockFetch } from '@netlify/dev-utils'
 import { base64Decode } from '@netlify/runtime-utils'
 import { describe, expect, test } from 'vitest'
 
-import type { Context } from './lib/context/context.js'
-import type { EnvironmentVariables } from './lib/environment-variables.js'
+import type { Context, EnvironmentVariables } from '@netlify/types'
 import type { GlobalScope } from './lib/util.js'
 import { startRuntime } from './main.js'
 

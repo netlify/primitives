@@ -231,7 +231,7 @@ export class FunctionsRegistry {
     // the incoming URL. It doesn't really matter that we don't have the actual
     // local URL with the correct port.
     const url = new URL(`http://localhost${urlPath}`)
-    const defaultURLMatch = url.pathname.match(DEFAULT_FUNCTION_URL_EXPRESSION)
+    const defaultURLMatch = DEFAULT_FUNCTION_URL_EXPRESSION.exec(url.pathname)
 
     if (defaultURLMatch) {
       const func = this.get(defaultURLMatch[2])

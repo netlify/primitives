@@ -7,7 +7,7 @@ export const base64Encode = (input: string | object) => {
 }
 
 export const streamToString = async function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
-  const chunks: Array<any> = []
+  const chunks: any[] = []
 
   for await (const chunk of stream) {
     chunks.push(chunk)

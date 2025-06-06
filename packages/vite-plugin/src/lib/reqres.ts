@@ -20,7 +20,7 @@ export const toWebRequest = (nodeReq: IncomingMessage, urlPath?: string) => {
   const ac = new AbortController()
   const origin = `http://${headers.host}`
   const fullUrl = new URL(urlPath ?? url, origin)
-  const webStream = Readable.toWeb(nodeReq) as unknown as ReadableStream<any>
+  const webStream = Readable.toWeb(nodeReq) as unknown as ReadableStream
 
   nodeReq.once('aborted', () => ac.abort())
 
