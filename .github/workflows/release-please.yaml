@@ -31,6 +31,10 @@ jobs:
           check-latest: true
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.releases_created }}
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: 2.2.4
       - run: npm ci
         if: ${{ steps.release.outputs.releases_created }}
       - name: Build packages
