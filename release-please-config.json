@@ -13,6 +13,7 @@
     "packages/edge-functions": {},
     "packages/functions": {},
     "packages/headers": {},
+    "packages/images": {},
     "packages/otel": {},
     "packages/redirects": {},
     "packages/runtime": {},

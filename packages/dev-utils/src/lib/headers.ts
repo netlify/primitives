@@ -3,7 +3,7 @@ export const headers = {
 }
 
 export const toMultiValueHeaders = (headers: Headers) => {
-  const headersObj: Record<string, Array<string>> = {}
+  const headersObj: Record<string, string[]> = {}
   for (const [name, value] of headers.entries()) {
     if (name in headersObj) {
       headersObj[name].push(value)

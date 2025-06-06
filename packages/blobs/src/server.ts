@@ -398,7 +398,7 @@ export class BlobsServer {
       return null
     }
 
-    const apiURLMatch = req.url.match(API_URL_PATH)
+    const apiURLMatch = API_URL_PATH.exec(req.url)
 
     if (apiURLMatch) {
       const key = apiURLMatch.groups?.key
@@ -416,7 +416,7 @@ export class BlobsServer {
       }
     }
 
-    const legacyAPIURLMatch = req.url.match(LEGACY_API_URL_PATH)
+    const legacyAPIURLMatch = LEGACY_API_URL_PATH.exec(req.url)
 
     if (legacyAPIURLMatch) {
       const fullURL = new URL(req.url, this.address)

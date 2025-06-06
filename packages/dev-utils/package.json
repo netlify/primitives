@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev-utils",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "description": "TypeScript utilities for the local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -41,6 +41,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
+    "@netlify/types": "2.0.1",
     "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^18.19.110",
     "@types/parse-gitignore": "^1.0.2",
@@ -57,6 +58,8 @@
     "dot-prop": "9.0.0",
     "env-paths": "^3.0.0",
     "find-up": "7.0.0",
+    "js-image-generator": "^1.0.4",
+    "image-size": "^2.0.2",
     "lodash.debounce": "^4.0.8",
     "parse-gitignore": "^2.0.0",
     "uuid": "^11.1.0",

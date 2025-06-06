@@ -8,7 +8,7 @@ users, it is primarily designed as a foundational library for higher-level tools
 [Netlify Vite Plugin](https://docs.netlify.com/integrations/vite/overview/).
 
 It provides a local request pipeline that mimics the Netlify platform’s request handling, including support for
-Functions, Blobs, Static files, and Redirects.
+Functions, Blobs, Static files, Redirects, and Image CDN.
 
 ## 🚧 Feature Support
 
@@ -21,7 +21,7 @@ Functions, Blobs, Static files, and Redirects.
 | Redirects and Rewrites | ✅ Yes    |
 | Headers                | ✅ Yes    |
 | Environment Variables  | ✅ Yes    |
-| Image CDN              | ❌ No     |
+| Image CDN              | ✅ Yes    |
 
 > Note: Missing features will be added incrementally. This module is **not** intended to be a full replacement for the
 > Netlify CLI.

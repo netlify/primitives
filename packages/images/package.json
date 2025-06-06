@@ -1,10 +1,10 @@
 {
-  "name": "@netlify/vite-plugin",
-  "version": "2.2.0",
-  "description": "Vite plugin with a local emulation of the Netlify environment",
+  "name": "@netlify/images",
+  "version": "1.0.0",
+  "description": "TypeScript implementation of Netlify's Image CDN",
   "type": "module",
   "engines": {
-    "node": "^20.6.1 || >=22"
+    "node": ">=20.6.1"
   },
   "main": "./dist/main.js",
   "exports": "./dist/main.js",
@@ -28,19 +28,15 @@
     "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
+  "directories": {
+    "test": "test"
+  },
   "devDependencies": {
-    "@types/node": "^20.17.57",
-    "playwright": "^1.52.0",
-    "tsup": "^8.0.0",
-    "vite": "^6.3.4",
-    "vitest": "^3.0.0"
+    "@netlify/dev-utils": "^3.2.0",
+    "tsup": "^8.5.0",
+    "vitest": "^3.1.4"
   },
   "dependencies": {
-    "@netlify/dev": "4.2.0",
-    "@netlify/dev-utils": "^3.2.0",
-    "chalk": "^5.4.1"
-  },
-  "peerDependencies": {
-    "vite": "^5 || ^6"
+    "ipx": "^3.0.3"
   }
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/netlify/primitives/compare/dev-utils-v3.1.1...dev-utils-v3.2.0) (2025-06-06)
+
+
+### Features
+
+* image cdn support ([#232](https://github.com/netlify/primitives/issues/232)) ([01c844d](https://github.com/netlify/primitives/commit/01c844d82a27a9812be7634219d9bdc69a128985))
+
 ## [3.1.1](https://github.com/netlify/primitives/compare/dev-utils-v3.1.0...dev-utils-v3.1.1) (2025-06-03)
 
 

@@ -1,18 +1,10 @@
-interface EventHeaders {
-  [name: string]: string | undefined
-}
+type EventHeaders = Record<string, string | undefined>
 
-interface EventMultiValueHeaders {
-  [name: string]: string[] | undefined
-}
+type EventMultiValueHeaders = Record<string, string[] | undefined>
 
-interface EventQueryStringParameters {
-  [name: string]: string | undefined
-}
+type EventQueryStringParameters = Record<string, string | undefined>
 
-interface EventMultiValueQueryStringParameters {
-  [name: string]: string[] | undefined
-}
+type EventMultiValueQueryStringParameters = Record<string, string[] | undefined>
 
 export interface HandlerEvent {
   rawUrl: string

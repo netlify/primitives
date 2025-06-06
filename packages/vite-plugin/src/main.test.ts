@@ -3,8 +3,8 @@ import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { Fixture } from '@netlify/dev-utils'
-import { type Browser, type ConsoleMessage, type Page, chromium } from 'playwright'
+import { createImageServerHandler, Fixture, generateImage, HTTPServer } from '@netlify/dev-utils'
+import { type Browser, type ConsoleMessage, type Locator, type Page, chromium } from 'playwright'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { createServer } from 'vite'
 
@@ -222,7 +222,7 @@ defined on your team and site and much more. Run npx netlify init to get started
         expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
         expect(mockLogger.info).toHaveBeenNthCalledWith(
           2,
-          'Middleware loaded. Emulating features: blobs, environmentVariables, functions, headers, redirects, static.',
+          'Middleware loaded. Emulating features: blobs, environmentVariables, functions, headers, images, redirects, static.',
           expect.objectContaining({}),
         )
         expect(mockLogger.info).toHaveBeenNthCalledWith(
@@ -428,6 +428,96 @@ defined on your team and site and much more. Run npx netlify init to get started
           'Hello from the redirect target',
         )
         expect(await page.goto(`${url}/beta/pricing`).then((r) => r?.text())).toContain('Hello from the rewrite target')
+
+        await server.close()
+        await fixture.destroy()
+      })
+
+      test('Handles Image CDN requests', async () => {
+        const IMAGE_WIDTH = 800
+        const IMAGE_HEIGHT = 400
+
+        const remoteServer = new HTTPServer(
+          createImageServerHandler(() => {
+            return { width: IMAGE_WIDTH, height: IMAGE_HEIGHT }
+          }),
+        )
+
+        const remoteServerAddress = await remoteServer.start()
+
+        const fixture = new Fixture()
+          .withFile(
+            'netlify.toml',
+            `[images]
+             remote_images = [
+               "^${remoteServerAddress}/allowed/.*"
+             ]`,
+          )
+          .withFile(
+            'vite.config.js',
+            `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
+
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                   middleware: true,
+                 })
+               ]
+             });`,
+          )
+          .withFile(
+            'index.html',
+            `<!DOCTYPE html>
+             <html>
+               <head><title>Hello World</title></head>
+               <body>
+                 <h1>Hello from the browser</h1>
+                 <img id="local-image" src="/.netlify/images?url=${encodeURIComponent('local/image.jpg')}&w=100" />
+                 <img id="allowed-remote-image" src="/.netlify/images?url=${encodeURIComponent(`${remoteServerAddress}/allowed/image`)}&w=100" />
+                 <img id="not-allowed-remote-image" src="/.netlify/images?url=${encodeURIComponent(`${remoteServerAddress}/not-allowed/image`)}&w=100" />
+               </body>
+             </html>`,
+          )
+          .withFile('local/image.jpg', await generateImage(IMAGE_WIDTH, IMAGE_HEIGHT))
+
+        const directory = await fixture.create()
+        await fixture
+          .withPackages({
+            vite: viteVersion,
+            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+          })
+          .create()
+
+        const mockLogger = createMockViteLogger()
+        const { server, url } = await startTestServer({
+          root: directory,
+          logLevel: 'info',
+          customLogger: mockLogger,
+        })
+
+        await page.goto(url)
+
+        const getImageSize = (locator: Locator) => {
+          return locator.evaluate((img: HTMLImageElement) => {
+            if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+              throw new Error(`Image was not loaded`)
+            }
+
+            return {
+              width: img.naturalWidth,
+              height: img.naturalHeight,
+            }
+          })
+        }
+
+        expect(await getImageSize(page.locator('#local-image'))).toEqual({ width: 100, height: 50 })
+        expect(await getImageSize(page.locator('#allowed-remote-image'))).toEqual({ width: 100, height: 50 })
+
+        await expect(
+          async () => await getImageSize(page.locator('#not-allowed-remote-image')),
+          'Not allowed remote image should not load',
+        ).rejects.toThrowError(`Image was not loaded`)
 
         await server.close()
         await fixture.destroy()

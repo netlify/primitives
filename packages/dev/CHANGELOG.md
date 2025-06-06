@@ -1,5 +1,43 @@
 # Changelog
 
+## [4.2.0](https://github.com/netlify/primitives/compare/dev-v4.1.4...dev-v4.2.0) (2025-06-06)
+
+
+### Features
+
+* image cdn support ([#232](https://github.com/netlify/primitives/issues/232)) ([01c844d](https://github.com/netlify/primitives/commit/01c844d82a27a9812be7634219d9bdc69a128985))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 9.1.5 to 9.1.6
+    * @netlify/dev-utils bumped from 3.1.1 to 3.2.0
+    * @netlify/edge-functions bumped from 2.14.3 to 2.14.4
+    * @netlify/functions bumped from 4.1.3 to 4.1.4
+    * @netlify/headers bumped from 2.0.1 to 2.0.2
+    * @netlify/images bumped from 0.0.0 to 1.0.0
+    * @netlify/redirects bumped from 3.0.1 to 3.0.2
+    * @netlify/runtime bumped from 4.0.2 to 4.0.3
+    * @netlify/static bumped from 3.0.1 to 3.0.2
+
+## [4.1.4](https://github.com/netlify/primitives/compare/dev-v4.1.3...dev-v4.1.4) (2025-06-06)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#288](https://github.com/netlify/primitives/issues/288)) ([cdf9261](https://github.com/netlify/primitives/commit/cdf92610050cafb0c0967eee8bebe76f352ffdb5))
+* **deps:** update netlify packages ([#290](https://github.com/netlify/primitives/issues/290)) ([ca10da6](https://github.com/netlify/primitives/commit/ca10da69a916ef29bb6251822548f9dbefb58d06))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.14.2 to 2.14.3
+    * @netlify/functions bumped from 4.1.2 to 4.1.3
+
 ## [4.1.3](https://github.com/netlify/primitives/compare/dev-v4.1.2...dev-v4.1.3) (2025-06-04)
 
 
