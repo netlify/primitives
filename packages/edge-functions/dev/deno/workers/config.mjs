@@ -1,12 +1,17 @@
 // @ts-check
+/// <reference lib="deno.worker" />
 
 /**
  * @typedef {import('../../shared/types.ts').SerializedError} SerializedError
- * @typedef {import('./types.js').ConfigResponseMessage} ConfigResponseMessage
+ * @typedef {import('./types.ts').ConfigResponseMessage} ConfigResponseMessage
  * @typedef {import('./types.ts').Message} Message
  */
 
-self.onmessage = async (e) => {
+/** @type {DedicatedWorkerGlobalScope} */
+// @ts-ignore We are inside a worker, so the global scope is `DedicatedWorkerGlobalScope`.
+const worker = globalThis
+
+worker.addEventListener('message', async (e) => {
   const message = /** @type {Message} */ (e.data)
 
   if (message.type === 'configRequest') {
@@ -38,10 +43,10 @@ self.onmessage = async (e) => {
 
     await Promise.allSettled(imports)
 
-    self.postMessage(/** @type {ConfigResponseMessage} */ ({ type: 'configResponse', data: { configs, errors } }))
+    worker.postMessage(/** @type {ConfigResponseMessage} */ ({ type: 'configResponse', data: { configs, errors } }))
 
     return
   }
 
   throw new Error('Unsupported message')
-}
+})

@@ -1,21 +1,26 @@
 // @ts-check
+/// <reference lib="deno.worker" />
+import { handleRequest } from '../bootstrap.mjs'
 
 /**
- * @typedef {import('./types.js').Message} Message
- * @typedef {import('./types.js').RunResponseStartMessage} RunResponseStartMessage
- * @typedef {import('./types.js').RunResponseChunkMessage} RunResponseChunkMessage
- * @typedef {import('./types.js').RunResponseEndMessage} RunResponseEndMessage
+ * @typedef {import('./types.ts').Message} Message
+ * @typedef {import('./types.ts').RunResponseStartMessage} RunResponseStartMessage
+ * @typedef {import('./types.ts').RunResponseChunkMessage} RunResponseChunkMessage
+ * @typedef {import('./types.ts').RunResponseEndMessage} RunResponseEndMessage
  */
 
 const consoleLog = globalThis.console.log
 /** @type {Map<string, string>} */
 const fetchRewrites = new Map()
 
-self.onmessage = async (e) => {
+/** @type {DedicatedWorkerGlobalScope} */
+// @ts-ignore We are inside a worker, so the global scope is `DedicatedWorkerGlobalScope`.
+const worker = globalThis
+
+worker.addEventListener('message', async (e) => {
   const message = /** @type {Message} */ (e.data)
 
   if (message.type === 'request') {
-    const { handleRequest } = await import(message.data.bootstrapURL)
     const body = message.data.method === 'GET' || message.data.method === 'HEAD' ? undefined : message.data.body
     const req = new Request(message.data.url, {
       body,
@@ -35,12 +40,14 @@ self.onmessage = async (e) => {
     await Promise.allSettled(imports)
 
     const res = await handleRequest(req, functions, {
+      // @ts-ignore TODO: Figure out why `fetchRewrites` is not being picked up
+      // as part of the type.
       fetchRewrites,
       rawLogger: consoleLog,
       requestTimeout: message.data.timeout,
     })
 
-    self.postMessage(
+    worker.postMessage(
       /** @type {RunResponseStartMessage} */ ({
         type: 'responseStart',
         data: {
@@ -58,7 +65,8 @@ self.onmessage = async (e) => {
           break
         }
 
-        self.postMessage(
+        // @ts-expect-error TODO: Figure out type mismatch.
+        worker.postMessage(
           /** @type {RunResponseChunkMessage} */ ({
             type: 'responseChunk',
             data: { chunk: value },
@@ -68,10 +76,10 @@ self.onmessage = async (e) => {
       }
     }
 
-    self.postMessage(/** @type {RunResponseEndMessage} */ ({ type: 'responseEnd' }))
+    worker.postMessage(/** @type {RunResponseEndMessage} */ ({ type: 'responseEnd' }))
 
     return
   }
 
   throw new Error('Unsupported message')
-}
+})

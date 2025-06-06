@@ -1,7 +1,7 @@
 // @ts-check
 
 /**
- * @typedef {import('./workers/types.js').Message} Message
+ * @typedef {import('./workers/types.ts').Message} Message
  */
 
 /**
@@ -10,11 +10,10 @@
  * construct a `Response`.
  *
  * @param {Request} req
- * @param {string} bootstrapURL
  * @param {Record<string, string>} functions
  * @param {number} requestTimeout
  */
-export function invoke(req, bootstrapURL, functions, requestTimeout) {
+export function invoke(req, functions, requestTimeout) {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./workers/runner.mjs', import.meta.url).href, {
       type: 'module',
@@ -43,7 +42,6 @@ export function invoke(req, bootstrapURL, functions, requestTimeout) {
           type: 'request',
           data: {
             body: await req.arrayBuffer(),
-            bootstrapURL,
             functions,
             headers: Object.fromEntries(req.headers.entries()),
             method: req.method,

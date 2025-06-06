@@ -15,7 +15,7 @@ import { invoke } from './invoke.mjs'
  *
  * @param {RunOptions} options
  */
-export const serveLocal = ({ bootstrapURL, denoPort: port, requestTimeout }) => {
+export const serveLocal = ({ denoPort: port, requestTimeout }) => {
   const serveOptions = {
     // Adding a no-op listener to avoid the default one, which prints a message
     // we don't want.
@@ -37,11 +37,11 @@ export const serveLocal = ({ bootstrapURL, denoPort: port, requestTimeout }) => 
     // the Deno server take a list of functions, import them, and return their
     // configs.
     if (method === 'NETLIFYCONFIG') {
+      const functionsParam = url.searchParams.get('functions')
+
       // This is the list of all the functions found in the project.
       /** @type {Record<string, string>} */
-      const availableFunctions = url.searchParams.has('functions')
-        ? JSON.parse(decodeURIComponent(url.searchParams.get('functions')))
-        : {}
+      const availableFunctions = functionsParam ? JSON.parse(decodeURIComponent(functionsParam)) : {}
 
       functions = availableFunctions
 
@@ -59,7 +59,7 @@ export const serveLocal = ({ bootstrapURL, denoPort: port, requestTimeout }) => 
     }
 
     try {
-      return await invoke(request, bootstrapURL, functions, requestTimeout)
+      return await invoke(request, functions, requestTimeout)
     } catch (error) {
       return getErrorResponse(error)
     }
