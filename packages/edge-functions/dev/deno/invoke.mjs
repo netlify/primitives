@@ -1,6 +1,10 @@
 // @ts-check
 
 /**
+ * @typedef {import('./workers/types.js').Message} Message
+ */
+
+/**
  * Spawns a `Worker` to invoke a chain of edge functions. It serializes the
  * `Request` into a worker message and uses the messages it receives back to
  * construct a `Response`.

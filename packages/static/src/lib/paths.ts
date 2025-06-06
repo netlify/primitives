@@ -17,7 +17,7 @@ export const getFilePathsForURL = (pathname: string, baseDirectory = '') => {
 export const getURLVariations = (pathname: string) => {
   const paths: string[] = []
 
-  if (pathname[pathname.length - 1] === '/') {
+  if (pathname.endsWith('/')) {
     const end = pathname.length - 1
 
     if (pathname !== '/') {

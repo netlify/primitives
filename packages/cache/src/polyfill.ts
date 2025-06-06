@@ -52,7 +52,7 @@ class NetlifyNoopCache implements Cache {
     return true
   }
 
-  async keys(_?: Request): Promise<Array<Request>> {
+  async keys(_?: Request): Promise<Request[]> {
     return []
   }
 
