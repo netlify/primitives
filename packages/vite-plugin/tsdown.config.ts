@@ -1,4 +1,3 @@
-import { argv } from 'node:process'
 import { defineConfig } from 'tsdown'
 
 export default defineConfig([
