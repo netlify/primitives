@@ -189,6 +189,8 @@ export class BlobsServer {
         return new Response(null, { status: 404 })
       }
 
+      this.logDebug('Error when reading data:', error)
+
       return new Response(null, { status: 500 })
     }
   }
@@ -291,16 +293,36 @@ export class BlobsServer {
       return new Response(null, { status: 400 })
     }
 
-    const metadataHeader = req.headers.get(METADATA_HEADER_INTERNAL)
-    const metadata = decodeMetadata(metadataHeader)
+    // Check conditional write headers.
+    const ifMatch = req.headers.get('if-match')
+    const ifNoneMatch = req.headers.get('if-none-match')
 
     try {
+      let fileExists = false
+      try {
+        await fs.access(dataPath)
+
+        fileExists = true
+      } catch {}
+
+      const currentEtag = fileExists ? await BlobsServer.generateETag(dataPath) : undefined
+
+      if (ifNoneMatch === '*' && fileExists) {
+        return new Response(null, { status: 412 })
+      }
+
+      if (ifMatch && (!fileExists || ifMatch !== currentEtag)) {
+        return new Response(null, { status: 412 })
+      }
+
+      const metadataHeader = req.headers.get(METADATA_HEADER_INTERNAL)
+      const metadata = decodeMetadata(metadataHeader)
+
       // We can't have multiple requests writing to the same file, which could
       // happen if multiple clients try to write to the same key at the same
       // time. To prevent this, we write to a temporary file first and then
       // atomically move it to its final destination.
       const tempPath = join(tmpdir(), Math.random().toString())
-
       const body = await req.arrayBuffer()
       await fs.writeFile(tempPath, Buffer.from(body))
       await fs.mkdir(dirname(dataPath), { recursive: true })
@@ -311,10 +333,18 @@ export class BlobsServer {
         await fs.writeFile(metadataPath, JSON.stringify(metadata))
       }
 
-      return new Response(null, { status: 200 })
-    } catch (error) {
-      this.logDebug('Error when writing data:', error)
+      const newEtag = await BlobsServer.generateETag(dataPath)
 
+      return new Response(null, {
+        status: 200,
+        headers: {
+          etag: newEtag,
+        },
+      })
+    } catch (error) {
+      if (isNodeError(error)) {
+        this.logDebug('Error when writing data:', error)
+      }
       return new Response(null, { status: 500 })
     }
   }
@@ -354,6 +384,20 @@ export class BlobsServer {
     const metadataPath = resolve(this.directory, 'metadata', siteID, storeName, ...key)
 
     return { dataPath, key: key.join('/'), metadataPath, rootPath: storePath }
+  }
+
+  /**
+   * Helper method to generate an ETag for a file based on its path and last modified time.
+   */
+  private static async generateETag(filePath: string): Promise<string> {
+    try {
+      const stats = await fs.stat(filePath)
+      const hash = createHmac('sha256', stats.mtime.toISOString()).update(filePath).digest('hex')
+
+      return `"${hash}"`
+    } catch {
+      return ''
+    }
   }
 
   private async handleRequest(req: Request): Promise<Response> {
@@ -502,9 +546,8 @@ export class BlobsServer {
 
       // If the entry is a file, add it to the `blobs` bucket.
       if (!stat.isDirectory()) {
-        // We don't support conditional requests in the local server, so we
-        // generate a random ETag for each entry.
-        const etag = Math.random().toString().slice(2)
+        // Generate a deterministic ETag based on file path and last modified time.
+        const etag = await this.generateETag(entryPath)
 
         result.blobs?.push({
           etag,
