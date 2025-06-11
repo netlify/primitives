@@ -8,8 +8,11 @@ import { BlobsInternalError } from './util.ts'
 
 export const SIGNED_URL_ACCEPT_HEADER = 'application/json;type=signed-url'
 
+export type Conditions = { onlyIfNew?: boolean } | { onlyIfMatch?: string }
+
 interface MakeStoreRequestOptions {
   body?: BlobInput | null
+  conditions?: Conditions
   consistency?: ConsistencyMode
   headers?: Record<string, string>
   key?: string
@@ -172,6 +175,7 @@ export class Client {
 
   async makeRequest({
     body,
+    conditions = {},
     consistency,
     headers: extraHeaders,
     key,
@@ -195,6 +199,12 @@ export class Client {
 
     if (method === HTTPMethod.PUT) {
       headers['cache-control'] = 'max-age=0, stale-while-revalidate=60'
+    }
+
+    if ('onlyIfMatch' in conditions && conditions.onlyIfMatch) {
+      headers['if-match'] = conditions.onlyIfMatch
+    } else if ('onlyIfNew' in conditions && conditions.onlyIfNew) {
+      headers['if-none-match'] = '*'
     }
 
     const options: RequestInit = {

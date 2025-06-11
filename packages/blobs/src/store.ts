@@ -1,5 +1,5 @@
 import { ListResponse, ListResponseBlob } from './backend/list.ts'
-import { Client } from './client.ts'
+import { Client, type Conditions } from './client.ts'
 import type { ConsistencyMode } from './consistency.ts'
 import { getMetadataFromResponse, Metadata } from './metadata.ts'
 import { BlobInput, HTTPMethod } from './types.ts'
@@ -8,6 +8,9 @@ import { BlobsInternalError, collectIterator } from './util.ts'
 export const DEPLOY_STORE_PREFIX = 'deploy:'
 export const LEGACY_STORE_INTERNAL_PREFIX = 'netlify-internal/legacy-namespace/'
 export const SITE_STORE_PREFIX = 'site:'
+
+const STATUS_OK = 200
+const STATUS_PRE_CONDITION_FAILED = 412
 
 interface BaseStoreOptions {
   client: Client
@@ -55,12 +58,51 @@ export interface ListOptions {
   prefix?: string
 }
 
-export interface SetOptions {
+interface BaseSetOptions {
   /**
    * Arbitrary metadata object to associate with an entry. Must be seralizable
    * to JSON.
    */
   metadata?: Metadata
+}
+
+type CreateOnlyOptions = {
+  onlyIfMatch?: never
+
+  /**
+   * If true, the operation will only succeed if the key does not already exist
+   * in the store. If the key exists, the operation will return with
+   * `modified: false`.
+   */
+  onlyIfNew?: boolean
+}
+
+type UpdateOnlyOptions = {
+  /**
+   * If specified, the operation will only succeed if the entry already exists
+   * in the store and its current ETag matches this value. If it doesn't match,
+   * the operation will return with `modified: false`.
+   */
+  onlyIfMatch?: string
+
+  onlyIfNew?: never
+}
+
+export type SetOptions = BaseSetOptions & (CreateOnlyOptions | UpdateOnlyOptions)
+
+export type WriteResult = {
+  /**
+   * The ETag of the entry after the write operation. It's only present if the
+   * operation actually resulted in a modified entry.
+   */
+  etag?: string
+
+  /**
+   * A boolean indicating whether the operation has resulted in a modified
+   * entry. A conditional `set` on a key that already exists will return
+   * an object with `modified` set to false.
+   */
+  modified: boolean
 }
 
 export type BlobResponseType = 'arrayBuffer' | 'blob' | 'json' | 'stream' | 'text'
@@ -283,42 +325,66 @@ export class Store {
     )
   }
 
-  async set(key: string, data: BlobInput, { metadata }: SetOptions = {}) {
+  async set(key: string, data: BlobInput, options: SetOptions = {}): Promise<WriteResult> {
     Store.validateKey(key)
 
+    const conditions = Store.getConditions(options)
     const res = await this.client.makeRequest({
+      conditions,
       body: data,
       key,
-      metadata,
+      metadata: options.metadata,
       method: HTTPMethod.PUT,
       storeName: this.name,
     })
+    const etag = res.headers.get('etag') ?? ''
 
-    if (res.status !== 200) {
-      throw new BlobsInternalError(res)
+    if (conditions) {
+      return res.status === STATUS_PRE_CONDITION_FAILED ? { modified: false } : { etag, modified: true }
     }
+
+    if (res.status === STATUS_OK) {
+      return {
+        etag,
+        modified: true,
+      }
+    }
+
+    throw new BlobsInternalError(res)
   }
 
-  async setJSON(key: string, data: unknown, { metadata }: SetOptions = {}) {
+  async setJSON(key: string, data: unknown, options: SetOptions = {}): Promise<WriteResult> {
     Store.validateKey(key)
 
+    const conditions = Store.getConditions(options)
     const payload = JSON.stringify(data)
     const headers = {
       'content-type': 'application/json',
     }
 
     const res = await this.client.makeRequest({
+      ...conditions,
       body: payload,
       headers,
       key,
-      metadata,
+      metadata: options.metadata,
       method: HTTPMethod.PUT,
       storeName: this.name,
     })
+    const etag = res.headers.get('etag') ?? ''
 
-    if (res.status !== 200) {
-      throw new BlobsInternalError(res)
+    if (conditions) {
+      return res.status === STATUS_PRE_CONDITION_FAILED ? { modified: false } : { etag, modified: true }
     }
+
+    if (res.status === STATUS_OK) {
+      return {
+        etag,
+        modified: true,
+      }
+    }
+
+    throw new BlobsInternalError(res)
   }
 
   private static formatListResultBlob(result: ListResponseBlob): ListResultBlob | null {
@@ -329,6 +395,36 @@ export class Store {
     return {
       etag: result.etag,
       key: result.key,
+    }
+  }
+
+  private static getConditions(options: SetOptions): Conditions | undefined {
+    if ('onlyIfMatch' in options && 'onlyIfNew' in options) {
+      throw new Error(
+        `The 'onlyIfMatch' and 'onlyIfNew' options are mutually exclusive. Using 'onlyIfMatch' will make the write succeed only if there is an entry for the key with the given content, while 'onlyIfNew' will make the write succeed only if there is no entry for the key.`,
+      )
+    }
+
+    if ('onlyIfMatch' in options && options.onlyIfMatch) {
+      if (typeof options.onlyIfMatch !== 'string') {
+        throw new Error(`The 'onlyIfMatch' property expects a string representing an ETag.`)
+      }
+
+      return {
+        onlyIfMatch: options.onlyIfMatch,
+      }
+    }
+
+    if ('onlyIfNew' in options && options.onlyIfNew) {
+      if (typeof options.onlyIfNew !== 'boolean') {
+        throw new Error(
+          `The 'onlyIfNew' property expects a boolean indicating whether the write should fail if an entry for the key already exists.`,
+        )
+      }
+
+      return {
+        onlyIfNew: true,
+      }
     }
   }
 
