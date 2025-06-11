@@ -11,6 +11,6 @@ export default defineConfig([
     dts: true,
     watch: argv.includes('--watch'),
     platform: 'node',
-    bundle: true,
+
   },
 ])
