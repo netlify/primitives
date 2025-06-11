@@ -8,8 +8,11 @@ import { BlobsInternalError } from './util.ts'
 
 export const SIGNED_URL_ACCEPT_HEADER = 'application/json;type=signed-url'
 
+export type Conditions = { ifNotExists?: boolean } | { ifExistsWithEtag?: string }
+
 interface MakeStoreRequestOptions {
   body?: BlobInput | null
+  conditions?: Conditions
   consistency?: ConsistencyMode
   headers?: Record<string, string>
   key?: string
@@ -172,6 +175,7 @@ export class Client {
 
   async makeRequest({
     body,
+    conditions = {},
     consistency,
     headers: extraHeaders,
     key,
@@ -195,6 +199,12 @@ export class Client {
 
     if (method === HTTPMethod.PUT) {
       headers['cache-control'] = 'max-age=0, stale-while-revalidate=60'
+    }
+
+    if ('ifExistsWithEtag' in conditions && conditions.ifExistsWithEtag) {
+      headers['if-match'] = conditions.ifExistsWithEtag
+    } else if ('ifNotExists' in conditions && conditions.ifNotExists) {
+      headers['if-none-match'] = '*'
     }
 
     const options: RequestInit = {
