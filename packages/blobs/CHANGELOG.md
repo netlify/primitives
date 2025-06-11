@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.0.0](https://github.com/netlify/primitives/compare/blobs-v9.1.6...blobs-v10.0.0) (2025-06-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* add support for conditional writes ([#303](https://github.com/netlify/primitives/issues/303))
+
+### Features
+
+* add support for conditional writes ([#303](https://github.com/netlify/primitives/issues/303)) ([de3295f](https://github.com/netlify/primitives/commit/de3295fa6d3f93d2bd76f959805a3cccfc3af5e7))
+* add support for conditional writes to `BlobsServer` ([#306](https://github.com/netlify/primitives/issues/306)) ([dad55a3](https://github.com/netlify/primitives/commit/dad55a35dadf36d17c026d8635c1c599892d423f))
+
 ## [9.1.6](https://github.com/netlify/primitives/compare/blobs-v9.1.5...blobs-v9.1.6) (2025-06-06)
 
 
