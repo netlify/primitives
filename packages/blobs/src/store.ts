@@ -10,7 +10,7 @@ export const LEGACY_STORE_INTERNAL_PREFIX = 'netlify-internal/legacy-namespace/'
 export const SITE_STORE_PREFIX = 'site:'
 
 const STATUS_OK = 200
-const STATUS_NOT_MODIFIED = 304
+const STATUS_PRE_CONDITION_FAILED = 412
 
 interface BaseStoreOptions {
   client: Client
@@ -340,7 +340,7 @@ export class Store {
     const etag = res.headers.get('etag') ?? ''
 
     if (conditions) {
-      return res.status === STATUS_NOT_MODIFIED ? { modified: false } : { etag, modified: true }
+      return res.status === STATUS_PRE_CONDITION_FAILED ? { modified: false } : { etag, modified: true }
     }
 
     if (res.status === STATUS_OK) {
@@ -374,7 +374,7 @@ export class Store {
     const etag = res.headers.get('etag') ?? ''
 
     if (conditions) {
-      return res.status === STATUS_NOT_MODIFIED ? { modified: false } : { etag, modified: true }
+      return res.status === STATUS_PRE_CONDITION_FAILED ? { modified: false } : { etag, modified: true }
     }
 
     if (res.status === STATUS_OK) {

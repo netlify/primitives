@@ -223,7 +223,7 @@ describe('get', () => {
           })
           .put({
             headers: { 'if-none-match': '*' },
-            response: new Response(null, { status: 304 }),
+            response: new Response(null, { status: 412 }),
             url: signedURL,
           })
           .inject()
@@ -252,7 +252,7 @@ describe('get', () => {
           })
           .put({
             headers: { 'if-none-match': '*' },
-            response: new Response(null, { status: 412, headers: { etag: '"123"' } }),
+            response: new Response(null, { status: 201, headers: { etag: '"123"' } }),
             url: signedURL,
           })
           .inject()
@@ -282,7 +282,7 @@ describe('get', () => {
           })
           .put({
             headers: { 'if-match': etag },
-            response: new Response(null, { status: 304 }),
+            response: new Response(null, { status: 412 }),
             url: signedURL,
           })
           .inject()
@@ -414,7 +414,7 @@ describe('get', () => {
         const mockStore = new MockFetch()
           .put({
             headers: { authorization: `Bearer ${edgeToken}`, 'if-none-match': '*' },
-            response: new Response(null, { status: 304 }),
+            response: new Response(null, { status: 412 }),
             url: `${edgeURL}/${siteID}/site:production/${key}`,
           })
           .inject()
@@ -438,7 +438,7 @@ describe('get', () => {
         const mockStore = new MockFetch()
           .put({
             headers: { authorization: `Bearer ${edgeToken}`, 'if-none-match': '*' },
-            response: new Response(null, { status: 200, headers: { etag: '"123"' } }),
+            response: new Response(null, { status: 201, headers: { etag: '"123"' } }),
             url: `${edgeURL}/${siteID}/site:production/${key}`,
           })
           .inject()
@@ -464,7 +464,7 @@ describe('get', () => {
         const mockStore = new MockFetch()
           .put({
             headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
-            response: new Response(null, { status: 304 }),
+            response: new Response(null, { status: 412 }),
             url: `${edgeURL}/${siteID}/site:production/${key}`,
           })
           .inject()
