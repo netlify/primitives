@@ -49,8 +49,8 @@
     "internal.d.ts"
   ],
   "scripts": {
-    "dev": "tsup-node --watch",
-    "build": "tsup-node",
+    "dev": "tsdown --watch",
+    "build": "tsdown",
     "prepack": "npm run build",
     "test": "run-s test:ci",
     "test:dev": "run-s build test:dev:*",
@@ -99,7 +99,7 @@
     "npm-run-all2": "^5.0.0",
     "semver": "^7.6.3",
     "tsd": "^0.32.0",
-    "tsup": "^8.0.2",
+    "tsdown": "^0.12.7",
     "vitest": "^3.0.0"
   },
   "engines": {
