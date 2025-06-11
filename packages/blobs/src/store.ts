@@ -93,7 +93,7 @@ export type SetOptions = BaseSetOptions & (CreateOnlyOptions | UpdateOnlyOptions
 export type WriteResult = {
   /**
    * The ETag of the entry after the write operation. It's only present if the
-   * operatio actually resulted in a modified entry.
+   * operation actually resulted in a modified entry.
    */
   etag?: string
 
