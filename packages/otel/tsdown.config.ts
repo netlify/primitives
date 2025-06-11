@@ -1,5 +1,3 @@
-import { argv } from 'node:process'
-
 import { defineConfig } from 'tsdown'
 
 export default defineConfig([
@@ -10,6 +8,5 @@ export default defineConfig([
     tsconfig: 'tsconfig.json',
     dts: true,
     outDir: './dist',
-    watch: argv.includes('--watch'),
   },
 ])
