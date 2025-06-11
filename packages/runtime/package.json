@@ -1,6 +1,6 @@
 {
   "name": "@netlify/runtime",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "description": "Netlify compute runtime",
   "type": "module",
   "engines": {
@@ -29,7 +29,7 @@
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/blobs": "^9.1.6",
+    "@netlify/blobs": "^10.0.0",
     "@netlify/cache": "3.0.3",
     "@netlify/runtime-utils": "2.1.0",
     "@netlify/types": "2.0.2"
