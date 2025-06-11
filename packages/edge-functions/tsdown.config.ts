@@ -51,7 +51,7 @@ export default defineConfig([
       await fs.cp(denoPath, path.resolve(distPath, 'deno'), { recursive: true })
 
       // We need to bundle the bootstrap layer with the package because Deno
-      // does not support HTTP imports when inside a `node_modukes` directory.
+      // does not support HTTP imports when inside a `node_modules` directory.
       const distBootstrapPath = path.resolve(distPath, 'deno', BOOTSTRAP_FILENAME)
       await execa(
         'deno',

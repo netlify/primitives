@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@netlify/types": "2.0.2",
+    "esbuild": "^0.25.5",
     "execa": "^8.0.1",
     "tsdown": "^0.12.7",
     "vitest": "^3.0.0"
