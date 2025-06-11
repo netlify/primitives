@@ -11,7 +11,6 @@ export default defineConfig([
     dts: true,
     watch: argv.includes('--watch'),
     platform: 'node',
-    bundle: true,
   },
   {
     clean: true,
@@ -21,6 +20,6 @@ export default defineConfig([
     dts: true,
     watch: argv.includes('--watch'),
     platform: 'node',
-    publicDir: 'dev/runtimes/nodejs',
+    copy: 'dev/runtimes/nodejs',
   },
 ])
