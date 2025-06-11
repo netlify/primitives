@@ -5,7 +5,7 @@ import { argv } from 'node:process'
 
 import { getURL } from '@netlify/edge-functions-bootstrap/version'
 import { execa } from 'execa'
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsdown'
 
 const __filename = fileURLToPath(import.meta.url)
 
@@ -17,8 +17,6 @@ export default defineConfig([
     format: ['esm'],
     entry: ['src/main.ts'],
     tsconfig: 'tsconfig.json',
-    splitting: false,
-    bundle: true,
     dts: true,
     outDir: './dist',
     watch: argv.includes('--watch'),
@@ -28,8 +26,6 @@ export default defineConfig([
     format: ['esm'],
     entry: ['src/version.ts'],
     tsconfig: 'tsconfig.json',
-    splitting: false,
-    bundle: true,
     dts: true,
     outDir: './dist',
     watch: argv.includes('--watch'),
@@ -40,7 +36,6 @@ export default defineConfig([
     entry: ['dev/node/main.ts'],
     format: ['esm'],
     dts: true,
-    splitting: false,
     watch: argv.includes('--watch'),
     platform: 'node',
     bundle: true,

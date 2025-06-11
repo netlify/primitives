@@ -1,17 +1,15 @@
 import { argv } from 'node:process'
 
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig([
   {
     clean: true,
-    entry: ['src/main.ts'],
-    outDir: 'dist',
     format: ['esm'],
+    entry: ['src/main.ts'],
+    tsconfig: 'tsconfig.json',
     dts: true,
-    splitting: false,
+    outDir: './dist',
     watch: argv.includes('--watch'),
-    platform: 'node',
-    bundle: true,
   },
 ])
