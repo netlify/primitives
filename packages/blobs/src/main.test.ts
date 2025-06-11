@@ -214,7 +214,7 @@ describe('get', () => {
     })
 
     describe('Conditional writes', () => {
-      test('Returns `modified: false` when `ifNotExists` is true and key exists', async () => {
+      test('Returns `modified: false` when `onlyIfNew` is true and key exists', async () => {
         const mockStore = new MockFetch()
           .put({
             headers: { authorization: `Bearer ${apiToken}` },
@@ -235,7 +235,7 @@ describe('get', () => {
         })
 
         const result = await blobs.set(key, value, {
-          ifNotExists: true,
+          onlyIfNew: true,
         })
 
         expect(result.modified).toBe(false)
@@ -243,7 +243,7 @@ describe('get', () => {
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
-      test('Returns `modified: true` when `ifNotExists` is true and key does not exist', async () => {
+      test('Returns `modified: true` when `onlyIfNew` is true and key does not exist', async () => {
         const mockStore = new MockFetch()
           .put({
             headers: { authorization: `Bearer ${apiToken}` },
@@ -264,7 +264,7 @@ describe('get', () => {
         })
 
         const result = await blobs.set(key, value, {
-          ifNotExists: true,
+          onlyIfNew: true,
         })
 
         expect(result.modified).toBe(true)
@@ -272,7 +272,7 @@ describe('get', () => {
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
-      test('Returns `modified: false` when `ifExistsWithEtag` does not match', async () => {
+      test('Returns `modified: false` when `onlyIfMatch` does not match', async () => {
         const etag = 'etag-123'
         const mockStore = new MockFetch()
           .put({
@@ -294,7 +294,7 @@ describe('get', () => {
         })
 
         const result = await blobs.set(key, value, {
-          ifExistsWithEtag: etag,
+          onlyIfMatch: etag,
         })
 
         expect(result.modified).toBe(false)
@@ -302,7 +302,7 @@ describe('get', () => {
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
-      test('Returns `modified: true` when `ifExistsWithEtag` matches', async () => {
+      test('Returns `modified: true` when `onlyIfMatch` matches', async () => {
         const etag = 'etag-123'
         const mockStore = new MockFetch()
           .put({
@@ -324,7 +324,7 @@ describe('get', () => {
         })
 
         const result = await blobs.set(key, value, {
-          ifExistsWithEtag: etag,
+          onlyIfMatch: etag,
         })
 
         expect(result.modified).toBe(true)
@@ -410,7 +410,7 @@ describe('get', () => {
     })
 
     describe('Conditional writes', () => {
-      test('Returns `modified: false` when `ifNotExists` is true and key exists', async () => {
+      test('Returns `modified: false` when `onlyIfNew` is true and key exists', async () => {
         const mockStore = new MockFetch()
           .put({
             headers: { authorization: `Bearer ${edgeToken}`, 'if-none-match': '*' },
@@ -427,14 +427,14 @@ describe('get', () => {
         })
 
         const result = await blobs.set(key, value, {
-          ifNotExists: true,
+          onlyIfNew: true,
         })
 
         expect(result.modified).toBe(false)
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
-      test('Returns `modified: true` when `ifNotExists` is true and key does not exist', async () => {
+      test('Returns `modified: true` when `onlyIfNew` is true and key does not exist', async () => {
         const mockStore = new MockFetch()
           .put({
             headers: { authorization: `Bearer ${edgeToken}`, 'if-none-match': '*' },
@@ -451,7 +451,7 @@ describe('get', () => {
         })
 
         const result = await blobs.set(key, value, {
-          ifNotExists: true,
+          onlyIfNew: true,
         })
 
         expect(result.modified).toBe(true)
@@ -459,7 +459,7 @@ describe('get', () => {
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
-      test('Returns `modified: false` when `ifExistsWithEtag` does not match', async () => {
+      test('Returns `modified: false` when `onlyIfMatch` does not match', async () => {
         const etag = 'etag-123'
         const mockStore = new MockFetch()
           .put({
@@ -477,14 +477,14 @@ describe('get', () => {
         })
 
         const result = await blobs.set(key, value, {
-          ifExistsWithEtag: etag,
+          onlyIfMatch: etag,
         })
 
         expect(result.modified).toBe(false)
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
-      test('Returns `modified: true` when `ifExistsWithEtag` matches', async () => {
+      test('Returns `modified: true` when `onlyIfMatch` matches', async () => {
         const etag = 'etag-123'
         const mockStore = new MockFetch()
           .put({
@@ -502,7 +502,7 @@ describe('get', () => {
         })
 
         const result = await blobs.set(key, value, {
-          ifExistsWithEtag: etag,
+          onlyIfMatch: etag,
         })
 
         expect(result.modified).toBe(true)
@@ -510,7 +510,7 @@ describe('get', () => {
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
-      test('Throws an error when both `ifNotExists` and `ifExistsWithEtag` are provided', async () => {
+      test('Throws an error when both `onlyIfNew` and `onlyIfMatch` are provided', async () => {
         const blobs = getStore({
           name: 'production',
           token: apiToken,
@@ -519,17 +519,17 @@ describe('get', () => {
 
         await expect(
           blobs.set(key, value, {
-            ifNotExists: true,
+            onlyIfNew: true,
 
             // @ts-expect-error Testing runtime validation
-            ifExistsWithEtag: '"123"',
+            onlyIfMatch: '"123"',
           }),
         ).rejects.toThrow(
-          `The 'ifExistsWithEtag' and 'ifNotExists' options are mutually exclusive. Using 'ifExistsWithEtag' will make the write succeed only if there is an entry for the key with the given content, while 'ifNotExists' will make the write succeed only if there is no entry for the key.`,
+          `The 'onlyIfMatch' and 'onlyIfNew' options are mutually exclusive. Using 'onlyIfMatch' will make the write succeed only if there is an entry for the key with the given content, while 'onlyIfNew' will make the write succeed only if there is no entry for the key.`,
         )
       })
 
-      test('Throws an error when `ifExistsWithEtag` is not a string', async () => {
+      test('Throws an error when `onlyIfMatch` is not a string', async () => {
         const blobs = getStore({
           name: 'production',
           token: apiToken,
@@ -539,12 +539,12 @@ describe('get', () => {
         await expect(
           blobs.set(key, value, {
             // @ts-expect-error Testing runtime validation
-            ifExistsWithEtag: 123,
+            onlyIfMatch: 123,
           }),
-        ).rejects.toThrow(`The 'ifExistsWithEtag' property expects a string representing an ETag.`)
+        ).rejects.toThrow(`The 'onlyIfMatch' property expects a string representing an ETag.`)
       })
 
-      test('Throws an error when `ifNotExists` is not a boolean', async () => {
+      test('Throws an error when `onlyIfNew` is not a boolean', async () => {
         const blobs = getStore({
           name: 'production',
           token: apiToken,
@@ -554,10 +554,10 @@ describe('get', () => {
         await expect(
           blobs.set(key, value, {
             // @ts-expect-error Testing runtime validation
-            ifNotExists: 'yes',
+            onlyIfNew: 'yes',
           }),
         ).rejects.toThrow(
-          `The 'ifNotExists' property expects a boolean indicating whether the write should fail if an entry for the key already exists.`,
+          `The 'onlyIfNew' property expects a boolean indicating whether the write should fail if an entry for the key already exists.`,
         )
       })
     })

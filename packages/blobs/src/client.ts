@@ -8,7 +8,7 @@ import { BlobsInternalError } from './util.ts'
 
 export const SIGNED_URL_ACCEPT_HEADER = 'application/json;type=signed-url'
 
-export type Conditions = { ifNotExists?: boolean } | { ifExistsWithEtag?: string }
+export type Conditions = { onlyIfNew?: boolean } | { onlyIfMatch?: string }
 
 interface MakeStoreRequestOptions {
   body?: BlobInput | null
@@ -201,9 +201,9 @@ export class Client {
       headers['cache-control'] = 'max-age=0, stale-while-revalidate=60'
     }
 
-    if ('ifExistsWithEtag' in conditions && conditions.ifExistsWithEtag) {
-      headers['if-match'] = conditions.ifExistsWithEtag
-    } else if ('ifNotExists' in conditions && conditions.ifNotExists) {
+    if ('onlyIfMatch' in conditions && conditions.onlyIfMatch) {
+      headers['if-match'] = conditions.onlyIfMatch
+    } else if ('onlyIfNew' in conditions && conditions.onlyIfNew) {
       headers['if-none-match'] = '*'
     }
 

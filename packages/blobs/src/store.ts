@@ -67,14 +67,14 @@ interface BaseSetOptions {
 }
 
 type CreateOnlyOptions = {
-  ifExistsWithEtag?: never
+  onlyIfMatch?: never
 
   /**
    * If true, the operation will only succeed if the key does not already exist
    * in the store. If the key exists, the operation will return with
    * `modified: false`.
    */
-  ifNotExists?: boolean
+  onlyIfNew?: boolean
 }
 
 type UpdateOnlyOptions = {
@@ -83,9 +83,9 @@ type UpdateOnlyOptions = {
    * in the store and its current ETag matches this value. If it doesn't match,
    * the operation will return with `modified: false`.
    */
-  ifExistsWithEtag?: string
+  onlyIfMatch?: string
 
-  ifNotExists?: never
+  onlyIfNew?: never
 }
 
 export type SetOptions = BaseSetOptions & (CreateOnlyOptions | UpdateOnlyOptions)
@@ -399,31 +399,31 @@ export class Store {
   }
 
   private static getConditions(options: SetOptions): Conditions | undefined {
-    if ('ifExistsWithEtag' in options && 'ifNotExists' in options) {
+    if ('onlyIfMatch' in options && 'onlyIfNew' in options) {
       throw new Error(
-        `The 'ifExistsWithEtag' and 'ifNotExists' options are mutually exclusive. Using 'ifExistsWithEtag' will make the write succeed only if there is an entry for the key with the given content, while 'ifNotExists' will make the write succeed only if there is no entry for the key.`,
+        `The 'onlyIfMatch' and 'onlyIfNew' options are mutually exclusive. Using 'onlyIfMatch' will make the write succeed only if there is an entry for the key with the given content, while 'onlyIfNew' will make the write succeed only if there is no entry for the key.`,
       )
     }
 
-    if ('ifExistsWithEtag' in options && options.ifExistsWithEtag) {
-      if (typeof options.ifExistsWithEtag !== 'string') {
-        throw new Error(`The 'ifExistsWithEtag' property expects a string representing an ETag.`)
+    if ('onlyIfMatch' in options && options.onlyIfMatch) {
+      if (typeof options.onlyIfMatch !== 'string') {
+        throw new Error(`The 'onlyIfMatch' property expects a string representing an ETag.`)
       }
 
       return {
-        ifExistsWithEtag: options.ifExistsWithEtag,
+        onlyIfMatch: options.onlyIfMatch,
       }
     }
 
-    if ('ifNotExists' in options && options.ifNotExists) {
-      if (typeof options.ifNotExists !== 'boolean') {
+    if ('onlyIfNew' in options && options.onlyIfNew) {
+      if (typeof options.onlyIfNew !== 'boolean') {
         throw new Error(
-          `The 'ifNotExists' property expects a boolean indicating whether the write should fail if an entry for the key already exists.`,
+          `The 'onlyIfNew' property expects a boolean indicating whether the write should fail if an entry for the key already exists.`,
         )
       }
 
       return {
-        ifNotExists: true,
+        onlyIfNew: true,
       }
     }
   }
