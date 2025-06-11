@@ -463,3 +463,55 @@ test('Accepts deploy-scoped stores with the region defined in the context', asyn
   await server.stop()
   await fs.rm(directory.path, { force: true, recursive: true })
 })
+
+test('Handles conditional writes', async () => {
+  const directory = await tmp.dir()
+  const server = new BlobsServer({
+    directory: directory.path,
+    token,
+  })
+  const { port } = await server.start()
+  const deployID = '655f77a1b48f470008e5879a'
+  const key = 'conditional-key'
+  const value1 = 'value 1'
+  const value2 = 'value 2'
+  const value3 = 'value 3'
+
+  const context = {
+    deployID,
+    edgeURL: `http://localhost:${port}`,
+    primaryRegion: 'us-east-1',
+    siteID,
+    token,
+  }
+
+  env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
+
+  const store1 = getStore({
+    edgeURL: `http://localhost:${port}`,
+    name: 'my-store',
+    token,
+    siteID,
+  })
+
+  const res1 = await store1.set(key, value1, { onlyIfNew: true })
+
+  expect(res1.modified).toBe(true)
+  expect(await store1.get(key)).toBe(value1)
+
+  const res2 = await store1.set(key, value2, { onlyIfNew: true })
+
+  expect(res2.modified).toBe(false)
+  expect(await store1.get(key)).toBe(value1)
+
+  const res3 = await store1.set(key, value3, { onlyIfMatch: `"wrong-etag"` })
+  expect(res3.modified).toBe(false)
+  expect(await store1.get(key)).toBe(value1)
+
+  const res4 = await store1.set(key, value3, { onlyIfMatch: res1.etag })
+  expect(res4.modified).toBe(true)
+  expect(await store1.get(key)).toBe(value3)
+
+  await server.stop()
+  await fs.rm(directory.path, { force: true, recursive: true })
+})
