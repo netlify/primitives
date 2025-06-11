@@ -1,8 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { argv } from 'node:process'
-
 import { getURL } from '@netlify/edge-functions-bootstrap/version'
 import { execa } from 'execa'
 import { defineConfig } from 'tsdown'
@@ -19,7 +17,6 @@ export default defineConfig([
     tsconfig: 'tsconfig.json',
     dts: true,
     outDir: './dist',
-    watch: argv.includes('--watch'),
   },
   {
     clean: true,
@@ -28,7 +25,6 @@ export default defineConfig([
     tsconfig: 'tsconfig.json',
     dts: true,
     outDir: './dist',
-    watch: argv.includes('--watch'),
   },
   {
     clean: true,
@@ -36,7 +32,6 @@ export default defineConfig([
     entry: ['dev/node/main.ts'],
     format: ['esm'],
     dts: true,
-    watch: argv.includes('--watch'),
     platform: 'node',
 
 

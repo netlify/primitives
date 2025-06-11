@@ -8,7 +8,6 @@ export default defineConfig([
     outDir: 'dist',
     format: ['esm'],
     dts: true,
-    watch: argv.includes('--watch'),
     platform: 'node',
     external: ['vite'],
   },
