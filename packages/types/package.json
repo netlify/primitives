@@ -12,12 +12,12 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "tsup-node",
+    "build": "tsdown",
     "prepack": "npm run build",
     "test": "npm run types && vitest run",
     "test:dev": "vitest",
     "test:ci": "npm run build && npm run test",
-    "dev": "tsup-node --watch",
+    "dev": "tsdown --watch",
     "types": "tsc --noEmit",
     "publint": "npx -y publint --strict"
   },
@@ -30,7 +30,7 @@
   "author": "Netlify Inc.",
   "devDependencies": {
     "@types/node": "^18.19.110",
-    "tsup": "^8.0.0",
+    "tsdown": "^0.12.7",
     "typescript": "^5.8.3",
     "vitest": "^3.0.0"
   }
