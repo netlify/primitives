@@ -440,6 +440,8 @@ export class NetlifyDev {
       this.#cleanupJobs.push(() => passthroughServer.stop())
 
       serverAddress = await passthroughServer.start()
+
+      this.#server = serverAddress
     }
 
     let envVariables: Record<string, InjectedEnvironmentVariable> = {}
