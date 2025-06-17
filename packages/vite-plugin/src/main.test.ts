@@ -150,11 +150,70 @@ describe.for([['5.0.0'], ['6.0.0']])('Vite %s', ([viteVersion]) => {
       expect(mockLogger.error).not.toHaveBeenCalled()
       expect(mockLogger.warn).not.toHaveBeenCalled()
       expect(mockLogger.warnOnce).not.toHaveBeenCalled()
+      expect(mockLogger.info).toHaveBeenCalledTimes(2)
       expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
       expect(mockLogger.info).toHaveBeenNthCalledWith(
         2,
         '💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables \
 defined on your team and site and much more. Run npx netlify init to get started.',
+        expect.objectContaining({}),
+      )
+
+      await server.close()
+      await fixture.destroy()
+    })
+
+    test('Prints a message listing emulated features on server start', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'vite.config.js',
+          `import { defineConfig } from 'vite';
+           import netlify from '@netlify/vite-plugin';
+           export default defineConfig({
+             plugins: [
+               netlify({
+                middleware: true,
+                edgeFunctions: { enabled: false },
+              })
+             ]
+           });`,
+        )
+        .withFile(
+          'index.html',
+          `<!doctype html>
+           <html>
+             <head><title>Hello World</title></head>
+             <body><h1>Hello from the browser</h1></body>
+           </html>`,
+        )
+      const directory = await fixture.create()
+      await fixture
+        .withPackages({
+          vite: viteVersion,
+          '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+        })
+        .create()
+
+      const mockLogger = createMockViteLogger()
+      const { server } = await startTestServer({
+        root: directory,
+        logLevel: 'info',
+        customLogger: mockLogger,
+      })
+
+      expect(mockLogger.error).not.toHaveBeenCalled()
+      expect(mockLogger.warn).not.toHaveBeenCalled()
+      expect(mockLogger.warnOnce).not.toHaveBeenCalled()
+      expect(mockLogger.info).toHaveBeenCalledTimes(3)
+      expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
+      expect(mockLogger.info).toHaveBeenNthCalledWith(
+        2,
+        'Middleware loaded. Emulating features: blobs, environmentVariables, functions, headers, images, redirects, static.',
+        expect.objectContaining({}),
+      )
+      expect(mockLogger.info).toHaveBeenNthCalledWith(
+        3,
+        expect.stringContaining('Linking this project to a Netlify site'),
         expect.objectContaining({}),
       )
 

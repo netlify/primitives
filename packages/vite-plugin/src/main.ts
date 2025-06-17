@@ -69,6 +69,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
           next()
         })
+        logger.log(`Middleware loaded. Emulating features: ${netlifyDev.getEnabledFeatures().join(', ')}.`)
       }
 
       if (!netlifyDev.siteIsLinked) {
