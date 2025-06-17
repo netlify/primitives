@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.3.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.2.3...vite-plugin-v2.3.0) (2025-06-17)
+
+
+### Features
+
+* add `serverAddress` to request handler ([#308](https://github.com/netlify/primitives/issues/308)) ([fa811f2](https://github.com/netlify/primitives/commit/fa811f24d473d471108f560abc484d17ea11bd70))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.2.2 to 4.3.0
+
 ## [2.2.3](https://github.com/netlify/primitives/compare/vite-plugin-v2.2.2...vite-plugin-v2.2.3) (2025-06-11)
 
 

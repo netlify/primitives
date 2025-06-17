@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.3.0](https://github.com/netlify/primitives/compare/dev-v4.2.2...dev-v4.3.0) (2025-06-17)
+
+
+### Features
+
+* add `serverAddress` to request handler ([#308](https://github.com/netlify/primitives/issues/308)) ([fa811f2](https://github.com/netlify/primitives/commit/fa811f24d473d471108f560abc484d17ea11bd70))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.14.5 to 2.15.0
+    * @netlify/images bumped from 1.0.0 to 1.1.0
+
 ## [4.2.2](https://github.com/netlify/primitives/compare/dev-v4.2.1...dev-v4.2.2) (2025-06-11)
 
 
