@@ -83,12 +83,6 @@ export interface Features {
   }
 
   /**
-   * If your local development setup has its own HTTP server (e.g. Vite), set
-   * its address here.
-   */
-  serverAddress?: string | null
-
-  /**
    * Configuration options for serving static files.
    */
   staticFiles?: {
@@ -107,6 +101,12 @@ interface NetlifyDevOptions extends Features {
   apiToken?: string
   logger?: Logger
   projectRoot?: string
+
+  /**
+   * If your local development setup has its own HTTP server (e.g. Vite), set
+   * its address here.
+   */
+  serverAddress?: string | null
 }
 
 const notFoundHandler = async () => new Response('Not found', { status: 404 })
