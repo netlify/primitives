@@ -86,7 +86,7 @@ export interface Features {
    * If your local development setup has its own HTTP server (e.g. Vite), set
    * its address here.
    */
-  serverAddress?: string
+  serverAddress?: string | null
 
   /**
    * Configuration options for serving static files.
@@ -121,6 +121,13 @@ interface HandleOptions {
    * {@link} https://docs.netlify.com/routing/headers/
    */
   headersCollector?: HeadersCollector
+
+  /**
+   * If your local development setup has its own HTTP server (e.g. Vite), you
+   * can supply its address here. It will override any value defined in the
+   * top-level `serverAddress` setting.
+   */
+  serverAddress?: string
 }
 
 export type ResponseType = 'edge-function' | 'function' | 'image' | 'redirect' | 'static'
@@ -149,7 +156,7 @@ export class NetlifyDev {
   #logger: Logger
   #projectRoot: string
   #redirectsHandler?: RedirectsHandler
-  #server?: string | HTTPServer
+  #server?: string | HTTPServer | null
   #siteID?: string
   #staticHandler?: StaticHandler
   #staticHandlerAdditionalDirectories: string[]
@@ -183,6 +190,22 @@ export class NetlifyDev {
     this.#staticHandlerAdditionalDirectories = options.staticFiles?.directories ?? []
   }
 
+  private async getServerAddress(requestServerAddress?: string) {
+    if (requestServerAddress) {
+      return requestServerAddress
+    }
+
+    if (this.#server instanceof HTTPServer) {
+      return await this.#server.start()
+    }
+
+    if (typeof this.#server === 'string') {
+      return this.#server
+    }
+
+    throw new Error('Server address is not defined')
+  }
+
   /**
    * Runs a request through the Netlify request chain and returns a `Response`
    * if there's a match. We must not disturb the incoming request unless we
@@ -202,6 +225,8 @@ export class NetlifyDev {
     destPath: string,
     options: HandleOptions = {},
   ): Promise<{ response: Response; type: ResponseType } | undefined> {
+    const serverAddress = await this.getServerAddress(options.serverAddress)
+
     // Try to match the request against the different steps in our request chain.
     //
     // https://docs.netlify.com/platform/request-chain/
@@ -211,7 +236,7 @@ export class NetlifyDev {
     const edgeFunctionMatch = await this.#edgeFunctionsHandler?.match(readRequest)
     if (edgeFunctionMatch) {
       return {
-        response: await edgeFunctionMatch.handle(getWriteRequest()),
+        response: await edgeFunctionMatch.handle(getWriteRequest(), serverAddress),
         type: 'edge-function',
       }
     }
@@ -219,7 +244,7 @@ export class NetlifyDev {
     // 2. Check if the request matches an image.
     const imageMatch = this.#imageHandler?.match(readRequest)
     if (imageMatch) {
-      const response = await imageMatch.handle()
+      const response = await imageMatch.handle(serverAddress)
       return { response, type: 'image' }
     }
 
@@ -251,7 +276,7 @@ export class NetlifyDev {
       // If the redirect rule matches Image CDN, we'll serve it.
       const imageMatch = this.#imageHandler?.match(redirectRequest)
       if (imageMatch) {
-        const response = await imageMatch.handle()
+        const response = await imageMatch.handle(serverAddress)
         return { response, type: 'image' }
       }
 
@@ -405,7 +430,7 @@ export class NetlifyDev {
     // and local images support for Image CDN.
     if (typeof this.#server === 'string') {
       serverAddress = this.#server
-    } else if (this.#features.edgeFunctions || this.#features.images) {
+    } else if (this.#server !== null && (this.#features.edgeFunctions || this.#features.images)) {
       const passthroughServer = new HTTPServer(async (req) => {
         const res = await this.handle(req)
 
@@ -430,7 +455,7 @@ export class NetlifyDev {
       })
     }
 
-    if (this.#features.edgeFunctions && serverAddress !== undefined) {
+    if (this.#features.edgeFunctions) {
       const env = Object.entries(envVariables).reduce<Record<string, string>>((acc, [key, variable]) => {
         if (
           variable.usedSource === 'account' ||
@@ -454,7 +479,6 @@ export class NetlifyDev {
         env,
         geolocation: mockLocation,
         logger: this.#logger,
-        originServerAddress: serverAddress,
         siteID,
         siteName: config?.siteInfo.name,
       })
@@ -511,7 +535,6 @@ export class NetlifyDev {
       this.#imageHandler = new ImageHandler({
         imagesConfig: this.#config?.config.images,
         logger: this.#logger,
-        originServerAddress: serverAddress,
       })
     }
 

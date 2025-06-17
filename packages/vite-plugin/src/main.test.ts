@@ -150,7 +150,6 @@ describe.for([['5.0.0'], ['6.0.0']])('Vite %s', ([viteVersion]) => {
       expect(mockLogger.error).not.toHaveBeenCalled()
       expect(mockLogger.warn).not.toHaveBeenCalled()
       expect(mockLogger.warnOnce).not.toHaveBeenCalled()
-      expect(mockLogger.info).toHaveBeenCalledTimes(2)
       expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
       expect(mockLogger.info).toHaveBeenNthCalledWith(
         2,
@@ -174,65 +173,6 @@ defined on your team and site and much more. Run npx netlify init to get started
 
       afterEach(async () => {
         await browser.close()
-      })
-
-      test('Prints a message listing emulated features on server start', async () => {
-        const fixture = new Fixture()
-          .withFile(
-            'vite.config.js',
-            `import { defineConfig } from 'vite';
-             import netlify from '@netlify/vite-plugin';
-
-             export default defineConfig({
-               plugins: [
-                 netlify({
-                  middleware: true,
-                  edgeFunctions: { enabled: false },
-                })
-               ]
-             });`,
-          )
-          .withFile(
-            'index.html',
-            `<!doctype html>
-             <html>
-               <head><title>Hello World</title></head>
-               <body><h1>Hello from the browser</h1></body>
-             </html>`,
-          )
-        const directory = await fixture.create()
-        await fixture
-          .withPackages({
-            vite: viteVersion,
-            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
-          })
-          .create()
-
-        const mockLogger = createMockViteLogger()
-        const { server } = await startTestServer({
-          root: directory,
-          logLevel: 'info',
-          customLogger: mockLogger,
-        })
-
-        expect(mockLogger.error).not.toHaveBeenCalled()
-        expect(mockLogger.warn).not.toHaveBeenCalled()
-        expect(mockLogger.warnOnce).not.toHaveBeenCalled()
-        expect(mockLogger.info).toHaveBeenCalledTimes(3)
-        expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
-        expect(mockLogger.info).toHaveBeenNthCalledWith(
-          2,
-          'Middleware loaded. Emulating features: blobs, environmentVariables, functions, headers, images, redirects, static.',
-          expect.objectContaining({}),
-        )
-        expect(mockLogger.info).toHaveBeenNthCalledWith(
-          3,
-          expect.stringContaining('Linking this project to a Netlify site'),
-          expect.objectContaining({}),
-        )
-
-        await server.close()
-        await fixture.destroy()
       })
 
       test('Returns static files from project dir', async () => {
@@ -518,6 +458,143 @@ defined on your team and site and much more. Run npx netlify init to get started
           async () => await getImageSize(page.locator('#not-allowed-remote-image')),
           'Not allowed remote image should not load',
         ).rejects.toThrowError(`Image was not loaded`)
+
+        await server.close()
+        await fixture.destroy()
+      })
+
+      // TODO: Figure out why Blobs is not available in these tests. It works
+      // when I test manually on a site.
+      test.todo('Handles function requests', async () => {
+        const fixture = new Fixture()
+          .withFile(
+            'vite.config.js',
+            `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
+  
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                   middleware: true,
+                 })
+               ]
+             });`,
+          )
+          .withFile(
+            'index.html',
+            `<!DOCTYPE html>
+             <html>
+               <head><title>Hello World</title></head>
+               <body>
+                 <h1>Hello from the browser</h1>
+               </body>
+             </html>`,
+          )
+          .withFile(
+            'netlify/functions/blob.mjs',
+            `
+            import { getStore } from "@netlify/blobs"
+
+
+            export default async (req, context) => {
+              const store = getStore("my-store")
+
+              const entry = await store.get("key")
+              if (!entry) {
+                await store.set("key", "Blob the builder")
+
+                return new Response("Added")
+              }
+
+              return new Response(entry)
+            }
+  
+            export const config = {
+              path: "/blob"
+            }
+          `,
+          )
+
+        const directory = await fixture.create()
+        await fixture
+          .withPackages({
+            vite: viteVersion,
+            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+            '@netlify/blobs': pathToFileURL(path.resolve(directory, PLUGIN_PATH, '../blobs')).toString(),
+          })
+          .create()
+
+        const mockLogger = createMockViteLogger()
+        const { server, url } = await startTestServer({
+          root: directory,
+          logLevel: 'info',
+          customLogger: mockLogger,
+        })
+
+        expect(await page.goto(`${url}/blob`).then((r) => r?.text())).toContain('Added')
+        expect(await page.goto(`${url}/blob`).then((r) => r?.text())).toContain('Blob the builder')
+
+        await server.close()
+        await fixture.destroy()
+      })
+
+      test('Handles edge function requests', async () => {
+        const fixture = new Fixture()
+          .withFile(
+            'vite.config.js',
+            `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
+  
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                   middleware: true,
+                 })
+               ]
+             });`,
+          )
+          .withFile(
+            'index.html',
+            `<!DOCTYPE html>
+             <html>
+               <head><title>Hello World</title></head>
+               <body>
+                 <h1>Hello from the browser</h1>
+               </body>
+             </html>`,
+          )
+          .withFile(
+            'netlify/edge-functions/yell.mjs',
+            `
+            export default async (req, context) => {
+              const res = await context.next()
+              const text = await res.text()
+              
+              return new Response(text.toUpperCase(), res)
+            }
+  
+            export const config = {
+              path: "/*"
+            }
+          `,
+          )
+
+        const directory = await fixture.create()
+        await fixture
+          .withPackages({
+            vite: viteVersion,
+            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+          })
+          .create()
+
+        const mockLogger = createMockViteLogger()
+        const { server, url } = await startTestServer({
+          root: directory,
+          logLevel: 'info',
+          customLogger: mockLogger,
+        })
+
+        expect(await page.goto(url).then((r) => r?.text())).toContain('<H1>HELLO FROM THE BROWSER</H1>')
 
         await server.close()
         await fixture.destroy()

@@ -12,7 +12,7 @@ interface ImageHandlerOptions {
 }
 
 export interface ImageMatch {
-  handle: () => Promise<Response>
+  handle: (originServerAddress: string) => Promise<Response>
 }
 
 const IMAGE_CDN_ENDPOINTS = ['/.netlify/images', '/.netlify/images/']
@@ -20,9 +20,8 @@ const IMAGE_CDN_ENDPOINTS = ['/.netlify/images', '/.netlify/images/']
 export class ImageHandler {
   #allowedRemoteUrlPatterns: RegExp[]
   #logger: Logger
-  #originServerURL?: URL
 
-  constructor({ logger, imagesConfig, originServerAddress }: ImageHandlerOptions) {
+  constructor({ logger, imagesConfig }: ImageHandlerOptions) {
     this.#logger = logger
     this.#allowedRemoteUrlPatterns = (imagesConfig?.remote_images ?? []).reduce<RegExp[]>((acc, stringPattern) => {
       try {
@@ -33,7 +32,6 @@ export class ImageHandler {
       }
       return acc
     }, [])
-    this.#originServerURL = originServerAddress ? new URL(originServerAddress) : undefined
   }
 
   private generateIPXRequestURL(imageURL: URL, netlifyImageCdnParams: URLSearchParams): URL {
@@ -82,7 +80,7 @@ export class ImageHandler {
     }
 
     return {
-      handle: async () => {
+      handle: async (originServerAddress: string) => {
         if (request.method !== 'GET') {
           return new Response('Method Not Allowed', { status: 405 })
         }
@@ -92,13 +90,15 @@ export class ImageHandler {
           return new Response('Bad Request: Missing "url" query parameter', { status: 400 })
         }
 
+        const originServerURL = originServerAddress ? new URL(originServerAddress) : null
+
         let sourceImageUrl: URL
         try {
-          sourceImageUrl = new URL(sourceImageUrlParam, this.#originServerURL)
+          sourceImageUrl = new URL(sourceImageUrlParam, String(originServerURL))
         } catch (error) {
           throw new Error(
             `Failed to construct source image URL from "${sourceImageUrlParam}".` +
-              (!this.#originServerURL && !sourceImageUrlParam.startsWith('http')
+              (!originServerURL && !sourceImageUrlParam.startsWith('http')
                 ? '\nLooks like source image is local and `originServerAddress` was not provided.'
                 : ''),
             { cause: error },
@@ -107,7 +107,7 @@ export class ImageHandler {
 
         // if it's not local image, check if it's allowed
         if (
-          sourceImageUrl.origin !== this.#originServerURL?.origin &&
+          sourceImageUrl.origin !== originServerURL?.origin &&
           !this.#allowedRemoteUrlPatterns.some((allowedRemoteUrlPattern) =>
             allowedRemoteUrlPattern.test(sourceImageUrl.href),
           )
