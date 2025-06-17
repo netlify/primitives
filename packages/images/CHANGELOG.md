@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/netlify/primitives/compare/images-v1.0.0...images-v1.1.0) (2025-06-17)
+
+
+### Features
+
+* add `serverAddress` to request handler ([#308](https://github.com/netlify/primitives/issues/308)) ([fa811f2](https://github.com/netlify/primitives/commit/fa811f24d473d471108f560abc484d17ea11bd70))
+
 ## 1.0.0 (2025-06-06)
 
 
