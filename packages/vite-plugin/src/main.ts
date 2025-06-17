@@ -26,7 +26,6 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
     name: 'vite-plugin-netlify',
     async configureServer(viteDevServer) {
       const logger = createLoggerFromViteLogger(viteDevServer.config.logger)
-      const { port } = viteDevServer.config.server
       const { blobs, edgeFunctions, functions, middleware = true, redirects, staticFiles } = options
       const netlifyDev = new NetlifyDev({
         blobs,
@@ -34,7 +33,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
         functions,
         logger,
         redirects,
-        serverAddress: `http://localhost:${port}`,
+        serverAddress: null,
         staticFiles: {
           ...staticFiles,
           directories: [viteDevServer.config.root, viteDevServer.config.publicDir],
@@ -52,6 +51,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
             headersCollector: (key, value) => {
               headers[key] = value
             },
+            serverAddress: `http://localhost:${nodeReq.socket.localPort}`,
           })
 
           const isStaticFile = result?.type === 'static'

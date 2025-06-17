@@ -23,7 +23,6 @@ interface EdgeFunctionsHandlerOptions {
   env: Record<string, string>
   geolocation: Geolocation
   logger: Logger
-  originServerAddress: string
   requestTimeout?: number
   siteID?: string
   siteName?: string
@@ -52,7 +51,6 @@ export class EdgeFunctionsHandler {
   private initialization: ReturnType<typeof this.initialize>
   private initialized: boolean
   private logger: Logger
-  private originServerAddress: string
   private requestTimeout: number
   private siteID?: string
   private siteName?: string
@@ -67,7 +65,6 @@ export class EdgeFunctionsHandler {
     })
     this.initialized = false
     this.logger = options.logger
-    this.originServerAddress = options.originServerAddress
     this.requestTimeout = options.requestTimeout ?? REQUEST_TIMEOUT
     this.siteID = options.siteID
     this.siteName = options.siteName
@@ -211,8 +208,8 @@ export class EdgeFunctionsHandler {
     }
 
     return {
-      handle: async (request: Request) => {
-        const originURL = new URL(this.originServerAddress)
+      handle: async (request: Request, originServerAddress: string) => {
+        const originURL = new URL(originServerAddress)
 
         const url = new URL(request.url)
         url.hostname = LOCAL_HOST
@@ -236,7 +233,7 @@ export class EdgeFunctionsHandler {
         const site = {
           id: this.siteID,
           name: this.siteName,
-          url: this.originServerAddress,
+          url: originServerAddress,
         }
 
         request.headers.set(headers.Site, base64Encode(site))

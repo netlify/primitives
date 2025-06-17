@@ -42,7 +42,6 @@ describe('`ImageHandler`', () => {
       test('matches on `/.netlify/images', async () => {
         const imageHandler = new ImageHandler({
           logger: createMockLogger(),
-          originServerAddress: 'http://localhost:5173',
         })
 
         const url = new URL('/.netlify/images', 'https://netlify.com')
@@ -52,7 +51,7 @@ describe('`ImageHandler`', () => {
 
         expect(match).toBeDefined()
 
-        const response = await match!.handle()
+        const response = await match!.handle('http://localhost:5173')
 
         expect(response.ok).toBe(true)
         expect(response).toMatchObject(mockedIpxResponse)
@@ -61,7 +60,6 @@ describe('`ImageHandler`', () => {
       test('matches on `/.netlify/images/', async () => {
         const imageHandler = new ImageHandler({
           logger: createMockLogger(),
-          originServerAddress: 'http://localhost:5173',
         })
 
         const url = new URL('/.netlify/images/', 'https://netlify.com')
@@ -71,7 +69,7 @@ describe('`ImageHandler`', () => {
 
         expect(match).toBeDefined()
 
-        const response = await match!.handle()
+        const response = await match!.handle('http://localhost:5173')
 
         expect(response.ok).toBe(true)
         expect(response).toMatchObject(mockedIpxResponse)
@@ -95,7 +93,6 @@ describe('`ImageHandler`', () => {
       test('allows GET requests', async () => {
         const imageHandler = new ImageHandler({
           logger: createMockLogger(),
-          originServerAddress: 'http://localhost:5173',
         })
 
         const url = new URL('/.netlify/images', 'https://netlify.com')
@@ -105,7 +102,7 @@ describe('`ImageHandler`', () => {
 
         expect(match).toBeDefined()
 
-        const response = await match!.handle()
+        const response = await match!.handle('http://localhost:5173')
 
         expect(response.ok).toBe(true)
         expect(response).toMatchObject(mockedIpxResponse)
@@ -123,7 +120,7 @@ describe('`ImageHandler`', () => {
 
         expect(match).toBeDefined()
 
-        const response = await match!.handle()
+        const response = await match!.handle('http://localhost:5173')
 
         expect(response.ok).toBe(false)
         expect(await response.text()).toBe('Method Not Allowed')
@@ -164,7 +161,6 @@ describe('`ImageHandler`', () => {
       test('preserves original width if width param is not used', async () => {
         const imageHandler = new ImageHandler({
           logger: createMockLogger(),
-          originServerAddress,
         })
 
         const url = new URL('/.netlify/images', originServerAddress)
@@ -174,7 +170,7 @@ describe('`ImageHandler`', () => {
 
         expect(match).toBeDefined()
 
-        const response = await match!.handle()
+        const response = await match!.handle(originServerAddress)
 
         expect(response.ok).toBe(true)
 
@@ -186,7 +182,6 @@ describe('`ImageHandler`', () => {
       test('resizes image to specified width preserving aspect ratio', async () => {
         const imageHandler = new ImageHandler({
           logger: createMockLogger(),
-          originServerAddress,
         })
 
         const requestedWidth = 200
@@ -199,7 +194,7 @@ describe('`ImageHandler`', () => {
 
         expect(match).toBeDefined()
 
-        const response = await match!.handle()
+        const response = await match!.handle(originServerAddress)
 
         expect(response.ok).toBe(true)
 
@@ -212,7 +207,6 @@ describe('`ImageHandler`', () => {
       test('resizes image to specified height preserving aspect ratio', async () => {
         const imageHandler = new ImageHandler({
           logger: createMockLogger(),
-          originServerAddress,
         })
 
         const requestedHeight = 200
@@ -225,7 +219,7 @@ describe('`ImageHandler`', () => {
 
         expect(match).toBeDefined()
 
-        const response = await match!.handle()
+        const response = await match!.handle(originServerAddress)
 
         expect(response.ok).toBe(true)
 
@@ -238,7 +232,6 @@ describe('`ImageHandler`', () => {
       test('resizes image to specified width and height ignoring original aspect ratio', async () => {
         const imageHandler = new ImageHandler({
           logger: createMockLogger(),
-          originServerAddress,
         })
 
         const requestedWidth = 200
@@ -253,7 +246,7 @@ describe('`ImageHandler`', () => {
 
         expect(match).toBeDefined()
 
-        const response = await match!.handle()
+        const response = await match!.handle(originServerAddress)
 
         expect(response.ok).toBe(true)
 
@@ -308,7 +301,7 @@ describe('`ImageHandler`', () => {
 
         expect(match).toBeDefined()
 
-        const response = await match!.handle()
+        const response = await match!.handle('https://example.netlify')
 
         expect(response.ok).toBe(true)
 
@@ -334,7 +327,7 @@ describe('`ImageHandler`', () => {
 
         expect(match).toBeDefined()
 
-        const response = await match!.handle()
+        const response = await match!.handle('https://example.netlify')
 
         expect(response.status).toBe(403)
         expect(await response.text()).toBe('Forbidden: Remote image URL not allowed')
