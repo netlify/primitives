@@ -156,7 +156,7 @@ export class NetlifyDev {
   #logger: Logger
   #projectRoot: string
   #redirectsHandler?: RedirectsHandler
-  #server?: string | HTTPServer | null
+  #serverAddress?: string | null
   #siteID?: string
   #staticHandler?: StaticHandler
   #staticHandlerAdditionalDirectories: string[]
@@ -185,22 +185,18 @@ export class NetlifyDev {
     }
     this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')
     this.#logger = options.logger ?? globalThis.console
-    this.#server = options.serverAddress
+    this.#serverAddress = options.serverAddress
     this.#projectRoot = projectRoot
     this.#staticHandlerAdditionalDirectories = options.staticFiles?.directories ?? []
   }
 
-  private async getServerAddress(requestServerAddress?: string) {
+  private getServerAddress(requestServerAddress?: string) {
     if (requestServerAddress) {
       return requestServerAddress
     }
 
-    if (this.#server instanceof HTTPServer) {
-      return await this.#server.start()
-    }
-
-    if (typeof this.#server === 'string') {
-      return this.#server
+    if (typeof this.#serverAddress === 'string') {
+      return this.#serverAddress
     }
 
     throw new Error('Server address is not defined')
@@ -225,7 +221,7 @@ export class NetlifyDev {
     destPath: string,
     options: HandleOptions = {},
   ): Promise<{ response: Response; type: ResponseType } | undefined> {
-    const serverAddress = await this.getServerAddress(options.serverAddress)
+    const serverAddress = this.getServerAddress(options.serverAddress)
 
     // Try to match the request against the different steps in our request chain.
     //
@@ -428,9 +424,9 @@ export class NetlifyDev {
     // If a custom server has been provided, use it. If not, we must stand up
     // a new one, since it's required for communication with edge functions
     // and local images support for Image CDN.
-    if (typeof this.#server === 'string') {
-      serverAddress = this.#server
-    } else if (this.#server !== null && (this.#features.edgeFunctions || this.#features.images)) {
+    if (typeof this.#serverAddress === 'string') {
+      serverAddress = this.#serverAddress
+    } else if (this.#serverAddress !== null && (this.#features.edgeFunctions || this.#features.images)) {
       const passthroughServer = new HTTPServer(async (req) => {
         const res = await this.handle(req)
 
@@ -440,8 +436,7 @@ export class NetlifyDev {
       this.#cleanupJobs.push(() => passthroughServer.stop())
 
       serverAddress = await passthroughServer.start()
-
-      this.#server = serverAddress
+      this.#serverAddress = serverAddress
     }
 
     let envVariables: Record<string, InjectedEnvironmentVariable> = {}
