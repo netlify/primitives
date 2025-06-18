@@ -331,6 +331,11 @@ export class EdgeFunctionsHandler {
         method: 'HEAD',
       })
     } catch {
+      // If we've already stopped the server, swallow the error.
+      if (!this.denoServerProcess) {
+        return
+      }
+
       if ((count + 1) * DENO_SERVER_POLL_INTERVAL > DENO_SERVER_POLL_TIMEOUT) {
         throw new Error('Could not establish a connection to the Netlify Edge Functions local development server')
       }
