@@ -346,8 +346,12 @@ export class EdgeFunctionsHandler {
       return
     }
 
+    const { ps } = this.denoServerProcess
+
+    this.denoServerProcess = undefined
+
     try {
-      await killProcess(this.denoServerProcess.ps)
+      await killProcess(ps)
     } catch {}
   }
 }
