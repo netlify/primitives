@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/netlify/primitives/compare/dev-utils-v3.2.0...dev-utils-v3.2.1) (2025-06-18)
+
+
+### Bug Fixes
+
+* clean up edge functions server ([#310](https://github.com/netlify/primitives/issues/310)) ([243f3b4](https://github.com/netlify/primitives/commit/243f3b472d1350eb6a80d8f736385750de8bc0d4))
+
 ## [3.2.0](https://github.com/netlify/primitives/compare/dev-utils-v3.1.1...dev-utils-v3.2.0) (2025-06-06)
 
 
