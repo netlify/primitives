@@ -31,7 +31,7 @@
       }
     }
   },
-  "version": "4.1.6",
+  "version": "4.1.7",
   "description": "TypeScript utilities for interacting with Netlify Functions",
   "files": [
     "dist/**/*.js",
