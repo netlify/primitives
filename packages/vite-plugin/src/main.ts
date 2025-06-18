@@ -49,7 +49,12 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
       if (middleware) {
         viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
+          // This should never happen, but adding this escape hatch just in case.
           if (!netlifyDev) {
+            logger.error(
+              'Some primitives will not work as expected due to an unknown error. Please restart your application.',
+            )
+
             next()
 
             return
@@ -78,6 +83,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
           next()
         })
+
         logger.log(`Middleware loaded. Emulating features: ${netlifyDev.getEnabledFeatures().join(', ')}.`)
       }
 
