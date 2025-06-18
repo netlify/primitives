@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.15.1](https://github.com/netlify/primitives/compare/edge-functions-v2.15.0...edge-functions-v2.15.1) (2025-06-18)
+
+
+### Bug Fixes
+
+* clean up edge functions server ([#310](https://github.com/netlify/primitives/issues/310)) ([243f3b4](https://github.com/netlify/primitives/commit/243f3b472d1350eb6a80d8f736385750de8bc0d4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.2.0 to 3.2.1
+
 ## [2.15.0](https://github.com/netlify/primitives/compare/edge-functions-v2.14.5...edge-functions-v2.15.0) (2025-06-17)
 
 

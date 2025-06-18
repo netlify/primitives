@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.3.1](https://github.com/netlify/primitives/compare/dev-v4.3.0...dev-v4.3.1) (2025-06-18)
+
+
+### Bug Fixes
+
+* clean up edge functions server ([#310](https://github.com/netlify/primitives/issues/310)) ([243f3b4](https://github.com/netlify/primitives/commit/243f3b472d1350eb6a80d8f736385750de8bc0d4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.0 to 10.0.1
+    * @netlify/dev-utils bumped from 3.2.0 to 3.2.1
+    * @netlify/edge-functions bumped from 2.15.0 to 2.15.1
+    * @netlify/functions bumped from 4.1.5 to 4.1.6
+    * @netlify/headers bumped from 2.0.2 to 2.0.3
+    * @netlify/images bumped from 1.1.0 to 1.1.1
+    * @netlify/redirects bumped from 3.0.2 to 3.0.3
+    * @netlify/runtime bumped from 4.0.4 to 4.0.5
+    * @netlify/static bumped from 3.0.2 to 3.0.3
+
 ## [4.3.0](https://github.com/netlify/primitives/compare/dev-v4.2.2...dev-v4.3.0) (2025-06-17)
 
 

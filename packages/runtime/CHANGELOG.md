@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.0.5](https://github.com/netlify/primitives/compare/runtime-v4.0.4...runtime-v4.0.5) (2025-06-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^10.0.0 to ^10.0.1
+    * @netlify/cache bumped from 3.0.3 to 3.0.4
+  * devDependencies
+    * @netlify/dev-utils bumped from ^3.2.0 to ^3.2.1
+
 ## [4.0.4](https://github.com/netlify/primitives/compare/runtime-v4.0.3...runtime-v4.0.4) (2025-06-11)
 
 
