@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { Logger, renderFunctionErrorPage, type Geolocation } from '@netlify/dev-utils'
+import { Logger, renderFunctionErrorPage, killProcess, type Geolocation, type ProcessRef } from '@netlify/dev-utils'
 import {
   find,
   generateManifest,
@@ -46,6 +46,7 @@ export type EdgeFunctionsMatch = Awaited<ReturnType<EdgeFunctionsHandler['getFun
 
 export class EdgeFunctionsHandler {
   private configDeclarations: Declaration[]
+  private denoServerProcess?: ProcessRef
   private directories: string[]
   private geolocation: Geolocation
   private initialization: ReturnType<typeof this.initialize>
@@ -257,7 +258,8 @@ export class EdgeFunctionsHandler {
   private async initialize(env: Record<string, string>) {
     let success = true
 
-    const processRef = {}
+    const processRef: ProcessRef = {}
+    this.denoServerProcess = processRef
 
     // If we ran the server on a random port, we wouldn't know how to reach it.
     // Compute the port upfront and pass it on to the server.
@@ -337,6 +339,16 @@ export class EdgeFunctionsHandler {
 
       return this.waitForDenoServer(port, count + 1)
     }
+  }
+
+  async stop() {
+    if (!this.denoServerProcess) {
+      return
+    }
+
+    try {
+      await killProcess(this.denoServerProcess.ps)
+    } catch {}
   }
 }
 

@@ -22,12 +22,15 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
     return []
   }
 
+  let netlifyDev: NetlifyDev | undefined
+
   const plugin: vite.Plugin = {
     name: 'vite-plugin-netlify',
     async configureServer(viteDevServer) {
       const logger = createLoggerFromViteLogger(viteDevServer.config.logger)
       const { blobs, edgeFunctions, functions, middleware = true, redirects, staticFiles } = options
-      const netlifyDev = new NetlifyDev({
+
+      netlifyDev = new NetlifyDev({
         blobs,
         edgeFunctions,
         functions,
@@ -46,6 +49,12 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
       if (middleware) {
         viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
+          if (!netlifyDev) {
+            next()
+
+            return
+          }
+
           const headers: Record<string, string> = {}
           const result = await netlifyDev.handleAndIntrospectNodeRequest(nodeReq, {
             headersCollector: (key, value) => {
@@ -77,6 +86,12 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
           `💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables defined on your team and site and much more. Run ${netlifyCommand('npx netlify init')} to get started.`,
         )
       }
+    },
+
+    async closeBundle() {
+      await netlifyDev?.stop()
+
+      netlifyDev = undefined
     },
   }
 

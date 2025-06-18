@@ -470,7 +470,7 @@ export class NetlifyDev {
         return acc
       }, {})
 
-      this.#edgeFunctionsHandler = new EdgeFunctionsHandler({
+      const edgeFunctionsHandler = new EdgeFunctionsHandler({
         configDeclarations: this.#config?.config.edge_functions ?? [],
         directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
         env,
@@ -479,6 +479,9 @@ export class NetlifyDev {
         siteID,
         siteName: config?.siteInfo.name,
       })
+      this.#edgeFunctionsHandler = edgeFunctionsHandler
+
+      this.#cleanupJobs.push(() => edgeFunctionsHandler.stop())
     }
 
     if (this.#features.functions) {

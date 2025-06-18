@@ -10,6 +10,7 @@ export { Handler } from './lib/handler.js'
 export { LocalState } from './lib/local-state.js'
 export { type Logger, netlifyCommand, netlifyCyan, netlifyBanner } from './lib/logger.js'
 export { memoize, MemoizeCache } from './lib/memoize.js'
+export { killProcess, type ProcessRef } from './lib/process.js'
 export { HTTPServer } from './server/http_server.js'
 export { watchDebounced } from './lib/watch-debounced.js'
 
