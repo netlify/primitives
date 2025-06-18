@@ -46,6 +46,7 @@
     "@types/node": "^18.19.110",
     "@types/parse-gitignore": "^1.0.2",
     "@types/write-file-atomic": "^4.0.3",
+    "execa": "^8.0.1",
     "tmp-promise": "^3.0.3",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
@@ -58,10 +59,11 @@
     "dot-prop": "9.0.0",
     "env-paths": "^3.0.0",
     "find-up": "7.0.0",
-    "js-image-generator": "^1.0.4",
     "image-size": "^2.0.2",
+    "js-image-generator": "^1.0.4",
     "lodash.debounce": "^4.0.8",
     "parse-gitignore": "^2.0.0",
+    "semver": "^7.7.2",
     "uuid": "^11.1.0",
     "write-file-atomic": "^5.0.1"
   }
