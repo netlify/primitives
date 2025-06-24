@@ -51,6 +51,7 @@ export class EdgeFunctionsHandler {
   private geolocation: Geolocation
   private initialization: ReturnType<typeof this.initialize>
   private initialized: boolean
+  private stopped: boolean
   private logger: Logger
   private requestTimeout: number
   private siteID?: string
@@ -65,6 +66,7 @@ export class EdgeFunctionsHandler {
       DENO_REGION: 'dev',
     })
     this.initialized = false
+    this.stopped = false
     this.logger = options.logger
     this.requestTimeout = options.requestTimeout ?? REQUEST_TIMEOUT
     this.siteID = options.siteID
@@ -282,15 +284,21 @@ export class EdgeFunctionsHandler {
         extendEnv: false,
         pipeOutput: true,
       })
+      if (this.stopped) {
+        killProcess(processRef.ps)
+        success = false
+      }
     } catch (error) {
       success = false
 
       this.logger.error(`An error occurred while setting up the Netlify Edge Functions environment: ${String(error)}`)
     }
 
-    // The Promise above will resolve as soon as we start the command, but we
-    // must wait for it to actually listen for requests.
-    await this.waitForDenoServer(denoPort)
+    if (success) {
+      // The Promise above will resolve as soon as we start the command, but we
+      // must wait for it to actually listen for requests.
+      await this.waitForDenoServer(denoPort)
+    }
 
     this.initialized = true
 
@@ -347,7 +355,9 @@ export class EdgeFunctionsHandler {
   }
 
   async stop() {
-    if (!this.denoServerProcess) {
+    if (this.stopped) return
+    this.stopped = true
+    if (!this.denoServerProcess?.ps) {
       return
     }
 
