@@ -16,6 +16,9 @@ export default defineConfig([
     format: ['esm'],
     dts: true,
     platform: 'node',
-    copy: 'dev/runtimes/nodejs',
+    copy: {
+      from: 'dev/runtimes/nodejs',
+      to: 'dist-dev',
+    },
   },
 ])
