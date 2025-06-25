@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.15.2](https://github.com/netlify/primitives/compare/edge-functions-v2.15.1...edge-functions-v2.15.2) (2025-06-25)
+
+
+### Bug Fixes
+
+* **edge:** note when stopped so we can kill process in early init ([#313](https://github.com/netlify/primitives/issues/313)) ([3062d40](https://github.com/netlify/primitives/commit/3062d400e4b8387c43c6c03713c58d3b29325a5d))
+
 ## [2.15.1](https://github.com/netlify/primitives/compare/edge-functions-v2.15.0...edge-functions-v2.15.1) (2025-06-18)
 
 
