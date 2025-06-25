@@ -174,8 +174,13 @@ test('Works with weird keys -- valid blob keys, tricky in filesystems', async ()
   const slashes = 'a///b'
   const namespace = 'name:space'
   for (const key of [pipes, question, glob, con, angles, emoji, slashes, namespace]) {
-    await store.set(key, 'value')
-    expect(await store.get(key)).toBe('value')
+    try {
+      await store.set(key, 'value')
+      expect(await store.get(key)).toBe('value')
+    } catch (error) {
+      console.warn(`couldn't set valid key of "${key}"`)
+      throw error
+    }
   }
 
   await server.stop()
