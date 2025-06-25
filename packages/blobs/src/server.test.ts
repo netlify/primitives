@@ -158,20 +158,24 @@ test('Works with weird keys -- valid blob keys, tricky in filesystems', async ()
   const { port } = await server.start()
   const store = getStore({
     edgeURL: `http://localhost:${port}`,
-    name: 'mystore1',
+    name: 'store',
     token,
     siteID,
   })
 
+  // valid as keys and store names
   const pipes = 'valid|key'
   const question = 'key?'
   const glob = '*hehe*'
   const con = 'CON'
-  const angles = '<a href="#anchor">valid'
   const emoji = '🐰'
-  for (const key of [pipes, question, glob, con, angles, emoji]) {
+  const angles = '<>'
+  // valid only as keys
+  const slashes = 'a///b'
+  const namespace = 'name:space'
+  for (const key of [pipes, question, glob, con, angles, emoji, slashes, namespace]) {
     await store.set(key, 'value')
-    expect(await store.get(key), `'${key}' is valid`).toBe('value')
+    expect(await store.get(key)).toBe('value')
   }
 
   await server.stop()
