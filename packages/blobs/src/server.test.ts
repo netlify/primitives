@@ -149,6 +149,35 @@ test('Reads and writes from the file system', async () => {
   await fs.rm(directory2.path, { force: true, recursive: true })
 })
 
+test('Works with weird keys -- valid blob keys, tricky in filesystems', async () => {
+  const directory = await tmp.dir()
+  const server = new BlobsServer({
+    directory: directory.path,
+    token,
+  })
+  const { port } = await server.start()
+  const store = getStore({
+    edgeURL: `http://localhost:${port}`,
+    name: 'mystore1',
+    token,
+    siteID,
+  })
+
+  const pipes = 'valid|key'
+  const question = 'key?'
+  const glob = '*hehe*'
+  const con = 'CON'
+  const angles = '<a href="#anchor">valid'
+  const emoji = '🐰'
+  for (const key of [pipes, question, glob, con, angles, emoji]) {
+    await store.set(key, 'value')
+    expect(await store.get(key), `'${key}' is valid`).toBe('value')
+  }
+
+  await server.stop()
+  await fs.rm(directory.path, { force: true, recursive: true })
+})
+
 test('Separates keys from different stores', async () => {
   const directory = await tmp.dir()
   const server = new BlobsServer({
