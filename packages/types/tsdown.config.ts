@@ -7,6 +7,6 @@ export default defineConfig([
     outDir: 'dist',
     format: ['esm'],
     dts: true,
-    platform: 'node'
+    platform: 'node',
   },
 ])

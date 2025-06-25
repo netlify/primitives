@@ -34,7 +34,6 @@ export default defineConfig([
     dts: true,
     platform: 'node',
 
-
     // Using a custom function to copy the contents of the `deno` directory and
     // preserve the original structure, so that the relative path to the worker
     // files is consistent.
