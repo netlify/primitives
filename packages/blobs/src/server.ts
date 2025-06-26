@@ -231,7 +231,7 @@ export class BlobsServer {
     req: Request
     url: URL
   }): Promise<Response> {
-    const { dataPath, rootPath, req, url } = options
+    const { dataPath, rootPath, url } = options
     const directories = url.searchParams.get('directories') === 'true'
     const prefix = url.searchParams.get('prefix') ?? ''
     const result: ListResponse = {
@@ -259,10 +259,7 @@ export class BlobsServer {
   private async listStores(rootPath: string, prefix: string): Promise<Response> {
     try {
       const allStores = await fs.readdir(rootPath)
-      const filteredStores = allStores
-        // Store names are URI-encoded on Windows, so we must decode them first.
-        .map((store) => (platform === 'win32' ? decodeURIComponent(store) : store))
-        .filter((store) => store.startsWith(prefix))
+      const filteredStores = allStores.map(this.decodeWin32SafeName).filter((store) => store.startsWith(prefix))
 
       return Response.json({ stores: filteredStores })
     } catch (error) {
@@ -349,6 +346,16 @@ export class BlobsServer {
     }
   }
 
+  // On Windows, file paths can't include some valid blob/store key characters, so we URI-encode them.
+  private encodeWin32SafeName(string: string): string {
+    return platform === 'win32' ? encodeURIComponent(string) : string
+  }
+
+  // Names are URI-encoded on Windows, so we must decode them first.
+  private decodeWin32SafeName(string: string): string {
+    return platform === 'win32' ? decodeURIComponent(string) : string
+  }
+
   /**
    * Parses the URL and returns the filesystem paths where entries and metadata
    * should be stored.
@@ -364,7 +371,7 @@ export class BlobsServer {
       parts = parts.slice(1)
     }
 
-    const [siteID, rawStoreName, ...key] = parts
+    const [siteID, rawStoreName, ...rawKey] = parts
 
     if (!siteID) {
       return {}
@@ -376,9 +383,9 @@ export class BlobsServer {
       return { rootPath }
     }
 
-    // On Windows, file paths can't include the `:` character, so we URI-encode
-    // them.
-    const storeName = platform === 'win32' ? encodeURIComponent(rawStoreName) : rawStoreName
+    const key = rawKey.map(this.encodeWin32SafeName)
+
+    const storeName = this.encodeWin32SafeName(rawStoreName)
     const storePath = resolve(rootPath, storeName)
     const dataPath = resolve(storePath, ...key)
     const metadataPath = resolve(this.directory, 'metadata', siteID, storeName, ...key)
