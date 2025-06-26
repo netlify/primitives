@@ -2,7 +2,6 @@ import { createHmac } from 'node:crypto'
 import { createReadStream, promises as fs } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve, sep } from 'node:path'
-import { platform } from 'node:process'
 
 import { HTTPServer } from '@netlify/dev-utils'
 
@@ -10,7 +9,7 @@ import { ListResponse } from './backend/list.ts'
 import { SIGNED_URL_ACCEPT_HEADER } from './client.ts'
 import { decodeMetadata, encodeMetadata, METADATA_HEADER_INTERNAL } from './metadata.ts'
 import { HTTPMethod } from './types.ts'
-import { isNodeError, Logger } from './util.ts'
+import { decodeName, encodeName, isNodeError, Logger } from './util.ts'
 
 const API_URL_PATH = /\/api\/v1\/blobs\/(?<site_id>[^/]+)\/(?<store_name>[^/]+)\/?(?<key>[^?]*)/
 const LEGACY_API_URL_PATH = /\/api\/v1\/sites\/(?<site_id>[^/]+)\/blobs\/?(?<key>[^?]*)/
@@ -259,7 +258,7 @@ export class BlobsServer {
   private async listStores(rootPath: string, prefix: string): Promise<Response> {
     try {
       const allStores = await fs.readdir(rootPath)
-      const filteredStores = allStores.map(this.decodeWin32SafeName).filter((store) => store.startsWith(prefix))
+      const filteredStores = allStores.map(decodeName).filter((store) => store.startsWith(prefix))
 
       return Response.json({ stores: filteredStores })
     } catch (error) {
@@ -346,16 +345,6 @@ export class BlobsServer {
     }
   }
 
-  // On Windows, file paths can't include some valid blob/store key characters, so we URI-encode them.
-  private encodeWin32SafeName(string: string): string {
-    return platform === 'win32' ? encodeURIComponent(string) : string
-  }
-
-  // Names are URI-encoded on Windows, so we must decode them first.
-  private decodeWin32SafeName(string: string): string {
-    return platform === 'win32' ? decodeURIComponent(string) : string
-  }
-
   /**
    * Parses the URL and returns the filesystem paths where entries and metadata
    * should be stored.
@@ -383,9 +372,9 @@ export class BlobsServer {
       return { rootPath }
     }
 
-    const key = rawKey.map(this.encodeWin32SafeName)
+    const key = rawKey.map(encodeName)
 
-    const storeName = this.encodeWin32SafeName(rawStoreName)
+    const storeName = encodeName(rawStoreName)
     const storePath = resolve(rootPath, storeName)
     const dataPath = resolve(storePath, ...key)
     const metadataPath = resolve(this.directory, 'metadata', siteID, storeName, ...key)
