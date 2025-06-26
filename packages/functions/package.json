@@ -31,7 +31,7 @@
       }
     }
   },
-  "version": "4.1.7",
+  "version": "4.1.8",
   "description": "TypeScript utilities for interacting with Netlify Functions",
   "files": [
     "dist/**/*.js",
@@ -80,7 +80,7 @@
     "test": "test"
   },
   "dependencies": {
-    "@netlify/blobs": "10.0.1",
+    "@netlify/blobs": "10.0.2",
     "@netlify/dev-utils": "3.2.1",
     "@netlify/serverless-functions-api": "2.1.2",
     "@netlify/zip-it-and-ship-it": "^12.1.5",
