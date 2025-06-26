@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.0.2](https://github.com/netlify/primitives/compare/blobs-v10.0.1...blobs-v10.0.2) (2025-06-26)
+
+
+### Bug Fixes
+
+* **blobs:** Encode blob key parts before saving to disk on windows ([#316](https://github.com/netlify/primitives/issues/316)) ([f6ee4ef](https://github.com/netlify/primitives/commit/f6ee4ef4d3911672ea0a2604886d20e2be6896eb))
+
 ## [10.0.1](https://github.com/netlify/primitives/compare/blobs-v10.0.0...blobs-v10.0.1) (2025-06-18)
 
 
