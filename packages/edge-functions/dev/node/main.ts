@@ -285,7 +285,8 @@ export class EdgeFunctionsHandler {
         pipeOutput: true,
       })
       if (this.stopped) {
-        killProcess(processRef.ps)
+        await killProcess(processRef.ps)
+        this.denoServerProcess = undefined
         success = false
       }
     } catch (error) {
