@@ -35,21 +35,7 @@ function percentEncode(str: string): string {
   })
 }
 
-const INVALID_WIN32_FILES = new Set([
-  'CON',
-  'COM1',
-  'COM2',
-  'COM3',
-  'COM4',
-  'COM5',
-  'COM6',
-  'COM7',
-  'COM8',
-  'COM9',
-  'LPT1',
-  'LPT2',
-  'LPT3',
-])
+const invalidWin32File = /^(CON|COM[1-9]|LPT[1-9]|NUL|PRN|AUX)$/i
 
 /*
  *  On Windows, file paths can't include some valid blob/store key characters, so we URI-encode them.  fixme: limitations
@@ -59,7 +45,7 @@ const INVALID_WIN32_FILES = new Set([
  *  For keys (which we don't need to decode) maybe a hash would be a better idea
  */
 export function encodeWin32SafeName(string: string): string {
-  if (INVALID_WIN32_FILES.has(string)) {
+  if (invalidWin32File.exec(string)) {
     return percentEncode(string)
   }
   return encodeURIComponent(string).replace(/([*]|[. ]$)/g, percentEncode)
