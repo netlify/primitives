@@ -1,9 +1,9 @@
 {
   "packages/blobs": "10.0.2",
   "packages/cache": "3.0.4",
-  "packages/dev": "4.3.3",
+  "packages/dev": "4.3.4",
   "packages/dev-utils": "3.2.1",
-  "packages/edge-functions": "2.15.3",
+  "packages/edge-functions": "2.15.4",
   "packages/functions": "4.1.8",
   "packages/headers": "2.0.3",
   "packages/images": "1.1.1",
@@ -13,5 +13,5 @@
   "packages/runtime-utils": "2.1.0",
   "packages/static": "3.0.3",
   "packages/types": "2.0.2",
-  "packages/vite-plugin": "2.3.3"
+  "packages/vite-plugin": "2.3.4"
 }
