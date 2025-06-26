@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.15.4](https://github.com/netlify/primitives/compare/edge-functions-v2.15.3...edge-functions-v2.15.4) (2025-06-26)
+
+
+### Bug Fixes
+
+* add missing await and let server process be collected ([#319](https://github.com/netlify/primitives/issues/319)) ([1724d50](https://github.com/netlify/primitives/commit/1724d507b844a3b8e1ccb0b6c84a7e80d70d4d4c))
+
 ## [2.15.3](https://github.com/netlify/primitives/compare/edge-functions-v2.15.2...edge-functions-v2.15.3) (2025-06-26)
 
 
