@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "workspaces": [
+    "packages/eslint-config-base",
     "packages/types",
     "packages/dev-utils",
     "packages/runtime-utils",
@@ -23,24 +24,17 @@
   "scripts": {
     "dev": "node scripts/parallel.js npm run dev",
     "prepare": "husky",
-    "lint": "eslint --cache",
-    "lint:fix": "npm run lint -- --fix",
+    "lint": "npm run lint:all",
+    "lint:fix": "npm run lint:all -- --fix",
+    "lint:all": "node scripts/parallel.js npm run lint",
     "format": "prettier --write .",
     "format:ci": "prettier --check ."
   },
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
-    "@eslint/compat": "^1.2.9",
-    "@eslint/js": "^9.27.0",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@vitest/eslint-plugin": "^1.2.1",
-    "eslint": "^9.0.0",
-    "eslint-config-prettier": "^10.0.0",
-    "eslint-plugin-n": "17.19.0",
     "execa": "^8.0.1",
     "husky": "^9.0.0",
-    "prettier": "^3.0.0",
-    "typescript-eslint": "^8.33.0"
+    "prettier": "^3.0.0"
   }
 }

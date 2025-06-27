@@ -15,6 +15,8 @@
   "scripts": {
     "build": "tsup-node",
     "prepack": "npm run build",
+    "lint": "eslint --cache",
+    "lint:fix": "eslint --cache --fix",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:ci": "npm run build && vitest run",
@@ -33,6 +35,7 @@
   },
   "devDependencies": {
     "@netlify/dev-utils": "^3.2.1",
+    "@netlify/eslint-config-base": "file:../eslint-config-base",
     "tsup": "^8.5.0",
     "vitest": "^3.1.4"
   },

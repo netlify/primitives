@@ -29,8 +29,7 @@ export const killProcess = (ps?: ExecaChildProcess) => {
     // which can cause unhandled rejection.
     try {
       ps.kill('SIGTERM', {
-        forceKillAfterTimeout:
-          platform() === 'win32' && satisfies(process.version, '>=21') ? false : SERVER_KILL_TIMEOUT,
+        forceKillAfterTimeout: SERVER_KILL_TIMEOUT,
       })
     } catch {
       // no-op

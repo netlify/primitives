@@ -27,6 +27,8 @@
   "scripts": {
     "build": "tsup-node",
     "prepack": "npm run build",
+    "lint": "eslint --cache",
+    "lint:fix": "eslint --cache --fix",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:ci": "npm run build && vitest run",
@@ -41,6 +43,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
+    "@netlify/eslint-config-base": "file:../eslint-config-base",
     "@netlify/types": "2.0.1",
     "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^18.19.110",

@@ -52,6 +52,8 @@
     "dev": "tsup-node --watch",
     "build": "tsup-node",
     "prepack": "npm run build",
+    "lint": "eslint --cache",
+    "lint:fix": "eslint --cache --fix",
     "test": "run-s test:ci",
     "test:dev": "run-s build test:dev:*",
     "test:dev:tsd": "tsd",
@@ -94,6 +96,7 @@
     "source-map-support": "^0.5.21"
   },
   "devDependencies": {
+    "@netlify/eslint-config-base": "file:../eslint-config-base",
     "@types/semver": "^7.5.8",
     "@types/source-map-support": "^0.5.10",
     "npm-run-all2": "^5.0.0",
