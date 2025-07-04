@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.1.9](https://github.com/netlify/primitives/compare/functions-v4.1.8...functions-v4.1.9) (2025-07-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/serverless-functions-api to v2.1.3 ([#328](https://github.com/netlify/primitives/issues/328)) ([3a82e4f](https://github.com/netlify/primitives/commit/3a82e4fc5dd9070871cc9cc8a4368af6585d9035))
+* **deps:** update dependency @netlify/zip-it-and-ship-it to ^12.2.0 ([#322](https://github.com/netlify/primitives/issues/322)) ([fb6721f](https://github.com/netlify/primitives/commit/fb6721fe63d92cf7538d40902821705841c1f0ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.2 to 10.0.3
+    * @netlify/dev-utils bumped from 3.2.1 to 3.2.2
+
 ## [4.1.8](https://github.com/netlify/primitives/compare/functions-v4.1.7...functions-v4.1.8) (2025-06-26)
 
 

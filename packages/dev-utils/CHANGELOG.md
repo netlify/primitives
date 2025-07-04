@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.2](https://github.com/netlify/primitives/compare/dev-utils-v3.2.1...dev-utils-v3.2.2) (2025-07-04)
+
+
+### Bug Fixes
+
+* **deps:** move tmp-promise to prod deps ([#329](https://github.com/netlify/primitives/issues/329)) ([f8d46bf](https://github.com/netlify/primitives/commit/f8d46bf759e15ed866436838610ddadbb06c0de1))
+
 ## [3.2.1](https://github.com/netlify/primitives/compare/dev-utils-v3.2.0...dev-utils-v3.2.1) (2025-06-18)
 
 

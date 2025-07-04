@@ -1,6 +1,6 @@
 {
   "name": "@netlify/static",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "TypeScript implementtion of Netlify's static file serving logic",
   "type": "module",
   "engines": {
@@ -32,7 +32,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "^3.2.1",
+    "@netlify/dev-utils": "^3.2.2",
     "@types/mime-types": "^2.1.4",
     "tsup": "^8.5.0",
     "vitest": "^3.1.4"
