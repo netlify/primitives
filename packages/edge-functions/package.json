@@ -50,7 +50,6 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/types": "2.0.2",
     "execa": "^8.0.1",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
@@ -60,6 +59,7 @@
     "@netlify/edge-bundler": "^14.0.6",
     "@netlify/edge-functions-bootstrap": "^2.14.0",
     "@netlify/runtime-utils": "2.1.0",
+    "@netlify/types": "2.0.2",
     "get-port": "^7.1.0"
   }
 }
