@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.15.6](https://github.com/netlify/primitives/compare/edge-functions-v2.15.5...edge-functions-v2.15.6) (2025-07-07)
+
+
+### Bug Fixes
+
+* declare `Netlify` global in edge functions types ([#330](https://github.com/netlify/primitives/issues/330)) ([0546bb6](https://github.com/netlify/primitives/commit/0546bb6eccf0e61aae64973cef788cc75d2965d8))
+
 ## [2.15.5](https://github.com/netlify/primitives/compare/edge-functions-v2.15.4...edge-functions-v2.15.5) (2025-07-04)
 
 
