@@ -317,7 +317,7 @@ export class BlobsServer {
       // happen if multiple clients try to write to the same key at the same
       // time. To prevent this, we write to a temporary file first and then
       // atomically move it to its final destination.
-      const tempPath = join(dirname(dataPath), '.' + Math.random().toString())
+      const tempPath = join(dirname(dataPath), `.${Math.random().toString().slice(2)}`)
       const body = await req.arrayBuffer()
       await fs.mkdir(dirname(dataPath), { recursive: true })
       await fs.writeFile(tempPath, Buffer.from(body))
