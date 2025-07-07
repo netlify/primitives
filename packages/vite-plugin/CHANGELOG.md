@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.3.7](https://github.com/netlify/primitives/compare/vite-plugin-v2.3.6...vite-plugin-v2.3.7) (2025-07-07)
+
+
+### Bug Fixes
+
+* apply fixes required for Vite plugin in Astro  ([#332](https://github.com/netlify/primitives/issues/332)) ([fb8588e](https://github.com/netlify/primitives/commit/fb8588ee2731c40ee2c33997c026bc86542c71d0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.3.6 to 4.3.7
+
 ## [2.3.6](https://github.com/netlify/primitives/compare/vite-plugin-v2.3.5...vite-plugin-v2.3.6) (2025-07-07)
 
 
