@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.0.4](https://github.com/netlify/primitives/compare/blobs-v10.0.3...blobs-v10.0.4) (2025-07-07)
+
+
+### Bug Fixes
+
+* apply fixes required for Vite plugin in Astro  ([#332](https://github.com/netlify/primitives/issues/332)) ([fb8588e](https://github.com/netlify/primitives/commit/fb8588ee2731c40ee2c33997c026bc86542c71d0))
+
 ## [10.0.3](https://github.com/netlify/primitives/compare/blobs-v10.0.2...blobs-v10.0.3) (2025-07-04)
 
 
