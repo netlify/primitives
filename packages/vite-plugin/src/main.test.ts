@@ -60,7 +60,7 @@ beforeEach(() => {
   process.env = { ...originalEnv }
 })
 
-describe.for([['5.0.0'], ['6.0.0']])('Vite %s', ([viteVersion]) => {
+describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
   describe('Plugin constructor', () => {
     test('Is a no-op when running in the Netlify CLI', () => {
       process.env.NETLIFY_DEV = 'true'
@@ -733,7 +733,7 @@ defined on your team and site and much more. Run npx netlify init to get started
         await fixture
           .withPackages({
             '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
-            '@vitejs/plugin-react': '4.5.0',
+            '@vitejs/plugin-react': '4.6.0',
             react: '19.1.0',
             'react-dom': '19.1.0',
             vite: viteVersion,
