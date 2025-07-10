@@ -6,7 +6,7 @@ type GlobalThisExtended = typeof globalThis & {
   [SHUTDOWN_TRACERS]?: () => void
 }
 
-export const getTracer = async (name?: string, version?: string): Promise<SugaredTracer | undefined> => {
+export const getTracer = (name?: string, version?: string): SugaredTracer | undefined => {
   return (globalThis as GlobalThisExtended)[GET_TRACER]?.(name, version)
 }
 
