@@ -39,18 +39,19 @@ export const createTracerProvider = async (options: {
 
   nodeTracerProvider.register()
 
+  const { trace } = await import('@opentelemetry/api')
+  const { SugaredTracer } = await import('@opentelemetry/api/experimental')
+  const { default: pkg } = await import('../../package.json', { with: { type: 'json' } })
+
   Object.defineProperty(globalThis, GET_TRACER, {
     enumerable: false,
     configurable: true,
     writable: false,
-    value: async function getTracer(name?: string, version?: string) {
-      const { trace } = await import('@opentelemetry/api')
-      const { SugaredTracer } = await import('@opentelemetry/api/experimental')
+    value: function getTracer(name?: string, version?: string) {
       if (name) {
         return new SugaredTracer(trace.getTracer(name, version))
       }
 
-      const { default: pkg } = await import('../../package.json', { with: { type: 'json' } })
       return new SugaredTracer(trace.getTracer(pkg.name, pkg.version))
     },
   })
