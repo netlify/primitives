@@ -1,9 +1,12 @@
+import { getTracer } from '@netlify/otel'
 import { ListResponse, ListResponseBlob } from './backend/list.ts'
 import { Client, type Conditions } from './client.ts'
 import type { ConsistencyMode } from './consistency.ts'
 import { getMetadataFromResponse, Metadata } from './metadata.ts'
 import { BlobInput, HTTPMethod } from './types.ts'
 import { BlobsInternalError, collectIterator } from './util.ts'
+
+import { Attributes, Span, SpanStatusCode } from '@opentelemetry/api'
 
 export const DEPLOY_STORE_PREFIX = 'deploy:'
 export const LEGACY_STORE_INTERNAL_PREFIX = 'netlify-internal/legacy-namespace/'
@@ -105,11 +108,51 @@ export type WriteResult = {
   modified: boolean
 }
 
-export type BlobResponseType = 'arrayBuffer' | 'blob' | 'json' | 'stream' | 'text'
+function otel<This extends Store, Args extends any[], Return>(getAttributes?: (...args: Args) => Attributes) {
+  return function (method: (...args: Args) => Promise<Return>, context: ClassMethodDecoratorContext) {
+    const methodName = String(context.name)
+    const operationName = `blobs.${methodName}`
+    return async function (this: This, ...args: Args): Promise<Return> {
+      const storeName = this['name']
+      const tracer = await getTracer()
+
+      if (tracer) {
+        return tracer.withActiveSpan(operationName, async (span) => {
+          span.setAttribute('blobs.store', storeName)
+          if (getAttributes) {
+            for (const [name, value] of Object.entries(getAttributes(...args))) {
+              value && span.setAttribute(`blobs.${name}`, value)
+            }
+          }
+          try {
+            this['span'] = span
+            const result = await method.apply(this, args)
+            span.setStatus({ code: SpanStatusCode.OK })
+            return result
+          } catch (error) {
+            const message = (error as Error).message ?? 'problem'
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message,
+            })
+            span.recordException(error as Error)
+            throw error
+          } finally {
+            this['span'] = null
+          }
+        })
+      }
+      return await method.apply(this, args)
+    }
+  }
+}
+
+export type BlobResponseType = 'arrayBuffer' | 'bytes' | 'blob' | 'json' | 'stream' | 'text'
 
 export class Store {
   private client: Client
   private name: string
+  private span: Span | null = null
 
   constructor(options: StoreOptions) {
     this.client = options.client
@@ -153,6 +196,11 @@ export class Store {
   async get(key: string, { type }: GetOptions & { type: 'json' }): Promise<any>
   async get(key: string, { type }: GetOptions & { type: 'stream' }): Promise<ReadableStream>
   async get(key: string, { type }: GetOptions & { type: 'text' }): Promise<string>
+  @otel((key, options) => ({
+    method: 'GET',
+    key,
+    response_type: options?.type ?? 'text',
+  }))
   async get(
     key: string,
     options?: GetOptions & { type?: BlobResponseType },
@@ -191,6 +239,11 @@ export class Store {
     throw new BlobsInternalError(res)
   }
 
+  @otel((key, options) => ({
+    method: 'GET',
+    key,
+    consistency: options?.consistency,
+  }))
   async getMetadata(key: string, { consistency }: { consistency?: ConsistencyMode } = {}) {
     const res = await this.client.makeRequest({ consistency, key, method: HTTPMethod.HEAD, storeName: this.name })
 
@@ -226,6 +279,10 @@ export class Store {
     key: string,
     options: { type: 'blob' } & GetWithMetadataOptions,
   ): Promise<({ data: Blob } & GetWithMetadataResult) | null>
+  async getWithMetadata(
+    key: string,
+    options: { type: 'blob' } & GetWithMetadataOptions,
+  ): Promise<({ data: Uint8Array } & GetWithMetadataResult) | null>
 
   async getWithMetadata(
     key: string,
@@ -242,6 +299,12 @@ export class Store {
     options: { type: 'text' } & GetWithMetadataOptions,
   ): Promise<({ data: string } & GetWithMetadataResult) | null>
 
+  @otel((key, options) => ({
+    method: 'GET',
+    key,
+    consistency: options?.consistency,
+    response_type: options?.type ?? 'text',
+  }))
   async getWithMetadata(
     key: string,
     options?: { type: BlobResponseType } & GetWithMetadataOptions,
@@ -325,6 +388,12 @@ export class Store {
     )
   }
 
+  @otel((key, data, options) => ({
+    method: 'PUT',
+    key,
+    atomic: options?.onlyIfMatch || options?.onlyIfNew,
+    type: typeof data == 'string' ? 'text' : data instanceof Blob ? data.type : 'arrayBuffer',
+  }))
   async set(key: string, data: BlobInput, options: SetOptions = {}): Promise<WriteResult> {
     Store.validateKey(key)
 
@@ -353,6 +422,12 @@ export class Store {
     throw new BlobsInternalError(res)
   }
 
+  @otel((key, data, options) => ({
+    method: 'PUT',
+    key,
+    atomic: options?.onlyIfMatch || options?.onlyIfNew,
+    type: 'json',
+  }))
   async setJSON(key: string, data: unknown, options: SetOptions = {}): Promise<WriteResult> {
     Store.validateKey(key)
 
