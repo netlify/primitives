@@ -147,7 +147,7 @@ function otel<This extends Store, Args extends any[], Return>(getAttributes?: (.
   }
 }
 
-export type BlobResponseType = 'arrayBuffer' | 'bytes' | 'blob' | 'json' | 'stream' | 'text'
+export type BlobResponseType = 'arrayBuffer' | 'blob' | 'json' | 'stream' | 'text'
 
 export class Store {
   private client: Client
@@ -279,10 +279,6 @@ export class Store {
     key: string,
     options: { type: 'blob' } & GetWithMetadataOptions,
   ): Promise<({ data: Blob } & GetWithMetadataResult) | null>
-  async getWithMetadata(
-    key: string,
-    options: { type: 'blob' } & GetWithMetadataOptions,
-  ): Promise<({ data: Uint8Array } & GetWithMetadataResult) | null>
 
   async getWithMetadata(
     key: string,
