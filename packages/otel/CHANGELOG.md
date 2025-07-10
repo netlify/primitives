@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/netlify/primitives/compare/otel-v3.0.2...otel-v3.1.0) (2025-07-10)
+
+
+### Features
+
+* make getTracer a sync function so it can be used in sync and async contexts ([#339](https://github.com/netlify/primitives/issues/339)) ([62e7ede](https://github.com/netlify/primitives/commit/62e7ede177212baaf1939220eba1dc91ac3460b4))
+
 ## [3.0.2](https://github.com/netlify/primitives/compare/otel-v3.0.1...otel-v3.0.2) (2025-06-03)
 
 

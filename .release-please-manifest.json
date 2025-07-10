@@ -7,11 +7,11 @@
   "packages/functions": "4.1.10",
   "packages/headers": "2.0.4",
   "packages/images": "1.1.2",
-  "packages/otel": "3.0.2",
+  "packages/otel": "3.1.0",
   "packages/redirects": "3.0.4",
   "packages/runtime": "4.0.8",
   "packages/runtime-utils": "2.1.0",
   "packages/static": "3.0.4",
   "packages/types": "2.0.2",
-  "packages/vite-plugin": "2.3.7"
+  "packages/vite-plugin": "2.3.8"
 }

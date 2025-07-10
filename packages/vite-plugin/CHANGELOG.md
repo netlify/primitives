@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.8](https://github.com/netlify/primitives/compare/vite-plugin-v2.3.7...vite-plugin-v2.3.8) (2025-07-10)
+
+
+### Bug Fixes
+
+* **deps:** loosen vite peer dep to support vite 7 ([#340](https://github.com/netlify/primitives/issues/340)) ([7cc76e6](https://github.com/netlify/primitives/commit/7cc76e6e5a9f308d857f59399329a752a1ee999c))
+
 ## [2.3.7](https://github.com/netlify/primitives/compare/vite-plugin-v2.3.6...vite-plugin-v2.3.7) (2025-07-07)
 
 
