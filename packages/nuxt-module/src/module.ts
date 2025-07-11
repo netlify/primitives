@@ -99,7 +99,7 @@ export default defineNuxtModule<NetlifyModuleOptions>({
           }
 
           for (const key in headers) {
-            nodeRes.setHeader(key, headers[key])
+            nodeRes.setHeader(key, headers[key] ?? '')
           }
 
           next()

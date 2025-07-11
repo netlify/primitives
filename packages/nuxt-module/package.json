@@ -24,16 +24,16 @@
     "dist"
   ],
   "scripts": {
-    "build": "exit 0",
+    "build": "nuxt-module-build prepare && nuxt-module-build build",
     "dev": "npm run dev:prepare && nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "lint": "eslint .",
-    "prepack": "nuxt-module-build build",
+    "prepack": "npm run build",
     "publint": "npx -y publint --strict",
     "test": "vitest run",
     "//": "Workaround to run this package's eslint in CI",
-    "test:ci": "npm run lint && npm run test",
+    "test:ci": "npm run lint && npm run test:types && npm run test",
     "test:dev": "vitest",
     "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
     "test:watch": "vitest watch"
@@ -51,7 +51,10 @@
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@nuxt/kit": "^3.17.6"
+    "@netlify/dev": "^4.3.8",
+    "@netlify/dev-utils": "^3.2.2",
+    "@nuxt/kit": "^3.17.6",
+    "h3": "^1.15.3"
   },
   "devDependencies": {
     "@nuxt/devtools": "^2.6.2",
