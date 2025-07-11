@@ -17,7 +17,7 @@ export const createTracerProvider = async (options: {
   const runtimeVersion = nodeVersion.slice(1)
 
   const { Resource } = await import('@opentelemetry/resources')
-  const { NodeTracerProvider, BatchSpanProcessor } = await import('@opentelemetry/sdk-trace-node')
+  const { NodeTracerProvider, SimpleSpanProcessor } = await import('@opentelemetry/sdk-trace-node')
 
   const { NetlifySpanExporter } = await import('./netlify_span_exporter.js')
 
@@ -34,7 +34,7 @@ export const createTracerProvider = async (options: {
 
   const nodeTracerProvider = new NodeTracerProvider({
     resource,
-    spanProcessors: [new BatchSpanProcessor(new NetlifySpanExporter())],
+    spanProcessors: [new SimpleSpanProcessor(new NetlifySpanExporter())],
   })
 
   nodeTracerProvider.register()
