@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
 import { createImageServerHandler, Fixture, generateImage, getImageResponseSize, HTTPServer } from '@netlify/dev-utils'
-import { describe, expect, test } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import { isFile } from './lib/fs.js'
 import { NetlifyDev } from './main.js'
@@ -10,6 +10,10 @@ import { NetlifyDev } from './main.js'
 import { withMockApi } from '../test/mock-api.js'
 
 describe('Handling requests', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
   describe('No linked site', () => {
     test('Same-site rewrite to a static file', async () => {
       const fixture = new Fixture()
@@ -425,7 +429,7 @@ describe('Handling requests', () => {
           'netlify/functions/hello.mjs',
           `export default async () => {
             const cache = await caches.open("my-cache");
-            
+
             await cache.put("https://example.com", new Response("Cached response"));
 
             return new Response("Hello world");
@@ -533,6 +537,130 @@ describe('Handling requests', () => {
       await dev.stop()
       await fixture.destroy()
     })
+
+    test('Invoking an edge function', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+           publish = "public"
+           [context.dev.environment]
+           MY_TOKEN = "value from dev context"
+           [context.deploy-preview.environment]
+           MY_OTHER_TOKEN = "value from deploy preview context"
+        `,
+        )
+        .withFile(
+          'netlify/functions/hello.mjs',
+          `export default async (req, context) => new Response("Hello from function");
+
+           export const config = { path: "/hello/:a/*" };`,
+        )
+        .withFile(
+          'netlify/edge-functions/passthrough.mjs',
+          `export default async (req, context) => {
+            const res = await context.next();
+            const text = await res.text();
+
+            return new Response(text.toUpperCase(), res);
+          };
+
+           export const config = { path: "/hello/passthrough/*" };`,
+        )
+        .withFile(
+          'netlify/edge-functions/terminate.mjs',
+          `export default async (req, context) => Response.json({
+             runtimeEnv: {
+               NETLIFY_BLOBS_CONTEXT: Netlify.env.get("NETLIFY_BLOBS_CONTEXT"),
+             },
+             platformEnv: {
+               DEPLOY_ID: Netlify.env.get("DEPLOY_ID"),
+             },
+             configEnv: {
+               MY_TOKEN: Netlify.env.get("MY_TOKEN"),
+               MY_OTHER_TOKEN: Netlify.env.get("MY_OTHER_TOKEN"),
+             },
+             parentProcessEnv: {
+               SOME_ZSH_THING_MAYBE: Netlify.env.get("SOME_ZSH_THING_MAYBE"),
+             },
+             geo: context.geo,
+             params: context.params,
+             path: context.path,
+             server: context.server,
+             site: context.site,
+             url: context.url,
+           });
+
+           export const config = { path: "/hello/terminate/*" };`,
+        )
+      const directory = await fixture.create()
+
+      vi.stubEnv('SOME_ZSH_THING_MAYBE', 'value on developer machine')
+
+      const dev = new NetlifyDev({
+        apiToken: 'token',
+        projectRoot: directory,
+      })
+
+      const { serverAddress } = await dev.start()
+
+      const req1 = new Request('https://site.netlify/hello/passthrough/two/three')
+      const res1 = await dev.handle(req1)
+
+      expect(await res1?.text()).toBe('HELLO FROM FUNCTION')
+
+      const req2 = new Request('https://site.netlify/hello/terminate/two/three')
+      const res2 = await dev.handle(req2)
+      const req2URL = new URL('/hello/terminate/two/three', serverAddress)
+
+      expect(await res2?.json()).toStrictEqual({
+        // Env vars emulating the EF runtime are present
+        runtimeEnv: {
+          NETLIFY_BLOBS_CONTEXT: expect.stringMatching(/\w+/) as unknown,
+        },
+        // Env vars emulating the EF runtime are present
+        // Note that these originate from `@netlify/config`
+        platformEnv: {
+          DEPLOY_ID: '0',
+        },
+        // Envs var set in `netlify.toml` for `dev` context only are passed to EFs
+        configEnv: {
+          MY_TOKEN: 'value from dev context',
+          // MY_OTHER_TOKEN is not present
+        },
+        parentProcessEnv: {
+          // SOME_ZSH_THING_MAYBE is not present
+        },
+
+        geo: {
+          city: 'San Francisco',
+          country: {
+            code: 'US',
+            name: 'United States',
+          },
+          latitude: 0,
+          longitude: 0,
+          subdivision: {
+            code: 'CA',
+            name: 'California',
+          },
+          timezone: 'UTC',
+        },
+        params: {
+          '0': 'two/three',
+        },
+        server: {
+          region: 'dev',
+        },
+        site: {
+          url: serverAddress,
+        },
+        url: req2URL.toString(),
+      })
+
+      await dev.stop()
+      await fixture.destroy()
+    })
   })
 
   describe('With linked site', () => {
@@ -587,7 +715,7 @@ describe('Handling requests', () => {
           `export default async (req, context) => Response.json({
              env: {
                WITH_DEV_OVERRIDE: Netlify.env.get("WITH_DEV_OVERRIDE"),
-               WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE")             
+               WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE")
              },
              geo: context.geo,
              params: context.params,
@@ -596,7 +724,7 @@ describe('Handling requests', () => {
              site: context.site,
              url: context.url
            });
-           
+
            export const config = { path: "/hello/:a/*" };`,
         )
         .withStateFile({ siteId: 'site_id' })
@@ -659,13 +787,17 @@ describe('Handling requests', () => {
         .withFile(
           'netlify.toml',
           `[build]
-        publish = "public"
+           publish = "public"
+           [context.dev.environment]
+           MY_TOKEN = "value from dev context"
+           [context.deploy-preview.environment]
+           MY_OTHER_TOKEN = "value from deploy preview context"
         `,
         )
         .withFile(
           'netlify/functions/hello.mjs',
           `export default async (req, context) => new Response("Hello from function");
-           
+
            export const config = { path: "/hello/:a/*" };`,
         )
         .withFile(
@@ -676,30 +808,45 @@ describe('Handling requests', () => {
 
             return new Response(text.toUpperCase(), res);
           };
-           
+
            export const config = { path: "/hello/passthrough/*" };`,
         )
         .withFile(
           'netlify/edge-functions/terminate.mjs',
           `export default async (req, context) => Response.json({
-             env: {
+             siteEnv: {
                WITH_DEV_OVERRIDE: Netlify.env.get("WITH_DEV_OVERRIDE"),
-               WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE")             
+               WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE"),
+             },
+             runtimeEnv: {
+               NETLIFY_BLOBS_CONTEXT: Netlify.env.get("NETLIFY_BLOBS_CONTEXT"),
+             },
+             platformEnv: {
+               DEPLOY_ID: Netlify.env.get("DEPLOY_ID"),
+             },
+             configEnv: {
+               MY_TOKEN: Netlify.env.get("MY_TOKEN"),
+               MY_OTHER_TOKEN: Netlify.env.get("MY_OTHER_TOKEN"),
+             },
+             parentProcessEnv: {
+               SOME_ZSH_THING_MAYBE: Netlify.env.get("SOME_ZSH_THING_MAYBE"),
              },
              geo: context.geo,
              params: context.params,
              path: context.path,
              server: context.server,
              site: context.site,
-             url: context.url
+             url: context.url,
            });
-           
+
            export const config = { path: "/hello/terminate/*" };`,
         )
         .withStateFile({ siteId: 'site_id' })
       const directory = await fixture.create()
 
       await withMockApi(routes, async (context) => {
+        vi.stubEnv('SOME_ZSH_THING_MAYBE', 'value on developer machine')
+
         const dev = new NetlifyDev({
           apiURL: context.apiUrl,
           apiToken: 'token',
@@ -718,10 +865,32 @@ describe('Handling requests', () => {
         const req2URL = new URL('/hello/terminate/two/three', serverAddress)
 
         expect(await res2?.json()).toStrictEqual({
-          env: {
+          // Env vars set on the site ("UI") are passed to EFs
+          siteEnv: {
             WITH_DEV_OVERRIDE: 'value from dev context',
             WITHOUT_DEV_OVERRIDE: 'value from all context',
           },
+          // Env vars emulating the EF runtime are present
+          // TODO(serhalp): Test conditionally injected `NETLIFY_PURGE_API_TOKEN`
+          // TODO(serhalp): Finish implementing and test conditionally injected `BRANCH`
+          runtimeEnv: {
+            NETLIFY_BLOBS_CONTEXT: expect.stringMatching(/\w+/) as unknown,
+          },
+          // Env vars emulating the EF runtime are present
+          // Note that these originate from `@netlify/config`
+          platformEnv: {
+            DEPLOY_ID: '0',
+          },
+          // Envs var set in `netlify.toml` for `dev` context only are passed to EFs
+          configEnv: {
+            MY_TOKEN: 'value from dev context',
+            // MY_OTHER_TOKEN is not present
+          },
+          parentProcessEnv: {
+            // SOME_ZSH_THING_MAYBE is not present
+          },
+          // TODO(serhalp): Implement and test support for `.env.*` files (exists in CLI)
+
           geo: {
             city: 'San Francisco',
             country: {
@@ -769,7 +938,7 @@ describe('Handling requests', () => {
         .withFile(
           'netlify/functions/greeting.mjs',
           `export default async (req, context) => new Response(context.params.greeting + ", friend!");
-           
+
            export const config = { path: "/:greeting", preferStatic: true };`,
         )
         .withFile('public/hello.html', '<html>Hello</html>')

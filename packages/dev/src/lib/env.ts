@@ -42,6 +42,7 @@ interface InjectEnvironmentVariablesOptions {
   accountSlug?: string
   baseVariables: Record<string, EnvironmentVariable>
   envAPI: EnvironmentVariables
+  envSnapshot: Record<string, string | undefined>
   netlifyAPI?: NetlifyAPI
   siteID?: string
 }
@@ -50,6 +51,7 @@ export const injectEnvVariables = async ({
   accountSlug,
   baseVariables = {},
   envAPI,
+  envSnapshot,
   netlifyAPI,
   siteID,
 }: InjectEnvironmentVariablesOptions) => {
@@ -66,6 +68,26 @@ export const injectEnvVariables = async ({
     })
   }
 
+  // We've kept track of env vars we've set ourselves so far. These are "internal" env vars,
+  // part of the runtime emulation. They've already been populated on the actual env - we just
+  // need to record them in the results.
+  // TODO(serhalp): It would likely be cleaner to populate these on the env here rather than
+  // have them be a special case.
+  for (const key of Object.keys(envSnapshot)) {
+    const result: InjectedEnvironmentVariable = {
+      isInternal: true,
+      originalValue: 'unused',
+      overriddenSources: [],
+      usedSource: 'internal',
+      value: envAPI.get(key) ?? '',
+    }
+
+    results[key] = result
+  }
+
+  // Then we inject all the rest of the env vars, which come from multiple `source`s and have
+  // been collected from `@netlify/config` and/or Envelope. These have not been populated on the
+  // actual env yet, so we need to do that now too.
   for (const [key, variable] of Object.entries(variables)) {
     const existsInProcess = envAPI.has(key)
     const [usedSource, ...overriddenSources] = existsInProcess ? ['process', ...variable.sources] : variable.sources

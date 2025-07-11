@@ -447,28 +447,20 @@ export class NetlifyDev {
         accountSlug: config?.siteInfo?.account_slug,
         baseVariables: config?.env || {},
         envAPI: runtime.env,
+        envSnapshot: runtime.envSnapshot,
         netlifyAPI: config?.api,
         siteID,
       })
     }
 
     if (this.#features.edgeFunctions) {
-      const env = Object.entries(envVariables).reduce<Record<string, string>>((acc, [key, variable]) => {
-        if (
-          variable.usedSource === 'account' ||
-          variable.usedSource === 'addons' ||
-          variable.usedSource === 'internal' ||
-          variable.usedSource === 'ui' ||
-          variable.usedSource.startsWith('.env')
-        ) {
-          return {
-            ...acc,
-            [key]: variable.value,
-          }
-        }
-
-        return acc
-      }, {})
+      const env = Object.entries(envVariables).reduce<Record<string, string>>(
+        (acc, [key, variable]) => ({
+          ...acc,
+          [key]: variable.value,
+        }),
+        {},
+      )
 
       const edgeFunctionsHandler = new EdgeFunctionsHandler({
         configDeclarations: this.#config?.config.edge_functions ?? [],
