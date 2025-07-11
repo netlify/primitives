@@ -46,6 +46,17 @@ interface InjectEnvironmentVariablesOptions {
   siteID?: string
 }
 
+/**
+ * Inject user-defined environment variables (from various sources, see `@netlify/config`)
+ * into the provided `envAPI` (which may be a proxy to `process.env`, affecting the current proc),
+ * if `siteID` and `accountSlug` are provided.
+ * @see {@link https://github.com/netlify/build/blob/8b7583e1890636bd64b54e20aee40ae5365edeaf/packages/config/src/env/main.ts#L92}
+ *
+ * This also injects and returns the documented runtime env vars:
+ * @see {@link https://docs.netlify.com/functions/environment-variables/#functions}
+ *
+ * @return Metadata about all injected environment variables
+ */
 export const injectEnvVariables = async ({
   accountSlug,
   baseVariables = {},
@@ -66,6 +77,8 @@ export const injectEnvVariables = async ({
     })
   }
 
+  // Inject env vars which come from multiple `source`s and have been collected from
+  // `@netlify/config` and/or Envelope. These have not been populated on the actual env yet.
   for (const [key, variable] of Object.entries(variables)) {
     const existsInProcess = envAPI.has(key)
     const [usedSource, ...overriddenSources] = existsInProcess ? ['process', ...variable.sources] : variable.sources

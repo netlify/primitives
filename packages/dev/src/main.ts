@@ -453,27 +453,32 @@ export class NetlifyDev {
     }
 
     if (this.#features.edgeFunctions) {
-      const env = Object.entries(envVariables).reduce<Record<string, string>>((acc, [key, variable]) => {
-        if (
-          variable.usedSource === 'account' ||
-          variable.usedSource === 'addons' ||
-          variable.usedSource === 'internal' ||
-          variable.usedSource === 'ui' ||
-          variable.usedSource.startsWith('.env')
-        ) {
-          return {
+      const edgeFunctionsEnv = {
+        // User-defined env vars + documented runtime env vars
+        ...Object.entries(envVariables).reduce<Record<string, string>>(
+          (acc, [key, variable]) => ({
             ...acc,
             [key]: variable.value,
-          }
-        }
-
-        return acc
-      }, {})
+          }),
+          {},
+        ),
+        // Add runtime env vars that we've set ourselves so far. These are "internal" env vars,
+        // part of the runtime emulation. They've already been populated on this process's env, which
+        // is needed to make other dev features work. These are different than the "documented" runtime
+        // env vars, in that they are implementation details, needed to make our features work.
+        ...Object.keys(runtime.envSnapshot).reduce<Record<string, string>>(
+          (acc, key) => ({
+            ...acc,
+            [key]: runtime.env.get(key) ?? '',
+          }),
+          {},
+        ),
+      }
 
       const edgeFunctionsHandler = new EdgeFunctionsHandler({
         configDeclarations: this.#config?.config.edge_functions ?? [],
         directories: [this.#config?.config.build.edge_functions].filter(Boolean) as string[],
-        env,
+        env: edgeFunctionsEnv,
         geolocation: mockLocation,
         logger: this.#logger,
         siteID,
