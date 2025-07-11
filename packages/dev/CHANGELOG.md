@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.8](https://github.com/netlify/primitives/compare/dev-v4.3.7...dev-v4.3.8) (2025-07-11)
+
+
+### Bug Fixes
+
+* pass all required env vars to edge function invocations ([#342](https://github.com/netlify/primitives/issues/342)) ([9b6c286](https://github.com/netlify/primitives/commit/9b6c2863d157a0fbeca35ea0cd55d6f8d0a0acc1))
+
 ## [4.3.7](https://github.com/netlify/primitives/compare/dev-v4.3.6...dev-v4.3.7) (2025-07-07)
 
 
