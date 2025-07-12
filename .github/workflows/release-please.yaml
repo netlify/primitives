@@ -78,6 +78,10 @@ jobs:
         if: ${{ steps.release.outputs['packages/images--release_created'] }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish packages/nuxt-module/ --provenance --access=public
+        if: ${{ steps.release.outputs['packages/nuxt-module--release_created'] }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/redirects/ --provenance --access=public
         if: ${{ steps.release.outputs['packages/redirects--release_created'] }}
         env:

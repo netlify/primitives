@@ -23,6 +23,10 @@ export default tseslint.config(
   includeIgnoreFile(path.resolve(__dirname, '.gitignore')),
   ...packageIgnores,
   {
+    // Uses its own eslint setup
+    ignores: ['packages/nuxt-module/'],
+  },
+  {
     linterOptions: {
       reportUnusedDisableDirectives: true,
     },

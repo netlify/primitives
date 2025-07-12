@@ -1,0 +1,73 @@
+{
+  "name": "@netlify/nuxt",
+  "version": "0.0.0",
+  "description": "Nuxt module providing local emulation of the Netlify environment",
+  "type": "module",
+  "engines": {
+    "node": "^20.6.1 || >=22"
+  },
+  "main": "./dist/module.mjs",
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/types.d.mts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/types.d.mts",
+      "import": "./dist/module.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "nuxt-module-build prepare && nuxt-module-build build",
+    "dev": "npm run dev:prepare && nuxi dev playground",
+    "dev:build": "nuxi build playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "lint": "eslint .",
+    "prepack": "npm run build",
+    "publint": "npx -y publint --strict",
+    "test": "vitest run",
+    "//": "Workaround to run this package's eslint in CI",
+    "test:ci": "npm run lint && npm run test:types && npm run test",
+    "test:dev": "vitest",
+    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
+    "test:watch": "vitest watch"
+  },
+  "keywords": [
+    "netlify",
+    "nuxt",
+    "nuxt-module",
+    "dev"
+  ],
+  "license": "MIT",
+  "repository": "netlify/primitives",
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  },
+  "author": "Netlify Inc.",
+  "dependencies": {
+    "@netlify/dev": "^4.3.8",
+    "@netlify/dev-utils": "^3.2.2",
+    "@nuxt/kit": "^3.17.6",
+    "h3": "^1.15.3"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "^2.6.2",
+    "@nuxt/eslint-config": "^1.5.2",
+    "@nuxt/module-builder": "^1.0.1",
+    "@nuxt/schema": "^3.17.6",
+    "@nuxt/test-utils": "^3.19.2",
+    "@types/node": "latest",
+    "changelogen": "^0.6.2",
+    "eslint": "^9.30.1",
+    "nuxt": "^3.17.6",
+    "typescript": "~5.8.3",
+    "vitest": "^3.2.4",
+    "vue-tsc": "^3.0.1"
+  }
+}

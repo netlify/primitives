@@ -1,11 +1,10 @@
 import process from 'node:process'
 
 import { NetlifyDev, type Features } from '@netlify/dev'
-import { netlifyCommand } from '@netlify/dev-utils'
+import { fromWebResponse, netlifyCommand } from '@netlify/dev-utils'
 import * as vite from 'vite'
 
 import { createLoggerFromViteLogger } from './lib/logger.js'
-import { fromWebResponse } from './lib/reqres.js'
 
 export interface NetlifyPluginOptions extends Features {
   /**
