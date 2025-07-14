@@ -1,5 +1,7 @@
 import type { Context } from '@netlify/types'
 
+import { LocalState } from './local-state.js'
+
 export type Geolocation = Context['geo']
 
 export const mockLocation: Geolocation = {
@@ -19,11 +21,6 @@ const CACHE_TTL = 8.64e7
 // 10 seconds
 const REQUEST_TIMEOUT = 1e4
 
-interface State {
-  get(key: string): unknown
-  set(key: string, value: unknown): void
-}
-
 /**
  * Returns geolocation data from a remote API, the local cache, or a mock location, depending on the
  * specified mode.
@@ -37,7 +34,7 @@ export const getGeoLocation = async ({
   mode: 'cache' | 'update' | 'mock'
   geoCountry?: string | undefined
   offline?: boolean | undefined
-  state: State
+  state: LocalState
 }): Promise<Geolocation> => {
   // Early return for pure mock mode (no geoCountry, no offline)
   if (mode === 'mock' && !geoCountry && !offline) {
@@ -63,14 +60,15 @@ export const getGeoLocation = async ({
     }
   }
 
-  // If `--country` was used, we also set `--mode=mock`.
+  // If a country code was provided, we use mock mode to generate
+  // location data for that country.
   if (geoCountry) {
     mode = 'mock'
   }
 
-  // If the `--geo` option is set to `mock`, we use the default mock location.
-  // If the `--offline` option was used, we can't talk to the API, so let's
-  // also use the mock location.  Otherwise, use the country code passed in by
+  // If the mode is set to `mock`, we use the default mock location.
+  // If the `offline` option was used, we can't talk to the API, so let's
+  // also use the mock location. Otherwise, use the country code passed in by
   // the user.
   if (mode === 'mock' || offline || geoCountry) {
     if (geoCountry) {
