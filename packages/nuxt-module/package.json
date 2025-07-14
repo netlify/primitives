@@ -34,7 +34,7 @@
     "test": "exit 0",
     "test:ci": "vitest run",
     "test:dev": "vitest",
-    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
+    "test:types": "vue-tsc --noEmit && nuxi prepare playground && cd playground && vue-tsc --noEmit",
     "test:watch": "vitest watch"
   },
   "keywords": [
