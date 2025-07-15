@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.1](https://github.com/netlify/primitives/compare/vite-plugin-v2.4.0...vite-plugin-v2.4.1) (2025-07-15)
+
+
+### Bug Fixes
+
+* pass `images` option from Vite plugin ([#351](https://github.com/netlify/primitives/issues/351)) ([b4ec7f2](https://github.com/netlify/primitives/commit/b4ec7f2fe674c007f3bbacb49cb97be768e27b0c))
+
 ## [2.4.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.3.10...vite-plugin-v2.4.0) (2025-07-15)
 
 
