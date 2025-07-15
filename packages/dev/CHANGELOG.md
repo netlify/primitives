@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.4.1](https://github.com/netlify/primitives/compare/dev-v4.4.0...dev-v4.4.1) (2025-07-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.4 to 10.0.5
+    * @netlify/dev-utils bumped from 3.2.2 to 3.3.0
+    * @netlify/edge-functions bumped from 2.15.6 to 2.15.7
+    * @netlify/functions bumped from 4.1.10 to 4.1.11
+    * @netlify/headers bumped from 2.0.4 to 2.0.5
+    * @netlify/images bumped from 1.2.0 to 1.2.1
+    * @netlify/redirects bumped from 3.0.4 to 3.0.5
+    * @netlify/runtime bumped from 4.0.8 to 4.0.9
+    * @netlify/static bumped from 3.0.4 to 3.0.5
+
 ## [4.4.0](https://github.com/netlify/primitives/compare/dev-v4.3.8...dev-v4.4.0) (2025-07-15)
 
 

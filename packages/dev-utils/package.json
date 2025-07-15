@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev-utils",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "TypeScript utilities for the local emulation of the Netlify environment",
   "type": "module",
   "engines": {
