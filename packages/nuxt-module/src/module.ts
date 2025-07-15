@@ -86,7 +86,7 @@ export default defineNuxtModule<NetlifyModuleOptions>({
             headersCollector: (key, value) => {
               headers[key] = value
             },
-            serverAddress: `http://localhost:${nodeReq.socket.localPort}`,
+            serverAddress: nuxt.options.devServer.url,
           })
 
           const isStaticFile = result?.type === 'static'
