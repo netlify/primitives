@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
   modules: ['../src/module'],
+  telemetry: { enabled: false },
   compatibilityDate: '2025-07-11',
   future: {
     compatibilityVersion: 4,
