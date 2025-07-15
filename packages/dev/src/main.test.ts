@@ -493,7 +493,7 @@ describe('Handling requests', () => {
           enabled: false,
         },
         images: {
-          remoteImages: [`^${remoteServerAddress}/allowed-via-option/.*`],
+          remoteURLPatterns: [`^${remoteServerAddress}/allowed-via-option/.*`],
         },
       })
 
