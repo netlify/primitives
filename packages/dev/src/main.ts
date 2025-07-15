@@ -71,6 +71,15 @@ export interface Features {
    */
   images?: {
     enabled?: boolean
+
+    /**
+     * Allowed URL patterns for remote images, described as an array of regular
+     * expression strings. This list will be merged with  the `remote_images`
+     * configuration property.
+     *
+     * {@link} https://docs.netlify.com/image-cdn/overview/#remote-path
+     */
+    remoteURLPatterns?: string[]
   }
 
   /**
@@ -152,6 +161,7 @@ export class NetlifyDev {
     static: boolean
   }
   #headersHandler?: HeadersHandler
+  #imageRemoteURLPatterns: string[]
   #imageHandler?: ImageHandler
   #logger: Logger
   #projectRoot: string
@@ -184,6 +194,7 @@ export class NetlifyDev {
       static: options.staticFiles?.enabled !== false,
     }
     this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')
+    this.#imageRemoteURLPatterns = options.images?.remoteURLPatterns ?? []
     this.#logger = options.logger ?? globalThis.console
     this.#serverAddress = options.serverAddress
     this.#projectRoot = projectRoot
@@ -542,8 +553,12 @@ export class NetlifyDev {
     }
 
     if (this.#features.images) {
+      const remoteImages = [...(this.#config?.config?.images?.remote_images ?? []), ...this.#imageRemoteURLPatterns]
+
       this.#imageHandler = new ImageHandler({
-        imagesConfig: this.#config?.config.images,
+        imagesConfig: {
+          remote_images: remoteImages,
+        },
         logger: this.#logger,
       })
     }

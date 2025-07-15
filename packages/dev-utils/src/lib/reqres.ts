@@ -18,17 +18,19 @@ const normalizeHeaders = (headers: IncomingHttpHeaders): HeadersInit => {
 export const toWebRequest = (nodeReq: IncomingMessage, urlPath?: string) => {
   const { method, headers, url = '' } = nodeReq
   const ac = new AbortController()
-  const origin = `http://${headers.host}`
+  const origin = `http://${headers.host ?? 'localhost'}`
   const fullUrl = new URL(urlPath ?? url, origin)
   const webStream = Readable.toWeb(nodeReq) as unknown as ReadableStream
 
-  nodeReq.once('aborted', () => ac.abort())
+  nodeReq.once('aborted', () => {
+    ac.abort()
+  })
 
   return new Request(fullUrl.href, {
     method,
     headers: normalizeHeaders(headers),
     body: method === 'GET' || method === 'HEAD' ? null : webStream,
-    // @ts-expect-error Not typed
+    // @ts-expect-error -- Not typed
     duplex: 'half',
   })
 }
@@ -43,6 +45,7 @@ export const fromWebResponse = async (webRes: Response, res: ServerResponse) => 
     const reader = webRes.body.getReader()
     const writer = res
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
       const { done, value } = await reader.read()
 
