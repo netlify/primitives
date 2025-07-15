@@ -486,8 +486,15 @@ export class NetlifyDev {
         ),
       }
 
+      // Use mock mode in test environment to ensure deterministic tests
+      const isTest = typeof process !== 'undefined' && (
+        process.env.NODE_ENV === 'test' ||
+        process.env.VITEST === 'true' ||
+        process.env.npm_lifecycle_event === 'test'
+      )
+      
       const geolocation = await getGeoLocation({
-        mode: 'cache',
+        mode: isTest ? 'mock' : 'cache',
         state,
       })
 
