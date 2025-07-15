@@ -1,6 +1,6 @@
 import type { Context } from '@netlify/types'
 
-import { LocalState } from './local-state.js'
+import type { LocalState } from './local-state.js'
 
 export type Geolocation = Context['geo']
 

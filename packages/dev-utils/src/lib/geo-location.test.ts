@@ -1,13 +1,11 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest'
 
 import { getGeoLocation, mockLocation } from './geo-location.js'
-
-// Mock fetch
-global.fetch = vi.fn()
-const mockFetch = vi.mocked(fetch)
+import { MockFetch } from '../test/fetch.js'
 
 describe('geolocation', () => {
   let mockState: { get: vi.Mock; set: vi.Mock }
+  let mockFetch: MockFetch
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -15,10 +13,11 @@ describe('geolocation', () => {
       get: vi.fn(),
       set: vi.fn(),
     }
+    mockFetch = new MockFetch()
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
+    mockFetch.restore()
   })
 
   describe('getGeoLocation', () => {
@@ -31,7 +30,7 @@ describe('geolocation', () => {
       expect(result).toEqual(mockLocation)
       expect(mockState.get).not.toHaveBeenCalled()
       expect(mockState.set).not.toHaveBeenCalled()
-      expect(mockFetch).not.toHaveBeenCalled()
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('returns custom mock location when geoCountry is provided', async () => {
@@ -49,7 +48,7 @@ describe('geolocation', () => {
         latitude: 0,
         timezone: 'UTC',
       })
-      expect(mockFetch).not.toHaveBeenCalled()
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('returns cached data when mode is "cache" and data is fresh', async () => {
@@ -74,7 +73,7 @@ describe('geolocation', () => {
 
       expect(result).toEqual(cachedData)
       expect(mockState.get).toHaveBeenCalledWith('geolocation')
-      expect(mockFetch).not.toHaveBeenCalled()
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('fetches new data when mode is "cache" but data is stale', async () => {
@@ -101,9 +100,12 @@ describe('geolocation', () => {
         timestamp: Date.now() - 1000 * 60 * 60 * 25, // 25 hours ago (stale)
       })
 
-      mockFetch.mockResolvedValue({
-        json: () => Promise.resolve({ geo: freshData }),
-      } as Response)
+      mockFetch.get({
+        url: 'https://netlifind.netlify.app',
+        response: new Response(JSON.stringify({ geo: freshData }), {
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      }).inject()
 
       const result = await getGeoLocation({
         mode: 'cache',
@@ -116,10 +118,7 @@ describe('geolocation', () => {
         data: freshData,
         timestamp: expect.any(Number),
       })
-      expect(mockFetch).toHaveBeenCalledWith('https://netlifind.netlify.app', {
-        method: 'GET',
-        signal: expect.any(AbortSignal),
-      })
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('always fetches new data when mode is "update"', async () => {
@@ -146,9 +145,12 @@ describe('geolocation', () => {
         timestamp: Date.now() - 1000 * 60 * 60, // 1 hour ago (fresh)
       })
 
-      mockFetch.mockResolvedValue({
-        json: () => Promise.resolve({ geo: freshData }),
-      } as Response)
+      mockFetch.get({
+        url: 'https://netlifind.netlify.app',
+        response: new Response(JSON.stringify({ geo: freshData }), {
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      }).inject()
 
       const result = await getGeoLocation({
         mode: 'update',
@@ -160,10 +162,7 @@ describe('geolocation', () => {
         data: freshData,
         timestamp: expect.any(Number),
       })
-      expect(mockFetch).toHaveBeenCalledWith('https://netlifind.netlify.app', {
-        method: 'GET',
-        signal: expect.any(AbortSignal),
-      })
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('uses cached data when offline is true, even if stale', async () => {
@@ -188,7 +187,7 @@ describe('geolocation', () => {
       })
 
       expect(result).toEqual(cachedData)
-      expect(mockFetch).not.toHaveBeenCalled()
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('returns mock location when offline is true and no cached data', async () => {
@@ -201,12 +200,16 @@ describe('geolocation', () => {
       })
 
       expect(result).toEqual(mockLocation)
-      expect(mockFetch).not.toHaveBeenCalled()
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('returns mock location when API request fails', async () => {
       mockState.get.mockReturnValue(undefined)
-      mockFetch.mockRejectedValue(new Error('Network error'))
+      
+      mockFetch.get({
+        url: 'https://netlifind.netlify.app',
+        response: new Error('Network error'),
+      }).inject()
 
       const result = await getGeoLocation({
         mode: 'update',
@@ -214,10 +217,7 @@ describe('geolocation', () => {
       })
 
       expect(result).toEqual(mockLocation)
-      expect(mockFetch).toHaveBeenCalledWith('https://netlifind.netlify.app', {
-        method: 'GET',
-        signal: expect.any(AbortSignal),
-      })
+      expect(mockFetch.fulfilled).toBe(true)
     })
 
     test('uses cached data when country matches geoCountry', async () => {
@@ -242,7 +242,7 @@ describe('geolocation', () => {
       })
 
       expect(result).toEqual(cachedData)
-      expect(mockFetch).not.toHaveBeenCalled()
+      expect(mockFetch.fulfilled).toBe(true)
     })
   })
 })
