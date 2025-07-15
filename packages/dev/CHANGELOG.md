@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.4.0](https://github.com/netlify/primitives/compare/dev-v4.3.8...dev-v4.4.0) (2025-07-15)
+
+
+### Features
+
+* add `images.remoteURLPatterns` option to `NetlifyDev` ([#348](https://github.com/netlify/primitives/issues/348)) ([606e264](https://github.com/netlify/primitives/commit/606e26475c88a47f41929c5548820f2886094b3a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/images bumped from 1.1.2 to 1.2.0
+
 ## [4.3.8](https://github.com/netlify/primitives/compare/dev-v4.3.7...dev-v4.3.8) (2025-07-11)
 
 
