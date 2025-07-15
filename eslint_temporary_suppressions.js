@@ -650,15 +650,6 @@ export default [
     },
   },
   {
-    files: ['packages/vite-plugin/src/lib/reqres.ts'],
-    rules: {
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-confusing-void-expression': 'off',
-      '@typescript-eslint/ban-ts-comment': 'off',
-      '@typescript-eslint/no-unnecessary-condition': 'off',
-    },
-  },
-  {
     files: ['packages/vite-plugin/src/main.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',

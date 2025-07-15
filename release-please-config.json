@@ -14,6 +14,7 @@
     "packages/functions": {},
     "packages/headers": {},
     "packages/images": {},
+    "packages/nuxt-module": {},
     "packages/otel": {},
     "packages/redirects": {},
     "packages/runtime": {},

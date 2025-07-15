@@ -21,7 +21,11 @@
     "dev": "tsup-node --watch",
     "publint": "npx -y publint --strict"
   },
-  "keywords": [],
+  "keywords": [
+    "netlify",
+    "vite-plugin",
+    "dev"
+  ],
   "license": "MIT",
   "repository": "netlify/primitives",
   "bugs": {
