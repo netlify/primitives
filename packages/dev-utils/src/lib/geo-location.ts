@@ -110,7 +110,7 @@ const getGeoLocationFromAPI = async (): Promise<Geolocation> => {
     method: 'GET',
     signal: AbortSignal.timeout(REQUEST_TIMEOUT),
   })
-  const { geo } = await res.json() as { geo: Geolocation }
+  const { geo } = (await res.json()) as { geo: Geolocation }
 
   return geo
 }

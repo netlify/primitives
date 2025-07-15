@@ -31,9 +31,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
 
       await dev.start()
@@ -64,9 +64,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
 
       await dev.start()
@@ -97,9 +97,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
 
       await dev.start()
@@ -137,9 +137,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
       await dev.start()
 
@@ -187,9 +187,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
       await dev.start()
 
@@ -232,9 +232,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
       await dev.start()
 
@@ -273,9 +273,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
       await dev.start()
 
@@ -309,9 +309,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
 
       await dev.start()
@@ -354,9 +354,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
 
       await dev.start()
@@ -389,9 +389,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
 
       await dev.start()
@@ -450,9 +450,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
 
       await dev.start()
@@ -497,9 +497,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
 
       await dev.start()
@@ -675,9 +675,9 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {
           geolocation: {
-            mode: 'mock'
-          }
-        }
+            mode: 'mock',
+          },
+        },
       })
 
       const { serverAddress } = await dev.start()
@@ -814,11 +814,11 @@ describe('Handling requests', () => {
           apiURL: context.apiUrl,
           apiToken: 'token',
           projectRoot: directory,
-        edgeFunctions: {
-          geolocation: {
-            mode: 'mock'
-          }
-        },
+          edgeFunctions: {
+            geolocation: {
+              mode: 'mock',
+            },
+          },
         })
 
         await dev.start()
@@ -934,11 +934,11 @@ describe('Handling requests', () => {
           apiURL: context.apiUrl,
           apiToken: 'token',
           projectRoot: directory,
-        edgeFunctions: {
-          geolocation: {
-            mode: 'mock'
-          }
-        },
+          edgeFunctions: {
+            geolocation: {
+              mode: 'mock',
+            },
+          },
         })
 
         const { serverAddress } = await dev.start()
@@ -1038,11 +1038,11 @@ describe('Handling requests', () => {
           apiURL: context.apiUrl,
           apiToken: 'token',
           projectRoot: directory,
-        edgeFunctions: {
-          geolocation: {
-            mode: 'mock'
-          }
-        },
+          edgeFunctions: {
+            geolocation: {
+              mode: 'mock',
+            },
+          },
         })
 
         await dev.start()

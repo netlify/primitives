@@ -100,12 +100,14 @@ describe('geolocation', () => {
         timestamp: Date.now() - 1000 * 60 * 60 * 25, // 25 hours ago (stale)
       })
 
-      mockFetch.get({
-        url: 'https://netlifind.netlify.app',
-        response: new Response(JSON.stringify({ geo: freshData }), {
-          headers: { 'Content-Type': 'application/json' },
-        }),
-      }).inject()
+      mockFetch
+        .get({
+          url: 'https://netlifind.netlify.app',
+          response: new Response(JSON.stringify({ geo: freshData }), {
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        })
+        .inject()
 
       const result = await getGeoLocation({
         mode: 'cache',
@@ -145,12 +147,14 @@ describe('geolocation', () => {
         timestamp: Date.now() - 1000 * 60 * 60, // 1 hour ago (fresh)
       })
 
-      mockFetch.get({
-        url: 'https://netlifind.netlify.app',
-        response: new Response(JSON.stringify({ geo: freshData }), {
-          headers: { 'Content-Type': 'application/json' },
-        }),
-      }).inject()
+      mockFetch
+        .get({
+          url: 'https://netlifind.netlify.app',
+          response: new Response(JSON.stringify({ geo: freshData }), {
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        })
+        .inject()
 
       const result = await getGeoLocation({
         mode: 'update',
@@ -205,11 +209,13 @@ describe('geolocation', () => {
 
     test('returns mock location when API request fails', async () => {
       mockState.get.mockReturnValue(undefined)
-      
-      mockFetch.get({
-        url: 'https://netlifind.netlify.app',
-        response: new Error('Network error'),
-      }).inject()
+
+      mockFetch
+        .get({
+          url: 'https://netlifind.netlify.app',
+          response: new Error('Network error'),
+        })
+        .inject()
 
       const result = await getGeoLocation({
         mode: 'update',
