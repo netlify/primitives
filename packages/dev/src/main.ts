@@ -8,7 +8,6 @@ import {
   ensureNetlifyIgnore,
   getAPIToken,
   getGeoLocation,
-  mockLocation,
   LocalState,
   type Logger,
   HTTPServer,
@@ -43,9 +42,6 @@ export interface Features {
    */
   edgeFunctions?: {
     enabled?: boolean
-    geolocation?: {
-      mode?: 'cache' | 'update' | 'mock'
-    }
   }
 
   /**
@@ -64,6 +60,15 @@ export interface Features {
    */
   functions?: {
     enabled?: boolean
+  }
+
+  /**
+   * Configuration options for geolocation data used by Functions and Edge Functions.
+   *
+   * {@link} https://docs.netlify.com/edge-functions/api/#geolocation
+   */
+  geolocation?: {
+    mode?: 'cache' | 'update' | 'mock'
   }
 
   /**
@@ -158,8 +163,8 @@ export class NetlifyDev {
   #apiToken?: string
   #cleanupJobs: (() => Promise<void>)[]
   #edgeFunctionsHandler?: EdgeFunctionsHandler
-  #edgeFunctionsConfig?: NetlifyDevOptions['edgeFunctions']
   #functionsHandler?: FunctionsHandler
+  #geolocationConfig?: NetlifyDevOptions['geolocation']
   #functionsServePath: string
   #config?: Config
   #features: {
@@ -195,7 +200,7 @@ export class NetlifyDev {
 
     this.#apiToken = options.apiToken
     this.#cleanupJobs = []
-    this.#edgeFunctionsConfig = options.edgeFunctions
+    this.#geolocationConfig = options.geolocation
     this.#features = {
       blobs: options.blobs?.enabled !== false,
       edgeFunctions: options.edgeFunctions?.enabled !== false,
@@ -500,7 +505,7 @@ export class NetlifyDev {
       }
 
       const geolocation = await getGeoLocation({
-        mode: this.#edgeFunctionsConfig?.geolocation?.mode ?? 'cache',
+        mode: this.#geolocationConfig?.mode ?? 'cache',
         state,
       })
 
@@ -523,10 +528,15 @@ export class NetlifyDev {
         this.#config?.config.functionsDirectory ?? path.join(this.#projectRoot, 'netlify/functions')
       const userFunctionsPathExists = await isDirectory(userFunctionsPath)
 
+      const geolocation = await getGeoLocation({
+        mode: this.#geolocationConfig?.mode ?? 'cache',
+        state,
+      })
+
       this.#functionsHandler = new FunctionsHandler({
         config: this.#config,
         destPath: this.#functionsServePath,
-        geolocation: mockLocation,
+        geolocation,
         projectRoot: this.#projectRoot,
         settings: {},
         siteId: this.#siteID,
