@@ -35,6 +35,9 @@ export interface Features {
    */
   edgeFunctions?: {
     enabled?: boolean
+    geolocation?: {
+      mode?: 'cache' | 'update' | 'mock'
+    }
   }
 
   /**
@@ -147,6 +150,7 @@ export class NetlifyDev {
   #apiToken?: string
   #cleanupJobs: (() => Promise<void>)[]
   #edgeFunctionsHandler?: EdgeFunctionsHandler
+  #edgeFunctionsConfig?: NetlifyDevOptions['edgeFunctions']
   #functionsHandler?: FunctionsHandler
   #functionsServePath: string
   #config?: Config
@@ -183,6 +187,7 @@ export class NetlifyDev {
 
     this.#apiToken = options.apiToken
     this.#cleanupJobs = []
+    this.#edgeFunctionsConfig = options.edgeFunctions
     this.#features = {
       blobs: options.blobs?.enabled !== false,
       edgeFunctions: options.edgeFunctions?.enabled !== false,
@@ -486,15 +491,8 @@ export class NetlifyDev {
         ),
       }
 
-      // Use mock mode in test environment to ensure deterministic tests
-      const isTest = typeof process !== 'undefined' && (
-        process.env.NODE_ENV === 'test' ||
-        process.env.VITEST === 'true' ||
-        process.env.npm_lifecycle_event === 'test'
-      )
-      
       const geolocation = await getGeoLocation({
-        mode: isTest ? 'mock' : 'cache',
+        mode: this.#edgeFunctionsConfig?.geolocation?.mode ?? 'cache',
         state,
       })
 
