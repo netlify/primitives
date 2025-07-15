@@ -1,6 +1,6 @@
 {
   "name": "@netlify/nuxt",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Nuxt module providing local emulation of the Netlify environment",
   "type": "module",
   "engines": {

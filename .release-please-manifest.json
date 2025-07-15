@@ -7,7 +7,7 @@
   "packages/functions": "4.1.11",
   "packages/headers": "2.0.5",
   "packages/images": "1.2.1",
-  "packages/nuxt-module": "0.1.0",
+  "packages/nuxt-module": "0.1.1",
   "packages/otel": "3.1.0",
   "packages/redirects": "3.0.5",
   "packages/runtime": "4.0.9",
