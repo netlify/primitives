@@ -1,10 +1,14 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest'
+import type { MockedFunction } from 'vitest'
 
 import { getGeoLocation, mockLocation } from './geo-location.js'
 import { MockFetch } from '../test/fetch.js'
 
 describe('geolocation', () => {
-  let mockState: { get: vi.Mock; set: vi.Mock }
+  let mockState: {
+    get: MockedFunction<(key: string) => unknown>
+    set: MockedFunction<(key: string, value: unknown) => void>
+  }
   let mockFetch: MockFetch
 
   beforeEach(() => {
