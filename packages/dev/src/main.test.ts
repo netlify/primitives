@@ -492,6 +492,9 @@ describe('Handling requests', () => {
           // for local images
           enabled: false,
         },
+        images: {
+          remoteImages: [`^${remoteServerAddress}/allowed-via-option/.*`],
+        },
       })
 
       await dev.start()
@@ -515,6 +518,16 @@ describe('Handling requests', () => {
       expect(allowedRemoteImageResponse?.headers.get('content-type')).toMatch(/^image\//)
       expect(
         await getImageResponseSize(allowedRemoteImageResponse ?? new Response('No @netlify/dev response')),
+      ).toMatchObject({ width: 100, height: 50 })
+
+      const allowedRemoteImage2Request = new Request(
+        `https://site.netlify/.netlify/images?url=${encodeURIComponent(`${remoteServerAddress}/allowed-via-option/image`)}&w=100`,
+      )
+      const allowedRemoteImage2Response = await dev.handle(allowedRemoteImage2Request)
+      expect(allowedRemoteImage2Response?.ok).toBe(true)
+      expect(allowedRemoteImage2Response?.headers.get('content-type')).toMatch(/^image\//)
+      expect(
+        await getImageResponseSize(allowedRemoteImage2Response ?? new Response('No @netlify/dev response')),
       ).toMatchObject({ width: 100, height: 50 })
 
       const notAllowedRemoteImageRequest = new Request(
