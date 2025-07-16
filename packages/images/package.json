@@ -13,12 +13,12 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "tsup-node",
+    "build": "tsdown",
     "prepack": "npm run build",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:ci": "npm run build && vitest run",
-    "dev": "tsup-node --watch",
+    "dev": "tsdown --watch",
     "publint": "npx -y publint --strict"
   },
   "keywords": [],
@@ -32,8 +32,8 @@
     "test": "test"
   },
   "devDependencies": {
+    "tsdown": "^0.12.7",
     "@netlify/dev-utils": "^3.3.0",
-    "tsup": "^8.5.0",
     "vitest": "^3.1.4"
   },
   "dependencies": {
