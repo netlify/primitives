@@ -1,5 +1,44 @@
 # Changelog
 
+## [2.15.7](https://github.com/netlify/primitives/compare/edge-functions-v2.15.6...edge-functions-v2.15.7) (2025-07-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.2.2 to 3.3.0
+
+## [2.15.6](https://github.com/netlify/primitives/compare/edge-functions-v2.15.5...edge-functions-v2.15.6) (2025-07-07)
+
+
+### Bug Fixes
+
+* declare `Netlify` global in edge functions types ([#330](https://github.com/netlify/primitives/issues/330)) ([0546bb6](https://github.com/netlify/primitives/commit/0546bb6eccf0e61aae64973cef788cc75d2965d8))
+
+## [2.15.5](https://github.com/netlify/primitives/compare/edge-functions-v2.15.4...edge-functions-v2.15.5) (2025-07-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.2.1 to 3.2.2
+
+## [2.15.4](https://github.com/netlify/primitives/compare/edge-functions-v2.15.3...edge-functions-v2.15.4) (2025-06-26)
+
+
+### Bug Fixes
+
+* add missing await and let server process be collected ([#319](https://github.com/netlify/primitives/issues/319)) ([1724d50](https://github.com/netlify/primitives/commit/1724d507b844a3b8e1ccb0b6c84a7e80d70d4d4c))
+
+## [2.15.3](https://github.com/netlify/primitives/compare/edge-functions-v2.15.2...edge-functions-v2.15.3) (2025-06-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/edge-functions-bootstrap to ^2.14.0 ([#314](https://github.com/netlify/primitives/issues/314)) ([f52f332](https://github.com/netlify/primitives/commit/f52f332abcd51093dbd6d7ab05cccff931a22a52))
+
 ## [2.15.2](https://github.com/netlify/primitives/compare/edge-functions-v2.15.1...edge-functions-v2.15.2) (2025-06-25)
 
 

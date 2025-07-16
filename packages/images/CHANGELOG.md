@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.2.1](https://github.com/netlify/primitives/compare/images-v1.2.0...images-v1.2.1) (2025-07-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^3.2.2 to ^3.3.0
+
+## [1.2.0](https://github.com/netlify/primitives/compare/images-v1.1.2...images-v1.2.0) (2025-07-15)
+
+
+### Features
+
+* add `images.remoteURLPatterns` option to `NetlifyDev` ([#348](https://github.com/netlify/primitives/issues/348)) ([606e264](https://github.com/netlify/primitives/commit/606e26475c88a47f41929c5548820f2886094b3a))
+
+## [1.1.2](https://github.com/netlify/primitives/compare/images-v1.1.1...images-v1.1.2) (2025-07-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^3.2.1 to ^3.2.2
+
 ## [1.1.1](https://github.com/netlify/primitives/compare/images-v1.1.0...images-v1.1.1) (2025-06-18)
 
 

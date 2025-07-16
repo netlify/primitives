@@ -1,5 +1,54 @@
 # Changelog
 
+## [4.1.11](https://github.com/netlify/primitives/compare/functions-v4.1.10...functions-v4.1.11) (2025-07-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.4 to 10.0.5
+    * @netlify/dev-utils bumped from 3.2.2 to 3.3.0
+
+## [4.1.10](https://github.com/netlify/primitives/compare/functions-v4.1.9...functions-v4.1.10) (2025-07-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.3 to 10.0.4
+
+## [4.1.9](https://github.com/netlify/primitives/compare/functions-v4.1.8...functions-v4.1.9) (2025-07-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/serverless-functions-api to v2.1.3 ([#328](https://github.com/netlify/primitives/issues/328)) ([3a82e4f](https://github.com/netlify/primitives/commit/3a82e4fc5dd9070871cc9cc8a4368af6585d9035))
+* **deps:** update dependency @netlify/zip-it-and-ship-it to ^12.2.0 ([#322](https://github.com/netlify/primitives/issues/322)) ([fb6721f](https://github.com/netlify/primitives/commit/fb6721fe63d92cf7538d40902821705841c1f0ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.2 to 10.0.3
+    * @netlify/dev-utils bumped from 3.2.1 to 3.2.2
+
+## [4.1.8](https://github.com/netlify/primitives/compare/functions-v4.1.7...functions-v4.1.8) (2025-06-26)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#318](https://github.com/netlify/primitives/issues/318)) ([6710630](https://github.com/netlify/primitives/commit/671063084526b210711971fbae53135e2aeb6e0a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.1 to 10.0.2
+
 ## [4.1.7](https://github.com/netlify/primitives/compare/functions-v4.1.6...functions-v4.1.7) (2025-06-25)
 
 

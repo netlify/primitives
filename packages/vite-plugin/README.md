@@ -16,7 +16,7 @@ A Vite plugin that integrates with Netlify's platform features.
 | Redirects and Rewrites | ✅ Yes    |
 | Headers                | ✅ Yes    |
 | Environment Variables  | ✅ Yes    |
-| Image CDN              | ❌ No     |
+| Image CDN              | ✅ Yes    |
 
 > Note: Missing features will be added incrementally. This module is **not** intended to be a full replacement for the
 > Netlify CLI.

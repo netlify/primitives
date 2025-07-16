@@ -12,6 +12,7 @@ export { type Logger, netlifyCommand, netlifyCyan, netlifyBanner } from './lib/l
 export { killProcess, type ProcessRef } from './lib/process.js'
 export { memoize, type MemoizeCache } from './lib/memoize.js'
 export { HTTPServer } from './server/http_server.js'
+export { fromWebResponse, toWebRequest } from './lib/reqres.js'
 export { watchDebounced } from './lib/watch-debounced.js'
 
 export { EventInspector } from './test/event_inspector.js'

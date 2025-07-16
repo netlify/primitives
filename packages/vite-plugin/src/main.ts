@@ -1,11 +1,10 @@
 import process from 'node:process'
 
 import { NetlifyDev, type Features } from '@netlify/dev'
-import { netlifyCommand } from '@netlify/dev-utils'
+import { fromWebResponse, netlifyCommand } from '@netlify/dev-utils'
 import * as vite from 'vite'
 
 import { createLoggerFromViteLogger } from './lib/logger.js'
-import { fromWebResponse } from './lib/reqres.js'
 
 export interface NetlifyPluginOptions extends Features {
   /**
@@ -22,18 +21,22 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
     return []
   }
 
-  let netlifyDev: NetlifyDev | undefined
-
   const plugin: vite.Plugin = {
     name: 'vite-plugin-netlify',
     async configureServer(viteDevServer) {
+      // if the vite dev server's http server isn't ready (or we're in
+      // middleware mode) let's not get involved
+      if (!viteDevServer.httpServer) {
+        return
+      }
       const logger = createLoggerFromViteLogger(viteDevServer.config.logger)
-      const { blobs, edgeFunctions, functions, middleware = true, redirects, staticFiles } = options
+      const { blobs, edgeFunctions, functions, images, middleware = true, redirects, staticFiles } = options
 
-      netlifyDev = new NetlifyDev({
+      const netlifyDev = new NetlifyDev({
         blobs,
         edgeFunctions,
         functions,
+        images,
         logger,
         redirects,
         serverAddress: null,
@@ -45,21 +48,15 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       })
 
       await netlifyDev.start()
+
+      viteDevServer.httpServer.once('close', () => {
+        netlifyDev.stop()
+      })
+
       logger.log('Environment loaded')
 
       if (middleware) {
         viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
-          // This should never happen, but adding this escape hatch just in case.
-          if (!netlifyDev) {
-            logger.error(
-              'Some primitives will not work as expected due to an unknown error. Please restart your application.',
-            )
-
-            next()
-
-            return
-          }
-
           const headers: Record<string, string> = {}
           const result = await netlifyDev.handleAndIntrospectNodeRequest(nodeReq, {
             headersCollector: (key, value) => {
@@ -92,12 +89,6 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
           `💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables defined on your team and site and much more. Run ${netlifyCommand('npx netlify init')} to get started.`,
         )
       }
-    },
-
-    async closeBundle() {
-      await netlifyDev?.stop()
-
-      netlifyDev = undefined
     },
   }
 

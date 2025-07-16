@@ -1,8 +1,6 @@
 import { createHmac } from 'node:crypto'
 import { createReadStream, promises as fs } from 'node:fs'
-import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve, sep } from 'node:path'
-import { platform } from 'node:process'
 
 import { HTTPServer } from '@netlify/dev-utils'
 
@@ -10,7 +8,7 @@ import { ListResponse } from './backend/list.ts'
 import { SIGNED_URL_ACCEPT_HEADER } from './client.ts'
 import { decodeMetadata, encodeMetadata, METADATA_HEADER_INTERNAL } from './metadata.ts'
 import { HTTPMethod } from './types.ts'
-import { isNodeError, Logger } from './util.ts'
+import { decodeName, encodeName, isNodeError, Logger } from './util.ts'
 
 const API_URL_PATH = /\/api\/v1\/blobs\/(?<site_id>[^/]+)\/(?<store_name>[^/]+)\/?(?<key>[^?]*)/
 const LEGACY_API_URL_PATH = /\/api\/v1\/sites\/(?<site_id>[^/]+)\/blobs\/?(?<key>[^?]*)/
@@ -231,7 +229,7 @@ export class BlobsServer {
     req: Request
     url: URL
   }): Promise<Response> {
-    const { dataPath, rootPath, req, url } = options
+    const { dataPath, rootPath, url } = options
     const directories = url.searchParams.get('directories') === 'true'
     const prefix = url.searchParams.get('prefix') ?? ''
     const result: ListResponse = {
@@ -259,10 +257,7 @@ export class BlobsServer {
   private async listStores(rootPath: string, prefix: string): Promise<Response> {
     try {
       const allStores = await fs.readdir(rootPath)
-      const filteredStores = allStores
-        // Store names are URI-encoded on Windows, so we must decode them first.
-        .map((store) => (platform === 'win32' ? decodeURIComponent(store) : store))
-        .filter((store) => store.startsWith(prefix))
+      const filteredStores = allStores.map(decodeName).filter((store) => store.startsWith(prefix))
 
       return Response.json({ stores: filteredStores })
     } catch (error) {
@@ -322,10 +317,10 @@ export class BlobsServer {
       // happen if multiple clients try to write to the same key at the same
       // time. To prevent this, we write to a temporary file first and then
       // atomically move it to its final destination.
-      const tempPath = join(tmpdir(), Math.random().toString())
+      const tempPath = join(dirname(dataPath), `.${Math.random().toString(36).slice(2)}`)
       const body = await req.arrayBuffer()
-      await fs.writeFile(tempPath, Buffer.from(body))
       await fs.mkdir(dirname(dataPath), { recursive: true })
+      await fs.writeFile(tempPath, Buffer.from(body))
       await fs.rename(tempPath, dataPath)
 
       if (metadata) {
@@ -364,7 +359,7 @@ export class BlobsServer {
       parts = parts.slice(1)
     }
 
-    const [siteID, rawStoreName, ...key] = parts
+    const [siteID, rawStoreName, ...rawKey] = parts
 
     if (!siteID) {
       return {}
@@ -376,9 +371,9 @@ export class BlobsServer {
       return { rootPath }
     }
 
-    // On Windows, file paths can't include the `:` character, so we URI-encode
-    // them.
-    const storeName = platform === 'win32' ? encodeURIComponent(rawStoreName) : rawStoreName
+    const key = rawKey.map(encodeName)
+
+    const storeName = encodeName(rawStoreName)
     const storePath = resolve(rootPath, storeName)
     const dataPath = resolve(storePath, ...key)
     const metadataPath = resolve(this.directory, 'metadata', siteID, storeName, ...key)

@@ -1,5 +1,37 @@
 # Changelog
 
+## [10.0.5](https://github.com/netlify/primitives/compare/blobs-v10.0.4...blobs-v10.0.5) (2025-07-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.2.2 to 3.3.0
+
+## [10.0.4](https://github.com/netlify/primitives/compare/blobs-v10.0.3...blobs-v10.0.4) (2025-07-07)
+
+
+### Bug Fixes
+
+* apply fixes required for Vite plugin in Astro  ([#332](https://github.com/netlify/primitives/issues/332)) ([fb8588e](https://github.com/netlify/primitives/commit/fb8588ee2731c40ee2c33997c026bc86542c71d0))
+
+## [10.0.3](https://github.com/netlify/primitives/compare/blobs-v10.0.2...blobs-v10.0.3) (2025-07-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.2.1 to 3.2.2
+
+## [10.0.2](https://github.com/netlify/primitives/compare/blobs-v10.0.1...blobs-v10.0.2) (2025-06-26)
+
+
+### Bug Fixes
+
+* **blobs:** Encode blob key parts before saving to disk on windows ([#316](https://github.com/netlify/primitives/issues/316)) ([f6ee4ef](https://github.com/netlify/primitives/commit/f6ee4ef4d3911672ea0a2604886d20e2be6896eb))
+
 ## [10.0.1](https://github.com/netlify/primitives/compare/blobs-v10.0.0...blobs-v10.0.1) (2025-06-18)
 
 

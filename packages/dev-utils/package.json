@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev-utils",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "TypeScript utilities for the local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -47,7 +47,6 @@
     "@types/parse-gitignore": "^1.0.2",
     "@types/write-file-atomic": "^4.0.3",
     "execa": "^8.0.1",
-    "tmp-promise": "^3.0.3",
     "tsdown": "^0.12.7",
     "vitest": "^3.0.0"
   },
