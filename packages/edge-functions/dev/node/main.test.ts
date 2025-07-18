@@ -196,6 +196,59 @@ describe('`EdgeFunctionsHandler`', () => {
     await fixture.destroy()
   })
 
+  test('Runs an edge function with header conditions', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/echo.mjs',
+        `export default async (req, context) => new Response("Hello from edge function");
+           
+         export const config = {
+           path: "/echo",
+           header: {
+             "x-present": true,
+             "x-absent": false,
+             "x-match": "something"
+           }
+         };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const req1 = new Request('https://site.netlify/echo')
+    req1.headers.set('x-nf-request-id', 'req-id')
+    expect(await handler.match(req1)).toBeFalsy()
+
+    const req2 = new Request('https://site.netlify/echo')
+    req2.headers.set('x-nf-request-id', 'req-id')
+    req2.headers.set('x-present', '1')
+    req2.headers.set('x-match', 'something good')
+    expect(await handler.match(req2)).toBeTruthy()
+
+    const req3 = new Request('https://site.netlify/echo')
+    req3.headers.set('x-nf-request-id', 'req-id')
+    req3.headers.set('x-present', '1')
+    req3.headers.set('x-absent', '1')
+    req3.headers.set('x-match', 'something good')
+    expect(await handler.match(req3)).toBeFalsy()
+
+    await fixture.destroy()
+  })
+
   test('Throws an error when the edge function has unparseable code', async () => {
     const fixture = new Fixture()
       .withFile(
