@@ -141,10 +141,10 @@ export class EdgeFunctionsHandler {
             return !requestHeaderValue
           }
 
-          if (headerMatch?.matcher === 'regex') {
+          if (requestHeaderValue && headerMatch?.matcher === 'regex') {
             const pattern = new RegExp(headerMatch.pattern)
 
-            return requestHeaderValue && pattern.test(requestHeaderValue)
+            return pattern.test(requestHeaderValue)
           }
 
           return false
