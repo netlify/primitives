@@ -48,6 +48,7 @@ export interface RunResponseStartMessage {
   data: {
     headers: Record<string, string>
     status: number
+    hasBody: boolean
   }
 }
 
