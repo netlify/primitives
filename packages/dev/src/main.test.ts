@@ -29,6 +29,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/from')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -57,6 +61,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/from')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -85,6 +93,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/from')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -120,6 +132,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello.txt')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
       await dev.start()
 
@@ -165,6 +181,10 @@ describe('Handling requests', () => {
       const directory = await fixture.create()
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
       await dev.start()
 
@@ -205,6 +225,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/shadowed-path.html')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
       await dev.start()
 
@@ -241,6 +265,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello.html')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
       await dev.start()
 
@@ -272,6 +300,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello?param1=value1')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -312,6 +344,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -342,6 +378,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/from')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -398,6 +438,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -440,6 +484,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -613,6 +661,10 @@ describe('Handling requests', () => {
       const dev = new NetlifyDev({
         apiToken: 'token',
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       const { serverAddress } = await dev.start()
@@ -749,6 +801,10 @@ describe('Handling requests', () => {
           apiURL: context.apiUrl,
           apiToken: 'token',
           projectRoot: directory,
+          edgeFunctions: {},
+          geolocation: {
+            enabled: false,
+          },
         })
 
         await dev.start()
@@ -864,6 +920,10 @@ describe('Handling requests', () => {
           apiURL: context.apiUrl,
           apiToken: 'token',
           projectRoot: directory,
+          edgeFunctions: {},
+          geolocation: {
+            enabled: false,
+          },
         })
 
         const { serverAddress } = await dev.start()
@@ -963,6 +1023,10 @@ describe('Handling requests', () => {
           apiURL: context.apiUrl,
           apiToken: 'token',
           projectRoot: directory,
+          edgeFunctions: {},
+          geolocation: {
+            enabled: false,
+          },
         })
 
         await dev.start()

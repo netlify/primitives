@@ -119,6 +119,10 @@ export default tseslint.config(
         },
       ],
       'n/no-unsupported-features/node-builtins': 'off',
+
+      // Disable unsafe assignment for test files due to vitest expect matchers returning `any`
+      // See: https://github.com/vitest-dev/vitest/issues/7015
+      '@typescript-eslint/no-unsafe-assignment': 'off',
     },
   },
 
