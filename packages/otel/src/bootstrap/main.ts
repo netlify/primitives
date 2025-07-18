@@ -1,8 +1,7 @@
-import type { SpanProcessor } from '@opentelemetry/sdk-trace-node'
+import { type SpanProcessor } from '@opentelemetry/sdk-trace-node'
 import type { Instrumentation } from '@opentelemetry/instrumentation'
 import { GET_TRACER, SHUTDOWN_TRACERS } from '../constants.js'
 
-const wellKnownInstrumentations = ['http', 'undici'] as const
 export interface TracerProviderOptions {
   /**
    * The request headers (checked for presence of the `x-nf-enable-tracing` header)
@@ -14,10 +13,7 @@ export interface TracerProviderOptions {
   siteUrl: string
   siteId: string
   siteName: string
-  /**
-   * Instrumentations to register. Defaults to ["http", "fetch", "undici"]
-   */
-  instrumentations?: ((typeof wellKnownInstrumentations)[number] | Instrumentation | Promise<Instrumentation>)[]
+  instrumentations?: (Instrumentation | Promise<Instrumentation>)[]
   extraSpanProcessors?: (SpanProcessor | Promise<SpanProcessor>)[]
 }
 
@@ -31,8 +27,7 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
 
   const { Resource } = await import('@opentelemetry/resources')
   const { NodeTracerProvider, SimpleSpanProcessor } = await import('@opentelemetry/sdk-trace-node')
-  const { HttpInstrumentation } = await import('@opentelemetry/instrumentation-http')
-  const { UndiciInstrumentation } = await import('@opentelemetry/instrumentation-undici')
+
   const { registerInstrumentations } = await import('@opentelemetry/instrumentation')
 
   const { NetlifySpanExporter } = await import('./netlify_span_exporter.js')
@@ -57,24 +52,13 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
   })
 
   nodeTracerProvider.register()
-  const instrumentations = await Promise.all(
-    (options.instrumentations ?? wellKnownInstrumentations).map(async (instrumentation) => {
-      if (typeof instrumentation === 'string') {
-        switch (instrumentation) {
-          case 'http':
-            return new HttpInstrumentation()
-          case 'undici':
-            return new UndiciInstrumentation()
-          default:
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            throw new Error(`Unknown instrumentation: ${instrumentation}`)
-        }
-      }
-      return await instrumentation
-    }),
-  )
 
-  registerInstrumentations({ instrumentations })
+  const instrumentations = await Promise.all(options.instrumentations ?? [])
+
+  registerInstrumentations({
+    instrumentations,
+    tracerProvider: nodeTracerProvider,
+  })
 
   const { trace } = await import('@opentelemetry/api')
   const { SugaredTracer } = await import('@opentelemetry/api/experimental')
