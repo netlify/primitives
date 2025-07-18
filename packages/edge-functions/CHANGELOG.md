@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.0](https://github.com/netlify/primitives/compare/edge-functions-v2.15.8...edge-functions-v2.16.0) (2025-07-18)
+
+
+### Features
+
+* support header matching in edge functions ([#361](https://github.com/netlify/primitives/issues/361)) ([05791fb](https://github.com/netlify/primitives/commit/05791fba0498326bc764dbde39943983c13962c8))
+
 ## [2.15.8](https://github.com/netlify/primitives/compare/edge-functions-v2.15.7...edge-functions-v2.15.8) (2025-07-17)
 
 
