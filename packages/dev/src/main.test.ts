@@ -31,7 +31,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
 
@@ -63,7 +63,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
 
@@ -95,7 +95,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
 
@@ -134,7 +134,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
       await dev.start()
@@ -183,7 +183,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
       await dev.start()
@@ -227,7 +227,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
       await dev.start()
@@ -267,7 +267,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
       await dev.start()
@@ -302,7 +302,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
 
@@ -346,7 +346,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
 
@@ -380,7 +380,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
 
@@ -440,7 +440,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
 
@@ -486,7 +486,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
 
@@ -663,7 +663,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
       })
 
@@ -803,7 +803,7 @@ describe('Handling requests', () => {
           projectRoot: directory,
           edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
         })
 
@@ -922,7 +922,7 @@ describe('Handling requests', () => {
           projectRoot: directory,
           edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
         })
 
@@ -1025,7 +1025,7 @@ describe('Handling requests', () => {
           projectRoot: directory,
           edgeFunctions: {},
         geolocation: {
-          mode: 'mock',
+          enabled: false,
         },
         })
 

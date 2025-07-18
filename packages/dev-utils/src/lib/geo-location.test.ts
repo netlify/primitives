@@ -25,9 +25,9 @@ describe('geolocation', () => {
   })
 
   describe('getGeoLocation', () => {
-    test('returns mock location when mode is "mock"', async () => {
+    test('returns mock location when enabled is false', async () => {
       const result = await getGeoLocation({
-        mode: 'mock',
+        enabled: false,
         state: mockState,
       })
 
@@ -39,7 +39,8 @@ describe('geolocation', () => {
 
     test('returns custom mock location when geoCountry is provided', async () => {
       const result = await getGeoLocation({
-        mode: 'cache',
+        enabled: true,
+        cache: true,
         geoCountry: 'FR',
         state: mockState,
       })
@@ -55,7 +56,7 @@ describe('geolocation', () => {
       expect(mockFetch.fulfilled).toBe(true)
     })
 
-    test('returns cached data when mode is "cache" and data is fresh', async () => {
+    test('returns cached data when cache is enabled and data is fresh', async () => {
       const cachedData = {
         city: 'Cached City',
         country: { code: 'CA', name: 'Canada' },
@@ -71,7 +72,8 @@ describe('geolocation', () => {
       })
 
       const result = await getGeoLocation({
-        mode: 'cache',
+        enabled: true,
+        cache: true,
         state: mockState,
       })
 
@@ -80,7 +82,7 @@ describe('geolocation', () => {
       expect(mockFetch.fulfilled).toBe(true)
     })
 
-    test('fetches new data when mode is "cache" but data is stale', async () => {
+    test('fetches new data when cache is enabled but data is stale', async () => {
       const staleData = {
         city: 'Stale City',
         country: { code: 'CA', name: 'Canada' },
@@ -114,7 +116,8 @@ describe('geolocation', () => {
         .inject()
 
       const result = await getGeoLocation({
-        mode: 'cache',
+        enabled: true,
+        cache: true,
         state: mockState,
       })
 
@@ -127,7 +130,7 @@ describe('geolocation', () => {
       expect(mockFetch.fulfilled).toBe(true)
     })
 
-    test('always fetches new data when mode is "update"', async () => {
+    test('always fetches new data when cache is disabled', async () => {
       const cachedData = {
         city: 'Cached City',
         country: { code: 'CA', name: 'Canada' },
@@ -161,7 +164,8 @@ describe('geolocation', () => {
         .inject()
 
       const result = await getGeoLocation({
-        mode: 'update',
+        enabled: true,
+        cache: false,
         state: mockState,
       })
 
@@ -189,7 +193,7 @@ describe('geolocation', () => {
       })
 
       const result = await getGeoLocation({
-        mode: 'cache',
+        enabled: true, cache: true,
         offline: true,
         state: mockState,
       })
@@ -202,7 +206,7 @@ describe('geolocation', () => {
       mockState.get.mockReturnValue(undefined)
 
       const result = await getGeoLocation({
-        mode: 'update',
+        enabled: true, cache: false,
         offline: true,
         state: mockState,
       })
@@ -222,7 +226,7 @@ describe('geolocation', () => {
         .inject()
 
       const result = await getGeoLocation({
-        mode: 'update',
+        enabled: true, cache: false,
         state: mockState,
       })
 
@@ -246,7 +250,7 @@ describe('geolocation', () => {
       })
 
       const result = await getGeoLocation({
-        mode: 'update',
+        enabled: true, cache: false,
         geoCountry: 'FR',
         state: mockState,
       })

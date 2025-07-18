@@ -23,35 +23,36 @@ const REQUEST_TIMEOUT = 1e4
 
 /**
  * Returns geolocation data from a remote API, the local cache, or a mock location, depending on the
- * specified mode.
+ * specified options.
  */
 export const getGeoLocation = async ({
   geoCountry,
-  mode,
+  enabled = true,
+  cache = true,
   offline = false,
   state,
 }: {
-  mode: 'cache' | 'update' | 'mock'
+  enabled?: boolean
+  cache?: boolean
   geoCountry?: string | undefined
   offline?: boolean | undefined
   state: LocalState
 }): Promise<Geolocation> => {
-  // Early return for pure mock mode (no geoCountry, no offline)
-  if (mode === 'mock' && !geoCountry && !offline) {
+  // Early return for disabled mode (no geoCountry, no offline)
+  if (!enabled && !geoCountry && !offline) {
     return mockLocation
   }
 
   const cacheObject = state.get(STATE_GEO_PROPERTY) as { data: Geolocation; timestamp: number } | undefined
 
-  // If we have cached geolocation data and the `--geo` option is set to
-  // `cache`, let's try to use it.
+  // If we have cached geolocation data and caching is enabled, let's try to use it.
   // Or, if the country we're trying to mock is the same one as we have in the
   // cache, let's use the cache instead of the mock.
-  if (cacheObject !== undefined && (mode === 'cache' || cacheObject.data.country?.code === geoCountry)) {
+  if (cacheObject !== undefined && (cache || cacheObject.data.country?.code === geoCountry)) {
     const age = Date.now() - cacheObject.timestamp
 
     // Let's use the cached data if it's not older than the TTL. Also, if the
-    // `--offline` option was used, it's best to use the cached location than
+    // `offline` option was used, it's best to use the cached location than
     // the mock one.
     // Additionally, if we're trying to mock a country that matches the cached country,
     // prefer the cached data over the mock.
@@ -60,17 +61,8 @@ export const getGeoLocation = async ({
     }
   }
 
-  // If a country code was provided, we use mock mode to generate
-  // location data for that country.
-  if (geoCountry) {
-    mode = 'mock'
-  }
-
-  // If the mode is set to `mock`, we use the default mock location.
-  // If the `offline` option was used, we can't talk to the API, so let's
-  // also use the mock location. Otherwise, use the country code passed in by
-  // the user.
-  if (mode === 'mock' || offline || geoCountry) {
+  // If a country code was provided or geolocation is disabled, we use mock location data.
+  if (geoCountry || !enabled) {
     if (geoCountry) {
       return {
         city: 'Mock City',
@@ -84,9 +76,17 @@ export const getGeoLocation = async ({
     return mockLocation
   }
 
+  // If the `offline` option was used, we can't talk to the API, so let's
+  // use the mock location.
+  if (offline) {
+    return mockLocation
+  }
+
   // Trying to retrieve geolocation data from the API and caching it locally.
   try {
     const data = await getGeoLocationFromAPI()
+    
+    // Always cache the data for future use
     const newCacheObject = {
       data,
       timestamp: Date.now(),

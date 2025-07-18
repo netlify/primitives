@@ -65,10 +65,24 @@ export interface Features {
   /**
    * Configuration options for geolocation data used by Functions and Edge Functions.
    *
-   * {@link} https://docs.netlify.com/edge-functions/api/#geolocation
+   * {@link} https://docs.netlify.com/build/edge-functions/api/#geo
    */
   geolocation?: {
-    mode?: 'cache' | 'update' | 'mock'
+    /**
+     * Use real geolocation data. Involves making an API call. When disabled, a
+     * mock location is used.
+     *
+     * {@default} true
+     */
+    enabled?: boolean
+
+    /**
+     * Cache the result of the API call. When disabled, the location is retrieved
+     * each time.
+     *
+     * {@default} true
+     */
+    cache?: boolean
   }
 
   /**
@@ -505,7 +519,8 @@ export class NetlifyDev {
       }
 
       const geolocation = await getGeoLocation({
-        mode: this.#geolocationConfig?.mode ?? 'cache',
+        enabled: this.#geolocationConfig?.enabled ?? true,
+        cache: this.#geolocationConfig?.cache ?? true,
         state,
       })
 
@@ -529,7 +544,8 @@ export class NetlifyDev {
       const userFunctionsPathExists = await isDirectory(userFunctionsPath)
 
       const geolocation = await getGeoLocation({
-        mode: this.#geolocationConfig?.mode ?? 'cache',
+        enabled: this.#geolocationConfig?.enabled ?? true,
+        cache: this.#geolocationConfig?.cache ?? true,
         state,
       })
 
