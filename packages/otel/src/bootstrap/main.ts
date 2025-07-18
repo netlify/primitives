@@ -2,7 +2,7 @@ import type { SpanProcessor } from '@opentelemetry/sdk-trace-node'
 import type { Instrumentation } from '@opentelemetry/instrumentation'
 import { GET_TRACER, SHUTDOWN_TRACERS } from '../constants.js'
 
-const wellKnownInstrumentations = ['http', 'fetch', 'undici'] as const
+const wellKnownInstrumentations = ['http', 'undici'] as const
 export interface TracerProviderOptions {
   /**
    * The request headers (checked for presence of the `x-nf-enable-tracing` header)
@@ -32,7 +32,6 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
   const { Resource } = await import('@opentelemetry/resources')
   const { NodeTracerProvider, SimpleSpanProcessor } = await import('@opentelemetry/sdk-trace-node')
   const { HttpInstrumentation } = await import('@opentelemetry/instrumentation-http')
-  const { FetchInstrumentation } = await import('@opentelemetry/instrumentation-fetch')
   const { UndiciInstrumentation } = await import('@opentelemetry/instrumentation-undici')
   const { registerInstrumentations } = await import('@opentelemetry/instrumentation')
 
@@ -64,8 +63,6 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
         switch (instrumentation) {
           case 'http':
             return new HttpInstrumentation()
-          case 'fetch':
-            return new FetchInstrumentation()
           case 'undici':
             return new UndiciInstrumentation()
           default:
