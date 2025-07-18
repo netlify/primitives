@@ -1,14 +1,14 @@
 # Netlify 🤝 Nuxt
 
-[![npm version][npm-version-src]][npm-version-href] [![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![License][license-src]][license-href] [![Nuxt][nuxt-src]][nuxt-href]
+[![npm version][npm-version-src]][npm-version-href] [![License][license-src]][license-href]
+[![Nuxt][nuxt-src]][nuxt-href]
 
 `@netlify/nuxt` provides local emulation of the Netlify platform directly in `nuxt dev`
 
 ## Features
 
 This repackages all the same features as `@netlify/vite-plugin`.
-[Check out its docs for details](../packages/vite-plugin/README.md).
+[Check out its docs for details](/packages/vite-plugin/README.md).
 
 ## Quick Setup
 

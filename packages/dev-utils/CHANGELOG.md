@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/netlify/primitives/compare/dev-utils-v3.3.0...dev-utils-v4.0.0) (2025-07-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* add named exports for global-config utils ([#359](https://github.com/netlify/primitives/issues/359))
+
+### Bug Fixes
+
+* add named exports for global-config utils ([#359](https://github.com/netlify/primitives/issues/359)) ([c66b7e0](https://github.com/netlify/primitives/commit/c66b7e0ac3c2c1a3725883fe45b81bdc7ffb24fd))
+
 ## [3.3.0](https://github.com/netlify/primitives/compare/dev-utils-v3.2.2...dev-utils-v3.3.0) (2025-07-15)
 
 
