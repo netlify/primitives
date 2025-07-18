@@ -68,12 +68,6 @@ export interface Features {
    * {@link} https://docs.netlify.com/build/edge-functions/api/#geo
    */
   geolocation?: {
-    /**
-     * Use real geolocation data. Involves making an API call. When disabled, a
-     * mock location is used.
-     *
-     * {@default} true
-     */
     enabled?: boolean
 
     /**
@@ -186,6 +180,7 @@ export class NetlifyDev {
     edgeFunctions: boolean
     environmentVariables: boolean
     functions: boolean
+    geolocation: boolean
     headers: boolean
     images: boolean
     redirects: boolean
@@ -220,6 +215,7 @@ export class NetlifyDev {
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
+      geolocation: options.geolocation?.enabled !== false,
       headers: options.headers?.enabled !== false,
       images: options.images?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
@@ -519,7 +515,7 @@ export class NetlifyDev {
       }
 
       const geolocation = await getGeoLocation({
-        enabled: this.#geolocationConfig?.enabled ?? true,
+        enabled: this.#features.geolocation,
         cache: this.#geolocationConfig?.cache ?? true,
         state,
       })
@@ -544,7 +540,7 @@ export class NetlifyDev {
       const userFunctionsPathExists = await isDirectory(userFunctionsPath)
 
       const geolocation = await getGeoLocation({
-        enabled: this.#geolocationConfig?.enabled ?? true,
+        enabled: this.#features.geolocation,
         cache: this.#geolocationConfig?.cache ?? true,
         state,
       })

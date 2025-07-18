@@ -29,17 +29,15 @@ export const getGeoLocation = async ({
   geoCountry,
   enabled = true,
   cache = true,
-  offline = false,
   state,
 }: {
   enabled?: boolean
   cache?: boolean
   geoCountry?: string | undefined
-  offline?: boolean | undefined
   state: LocalState
 }): Promise<Geolocation> => {
-  // Early return for disabled mode (no geoCountry, no offline)
-  if (!enabled && !geoCountry && !offline) {
+  // Early return for disabled mode (no geoCountry)
+  if (!enabled && !geoCountry) {
     return mockLocation
   }
 
@@ -51,12 +49,10 @@ export const getGeoLocation = async ({
   if (cacheObject !== undefined && (cache || cacheObject.data.country?.code === geoCountry)) {
     const age = Date.now() - cacheObject.timestamp
 
-    // Let's use the cached data if it's not older than the TTL. Also, if the
-    // `offline` option was used, it's best to use the cached location than
-    // the mock one.
+    // Let's use the cached data if it's not older than the TTL.
     // Additionally, if we're trying to mock a country that matches the cached country,
     // prefer the cached data over the mock.
-    if (age < CACHE_TTL || offline || cacheObject.data.country?.code === geoCountry) {
+    if (age < CACHE_TTL || cacheObject.data.country?.code === geoCountry) {
       return cacheObject.data
     }
   }
@@ -76,16 +72,10 @@ export const getGeoLocation = async ({
     return mockLocation
   }
 
-  // If the `offline` option was used, we can't talk to the API, so let's
-  // use the mock location.
-  if (offline) {
-    return mockLocation
-  }
-
   // Trying to retrieve geolocation data from the API and caching it locally.
   try {
     const data = await getGeoLocationFromAPI()
-    
+
     // Always cache the data for future use
     const newCacheObject = {
       data,

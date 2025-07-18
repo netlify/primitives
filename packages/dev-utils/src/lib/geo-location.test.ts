@@ -177,44 +177,6 @@ describe('geolocation', () => {
       expect(mockFetch.fulfilled).toBe(true)
     })
 
-    test('uses cached data when offline is true, even if stale', async () => {
-      const cachedData = {
-        city: 'Cached City',
-        country: { code: 'CA', name: 'Canada' },
-        subdivision: { code: 'ON', name: 'Ontario' },
-        longitude: -79.3832,
-        latitude: 43.6532,
-        timezone: 'America/Toronto',
-      }
-
-      mockState.get.mockReturnValue({
-        data: cachedData,
-        timestamp: Date.now() - 1000 * 60 * 60 * 25, // 25 hours ago (stale)
-      })
-
-      const result = await getGeoLocation({
-        enabled: true, cache: true,
-        offline: true,
-        state: mockState,
-      })
-
-      expect(result).toEqual(cachedData)
-      expect(mockFetch.fulfilled).toBe(true)
-    })
-
-    test('returns mock location when offline is true and no cached data', async () => {
-      mockState.get.mockReturnValue(undefined)
-
-      const result = await getGeoLocation({
-        enabled: true, cache: false,
-        offline: true,
-        state: mockState,
-      })
-
-      expect(result).toEqual(mockLocation)
-      expect(mockFetch.fulfilled).toBe(true)
-    })
-
     test('returns mock location when API request fails', async () => {
       mockState.get.mockReturnValue(undefined)
 
@@ -226,7 +188,8 @@ describe('geolocation', () => {
         .inject()
 
       const result = await getGeoLocation({
-        enabled: true, cache: false,
+        enabled: true,
+        cache: false,
         state: mockState,
       })
 
@@ -250,7 +213,8 @@ describe('geolocation', () => {
       })
 
       const result = await getGeoLocation({
-        enabled: true, cache: false,
+        enabled: true,
+        cache: false,
         geoCountry: 'FR',
         state: mockState,
       })

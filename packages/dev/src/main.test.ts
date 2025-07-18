@@ -802,9 +802,9 @@ describe('Handling requests', () => {
           apiToken: 'token',
           projectRoot: directory,
           edgeFunctions: {},
-        geolocation: {
-          enabled: false,
-        },
+          geolocation: {
+            enabled: false,
+          },
         })
 
         await dev.start()
@@ -921,9 +921,9 @@ describe('Handling requests', () => {
           apiToken: 'token',
           projectRoot: directory,
           edgeFunctions: {},
-        geolocation: {
-          enabled: false,
-        },
+          geolocation: {
+            enabled: false,
+          },
         })
 
         const { serverAddress } = await dev.start()
@@ -1024,9 +1024,9 @@ describe('Handling requests', () => {
           apiToken: 'token',
           projectRoot: directory,
           edgeFunctions: {},
-        geolocation: {
-          enabled: false,
-        },
+          geolocation: {
+            enabled: false,
+          },
         })
 
         await dev.start()
