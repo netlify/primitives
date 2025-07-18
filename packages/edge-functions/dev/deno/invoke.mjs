@@ -52,6 +52,10 @@ export function invoke(req, functions, requestTimeout) {
               start(controller) {
                 streamController = controller
               },
+              cancel() {
+                streamController = null
+                worker.terminate()
+              },
             })
           }
 
