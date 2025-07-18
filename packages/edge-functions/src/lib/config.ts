@@ -6,6 +6,8 @@ type OnError = 'fail' | 'bypass' | Path
 
 export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'
 
+export type HeadersConfig = Record<string, boolean | string>
+
 type RateLimitAggregator = 'domain' | 'ip'
 
 type RateLimitAction = 'rate_limit' | 'rewrite'
@@ -29,6 +31,7 @@ export interface Config {
   cache?: Cache
   excludedPath?: Path | Path[]
   excludedPattern?: string | string[]
+  header?: HeadersConfig
   onError?: OnError
   path?: Path | Path[]
   pattern?: string | string[]
