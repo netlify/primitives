@@ -131,20 +131,20 @@ export class EdgeFunctionsHandler {
 
       if (route.headers) {
         const headerMatches = Object.entries(route.headers).every(([headerName, headerMatch]) => {
-          const requestHeaderValue = req.headers.get(headerName)?.split(', ').join(',')
+          const requestHeaderValue = req.headers.get(headerName)
 
           if (headerMatch?.matcher === 'exists') {
-            return Boolean(requestHeaderValue)
+            return requestHeaderValue !== null
           }
 
           if (headerMatch?.matcher === 'missing') {
-            return !requestHeaderValue
+            return requestHeaderValue === null
           }
 
           if (requestHeaderValue && headerMatch?.matcher === 'regex') {
             const pattern = new RegExp(headerMatch.pattern)
 
-            return pattern.test(requestHeaderValue)
+            return pattern.test(requestHeaderValue.split(', ').join(','))
           }
 
           return false
