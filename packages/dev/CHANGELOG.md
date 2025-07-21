@@ -1,5 +1,28 @@
 # Changelog
 
+## [4.4.5](https://github.com/netlify/primitives/compare/dev-v4.4.4...dev-v4.4.5) (2025-07-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions bumped from 4.1.12 to 4.1.13
+
+## [4.4.4](https://github.com/netlify/primitives/compare/dev-v4.4.3...dev-v4.4.4) (2025-07-21)
+
+
+### Bug Fixes
+
+* handle 304 responses from edge functions ([#364](https://github.com/netlify/primitives/issues/364)) ([08e2543](https://github.com/netlify/primitives/commit/08e254325163707a397c8dddc0761df6aad63fd7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.16.0 to 2.16.1
+
 ## [4.4.3](https://github.com/netlify/primitives/compare/dev-v4.4.2...dev-v4.4.3) (2025-07-18)
 
 

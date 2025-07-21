@@ -654,6 +654,14 @@ describe('Handling requests', () => {
 
            export const config = { path: "/hello/terminate/*" };`,
         )
+        .withFile(
+          'netlify/edge-functions/bodyless-response.mjs',
+          `export default async (req, context) => {
+            return new Response(null, { status: 304 });
+          };
+
+          export const config = { path: "/bodyless-response" };`,
+        )
       const directory = await fixture.create()
 
       vi.stubEnv('SOME_ZSH_THING_MAYBE', 'value on developer machine')
@@ -722,6 +730,11 @@ describe('Handling requests', () => {
         },
         url: req2URL.toString(),
       })
+
+      const req3 = new Request('https://site.netlify/bodyless-response')
+      const res3 = await dev.handle(req3)
+
+      expect(res3?.status).toBe(304)
 
       await dev.stop()
       await fixture.destroy()

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.1](https://github.com/netlify/primitives/compare/edge-functions-v2.16.0...edge-functions-v2.16.1) (2025-07-21)
+
+
+### Bug Fixes
+
+* handle 304 responses from edge functions ([#364](https://github.com/netlify/primitives/issues/364)) ([08e2543](https://github.com/netlify/primitives/commit/08e254325163707a397c8dddc0761df6aad63fd7))
+
 ## [2.16.0](https://github.com/netlify/primitives/compare/edge-functions-v2.15.8...edge-functions-v2.16.0) (2025-07-18)
 
 

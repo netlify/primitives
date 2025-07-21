@@ -1,6 +1,6 @@
 {
   "name": "@netlify/nuxt",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "Nuxt module providing local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -34,7 +34,7 @@
     "test": "exit 0",
     "test:ci": "vitest run",
     "test:dev": "vitest",
-    "test:types": "vue-tsc --noEmit && nuxi prepare playground && cd playground && vue-tsc --noEmit",
+    "test:types": "vue-tsc --noEmit",
     "test:watch": "vitest watch"
   },
   "keywords": [
@@ -50,7 +50,7 @@
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/dev": "^4.4.3",
+    "@netlify/dev": "^4.4.5",
     "@netlify/dev-utils": "^4.0.0",
     "@nuxt/kit": "^4.0.0",
     "h3": "^1.15.3"
