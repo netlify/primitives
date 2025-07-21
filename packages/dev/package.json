@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev",
-  "version": "4.4.4",
+  "version": "4.4.5",
   "description": "Emulation of the Netlify environment for local development",
   "type": "module",
   "engines": {
@@ -56,7 +56,7 @@
     "@netlify/config": "^23.2.0",
     "@netlify/dev-utils": "4.0.0",
     "@netlify/edge-functions": "2.16.1",
-    "@netlify/functions": "4.1.12",
+    "@netlify/functions": "4.1.13",
     "@netlify/headers": "2.0.6",
     "@netlify/images": "1.2.2",
     "@netlify/redirects": "3.0.6",
