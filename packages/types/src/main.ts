@@ -1,5 +1,5 @@
 export type { Context } from './lib/context/context.js'
 export type { Cookie } from './lib/context/cookies.js'
 export type { EnvironmentVariables } from './lib/environment-variables.js'
-export type { FunctionTimeoutConfig } from './lib/function-timeout.js'
 export type { NetlifyGlobal } from './lib/globals.js'
+export type { Site, SiteConfig } from './lib/context/site.js'
