@@ -1,5 +1,37 @@
 # Changelog
 
+## [4.1.13](https://github.com/netlify/primitives/compare/functions-v4.1.12...functions-v4.1.13) (2025-07-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/zip-it-and-ship-it to v14 ([#334](https://github.com/netlify/primitives/issues/334)) ([fe935fe](https://github.com/netlify/primitives/commit/fe935fe999b18440b3c051b68b3cf4867979d2c0))
+
+## [4.1.12](https://github.com/netlify/primitives/compare/functions-v4.1.11...functions-v4.1.12) (2025-07-17)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#333](https://github.com/netlify/primitives/issues/333)) ([0fa1f1e](https://github.com/netlify/primitives/commit/0fa1f1e8d717cbc5c797c19b64b4fa4ffbdaf992))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.5 to 10.0.6
+    * @netlify/dev-utils bumped from 3.3.0 to 4.0.0
+
+## [4.1.11](https://github.com/netlify/primitives/compare/functions-v4.1.10...functions-v4.1.11) (2025-07-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.4 to 10.0.5
+    * @netlify/dev-utils bumped from 3.2.2 to 3.3.0
+
 ## [4.1.10](https://github.com/netlify/primitives/compare/functions-v4.1.9...functions-v4.1.10) (2025-07-07)
 
 

@@ -53,6 +53,7 @@ worker.addEventListener('message', async (e) => {
         data: {
           headers: Object.fromEntries(res.headers.entries()),
           status: res.status,
+          hasBody: Boolean(res.body),
         },
       }),
     )
