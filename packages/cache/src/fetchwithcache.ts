@@ -134,7 +134,11 @@ export const fetchWithCache: FetchWithCache = async (
   if (onCachePut) {
     await onCachePut(cachePut)
   } else {
-    const requestContext = (globalThis as GlobalScope).Netlify?.context
+    // NOTE: when `requestContext` is assigned via a single expression here, we
+    // hit some `@typescript-eslint/no-unsafe-assignment` bug. TODO(serhalp): try
+    // to reduce this down to a minimal repro and file an issue.
+    const netlifyGlobal: NetlifyGlobal | undefined = (globalThis as GlobalScope).Netlify
+    const requestContext = netlifyGlobal?.context
 
     if (requestContext) {
       requestContext.waitUntil(cachePut)
