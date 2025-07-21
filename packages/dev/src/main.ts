@@ -491,6 +491,8 @@ export class NetlifyDev {
       })
     }
 
+    let geolocation: Awaited<ReturnType<typeof getGeoLocation>> | undefined
+
     if (this.#features.edgeFunctions) {
       const edgeFunctionsEnv = {
         // User-defined env vars + documented runtime env vars
@@ -514,7 +516,7 @@ export class NetlifyDev {
         ),
       }
 
-      const geolocation = await getGeoLocation({
+      geolocation ??= await getGeoLocation({
         enabled: this.#features.geolocation,
         cache: this.#geolocationConfig?.cache ?? true,
         state,
@@ -539,7 +541,7 @@ export class NetlifyDev {
         this.#config?.config.functionsDirectory ?? path.join(this.#projectRoot, 'netlify/functions')
       const userFunctionsPathExists = await isDirectory(userFunctionsPath)
 
-      const geolocation = await getGeoLocation({
+      geolocation ??= await getGeoLocation({
         enabled: this.#features.geolocation,
         cache: this.#geolocationConfig?.cache ?? true,
         state,
