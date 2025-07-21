@@ -11,6 +11,6 @@
     "nuxt": "^3.17.6"
   },
   "devDependencies": {
-    "@netlify/edge-functions": "^2.16.0"
+    "@netlify/edge-functions": "^2.16.1"
   }
 }
