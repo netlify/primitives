@@ -14,7 +14,7 @@
  * @param {number} requestTimeout
  */
 export function invoke(req, functions, requestTimeout) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const worker = new Worker(new URL('./workers/runner.mjs', import.meta.url).href, {
       type: 'module',
     })
@@ -23,6 +23,8 @@ export function invoke(req, functions, requestTimeout) {
     let response = null
     /** @type {ReadableStreamDefaultController<Uint8Array> | null} */
     let streamController = null
+    /** @type {ReadableStream | null} */
+    let stream = null
 
     const timeoutCheck = setTimeout(() => {
       if (!response) {
@@ -33,24 +35,6 @@ export function invoke(req, functions, requestTimeout) {
         )
       }
     }, requestTimeout)
-
-    const stream = new ReadableStream({
-      async start(controller) {
-        streamController = controller
-
-        worker.postMessage({
-          type: 'request',
-          data: {
-            body: await req.arrayBuffer(),
-            functions,
-            headers: Object.fromEntries(req.headers.entries()),
-            method: req.method,
-            timeout: requestTimeout,
-            url: req.url,
-          },
-        })
-      },
-    })
 
     worker.onmessage = (e) => {
       const message = /** @type {Message} */ (e.data)
@@ -63,6 +47,18 @@ export function invoke(req, functions, requestTimeout) {
         }
 
         case 'responseStart': {
+          if (message.data.hasBody) {
+            stream = new ReadableStream({
+              start(controller) {
+                streamController = controller
+              },
+              cancel() {
+                streamController = null
+                worker.terminate()
+              },
+            })
+          }
+
           response = new Response(stream, {
             headers: message.data.headers,
             status: message.data.status,
@@ -97,5 +93,17 @@ export function invoke(req, functions, requestTimeout) {
 
       reject(e)
     }
+
+    worker.postMessage({
+      type: 'request',
+      data: {
+        body: await req.arrayBuffer(),
+        functions,
+        headers: Object.fromEntries(req.headers.entries()),
+        method: req.method,
+        timeout: requestTimeout,
+        url: req.url,
+      },
+    })
   })
 }
