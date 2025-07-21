@@ -311,6 +311,38 @@ describe('`ImageHandler`', () => {
         expect(width / height).toBe(IMAGE_WIDTH / IMAGE_HEIGHT)
       }, 30_000)
 
+      test('allow matching any remote image when using a wildcard pattern', async () => {
+        mockCreateIPXWebServer.mockImplementation(
+          (await vi.importActual<typeof import('ipx')>('ipx')).createIPXWebServer,
+        )
+
+        const imageHandler = new ImageHandler({
+          logger: createMockLogger(),
+          imagesConfig: {
+            remote_images: [`(.*)`],
+          },
+        })
+
+        const requestedWidth = 100
+
+        const url = new URL('/.netlify/images', 'https://netlify.com')
+        url.searchParams.set('url', remoteServerAddress)
+        url.searchParams.set('w', requestedWidth.toString())
+
+        const match = imageHandler.match(new Request(url))
+
+        expect(match).toBeDefined()
+
+        const response = await match!.handle('https://example.netlify')
+
+        expect(response.ok).toBe(true)
+
+        const { width, height } = await getImageResponseSize(response)
+
+        expect(width).toBe(requestedWidth)
+        expect(width / height).toBe(IMAGE_WIDTH / IMAGE_HEIGHT)
+      }, 30_000)
+
       test('does not allow remote images not matching configured patterns', async () => {
         const imageHandler = new ImageHandler({
           logger: createMockLogger(),

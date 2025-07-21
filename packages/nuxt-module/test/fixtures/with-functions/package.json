@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "name": "with-functions",
+  "type": "module",
+  "dependencies": {
+    "@netlify/edge-functions": "^2.15.6"
+  }
+}

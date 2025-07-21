@@ -1,11 +1,10 @@
 import process from 'node:process'
 
 import { NetlifyDev, type Features } from '@netlify/dev'
-import { netlifyCommand } from '@netlify/dev-utils'
+import { fromWebResponse, netlifyCommand } from '@netlify/dev-utils'
 import * as vite from 'vite'
 
 import { createLoggerFromViteLogger } from './lib/logger.js'
-import { fromWebResponse } from './lib/reqres.js'
 
 export interface NetlifyPluginOptions extends Features {
   /**
@@ -31,12 +30,13 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
         return
       }
       const logger = createLoggerFromViteLogger(viteDevServer.config.logger)
-      const { blobs, edgeFunctions, functions, middleware = true, redirects, staticFiles } = options
+      const { blobs, edgeFunctions, functions, images, middleware = true, redirects, staticFiles } = options
 
       const netlifyDev = new NetlifyDev({
         blobs,
         edgeFunctions,
         functions,
+        images,
         logger,
         redirects,
         serverAddress: null,
