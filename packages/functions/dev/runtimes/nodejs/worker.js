@@ -11,7 +11,7 @@ import lambdaLocal from 'lambda-local'
 import sourceMapSupport from 'source-map-support'
 
 // https://github.com/nodejs/undici/blob/a36e299d544863c5ade17d4090181be894366024/lib/web/fetch/constants.js#L6
-const nullBodyStatus = [101, 204, 205, 304]
+const nullBodyStatus = new Set([101, 204, 205, 304])
 
 /**
  * @typedef HandlerResponse
@@ -49,40 +49,54 @@ const invocationResult = /** @type {HandlerResponse} */ (
   })
 )
 
-/** @type {number | undefined} */
-let streamPort
+/**
+ * When the result body is a stream and result status code allow to have a body,
+ * open up a http server that proxies back to the main thread and resolve with server port.
+ * Otherwise, resolve with undefined.
+ *
+ * @param {HandlerResponse} invocationResult
+ * @returns {Promise<number | undefined>}
+ */
+async function getStreamPortForStreamingResponse(invocationResult) {
+  // if we don't have result or result's body is not a stream, we do not need a stream port
+  if (!invocationResult || !isStream(invocationResult.body)) {
+    return undefined
+  }
 
-// When the result body is a StreamResponse
-// we open up a http server that proxies back to the main thread.
-if (invocationResult && isStream(invocationResult.body)) {
   const { body } = invocationResult
 
   delete invocationResult.body
 
-  // For streaming responses, lambda-local always return a result with body stream.
-  // We need to discard this if response status code does not allow to have a body.
-  const shouldHaveBodyStream = !nullBodyStatus.includes(invocationResult.statusCode)
-
-  if (shouldHaveBodyStream) {
-    await new Promise((resolve, reject) => {
-      const server = createServer((socket) => {
-        body.pipe(socket).on('end', () => server.close())
-      })
-      server.on('error', (error) => {
-        reject(error)
-      })
-      server.listen({ port: 0, host: 'localhost' }, () => {
-        const address = server.address()
-
-        if (address && typeof address !== 'string') {
-          streamPort = address.port
-        }
-
-        resolve(undefined)
-      })
-    })
+  // For streaming responses, lambda-local always returns a result with body stream.
+  // We need to discard it if result's status code does not allow response to have a body.
+  const shouldNotHaveABody = nullBodyStatus.has(invocationResult.statusCode)
+  if (shouldNotHaveABody) {
+    return undefined
   }
+
+  // create a server that will proxy the body stream back to the main thread
+  return await new Promise((resolve, reject) => {
+    const server = createServer((socket) => {
+      body.pipe(socket).on('end', () => server.close())
+    })
+    server.on('error', (error) => {
+      reject(error)
+    })
+    server.listen({ port: 0, host: 'localhost' }, () => {
+      const address = server.address()
+
+      /** @type {number | undefined} */
+      let streamPort
+      if (address && typeof address !== 'string') {
+        streamPort = address.port
+      }
+
+      resolve(streamPort)
+    })
+  })
 }
+
+const streamPort = await getStreamPortForStreamingResponse(invocationResult)
 
 if (parentPort) {
   /** @type {WorkerResult} */
