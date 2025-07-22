@@ -8,6 +8,7 @@ import {
   ensureNetlifyIgnore,
   getAPIToken,
   getGeoLocation,
+  type Geolocation,
   LocalState,
   type Logger,
   HTTPServer,
@@ -491,7 +492,7 @@ export class NetlifyDev {
       })
     }
 
-    let geolocation: Awaited<ReturnType<typeof getGeoLocation>> | undefined
+    let geolocation: Geolocation | undefined
 
     if (this.#features.edgeFunctions) {
       const edgeFunctionsEnv = {
