@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.13](https://github.com/netlify/primitives/compare/functions-v4.1.12...functions-v4.1.13) (2025-07-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/zip-it-and-ship-it to v14 ([#334](https://github.com/netlify/primitives/issues/334)) ([fe935fe](https://github.com/netlify/primitives/commit/fe935fe999b18440b3c051b68b3cf4867979d2c0))
+
 ## [4.1.12](https://github.com/netlify/primitives/compare/functions-v4.1.11...functions-v4.1.12) (2025-07-17)
 
 
