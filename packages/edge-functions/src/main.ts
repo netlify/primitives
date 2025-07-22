@@ -3,7 +3,7 @@ import type { NetlifyGlobal } from '@netlify/types'
 declare global {
   // Using `var` so that the declaration is hoisted in such a way that we can
   // reference it before it's initialized.
-  // eslint-disable-next-line no-var
+
   var Netlify: NetlifyGlobal
 }
 
