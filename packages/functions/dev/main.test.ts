@@ -28,6 +28,7 @@ describe('Functions with the v2 API syntax', () => {
       settings: {},
       timeouts: {},
       userFunctionsPath: 'netlify/functions',
+      watch: true,
     })
 
     const req1 = new Request('https://site.netlify/.netlify/functions/foo')
@@ -172,6 +173,7 @@ describe('Functions with the v2 API syntax', () => {
       settings: {},
       timeouts: {},
       userFunctionsPath: 'netlify/functions',
+      watch: true,
     })
 
     const req1 = new Request('https://site.netlify/hello')
