@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.16.1](https://github.com/netlify/primitives/compare/edge-functions-v2.16.0...edge-functions-v2.16.1) (2025-07-21)
+
+
+### Bug Fixes
+
+* handle 304 responses from edge functions ([#364](https://github.com/netlify/primitives/issues/364)) ([08e2543](https://github.com/netlify/primitives/commit/08e254325163707a397c8dddc0761df6aad63fd7))
+
+## [2.16.0](https://github.com/netlify/primitives/compare/edge-functions-v2.15.8...edge-functions-v2.16.0) (2025-07-18)
+
+
+### Features
+
+* support header matching in edge functions ([#361](https://github.com/netlify/primitives/issues/361)) ([05791fb](https://github.com/netlify/primitives/commit/05791fba0498326bc764dbde39943983c13962c8))
+
+## [2.15.8](https://github.com/netlify/primitives/compare/edge-functions-v2.15.7...edge-functions-v2.15.8) (2025-07-17)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#333](https://github.com/netlify/primitives/issues/333)) ([0fa1f1e](https://github.com/netlify/primitives/commit/0fa1f1e8d717cbc5c797c19b64b4fa4ffbdaf992))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.3.0 to 4.0.0
+
 ## [2.15.7](https://github.com/netlify/primitives/compare/edge-functions-v2.15.6...edge-functions-v2.15.7) (2025-07-15)
 
 

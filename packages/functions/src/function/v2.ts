@@ -1,4 +1,4 @@
-export type { Context } from '@netlify/serverless-functions-api'
+export type { Context } from '@netlify/types'
 
 type Path = `/${string}`
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'

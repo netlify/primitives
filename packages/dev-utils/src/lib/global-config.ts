@@ -76,7 +76,7 @@ const globalConfigDefaults = {
 // Memoise config result so that we only load it once
 let configStore: GlobalConfigStore | undefined
 
-const getGlobalConfigStore = async (): Promise<GlobalConfigStore> => {
+export const getGlobalConfigStore = async (): Promise<GlobalConfigStore> => {
   if (!configStore) {
     // Legacy config file in home ~/.netlify/config.json
     const legacyPath = getLegacyPathInHome(['config.json'])
@@ -95,8 +95,6 @@ const getGlobalConfigStore = async (): Promise<GlobalConfigStore> => {
 
   return configStore
 }
-
-export default getGlobalConfigStore
 
 export const resetConfigCache = () => {
   configStore = undefined

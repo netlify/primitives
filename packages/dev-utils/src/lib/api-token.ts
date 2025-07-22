@@ -1,4 +1,4 @@
-import getGlobalConfigStore from './global-config.js'
+import { getGlobalConfigStore } from './global-config.js'
 
 export const getAPIToken = async () => {
   const globalConfig = await getGlobalConfigStore()

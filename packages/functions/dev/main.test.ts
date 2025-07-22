@@ -28,6 +28,7 @@ describe('Functions with the v2 API syntax', () => {
       settings: {},
       timeouts: {},
       userFunctionsPath: 'netlify/functions',
+      watch: true,
     })
 
     const req1 = new Request('https://site.netlify/.netlify/functions/foo')
@@ -114,6 +115,39 @@ describe('Functions with the v2 API syntax', () => {
     expect(thirdChunk.done).toBeTruthy()
   })
 
+  test('Handles bodyless responses', async () => {
+    const source = `
+      export default async () =>
+        new Response(null,
+          {
+            status: 304,
+          },
+        )
+
+      export const config = { path: '/bodyless-response' }
+    `
+    const fixture = new Fixture().withFile('netlify/functions/bodyless-response.mjs', source)
+
+    const directory = await fixture.create()
+    const destPath = join(directory, 'functions-serve')
+    const functions = new FunctionsHandler({
+      accountId: 'account-123',
+      config: {},
+      destPath,
+      geolocation: {},
+      projectRoot: directory,
+      settings: {},
+      timeouts: {},
+      userFunctionsPath: 'netlify/functions',
+    })
+
+    const req = new Request('https://site.netlify/bodyless-response')
+    const match = await functions.match(req, destPath)
+    expect(match).not.toBeUndefined()
+    const res = await match!.handle(req)
+    expect(res.status).toBe(304)
+  })
+
   test('Returns a `preferStatic` property', async () => {
     const fixture = new Fixture().withFile(
       'netlify/functions/hello.mjs',
@@ -139,6 +173,7 @@ describe('Functions with the v2 API syntax', () => {
       settings: {},
       timeouts: {},
       userFunctionsPath: 'netlify/functions',
+      watch: true,
     })
 
     const req1 = new Request('https://site.netlify/hello')
