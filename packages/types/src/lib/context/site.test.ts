@@ -53,10 +53,10 @@ describe('Site types', () => {
 
     expect(config.functionsTimeout).toBe(30)
     expect(config.functionsConfig?.timeout).toBe(900)
-    
+
     expectTypeOf(config.functionsTimeout).toEqualTypeOf<number | undefined>()
     expectTypeOf(config.functionsConfig).toEqualTypeOf<{ timeout?: number } | undefined>()
-    
+
     if (config.functionsTimeout) {
       expectTypeOf(config.functionsTimeout).toBeNumber()
     }
