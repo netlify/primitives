@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.14](https://github.com/netlify/primitives/compare/functions-v4.1.13...functions-v4.1.14) (2025-07-22)
+
+
+### Bug Fixes
+
+* export `Context` type from `@netlify/types` ([#374](https://github.com/netlify/primitives/issues/374)) ([77e828c](https://github.com/netlify/primitives/commit/77e828c597c411a0490fa68333d9846e24e3fcd8))
+* handle 304 responses from functions ([#373](https://github.com/netlify/primitives/issues/373)) ([1094683](https://github.com/netlify/primitives/commit/1094683542fd38bd501b8452a24912e5ee2896ef))
+
 ## [4.1.13](https://github.com/netlify/primitives/compare/functions-v4.1.12...functions-v4.1.13) (2025-07-21)
 
 

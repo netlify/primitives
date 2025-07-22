@@ -5,7 +5,7 @@ export default defineConfig({
     target: 'esnext',
   },
   test: {
-    include: ['src/**/*.test.ts'],
+    include: ['(src|dev)/**/*.test.ts'],
     testTimeout: 30_000,
   },
 })
