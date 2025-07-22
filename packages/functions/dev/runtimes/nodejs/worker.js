@@ -10,6 +10,9 @@ import { isStream } from 'is-stream'
 import lambdaLocal from 'lambda-local'
 import sourceMapSupport from 'source-map-support'
 
+// https://github.com/nodejs/undici/blob/a36e299d544863c5ade17d4090181be894366024/lib/web/fetch/constants.js#L6
+const nullBodyStatus = [101, 204, 205, 304]
+
 /**
  * @typedef HandlerResponse
  * @type {import('../../../src/function/handler_response.js').HandlerResponse}
@@ -56,23 +59,29 @@ if (invocationResult && isStream(invocationResult.body)) {
 
   delete invocationResult.body
 
-  await new Promise((resolve, reject) => {
-    const server = createServer((socket) => {
-      body.pipe(socket).on('end', () => server.close())
-    })
-    server.on('error', (error) => {
-      reject(error)
-    })
-    server.listen({ port: 0, host: 'localhost' }, () => {
-      const address = server.address()
+  // For streaming responses, lambda-local always return a result with body stream.
+  // We need to discard this if response status code does not allow to have a body.
+  const shouldHaveBodyStream = !nullBodyStatus.includes(invocationResult.statusCode)
 
-      if (address && typeof address !== 'string') {
-        streamPort = address.port
-      }
+  if (shouldHaveBodyStream) {
+    await new Promise((resolve, reject) => {
+      const server = createServer((socket) => {
+        body.pipe(socket).on('end', () => server.close())
+      })
+      server.on('error', (error) => {
+        reject(error)
+      })
+      server.listen({ port: 0, host: 'localhost' }, () => {
+        const address = server.address()
 
-      resolve(undefined)
+        if (address && typeof address !== 'string') {
+          streamPort = address.port
+        }
+
+        resolve(undefined)
+      })
     })
-  })
+  }
 }
 
 if (parentPort) {
