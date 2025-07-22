@@ -26,50 +26,29 @@ const REQUEST_TIMEOUT = 1e4
  * specified options.
  */
 export const getGeoLocation = async ({
-  geoCountry,
   enabled = true,
   cache = true,
   state,
 }: {
   enabled?: boolean
   cache?: boolean
-  geoCountry?: string | undefined
   state: LocalState
 }): Promise<Geolocation> => {
-  // Early return for disabled mode (no geoCountry)
-  if (!enabled && !geoCountry) {
+  // Early return for disabled mode
+  if (!enabled) {
     return mockLocation
   }
 
   const cacheObject = state.get(STATE_GEO_PROPERTY) as { data: Geolocation; timestamp: number } | undefined
 
   // If we have cached geolocation data and caching is enabled, let's try to use it.
-  // Or, if the country we're trying to mock is the same one as we have in the
-  // cache, let's use the cache instead of the mock.
-  if (cacheObject !== undefined && (cache || cacheObject.data.country?.code === geoCountry)) {
+  if (cacheObject !== undefined && cache) {
     const age = Date.now() - cacheObject.timestamp
 
     // Let's use the cached data if it's not older than the TTL.
-    // Additionally, if we're trying to mock a country that matches the cached country,
-    // prefer the cached data over the mock.
-    if (age < CACHE_TTL || cacheObject.data.country?.code === geoCountry) {
+    if (age < CACHE_TTL) {
       return cacheObject.data
     }
-  }
-
-  // If a country code was provided or geolocation is disabled, we use mock location data.
-  if (geoCountry || !enabled) {
-    if (geoCountry) {
-      return {
-        city: 'Mock City',
-        country: { code: geoCountry, name: 'Mock Country' },
-        subdivision: { code: 'SD', name: 'Mock Subdivision' },
-        longitude: 0,
-        latitude: 0,
-        timezone: 'UTC',
-      }
-    }
-    return mockLocation
   }
 
   // Trying to retrieve geolocation data from the API and caching it locally.

@@ -37,25 +37,6 @@ describe('geolocation', () => {
       expect(mockFetch.fulfilled).toBe(true)
     })
 
-    test('returns custom mock location when geoCountry is provided', async () => {
-      const result = await getGeoLocation({
-        enabled: true,
-        cache: true,
-        geoCountry: 'FR',
-        state: mockState,
-      })
-
-      expect(result).toEqual({
-        city: 'Mock City',
-        country: { code: 'FR', name: 'Mock Country' },
-        subdivision: { code: 'SD', name: 'Mock Subdivision' },
-        longitude: 0,
-        latitude: 0,
-        timezone: 'UTC',
-      })
-      expect(mockFetch.fulfilled).toBe(true)
-    })
-
     test('returns cached data when cache is enabled and data is fresh', async () => {
       const cachedData = {
         city: 'Cached City',
@@ -194,32 +175,6 @@ describe('geolocation', () => {
       })
 
       expect(result).toEqual(mockLocation)
-      expect(mockFetch.fulfilled).toBe(true)
-    })
-
-    test('uses cached data when country matches geoCountry', async () => {
-      const cachedData = {
-        city: 'Paris',
-        country: { code: 'FR', name: 'France' },
-        subdivision: { code: 'IDF', name: 'Île-de-France' },
-        longitude: 2.3522,
-        latitude: 48.8566,
-        timezone: 'Europe/Paris',
-      }
-
-      mockState.get.mockReturnValue({
-        data: cachedData,
-        timestamp: Date.now() - 1000 * 60 * 60 * 25, // 25 hours ago (stale)
-      })
-
-      const result = await getGeoLocation({
-        enabled: true,
-        cache: false,
-        geoCountry: 'FR',
-        state: mockState,
-      })
-
-      expect(result).toEqual(cachedData)
       expect(mockFetch.fulfilled).toBe(true)
     })
   })
