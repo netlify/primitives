@@ -29,6 +29,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/from')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -57,6 +61,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/from')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -85,6 +93,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/from')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -120,6 +132,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello.txt')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
       await dev.start()
 
@@ -165,6 +181,10 @@ describe('Handling requests', () => {
       const directory = await fixture.create()
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
       await dev.start()
 
@@ -205,6 +225,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/shadowed-path.html')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
       await dev.start()
 
@@ -241,6 +265,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello.html')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
       await dev.start()
 
@@ -272,6 +300,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello?param1=value1')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -312,6 +344,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -342,6 +378,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/from')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -398,6 +438,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -440,6 +484,10 @@ describe('Handling requests', () => {
       const req = new Request('https://site.netlify/hello')
       const dev = new NetlifyDev({
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       await dev.start()
@@ -606,6 +654,14 @@ describe('Handling requests', () => {
 
            export const config = { path: "/hello/terminate/*" };`,
         )
+        .withFile(
+          'netlify/edge-functions/bodyless-response.mjs',
+          `export default async (req, context) => {
+            return new Response(null, { status: 304 });
+          };
+
+          export const config = { path: "/bodyless-response" };`,
+        )
       const directory = await fixture.create()
 
       vi.stubEnv('SOME_ZSH_THING_MAYBE', 'value on developer machine')
@@ -613,6 +669,10 @@ describe('Handling requests', () => {
       const dev = new NetlifyDev({
         apiToken: 'token',
         projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
       })
 
       const { serverAddress } = await dev.start()
@@ -670,6 +730,11 @@ describe('Handling requests', () => {
         },
         url: req2URL.toString(),
       })
+
+      const req3 = new Request('https://site.netlify/bodyless-response')
+      const res3 = await dev.handle(req3)
+
+      expect(res3?.status).toBe(304)
 
       await dev.stop()
       await fixture.destroy()
@@ -749,6 +814,10 @@ describe('Handling requests', () => {
           apiURL: context.apiUrl,
           apiToken: 'token',
           projectRoot: directory,
+          edgeFunctions: {},
+          geolocation: {
+            enabled: false,
+          },
         })
 
         await dev.start()
@@ -864,6 +933,10 @@ describe('Handling requests', () => {
           apiURL: context.apiUrl,
           apiToken: 'token',
           projectRoot: directory,
+          edgeFunctions: {},
+          geolocation: {
+            enabled: false,
+          },
         })
 
         const { serverAddress } = await dev.start()
@@ -963,6 +1036,10 @@ describe('Handling requests', () => {
           apiURL: context.apiUrl,
           apiToken: 'token',
           projectRoot: directory,
+          edgeFunctions: {},
+          geolocation: {
+            enabled: false,
+          },
         })
 
         await dev.start()

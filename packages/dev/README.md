@@ -1,7 +1,5 @@
 # @netlify/dev
 
-> [!WARNING] This module is under active development and does **not** yet support all Netlify platform features.
-
 `@netlify/dev` is a local emulator for the Netlify production environment. While it can be used directly by advanced
 users, it is primarily designed as a foundational library for higher-level tools like the
 [Netlify CLI](https://docs.netlify.com/cli/get-started/) and the
@@ -9,22 +7,6 @@ users, it is primarily designed as a foundational library for higher-level tools
 
 It provides a local request pipeline that mimics the Netlify platform’s request handling, including support for
 Functions, Blobs, Static files, Redirects, and Image CDN.
-
-## 🚧 Feature Support
-
-| Feature                | Supported |
-| ---------------------- | --------- |
-| Functions              | ✅ Yes    |
-| Edge Functions         | ✅ Yes    |
-| Blobs                  | ✅ Yes    |
-| Cache API              | ✅ Yes    |
-| Redirects and Rewrites | ✅ Yes    |
-| Headers                | ✅ Yes    |
-| Environment Variables  | ✅ Yes    |
-| Image CDN              | ✅ Yes    |
-
-> Note: Missing features will be added incrementally. This module is **not** intended to be a full replacement for the
-> Netlify CLI.
 
 ## 📦 Installation
 

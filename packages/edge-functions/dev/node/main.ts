@@ -129,6 +129,32 @@ export class EdgeFunctionsHandler {
         return
       }
 
+      if (route.headers) {
+        const headerMatches = Object.entries(route.headers).every(([headerName, headerMatch]) => {
+          const requestHeaderValue = req.headers.get(headerName)
+
+          if (headerMatch?.matcher === 'exists') {
+            return requestHeaderValue !== null
+          }
+
+          if (headerMatch?.matcher === 'missing') {
+            return requestHeaderValue === null
+          }
+
+          if (requestHeaderValue && headerMatch?.matcher === 'regex') {
+            const pattern = new RegExp(headerMatch.pattern)
+
+            return pattern.test(requestHeaderValue.split(', ').join(','))
+          }
+
+          return false
+        })
+
+        if (!headerMatches) {
+          return
+        }
+      }
+
       const isExcludedForFunction = manifest.function_config[route.function]?.excluded_patterns?.some((pattern) =>
         new RegExp(pattern).test(url.pathname),
       )

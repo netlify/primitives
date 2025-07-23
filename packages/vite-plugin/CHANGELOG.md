@@ -1,5 +1,71 @@
 # Changelog
 
+## [2.5.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.4.6...vite-plugin-v2.5.0) (2025-07-23)
+
+
+### Features
+
+* add actual dev geolocation to functions and edge functions context ([#345](https://github.com/netlify/primitives/issues/345)) ([916c38b](https://github.com/netlify/primitives/commit/916c38b84632b705a1d6ab4bfc6d60bfebd1ed2c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.4.6 to 4.5.0
+    * @netlify/dev-utils bumped from ^4.0.0 to ^4.1.0
+
+## [2.4.6](https://github.com/netlify/primitives/compare/vite-plugin-v2.4.5...vite-plugin-v2.4.6) (2025-07-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.4.5 to 4.4.6
+
+## [2.4.5](https://github.com/netlify/primitives/compare/vite-plugin-v2.4.4...vite-plugin-v2.4.5) (2025-07-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.4.4 to 4.4.5
+
+## [2.4.4](https://github.com/netlify/primitives/compare/vite-plugin-v2.4.3...vite-plugin-v2.4.4) (2025-07-21)
+
+
+### Bug Fixes
+
+* **docs:** update outdated vite plugin readme ([#365](https://github.com/netlify/primitives/issues/365)) ([8ad4e63](https://github.com/netlify/primitives/commit/8ad4e63efd7a6d27c75c8b44a50b4db6c4f22fd7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.4.3 to 4.4.4
+
+## [2.4.3](https://github.com/netlify/primitives/compare/vite-plugin-v2.4.2...vite-plugin-v2.4.3) (2025-07-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.4.2 to 4.4.3
+
+## [2.4.2](https://github.com/netlify/primitives/compare/vite-plugin-v2.4.1...vite-plugin-v2.4.2) (2025-07-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.4.1 to 4.4.2
+    * @netlify/dev-utils bumped from ^3.3.0 to ^4.0.0
+
 ## [2.4.1](https://github.com/netlify/primitives/compare/vite-plugin-v2.4.0...vite-plugin-v2.4.1) (2025-07-15)
 
 
