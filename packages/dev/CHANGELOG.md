@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.5.0](https://github.com/netlify/primitives/compare/dev-v4.4.6...dev-v4.5.0) (2025-07-23)
+
+
+### Features
+
+* add actual dev geolocation to functions and edge functions context ([#345](https://github.com/netlify/primitives/issues/345)) ([916c38b](https://github.com/netlify/primitives/commit/916c38b84632b705a1d6ab4bfc6d60bfebd1ed2c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.6 to 10.0.7
+    * @netlify/dev-utils bumped from 4.0.0 to 4.1.0
+    * @netlify/edge-functions bumped from 2.16.1 to 2.16.2
+    * @netlify/functions bumped from 4.1.14 to 4.1.15
+    * @netlify/headers bumped from 2.0.6 to 2.0.7
+    * @netlify/images bumped from 1.2.2 to 1.2.3
+    * @netlify/redirects bumped from 3.0.6 to 3.0.7
+    * @netlify/runtime bumped from 4.0.10 to 4.0.11
+    * @netlify/static bumped from 3.0.6 to 3.0.7
+
 ## [4.4.6](https://github.com/netlify/primitives/compare/dev-v4.4.5...dev-v4.4.6) (2025-07-22)
 
 
