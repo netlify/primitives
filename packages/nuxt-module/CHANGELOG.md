@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.1.7](https://github.com/netlify/primitives/compare/nuxt-v0.1.6...nuxt-v0.1.7) (2025-07-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.4.6 to ^4.5.0
+    * @netlify/dev-utils bumped from ^4.0.0 to ^4.1.0
+
+## [0.1.6](https://github.com/netlify/primitives/compare/nuxt-v0.1.5...nuxt-v0.1.6) (2025-07-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.4.5 to ^4.4.6
+
 ## [0.1.5](https://github.com/netlify/primitives/compare/nuxt-v0.1.4...nuxt-v0.1.5) (2025-07-21)
 
 
