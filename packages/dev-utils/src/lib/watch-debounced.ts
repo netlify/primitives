@@ -1,8 +1,8 @@
 import { once } from 'node:events'
 
-import chokidar, { FSWatcher } from 'chokidar'
+import chokidar from 'chokidar'
 import decache from 'decache'
-import debounce from 'lodash.debounce'
+import { debounce } from 'dettle'
 
 const DEBOUNCE_WAIT = 100
 
