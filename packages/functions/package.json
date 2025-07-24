@@ -84,7 +84,7 @@
     "@netlify/dev-utils": "4.1.0",
     "@netlify/types": "2.0.2",
     "@netlify/zip-it-and-ship-it": "^14.1.0",
-    "cron-parser": "^4.9.0",
+    "cron-parser": "^5.0.0",
     "decache": "^4.6.2",
     "extract-zip": "^2.0.1",
     "is-stream": "^4.0.1",
