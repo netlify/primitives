@@ -6,6 +6,7 @@
     "packages/types",
     "packages/dev-utils",
     "packages/runtime-utils",
+    "packages/otel",
     "packages/blobs",
     "packages/cache",
     "packages/edge-functions",
@@ -17,8 +18,7 @@
     "packages/static",
     "packages/dev",
     "packages/nuxt-module",
-    "packages/vite-plugin",
-    "packages/otel"
+    "packages/vite-plugin"
   ],
   "version": "0.0.0",
   "scripts": {
