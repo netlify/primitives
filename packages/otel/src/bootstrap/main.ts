@@ -30,7 +30,7 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
 
   const { registerInstrumentations } = await import('@opentelemetry/instrumentation')
 
-  const { NetlifySpanExporter } = await import('./netlify_span_exporter.js')
+  const { NetlifySpanExporter } = await import('../exporters/netlify.js')
 
   const resource = new Resource({
     'service.name': options.serviceName,
