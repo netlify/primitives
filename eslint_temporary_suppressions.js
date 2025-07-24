@@ -557,11 +557,9 @@ export default [
     },
   },
   {
-    files: ['packages/otel/src/bootstrap/netlify_span_exporter.ts'],
+    files: ['packages/otel/src/exporters/netlify.ts'],
     rules: {
       '@typescript-eslint/unbound-method': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-confusing-void-expression': 'off',
     },
   },
   {
