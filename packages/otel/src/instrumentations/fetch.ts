@@ -78,7 +78,7 @@ export class FetchInstrumentation implements Instrumentation {
   }
 
   /**
-   * patch global fetch, http and https
+   * patch global fetch
    */
   enable(): void {
     const originalFetch = _globalThis.fetch
@@ -101,7 +101,7 @@ export class FetchInstrumentation implements Instrumentation {
   }
 
   /**
-   * unpatch global fetch, http and https
+   * unpatch global fetch
    */
   disable(): void {
     if (this.originalFetch) {
