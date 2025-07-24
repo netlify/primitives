@@ -38,18 +38,30 @@ export const watchDebounced = async (
   let onAddQueue: string[] = []
   let onUnlinkQueue: string[] = []
 
-  const debouncedOnChange = debounce(() => {
-    onChange(onChangeQueue)
-    onChangeQueue = []
-  }, DEBOUNCE_WAIT)
-  const debouncedOnAdd = debounce(() => {
-    onAdd(onAddQueue)
-    onAddQueue = []
-  }, DEBOUNCE_WAIT)
-  const debouncedOnUnlink = debounce(() => {
-    onUnlink(onUnlinkQueue)
-    onUnlinkQueue = []
-  }, DEBOUNCE_WAIT)
+  const debouncedOnChange = debounce(
+    () => {
+      onChange(onChangeQueue)
+      onChangeQueue = []
+    },
+    DEBOUNCE_WAIT,
+    { leading: true },
+  )
+  const debouncedOnAdd = debounce(
+    () => {
+      onAdd(onAddQueue)
+      onAddQueue = []
+    },
+    DEBOUNCE_WAIT,
+    { leading: true },
+  )
+  const debouncedOnUnlink = debounce(
+    () => {
+      onUnlink(onUnlinkQueue)
+      onUnlinkQueue = []
+    },
+    DEBOUNCE_WAIT,
+    { leading: true },
+  )
 
   watcher
     .on('change', (path) => {
