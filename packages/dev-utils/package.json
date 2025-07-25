@@ -22,7 +22,8 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "src/templates/*.html"
   ],
   "scripts": {
     "build": "tsup-node",
