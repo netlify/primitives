@@ -15,10 +15,11 @@ interface RateLimitConfig {
 
 interface BaseConfig {
   /**
-   * Configures the function to serve any static files that match the request
-   * URL and render the function only if no matching files exist.
+   * Defines metadata about the framework or extension that has generated the
+   * function, if applicable. Typically contains the nane and the version.
+   * Should not be used for functions authored by users.
    */
-  preferStatic?: boolean
+  generator?: string
 
   /**
    * Limits the HTTP methods for which the function will run. If not set, the
@@ -26,6 +27,17 @@ interface BaseConfig {
    */
   method?: HTTPMethod | HTTPMethod[]
 
+  /**
+   * Configures the function to serve any static files that match the request
+   * URL and render the function only if no matching files exist.
+   */
+  preferStatic?: boolean
+
+  /**
+   * Set rate-limiting rules for this function.
+   *
+   * {@link} https://ntl.fyi/rate-limiting-code
+   */
   rateLimit?: RateLimitConfig
 }
 

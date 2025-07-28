@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/netlify/primitives/compare/otel-v3.1.0...otel-v3.2.0) (2025-07-24)
+
+
+### Features
+
+* Add @netlify/otel affordances ([#363](https://github.com/netlify/primitives/issues/363)) ([50fae00](https://github.com/netlify/primitives/commit/50fae00cfae69fcfeed18f24e39f51066cdbcee0))
+
 ## [3.1.0](https://github.com/netlify/primitives/compare/otel-v3.0.2...otel-v3.1.0) (2025-07-10)
 
 
