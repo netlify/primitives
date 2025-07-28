@@ -18,7 +18,7 @@ export class NetlifySpanExporter implements SpanExporter {
 
   /** Export spans. */
   export(spans: ReadableSpan[], resultCallback: (result: ExportResult) => void): void {
-    this.#logger.debug(`export ${spans.length} spans`)
+    this.#logger.debug(`export ${spans.length.toString()} spans`)
     if (this.#shutdownOnce.isCalled) {
       resultCallback({
         code: ExportResultCode.FAILED,
@@ -28,7 +28,7 @@ export class NetlifySpanExporter implements SpanExporter {
     }
 
     console.log(TRACE_PREFIX, NetlifySpanExporter.#decoder.decode(JsonTraceSerializer.serializeRequest(spans)))
-    return resultCallback({ code: ExportResultCode.SUCCESS })
+    resultCallback({ code: ExportResultCode.SUCCESS })
   }
 
   /**
