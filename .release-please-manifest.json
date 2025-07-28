@@ -1,18 +1,18 @@
 {
   "packages/blobs": "10.0.7",
   "packages/cache": "3.0.8",
-  "packages/dev": "4.5.1",
+  "packages/dev": "4.5.2",
   "packages/dev-utils": "4.1.0",
   "packages/edge-functions": "2.16.2",
-  "packages/functions": "4.1.15",
+  "packages/functions": "4.2.0",
   "packages/headers": "2.0.7",
   "packages/images": "1.2.4",
-  "packages/nuxt-module": "0.1.8",
-  "packages/otel": "3.2.0",
+  "packages/nuxt-module": "0.1.9",
+  "packages/otel": "3.3.0",
   "packages/redirects": "3.0.7",
   "packages/runtime": "4.0.11",
   "packages/runtime-utils": "2.1.0",
   "packages/static": "3.0.7",
   "packages/types": "2.0.2",
-  "packages/vite-plugin": "2.5.1"
+  "packages/vite-plugin": "2.5.2"
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/netlify/primitives/compare/functions-v4.1.15...functions-v4.2.0) (2025-07-28)
+
+
+### Features
+
+* add `generator` field to `Config` type ([#397](https://github.com/netlify/primitives/issues/397)) ([ee49e8a](https://github.com/netlify/primitives/commit/ee49e8a64b360a0b54711e0f1de7bf512d366eb9))
+
 ## [4.1.15](https://github.com/netlify/primitives/compare/functions-v4.1.14...functions-v4.1.15) (2025-07-23)
 
 
