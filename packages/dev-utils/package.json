@@ -25,12 +25,12 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "tsup-node",
+    "build": "tsdown",
     "prepack": "npm run build",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:ci": "npm run build && vitest run",
-    "dev": "tsup-node --watch",
+    "dev": "tsdown --watch",
     "publint": "npx -y publint --strict"
   },
   "keywords": [],
@@ -47,7 +47,7 @@
     "@types/parse-gitignore": "^1.0.2",
     "@types/write-file-atomic": "^4.0.3",
     "execa": "^8.0.1",
-    "tsup": "^8.0.0",
+    "tsdown": "^0.12.7",
     "vitest": "^3.0.0"
   },
   "dependencies": {
@@ -63,7 +63,6 @@
     "lodash.debounce": "^4.0.8",
     "parse-gitignore": "^2.0.0",
     "semver": "^7.7.2",
-    "tmp-promise": "^3.0.3",
     "uuid": "^11.1.0",
     "write-file-atomic": "^5.0.1"
   }

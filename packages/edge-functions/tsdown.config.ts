@@ -1,11 +1,9 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { argv } from 'node:process'
-
 import { getURL } from '@netlify/edge-functions-bootstrap/version'
 import { execa } from 'execa'
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsdown'
 
 const __filename = fileURLToPath(import.meta.url)
 
@@ -17,22 +15,16 @@ export default defineConfig([
     format: ['esm'],
     entry: ['src/main.ts'],
     tsconfig: 'tsconfig.json',
-    splitting: false,
-    bundle: true,
     dts: true,
     outDir: './dist',
-    watch: argv.includes('--watch'),
   },
   {
     clean: true,
     format: ['esm'],
     entry: ['src/version.ts'],
     tsconfig: 'tsconfig.json',
-    splitting: false,
-    bundle: true,
     dts: true,
     outDir: './dist',
-    watch: argv.includes('--watch'),
   },
   {
     clean: true,
@@ -40,10 +32,7 @@ export default defineConfig([
     entry: ['dev/node/main.ts'],
     format: ['esm'],
     dts: true,
-    splitting: false,
-    watch: argv.includes('--watch'),
     platform: 'node',
-    bundle: true,
 
     // Using a custom function to copy the contents of the `deno` directory and
     // preserve the original structure, so that the relative path to the worker
@@ -56,7 +45,7 @@ export default defineConfig([
       await fs.cp(denoPath, path.resolve(distPath, 'deno'), { recursive: true })
 
       // We need to bundle the bootstrap layer with the package because Deno
-      // does not support HTTP imports when inside a `node_modukes` directory.
+      // does not support HTTP imports when inside a `node_modules` directory.
       const distBootstrapPath = path.resolve(distPath, 'deno', BOOTSTRAP_FILENAME)
       await execa(
         'deno',

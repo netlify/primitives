@@ -28,12 +28,12 @@
     "deno/**/*"
   ],
   "scripts": {
-    "build": "tsup-node",
+    "build": "tsdown",
     "prepack": "npm run build",
     "test": "vitest run",
     "test:dev": "vitest",
     "test:ci": "npm run build && vitest run",
-    "dev": "tsup-node --watch",
+    "dev": "tsdown --watch",
     "publint": "npx -y publint --strict"
   },
   "keywords": [
@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "execa": "^8.0.1",
-    "tsup": "^8.0.0",
+    "tsdown": "^0.12.7",
     "vitest": "^3.0.0"
   },
   "dependencies": {
