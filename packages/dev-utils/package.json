@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev-utils",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "TypeScript utilities for the local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -22,7 +22,8 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "src/templates/*.html"
   ],
   "scripts": {
     "build": "tsup-node",
@@ -56,8 +57,8 @@
     "decache": "^4.6.2",
     "dettle": "^1.0.5",
     "dot-prop": "9.0.0",
+    "empathic": "^2.0.0",
     "env-paths": "^3.0.0",
-    "find-up": "7.0.0",
     "image-size": "^2.0.2",
     "js-image-generator": "^1.0.4",
     "parse-gitignore": "^2.0.0",

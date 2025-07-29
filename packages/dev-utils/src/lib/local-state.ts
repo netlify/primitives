@@ -3,7 +3,7 @@ import path from 'path'
 import process from 'process'
 
 import { deleteProperty, getProperty, hasProperty, setProperty } from 'dot-prop'
-import { findUpSync } from 'find-up'
+import { file as findUpSync } from 'empathic/find'
 import writeFileAtomic from 'write-file-atomic'
 
 import { getPathInProject } from './paths.js'
@@ -15,7 +15,7 @@ const permissionError = "You don't have access to this file."
  * Finds location of `.netlify/state.json`
  */
 const findStatePath = (cwd: string): string => {
-  const statePath = findUpSync([STATE_PATH], { cwd })
+  const statePath = findUpSync(STATE_PATH, { cwd })
 
   if (!statePath) {
     return path.join(cwd, STATE_PATH)

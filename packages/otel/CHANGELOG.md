@@ -1,5 +1,26 @@
 # Changelog
 
+## [3.3.1](https://github.com/netlify/primitives/compare/otel-v3.3.0...otel-v3.3.1) (2025-07-29)
+
+
+### Bug Fixes
+
+* Add exporter-netlify and instrumentation-fetch to exports ([#400](https://github.com/netlify/primitives/issues/400)) ([5a6c6f6](https://github.com/netlify/primitives/commit/5a6c6f616f165debe1fe6cff5dbc4a4224327220))
+
+## [3.3.0](https://github.com/netlify/primitives/compare/otel-v3.2.0...otel-v3.3.0) (2025-07-28)
+
+
+### Features
+
+* a minimal fetch instrumentation ([#383](https://github.com/netlify/primitives/issues/383)) ([744a3a3](https://github.com/netlify/primitives/commit/744a3a39851800fd7220080e7322b8ed38b84391))
+
+## [3.2.0](https://github.com/netlify/primitives/compare/otel-v3.1.0...otel-v3.2.0) (2025-07-24)
+
+
+### Features
+
+* Add @netlify/otel affordances ([#363](https://github.com/netlify/primitives/issues/363)) ([50fae00](https://github.com/netlify/primitives/commit/50fae00cfae69fcfeed18f24e39f51066cdbcee0))
+
 ## [3.1.0](https://github.com/netlify/primitives/compare/otel-v3.0.2...otel-v3.1.0) (2025-07-10)
 
 
