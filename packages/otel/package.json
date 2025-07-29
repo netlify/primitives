@@ -37,6 +37,34 @@
         "types": "./dist/bootstrap/main.d.ts",
         "default": "./dist/bootstrap/main.js"
       }
+    },
+    "./exporter-netlify": {
+      "require": {
+        "types": "./dist/exporters/netlify.d.cts",
+        "default": "./dist/exporters/netlify.cjs"
+      },
+      "import": {
+        "types": "./dist/exporters/netlify.d.ts",
+        "default": "./dist/exporters/netlify.js"
+      },
+      "default": {
+        "types": "./dist/exporters/netlify.d.ts",
+        "default": "./dist/exporters/netlify.js"
+      }
+    },
+    "./instrumentation-fetch": {
+      "require": {
+        "types": "./dist/instrumentations/fetch.d.cts",
+        "default": "./dist/instrumentations/fetch.cjs"
+      },
+      "import": {
+        "types": "./dist/instrumentations/fetch.d.ts",
+        "default": "./dist/instrumentations/fetch.js"
+      },
+      "default": {
+        "types": "./dist/instrumentations/fetch.d.ts",
+        "default": "./dist/instrumentations/fetch.js"
+      }
     }
   },
   "files": [
