@@ -1,12 +1,5 @@
 # Changelog
 
-## [4.1.1](https://github.com/netlify/primitives/compare/dev-utils-v4.1.0...dev-utils-v4.1.1) (2025-07-29)
-
-
-### Bug Fixes
-
-* include html templates with dev-utils package ([#396](https://github.com/netlify/primitives/issues/396)) ([8fc2e28](https://github.com/netlify/primitives/commit/8fc2e28223763fb195729d81b7d2146d49c63819))
-
 ## [4.1.0](https://github.com/netlify/primitives/compare/dev-utils-v4.0.0...dev-utils-v4.1.0) (2025-07-23)
 
 
