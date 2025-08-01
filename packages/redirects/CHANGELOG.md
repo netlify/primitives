@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.9](https://github.com/netlify/primitives/compare/redirects-v3.0.8...redirects-v3.0.9) (2025-08-01)
+
+
+### Bug Fixes
+
+* add `@netlify/dev-utils` dependency ([#403](https://github.com/netlify/primitives/issues/403)) ([3ecf352](https://github.com/netlify/primitives/commit/3ecf352a38dd7d337067b382286c49ea041b0464))
+
 ## [3.0.8](https://github.com/netlify/primitives/compare/redirects-v3.0.7...redirects-v3.0.8) (2025-07-29)
 
 
