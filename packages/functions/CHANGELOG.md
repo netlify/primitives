@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.2](https://github.com/netlify/primitives/compare/functions-v4.2.1...functions-v4.2.2) (2025-08-14)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#411](https://github.com/netlify/primitives/issues/411)) ([bad2dce](https://github.com/netlify/primitives/commit/bad2dceae8b5e5f56d947ce2332372d148819ccc))
+
 ## [4.2.1](https://github.com/netlify/primitives/compare/functions-v4.2.0...functions-v4.2.1) (2025-07-29)
 
 

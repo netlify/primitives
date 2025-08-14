@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.1](https://github.com/netlify/primitives/compare/edge-functions-v2.17.0...edge-functions-v2.17.1) (2025-08-14)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#411](https://github.com/netlify/primitives/issues/411)) ([bad2dce](https://github.com/netlify/primitives/commit/bad2dceae8b5e5f56d947ce2332372d148819ccc))
+
 ## [2.17.0](https://github.com/netlify/primitives/compare/edge-functions-v2.16.3...edge-functions-v2.17.0) (2025-08-01)
 
 
