@@ -83,7 +83,7 @@
     "@netlify/blobs": "10.0.8",
     "@netlify/dev-utils": "4.1.1",
     "@netlify/types": "2.0.2",
-    "@netlify/zip-it-and-ship-it": "^14.1.0",
+    "@netlify/zip-it-and-ship-it": "^14.1.2",
     "cron-parser": "^4.9.0",
     "decache": "^4.6.2",
     "extract-zip": "^2.0.1",
