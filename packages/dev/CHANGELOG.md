@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.5.4](https://github.com/netlify/primitives/compare/dev-v4.5.3...dev-v4.5.4) (2025-08-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.16.3 to 2.17.0
+    * @netlify/redirects bumped from 3.0.8 to 3.0.9
+
 ## [4.5.3](https://github.com/netlify/primitives/compare/dev-v4.5.2...dev-v4.5.3) (2025-07-29)
 
 

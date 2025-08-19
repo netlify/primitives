@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0](https://github.com/netlify/primitives/compare/otel-v3.3.1...otel-v3.4.0) (2025-08-05)
+
+
+### Features
+
+* Add skipping and redacting of headers ([#404](https://github.com/netlify/primitives/issues/404)) ([7bcfe6d](https://github.com/netlify/primitives/commit/7bcfe6d636869edbf035da8a815d00a5979044c8))
+
 ## [3.3.1](https://github.com/netlify/primitives/compare/otel-v3.3.0...otel-v3.3.1) (2025-07-29)
 
 
