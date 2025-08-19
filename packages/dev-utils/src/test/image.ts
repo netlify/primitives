@@ -34,7 +34,7 @@ export function createImageServerHandler(imageConfigFromURL: (url: URL) => { wid
 
     try {
       const imageBuffer = await generateImage(imageConfig.width, imageConfig.height)
-      return new Response(imageBuffer, {
+      return new Response(imageBuffer as BodyInit, {
         headers: {
           'Content-Type': 'image/jpeg',
           'Content-Length': imageBuffer.length.toString(),
