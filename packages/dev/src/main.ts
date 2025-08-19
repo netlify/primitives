@@ -451,7 +451,7 @@ export class NetlifyDev {
     this.#config = config
 
     const runtime = await getRuntime({
-      blobs: Boolean(this.#features.blobs),
+      blobs: this.#features.blobs,
       deployID: '0',
       projectRoot: this.#projectRoot,
       siteID: siteID ?? '0',

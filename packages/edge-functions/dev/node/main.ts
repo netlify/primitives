@@ -339,7 +339,7 @@ export class EdgeFunctionsHandler {
     const status = 500
     const {
       error: { message, name, stack = '' },
-    } = JSON.parse(errorBuffer.toString()) as { error: Error }
+    } = JSON.parse(errorBuffer) as { error: Error }
 
     if (!acceptsHTML) {
       return new Response(`${name}: ${message}\n ${stack}`, { status })
