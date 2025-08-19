@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.2.3](https://github.com/netlify/primitives/compare/functions-v4.2.2...functions-v4.2.3) (2025-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.8 to 10.0.9
+    * @netlify/dev-utils bumped from 4.1.1 to 4.1.2
+
 ## [4.2.2](https://github.com/netlify/primitives/compare/functions-v4.2.1...functions-v4.2.2) (2025-08-14)
 
 

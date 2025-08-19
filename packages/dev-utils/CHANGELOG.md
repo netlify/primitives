@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.2](https://github.com/netlify/primitives/compare/dev-utils-v4.1.1...dev-utils-v4.1.2) (2025-08-19)
+
+
+### Bug Fixes
+
+* **deps:** replace lodash.debounce with dettle ([#388](https://github.com/netlify/primitives/issues/388)) ([9c5c1e7](https://github.com/netlify/primitives/commit/9c5c1e7cd326a63818a4a09ea11b77fb5e09eed1))
+
 ## [4.1.1](https://github.com/netlify/primitives/compare/dev-utils-v4.1.0...dev-utils-v4.1.1) (2025-07-29)
 
 

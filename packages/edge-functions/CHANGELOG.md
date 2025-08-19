@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.17.2](https://github.com/netlify/primitives/compare/edge-functions-v2.17.1...edge-functions-v2.17.2) (2025-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.1.1 to 4.1.2
+
 ## [2.17.1](https://github.com/netlify/primitives/compare/edge-functions-v2.17.0...edge-functions-v2.17.1) (2025-08-14)
 
 
