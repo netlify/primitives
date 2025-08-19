@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.5.5](https://github.com/netlify/primitives/compare/dev-v4.5.4...dev-v4.5.5) (2025-08-14)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#411](https://github.com/netlify/primitives/issues/411)) ([bad2dce](https://github.com/netlify/primitives/commit/bad2dceae8b5e5f56d947ce2332372d148819ccc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.17.0 to 2.17.1
+    * @netlify/functions bumped from 4.2.1 to 4.2.2
+    * @netlify/headers bumped from 2.0.8 to 2.0.9
+    * @netlify/redirects bumped from 3.0.9 to 3.0.10
+
 ## [4.5.4](https://github.com/netlify/primitives/compare/dev-v4.5.3...dev-v4.5.4) (2025-08-01)
 
 

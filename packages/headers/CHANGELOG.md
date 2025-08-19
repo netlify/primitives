@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.9](https://github.com/netlify/primitives/compare/headers-v2.0.8...headers-v2.0.9) (2025-08-14)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#411](https://github.com/netlify/primitives/issues/411)) ([bad2dce](https://github.com/netlify/primitives/commit/bad2dceae8b5e5f56d947ce2332372d148819ccc))
+
 ## [2.0.8](https://github.com/netlify/primitives/compare/headers-v2.0.7...headers-v2.0.8) (2025-07-29)
 
 
