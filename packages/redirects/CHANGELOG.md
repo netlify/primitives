@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.10](https://github.com/netlify/primitives/compare/redirects-v3.0.9...redirects-v3.0.10) (2025-08-14)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#411](https://github.com/netlify/primitives/issues/411)) ([bad2dce](https://github.com/netlify/primitives/commit/bad2dceae8b5e5f56d947ce2332372d148819ccc))
+
 ## [3.0.9](https://github.com/netlify/primitives/compare/redirects-v3.0.8...redirects-v3.0.9) (2025-08-01)
 
 
