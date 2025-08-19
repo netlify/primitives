@@ -1,7 +1,13 @@
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { type Logger, renderFunctionErrorPage, killProcess, type Geolocation, type ProcessRef } from '@netlify/dev-utils'
+import {
+  type Logger,
+  renderFunctionErrorPage,
+  killProcess,
+  type Geolocation,
+  type ProcessRef,
+} from '@netlify/dev-utils'
 import {
   find,
   generateManifest,
