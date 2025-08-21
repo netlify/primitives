@@ -115,6 +115,9 @@ export default tseslint.config(
 
             // Custom assertion functions
             'assertNetlifyToml',
+
+            // Vitest type testing functions
+            'expectTypeOf',
           ],
         },
       ],
