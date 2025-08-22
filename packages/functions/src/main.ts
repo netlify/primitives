@@ -1,3 +1,9 @@
+import type { NetlifyGlobal } from '@netlify/types'
+
+declare global {
+  const Netlify: NetlifyGlobal
+}
+
 export { builder } from './lib/builder.js'
 export { purgeCache } from './lib/purge_cache.js'
 export { schedule } from './lib/schedule.js'
