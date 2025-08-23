@@ -85,7 +85,7 @@ describe('header exclusion', () => {
   })
 })
 
-describe('patched fetch', async () => {
+describe('patched fetch', () => {
   const server = setupServer(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     http.get('http://localhost:3000/ok', () => HttpResponse.json({ message: 'ok' })),
