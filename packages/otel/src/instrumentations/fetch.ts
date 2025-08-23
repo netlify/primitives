@@ -123,7 +123,7 @@ export class FetchInstrumentation implements Instrumentation {
       return tracer.withActiveSpan('fetch', async (span) => {
         const request = new Request(resource, options)
         this.annotateFromRequest(span, request)
-        const response = await originalFetch(resource, options)
+        const response = await originalFetch(request, options)
         this.annotateFromResponse(span, response)
         return response
       })
