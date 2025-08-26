@@ -93,6 +93,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
+    "msw": "^2.10.5",
     "npm-run-all2": "^7.0.2",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
