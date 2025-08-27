@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.14](https://github.com/netlify/primitives/compare/nuxt-v0.1.13...nuxt-v0.1.14) (2025-08-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/zip-it-and-ship-it to ^14.1.3 ([#418](https://github.com/netlify/primitives/issues/418)) ([c08dfc9](https://github.com/netlify/primitives/commit/c08dfc9bed1ea71b9654049a48cfe703b90c59c0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.5.6 to ^4.5.7
+
 ## [0.1.13](https://github.com/netlify/primitives/compare/nuxt-v0.1.12...nuxt-v0.1.13) (2025-08-19)
 
 

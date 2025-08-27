@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.3](https://github.com/netlify/primitives/compare/edge-functions-v2.17.2...edge-functions-v2.17.3) (2025-08-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/edge-functions-bootstrap to ^2.16.0 ([#410](https://github.com/netlify/primitives/issues/410)) ([4ddfeec](https://github.com/netlify/primitives/commit/4ddfeec097be72e2939a9dca303cb094a0af00af))
+
 ## [2.17.2](https://github.com/netlify/primitives/compare/edge-functions-v2.17.1...edge-functions-v2.17.2) (2025-08-19)
 
 
