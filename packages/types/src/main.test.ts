@@ -4,12 +4,12 @@ import { fileURLToPath } from 'node:url'
 
 import { expect, expectTypeOf, test } from 'vitest'
 
-import { Context, NetlifyGlobal } from './main.js'
+import type { Context, NetlifyGlobal } from './main.js'
 import * as main from './main.js'
 
 test('Exports types', () => {
-  expectTypeOf<Context>()
-  expectTypeOf<NetlifyGlobal>()
+  expectTypeOf<Context>().toExtend<object>()
+  expectTypeOf<NetlifyGlobal>().toExtend<object>()
 })
 
 test('Does not export runtime code', () => {
