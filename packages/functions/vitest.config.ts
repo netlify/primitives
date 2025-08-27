@@ -8,7 +8,7 @@ export default defineConfig({
     include: ['(src|dev)/**/*.test.ts'],
     testTimeout: 30_000,
     typecheck: {
-      tsconfig: './tsconfig.json',
+      enabled: true,
     },
   },
 })
