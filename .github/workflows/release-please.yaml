@@ -59,11 +59,15 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/dev-utils/ --provenance --access=public
-        if: ${{ steps.release.outputs['packages/dev-utils--release_created'] || github.event_name == 'workflow_dispatch' }}
+        if:
+          ${{ steps.release.outputs['packages/dev-utils--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/runtime-utils/ --provenance --access=public
-        if: ${{ steps.release.outputs['packages/runtime-utils--release_created'] || github.event_name == 'workflow_dispatch' }}
+        if:
+          ${{ steps.release.outputs['packages/runtime-utils--release_created'] || github.event_name ==
+          'workflow_dispatch' }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/blobs/ --provenance --access=public
@@ -75,15 +79,20 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/edge-functions/ --provenance --access=public
-        if: ${{ steps.release.outputs['packages/edge-functions--release_created'] || github.event_name == 'workflow_dispatch' }}
+        if:
+          ${{ steps.release.outputs['packages/edge-functions--release_created'] || github.event_name ==
+          'workflow_dispatch' }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/functions/ --provenance --access=public
-        if: ${{ steps.release.outputs['packages/functions--release_created'] || github.event_name == 'workflow_dispatch' }}
+        if:
+          ${{ steps.release.outputs['packages/functions--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/headers/ --provenance --access=public
-        if: ${{ steps.release.outputs['packages/headers--release_created'] || github.event_name == 'workflow_dispatch' }}
+        if:
+          ${{ steps.release.outputs['packages/headers--release_created'] || github.event_name == 'workflow_dispatch' }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/images/ --provenance --access=public
@@ -91,15 +100,20 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/nuxt-module/ --provenance --access=public
-        if: ${{ steps.release.outputs['packages/nuxt-module--release_created'] || github.event_name == 'workflow_dispatch' }}
+        if:
+          ${{ steps.release.outputs['packages/nuxt-module--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/redirects/ --provenance --access=public
-        if: ${{ steps.release.outputs['packages/redirects--release_created'] || github.event_name == 'workflow_dispatch' }}
+        if:
+          ${{ steps.release.outputs['packages/redirects--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/runtime/ --provenance --access=public
-        if: ${{ steps.release.outputs['packages/runtime--release_created'] || github.event_name == 'workflow_dispatch' }}
+        if:
+          ${{ steps.release.outputs['packages/runtime--release_created'] || github.event_name == 'workflow_dispatch' }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/static/ --provenance --access=public
@@ -111,7 +125,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/vite-plugin/ --provenance --access=public
-        if: ${{ steps.release.outputs['packages/vite-plugin--release_created'] || github.event_name == 'workflow_dispatch' }}
+        if:
+          ${{ steps.release.outputs['packages/vite-plugin--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - run: npm publish packages/otel/ --provenance --access=public
