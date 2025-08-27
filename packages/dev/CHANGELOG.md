@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.5.7](https://github.com/netlify/primitives/compare/dev-v4.5.6...dev-v4.5.7) (2025-08-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions bumped from 2.17.2 to 2.17.3
+    * @netlify/functions bumped from 4.2.3 to 4.2.4
+
 ## [4.5.6](https://github.com/netlify/primitives/compare/dev-v4.5.5...dev-v4.5.6) (2025-08-19)
 
 

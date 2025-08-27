@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.1](https://github.com/netlify/primitives/compare/otel-v3.4.0...otel-v3.4.1) (2025-08-26)
+
+
+### Bug Fixes
+
+* don't reüse used request in otel fetch ([#435](https://github.com/netlify/primitives/issues/435)) ([6d755f6](https://github.com/netlify/primitives/commit/6d755f6a081169f5b59b132c03e65bf955debc91))
+
 ## [3.4.0](https://github.com/netlify/primitives/compare/otel-v3.3.1...otel-v3.4.0) (2025-08-05)
 
 
