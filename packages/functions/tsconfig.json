@@ -11,6 +11,7 @@
     "removeComments": false,
     "strict": true,
     "moduleResolution": "node",
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src", "dev"]
