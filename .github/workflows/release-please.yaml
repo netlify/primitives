@@ -63,7 +63,9 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if: ${{ steps.release.outputs['packages/dev-utils--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - if:
+          ${{ steps.release.outputs['packages/dev-utils--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/dev-utils/ --provenance --access=public || true
@@ -72,7 +74,9 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if: ${{ steps.release.outputs['packages/runtime-utils--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - if:
+          ${{ steps.release.outputs['packages/runtime-utils--release_created'] || github.event_name ==
+          'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/runtime-utils/ --provenance --access=public || true
@@ -99,7 +103,9 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if: ${{ steps.release.outputs['packages/edge-functions--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - if:
+          ${{ steps.release.outputs['packages/edge-functions--release_created'] || github.event_name ==
+          'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/edge-functions/ --provenance --access=public || true
@@ -108,7 +114,9 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if: ${{ steps.release.outputs['packages/functions--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - if:
+          ${{ steps.release.outputs['packages/functions--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/functions/ --provenance --access=public || true
@@ -117,7 +125,8 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if: ${{ steps.release.outputs['packages/headers--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - if:
+          ${{ steps.release.outputs['packages/headers--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/headers/ --provenance --access=public || true
@@ -135,7 +144,9 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if: ${{ steps.release.outputs['packages/nuxt-module--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - if:
+          ${{ steps.release.outputs['packages/nuxt-module--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/nuxt-module/ --provenance --access=public || true
@@ -144,7 +155,9 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if: ${{ steps.release.outputs['packages/redirects--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - if:
+          ${{ steps.release.outputs['packages/redirects--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/redirects/ --provenance --access=public || true
@@ -153,7 +166,8 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if: ${{ steps.release.outputs['packages/runtime--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - if:
+          ${{ steps.release.outputs['packages/runtime--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/runtime/ --provenance --access=public || true
@@ -180,7 +194,9 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if: ${{ steps.release.outputs['packages/vite-plugin--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - if:
+          ${{ steps.release.outputs['packages/vite-plugin--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/vite-plugin/ --provenance --access=public || true
