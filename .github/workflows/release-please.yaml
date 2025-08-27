@@ -108,7 +108,7 @@ jobs:
           'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/edge-functions/ --provenance --access=public || true
+            npm publish packages/edge-functions/ --provenance --access=public --tag=missing || true
           else
             npm publish packages/edge-functions/ --provenance --access=public
           fi
@@ -119,7 +119,7 @@ jobs:
           }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/functions/ --provenance --access=public || true
+            npm publish packages/functions/ --provenance --access=public --tag=missing || true
           else
             npm publish packages/functions/ --provenance --access=public
           fi
@@ -149,7 +149,7 @@ jobs:
           }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/nuxt-module/ --provenance --access=public || true
+            npm publish packages/nuxt-module/ --provenance --access=public --tag=missing || true
           else
             npm publish packages/nuxt-module/ --provenance --access=public
           fi
@@ -188,7 +188,7 @@ jobs:
       - if: ${{ steps.release.outputs['packages/dev--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/dev/ --provenance --access=public || true
+            npm publish packages/dev/ --provenance --access=public --tag=missing || true
           else
             npm publish packages/dev/ --provenance --access=public
           fi
@@ -199,7 +199,7 @@ jobs:
           }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/vite-plugin/ --provenance --access=public || true
+            npm publish packages/vite-plugin/ --provenance --access=public --tag=missing || true
           else
             npm publish packages/vite-plugin/ --provenance --access=public
           fi
