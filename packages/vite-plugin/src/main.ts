@@ -30,11 +30,21 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
         return
       }
       const logger = createLoggerFromViteLogger(viteDevServer.config.logger)
-      const { blobs, edgeFunctions, functions, images, middleware = true, redirects, staticFiles } = options
+      const {
+        blobs,
+        edgeFunctions,
+        environmentVariables,
+        functions,
+        images,
+        middleware = true,
+        redirects,
+        staticFiles,
+      } = options
 
       const netlifyDev = new NetlifyDev({
         blobs,
         edgeFunctions,
+        environmentVariables,
         functions,
         images,
         logger,
