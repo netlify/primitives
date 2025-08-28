@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.2.5](https://github.com/netlify/primitives/compare/functions-v4.2.4...functions-v4.2.5) (2025-08-28)
+
+
+### Bug Fixes
+
+* restore missing `Netlify` global type in `@netlify/functions` ([#434](https://github.com/netlify/primitives/issues/434)) ([2e028b9](https://github.com/netlify/primitives/commit/2e028b9cbdc88a61da1641ec9bf30704e2b36220))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.9 to 10.0.10
+    * @netlify/dev-utils bumped from 4.1.2 to 4.1.3
+    * @netlify/types bumped from 2.0.2 to 2.0.3
+
 ## [4.2.4](https://github.com/netlify/primitives/compare/functions-v4.2.3...functions-v4.2.4) (2025-08-26)
 
 
