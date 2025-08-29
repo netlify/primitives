@@ -43,6 +43,10 @@ jobs:
           check-latest: true
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.releases_created || github.event_name == 'workflow_dispatch' }}
+      # Use npm@10 on Node 22+ due to https://github.com/npm/cli/issues/8489
+      - name: Setup npm version
+        run: npm install -g npm@10
+        if: ${{ steps.release.outputs.releases_created || github.event_name == 'workflow_dispatch' }}
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
