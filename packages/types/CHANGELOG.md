@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/netlify/primitives/compare/types-v2.0.2...types-v2.0.3) (2025-08-28)
+
+
+### Bug Fixes
+
+* restore missing `Netlify` global type in `@netlify/functions` ([#434](https://github.com/netlify/primitives/issues/434)) ([2e028b9](https://github.com/netlify/primitives/commit/2e028b9cbdc88a61da1641ec9bf30704e2b36220))
+
 ## [2.0.2](https://github.com/netlify/primitives/compare/types-v2.0.1...types-v2.0.2) (2025-06-04)
 
 

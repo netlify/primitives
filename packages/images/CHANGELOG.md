@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.7](https://github.com/netlify/primitives/compare/images-v1.2.6...images-v1.2.7) (2025-08-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.1.2 to ^4.1.3
+
 ## [1.2.6](https://github.com/netlify/primitives/compare/images-v1.2.5...images-v1.2.6) (2025-08-19)
 
 

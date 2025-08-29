@@ -1,5 +1,29 @@
 # Changelog
 
+## [4.5.8](https://github.com/netlify/primitives/compare/dev-v4.5.7...dev-v4.5.8) (2025-08-28)
+
+
+### Bug Fixes
+
+* **dev:** add support for `dev-server` context ([#438](https://github.com/netlify/primitives/issues/438)) ([793b853](https://github.com/netlify/primitives/commit/793b85333bbdd0959df97ccd8e04bc269f9d3747))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.9 to 10.0.10
+    * @netlify/dev-utils bumped from 4.1.2 to 4.1.3
+    * @netlify/edge-functions bumped from 2.17.3 to 2.17.4
+    * @netlify/functions bumped from 4.2.4 to 4.2.5
+    * @netlify/headers bumped from 2.0.10 to 2.0.11
+    * @netlify/images bumped from 1.2.6 to 1.2.7
+    * @netlify/redirects bumped from 3.0.11 to 3.0.12
+    * @netlify/runtime bumped from 4.0.13 to 4.0.14
+    * @netlify/static bumped from 3.0.9 to 3.0.10
+  * devDependencies
+    * @netlify/types bumped from 2.0.2 to 2.0.3
+
 ## [4.5.7](https://github.com/netlify/primitives/compare/dev-v4.5.6...dev-v4.5.7) (2025-08-26)
 
 

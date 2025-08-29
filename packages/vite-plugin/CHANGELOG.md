@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.5.8](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.7...vite-plugin-v2.5.8) (2025-08-28)
+
+
+### Bug Fixes
+
+* **vite-plugin:** pass environmentVariables option to NetlifyDev ([#442](https://github.com/netlify/primitives/issues/442)) ([214ac26](https://github.com/netlify/primitives/commit/214ac26f0da3e598b29e8ee7c8c9434de4468703))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.7 to 4.5.8
+    * @netlify/dev-utils bumped from ^4.1.2 to ^4.1.3
+
 ## [2.5.7](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.6...vite-plugin-v2.5.7) (2025-08-26)
 
 
