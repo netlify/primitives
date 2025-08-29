@@ -1,9 +1,9 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>netlify/renovate-config"],
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: ['local>netlify/renovate-config'],
   // See https://docs.renovatebot.com/configuration-options/#constraints
-  "constraints": {
+  constraints: {
     // Use npm@10 (instead of default v11 on Node.js 22+) due to https://github.com/npm/cli/issues/8489
-    "npm": "^10.0.0"
-  }
+    npm: '^10.0.0',
+  },
 }
