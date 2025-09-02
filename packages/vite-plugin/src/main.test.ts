@@ -776,4 +776,88 @@ defined on your team and site and much more. Run npx netlify init to get started
       })
     })
   })
+
+  describe('configurePreviewServer', { timeout: 15_000 }, () => {
+    test('Hook exists and is properly configured', () => {
+      const plugins = netlify({ middleware: false })
+      expect(plugins).toHaveLength(1)
+      expect(plugins[0]).toHaveProperty('configurePreviewServer')
+      expect(typeof plugins[0].configurePreviewServer).toBe('function')
+    })
+
+    test('Calls setupNetlifyEnvironment when invoked', async () => {
+      // Create a temporary directory for the test
+      const tmpDir = await import('node:fs/promises').then(async (fs) => {
+        const os = await import('node:os')
+        const path = await import('node:path')
+        const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'netlify-test-'))
+        return tmpDir
+      })
+
+      // Create a mock preview server
+      const mockPreviewServer = {
+        httpServer: {
+          once: vi.fn(),
+          listening: true,
+          address: () => ({ port: 4173 }),
+        },
+        config: {
+          logger: {
+            info: vi.fn(),
+            warn: vi.fn(),
+            error: vi.fn(),
+          },
+          root: tmpDir,
+          publicDir: tmpDir + '/public',
+        },
+        middlewares: {
+          use: vi.fn(),
+        },
+      }
+
+      const plugins = netlify({ middleware: false })
+      const plugin = plugins[0]
+
+      try {
+        // Call the configurePreviewServer hook
+        await plugin.configurePreviewServer(mockPreviewServer)
+
+        // Verify the httpServer.once was called (part of cleanup setup)
+        expect(mockPreviewServer.httpServer.once).toHaveBeenCalledWith('close', expect.any(Function))
+      } finally {
+        // Clean up the temporary directory
+        await import('node:fs/promises').then(async (fs) => {
+          await fs.rm(tmpDir, { recursive: true }).catch(() => {
+            // Ignore errors during cleanup
+          })
+        })
+      }
+    })
+
+    test('Skips setup when httpServer is not available', async () => {
+      const mockPreviewServer = {
+        httpServer: null,
+        config: {
+          logger: {
+            info: vi.fn(),
+            warn: vi.fn(), 
+            error: vi.fn(),
+          },
+          root: '/test',
+          publicDir: '/test/public',
+        },
+        middlewares: {
+          use: vi.fn(),
+        },
+      }
+
+      const plugins = netlify({ middleware: false })
+      const plugin = plugins[0]
+
+      // This should not throw and should return early
+      await plugin.configurePreviewServer(mockPreviewServer)
+
+      // No assertions needed - just verifying it doesn't crash
+    })
+  })
 })

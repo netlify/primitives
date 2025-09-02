@@ -14,6 +14,84 @@ export interface NetlifyPluginOptions extends Features {
   middleware?: boolean
 }
 
+async function setupNetlifyEnvironment(server: vite.ViteDevServer | vite.PreviewServer, options: NetlifyPluginOptions) {
+  // if the server's http server isn't ready (or we're in middleware mode) let's not get involved
+  if (!server.httpServer) {
+    return
+  }
+  
+  const logger = createLoggerFromViteLogger(server.config.logger)
+  const {
+    blobs,
+    edgeFunctions,
+    environmentVariables,
+    functions,
+    images,
+    middleware = true,
+    redirects,
+    staticFiles,
+  } = options
+
+  const netlifyDev = new NetlifyDev({
+    blobs,
+    edgeFunctions,
+    environmentVariables,
+    functions,
+    images,
+    logger,
+    redirects,
+    serverAddress: null,
+    staticFiles: {
+      ...staticFiles,
+      directories: [server.config.root, server.config.publicDir],
+    },
+    projectRoot: server.config.root,
+  })
+
+  await netlifyDev.start()
+
+  server.httpServer.once('close', () => {
+    netlifyDev.stop()
+  })
+
+  logger.log('Environment loaded')
+
+  if (middleware) {
+    server.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
+      const headers: Record<string, string> = {}
+      const result = await netlifyDev.handleAndIntrospectNodeRequest(nodeReq, {
+        headersCollector: (key, value) => {
+          headers[key] = value
+        },
+        serverAddress: `http://localhost:${nodeReq.socket.localPort}`,
+      })
+
+      const isStaticFile = result?.type === 'static'
+
+      // Don't serve static matches. Let the Vite server handle them.
+      if (result && !isStaticFile) {
+        fromWebResponse(result.response, nodeRes)
+
+        return
+      }
+
+      for (const key in headers) {
+        nodeRes.setHeader(key, headers[key])
+      }
+
+      next()
+    })
+
+    logger.log(`Middleware loaded. Emulating features: ${netlifyDev.getEnabledFeatures().join(', ')}.`)
+  }
+
+  if (!netlifyDev.siteIsLinked) {
+    logger.log(
+      `💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables defined on your team and site and much more. Run ${netlifyCommand('npx netlify init')} to get started.`,
+    )
+  }
+}
+
 export default function netlify(options: NetlifyPluginOptions = {}): any {
   // If we're already running inside the Netlify CLI, there is no need to run
   // the plugin, as the environment will already be configured.
@@ -24,81 +102,10 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
   const plugin: vite.Plugin = {
     name: 'vite-plugin-netlify',
     async configureServer(viteDevServer) {
-      // if the vite dev server's http server isn't ready (or we're in
-      // middleware mode) let's not get involved
-      if (!viteDevServer.httpServer) {
-        return
-      }
-      const logger = createLoggerFromViteLogger(viteDevServer.config.logger)
-      const {
-        blobs,
-        edgeFunctions,
-        environmentVariables,
-        functions,
-        images,
-        middleware = true,
-        redirects,
-        staticFiles,
-      } = options
-
-      const netlifyDev = new NetlifyDev({
-        blobs,
-        edgeFunctions,
-        environmentVariables,
-        functions,
-        images,
-        logger,
-        redirects,
-        serverAddress: null,
-        staticFiles: {
-          ...staticFiles,
-          directories: [viteDevServer.config.root, viteDevServer.config.publicDir],
-        },
-        projectRoot: viteDevServer.config.root,
-      })
-
-      await netlifyDev.start()
-
-      viteDevServer.httpServer.once('close', () => {
-        netlifyDev.stop()
-      })
-
-      logger.log('Environment loaded')
-
-      if (middleware) {
-        viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
-          const headers: Record<string, string> = {}
-          const result = await netlifyDev.handleAndIntrospectNodeRequest(nodeReq, {
-            headersCollector: (key, value) => {
-              headers[key] = value
-            },
-            serverAddress: `http://localhost:${nodeReq.socket.localPort}`,
-          })
-
-          const isStaticFile = result?.type === 'static'
-
-          // Don't serve static matches. Let the Vite server handle them.
-          if (result && !isStaticFile) {
-            fromWebResponse(result.response, nodeRes)
-
-            return
-          }
-
-          for (const key in headers) {
-            nodeRes.setHeader(key, headers[key])
-          }
-
-          next()
-        })
-
-        logger.log(`Middleware loaded. Emulating features: ${netlifyDev.getEnabledFeatures().join(', ')}.`)
-      }
-
-      if (!netlifyDev.siteIsLinked) {
-        logger.log(
-          `💭 Linking this project to a Netlify site lets you deploy your site, use any environment variables defined on your team and site and much more. Run ${netlifyCommand('npx netlify init')} to get started.`,
-        )
-      }
+      await setupNetlifyEnvironment(viteDevServer, options)
+    },
+    async configurePreviewServer(vitePreviewServer) {
+      await setupNetlifyEnvironment(vitePreviewServer, options)
     },
   }
 
