@@ -5,6 +5,7 @@ import { fromWebResponse, netlifyCommand } from '@netlify/dev-utils'
 import * as vite from 'vite'
 
 import { createLoggerFromViteLogger } from './lib/logger.js'
+import { createBuildPlugin } from './build.js'
 
 export interface NetlifyPluginOptions extends Features {
   /**
@@ -12,6 +13,21 @@ export interface NetlifyPluginOptions extends Features {
    * same way as the Netlify production environment (default: true).
    */
   middleware?: boolean
+
+  /**
+   * Experimental features are not subject to SemVer guarantees
+   */
+  experimental?: {
+    build?: {
+      /**
+       * Prepare the server build for deployment to Netlify - no additional configuration,
+       * plugins, or adapters necessary (default: false).
+       *
+       * This is an experimental feature that is currently only supported for TanStack Start projects.
+       */
+      enabled?: boolean
+    }
+  }
 }
 
 export default function netlify(options: NetlifyPluginOptions = {}): any {
@@ -21,8 +37,9 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
     return []
   }
 
-  const plugin: vite.Plugin = {
+  const devPlugin: vite.Plugin = {
     name: 'vite-plugin-netlify',
+
     async configureServer(viteDevServer) {
       // if the vite dev server's http server isn't ready (or we're in
       // middleware mode) let's not get involved
@@ -102,5 +119,5 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
     },
   }
 
-  return [plugin]
+  return [devPlugin, ...(options.experimental?.build?.enabled === true ? [createBuildPlugin()] : [])]
 }
