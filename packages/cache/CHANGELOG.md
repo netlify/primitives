@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/netlify/primitives/compare/cache-v3.0.11...cache-v3.1.0) (2025-09-05)
+
+
+### Features
+
+* expose `cacheHeaders` method ([#445](https://github.com/netlify/primitives/issues/445)) ([54eda15](https://github.com/netlify/primitives/commit/54eda159219675696d0bdf34f471e0c2e84fe923))
+
 ## [3.0.11](https://github.com/netlify/primitives/compare/cache-v3.0.10...cache-v3.0.11) (2025-08-28)
 
 
