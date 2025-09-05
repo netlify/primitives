@@ -1,6 +1,7 @@
 import { describe, test, expect } from 'vitest'
 
-import { cacheHeaders, ONE_YEAR } from './cache-headers.js'
+import { cacheHeaders } from '../main.js'
+import { ONE_YEAR } from './cache-headers.js'
 
 describe('`cacheHaders`', () => {
   describe('`tags`', () => {
