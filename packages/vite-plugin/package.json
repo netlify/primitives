@@ -36,7 +36,7 @@
     "@types/node": "^20.17.57",
     "playwright": "^1.52.0",
     "tsup": "^8.0.0",
-    "vite": "^6.3.4",
+    "vite": "^7.1.5",
     "vitest": "^3.0.0"
   },
   "dependencies": {
