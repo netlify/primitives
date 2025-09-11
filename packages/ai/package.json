@@ -1,7 +1,7 @@
 {
-  "name": "@netlify/ai-gateway",
+  "name": "@netlify/ai",
   "version": "1.0.0",
-  "description": "Netlify AI Gateway integration for local development",
+  "description": "TypeScript utilities for interacting with Netlify AI features",
   "type": "module",
   "engines": {
     "node": ">=20.6.1"
@@ -24,7 +24,21 @@
         "default": "./dist/main.js"
       }
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./bootstrap": {
+      "require": {
+        "types": "./dist/bootstrap/main.d.cts",
+        "default": "./dist/bootstrap/main.cjs"
+      },
+      "import": {
+        "types": "./dist/bootstrap/main.d.ts",
+        "default": "./dist/bootstrap/main.js"
+      },
+      "default": {
+        "types": "./dist/bootstrap/main.d.ts",
+        "default": "./dist/bootstrap/main.js"
+      }
+    }
   },
   "files": [
     "dist/**/*"

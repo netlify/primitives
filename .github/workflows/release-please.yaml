@@ -219,13 +219,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - if:
-          ${{ steps.release.outputs['packages/ai-gateway--release_created'] || github.event_name == 'workflow_dispatch'
+          ${{ steps.release.outputs['packages/ai--release_created'] || github.event_name == 'workflow_dispatch'
           }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/ai-gateway/ --provenance --access=public || true
+            npm publish packages/ai/ --provenance --access=public || true
           else
-            npm publish packages/ai-gateway/ --provenance --access=public
+            npm publish packages/ai/ --provenance --access=public
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

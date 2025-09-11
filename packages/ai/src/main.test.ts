@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest'
-import { fetchAIGatewayToken, setupAIGateway, parseAIGatewayContext } from './main.js'
+import { fetchAIGatewayToken, setupAIGateway, parseAIGatewayContext } from './bootstrap/main.js'
 import type { NetlifyAPI } from '@netlify/api'
 
 const mockFetch = vi.fn()
