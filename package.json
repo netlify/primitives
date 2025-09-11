@@ -16,7 +16,7 @@
     "packages/runtime",
     "packages/static",
     "packages/dev",
-    "packages/ai-gateway",
+    "packages/ai",
     "packages/nuxt-module",
     "packages/vite-plugin",
     "packages/otel"

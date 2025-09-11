@@ -77,16 +77,16 @@ export const setupAIGateway = async (config: AIGatewayConfig): Promise<void> => 
   if (site.id && site.id !== 'unlinked' && siteUrl && !(options.offline || options.offlineEnv)) {
     const aiGatewayToken = await fetchAIGatewayToken({ api, siteId: site.id })
     if (aiGatewayToken) {
-      const aiGatewayPayload = JSON.stringify({
+      const aiGatewayContext = JSON.stringify({
         token: aiGatewayToken.token,
         url: `${siteUrl}/.netlify/ai`,
       })
-      const base64Payload = Buffer.from(aiGatewayPayload).toString('base64')
-      env.AI_GATEWAY = { sources: ['internal'], value: base64Payload }
+      const base64Context = Buffer.from(aiGatewayContext).toString('base64')
+      env.AI_GATEWAY = { sources: ['internal'], value: base64Context }
 
       // Also set process env for compatibility
       if (typeof process !== 'undefined') {
-        process.env.AI_GATEWAY = base64Payload
+        process.env.AI_GATEWAY = base64Context
       }
     }
   }
@@ -96,9 +96,9 @@ export const parseAIGatewayContext = (): { token: string; url: string } | undefi
   try {
     const aiGatewayEnv = typeof process !== 'undefined' ? process.env.AI_GATEWAY : undefined
     if (aiGatewayEnv) {
-      const decodedData = Buffer.from(aiGatewayEnv, 'base64').toString('utf8')
-      const aiGatewayData = JSON.parse(decodedData) as { token: string; url: string }
-      return { token: aiGatewayData.token, url: aiGatewayData.url }
+      const decodedContext = Buffer.from(aiGatewayEnv, 'base64').toString('utf8')
+      const aiGatewayContext = JSON.parse(decodedContext) as { token: string; url: string }
+      return { token: aiGatewayContext.token, url: aiGatewayContext.url }
     }
   } catch {
     // Ignore parsing errors - AI Gateway is optional
