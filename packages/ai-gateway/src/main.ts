@@ -35,6 +35,7 @@ export const fetchAIGatewayToken = async ({
   siteId: string
 }): Promise<AIGatewayTokenResponse | null> => {
   try {
+    // TODO: update once available in openApi
     const url = `${api.scheme}://${api.host}/api/v1/sites/${siteId}/ai-gateway/token`
 
     const response = await fetch(url, {

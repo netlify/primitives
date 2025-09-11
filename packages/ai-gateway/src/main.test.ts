@@ -5,8 +5,6 @@ import type { NetlifyAPI } from '@netlify/api'
 const mockFetch = vi.fn()
 vi.stubGlobal('fetch', mockFetch)
 
-// Node.js environment has Buffer available, no need to mock it
-
 describe('fetchAIGatewayToken', () => {
   const mockApi: NetlifyAPI = {
     scheme: 'https',
