@@ -87,18 +87,14 @@ export const setupAIGateway = async (config: AIGatewayConfig): Promise<void> => 
       })
       const base64Context = Buffer.from(aiGatewayContext).toString('base64')
       env.AI_GATEWAY = { sources: ['internal'], value: base64Context }
-
-      // Also set process env for compatibility
-      process.env.AI_GATEWAY = base64Context
     }
   }
 }
 
-export const parseAIGatewayContext = (): AIGatewayTokenResponse | undefined => {
+export const parseAIGatewayContext = (aiGatewayValue?: string): AIGatewayTokenResponse | undefined => {
   try {
-    const aiGatewayEnv = process.env.AI_GATEWAY
-    if (aiGatewayEnv) {
-      const decodedContext = Buffer.from(aiGatewayEnv, 'base64').toString('utf8')
+    if (aiGatewayValue) {
+      const decodedContext = Buffer.from(aiGatewayValue, 'base64').toString('utf8')
       const aiGatewayContext = JSON.parse(decodedContext) as AIGatewayTokenResponse
       return aiGatewayContext
     }

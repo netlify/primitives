@@ -119,7 +119,6 @@ describe('setupAIGateway', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    delete process.env.AI_GATEWAY
   })
 
   test('sets up AI Gateway when conditions are met', async () => {
@@ -145,7 +144,6 @@ describe('setupAIGateway', () => {
 
     expect(env).toHaveProperty('AI_GATEWAY')
     expect((env as { AI_GATEWAY: { sources: string[] } }).AI_GATEWAY.sources).toEqual(['internal'])
-    expect(process.env.AI_GATEWAY).toBeDefined()
   })
 
   test('skips setup when site is unlinked', async () => {
@@ -160,7 +158,6 @@ describe('setupAIGateway', () => {
     await setupAIGateway(config)
 
     expect(env).not.toHaveProperty('AI_GATEWAY')
-    expect(process.env.AI_GATEWAY).toBeUndefined()
   })
 
 
@@ -176,43 +173,36 @@ describe('setupAIGateway', () => {
     await setupAIGateway(config)
 
     expect(env).not.toHaveProperty('AI_GATEWAY')
-    expect(process.env.AI_GATEWAY).toBeUndefined()
   })
 })
 
 describe('parseAIGatewayContext', () => {
-  beforeEach(() => {
-    delete process.env.AI_GATEWAY
-  })
 
   test('parses valid AI Gateway context', () => {
     const contextData = { token: 'test-token', url: 'https://example.com/.netlify/ai' }
     const base64Data = Buffer.from(JSON.stringify(contextData)).toString('base64')
-    process.env.AI_GATEWAY = base64Data
 
-    const result = parseAIGatewayContext()
+    const result = parseAIGatewayContext(base64Data)
 
     expect(result).toEqual(contextData)
   })
 
-  test('returns undefined when no AI_GATEWAY env var', () => {
+  test('returns undefined when no value provided', () => {
     const result = parseAIGatewayContext()
 
     expect(result).toBeUndefined()
   })
 
-  test('returns undefined when AI_GATEWAY is invalid base64', () => {
-    process.env.AI_GATEWAY = 'invalid-base64'
-
-    const result = parseAIGatewayContext()
+  test('returns undefined when value is invalid base64', () => {
+    const result = parseAIGatewayContext('invalid-base64')
 
     expect(result).toBeUndefined()
   })
 
-  test('returns undefined when AI_GATEWAY contains invalid JSON', () => {
-    process.env.AI_GATEWAY = Buffer.from('invalid-json').toString('base64')
+  test('returns undefined when value contains invalid JSON', () => {
+    const invalidBase64 = Buffer.from('invalid-json').toString('base64')
 
-    const result = parseAIGatewayContext()
+    const result = parseAIGatewayContext(invalidBase64)
 
     expect(result).toBeUndefined()
   })
