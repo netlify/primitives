@@ -99,8 +99,8 @@ export const parseAIGatewayContext = (): AIGatewayTokenResponse | undefined => {
     const aiGatewayEnv = process.env.AI_GATEWAY
     if (aiGatewayEnv) {
       const decodedContext = Buffer.from(aiGatewayEnv, 'base64').toString('utf8')
-      const aiGatewayContext = JSON.parse(decodedContext) as { token: string; url: string }
-      return { token: aiGatewayContext.token, url: aiGatewayContext.url }
+      const aiGatewayContext = JSON.parse(decodedContext) as AIGatewayTokenResponse
+      return aiGatewayContext
     }
   } catch {
     // Ignore parsing errors - AI Gateway is optional

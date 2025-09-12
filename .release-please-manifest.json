@@ -1,4 +1,5 @@
 {
+  "packages/ai": "1.0.0",
   "packages/blobs": "10.0.10",
   "packages/cache": "3.1.0",
   "packages/dev": "4.5.9",
