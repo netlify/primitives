@@ -1,4 +1,5 @@
 import type { NetlifyAPI } from '@netlify/api'
+import process from 'node:process'
 
 export interface AIGatewayContext {
   token: string
@@ -8,12 +9,11 @@ export interface AIGatewayContext {
 export interface AIGatewayConfig {
   api: NetlifyAPI
   env: Record<string, { sources: string[]; value: string }>
-  options: { offline?: boolean; offlineEnv?: boolean }
-  site: { id?: string }
+  siteId: string | undefined
   siteUrl: string | undefined
 }
 
-interface AIGatewayTokenResponse {
+export interface AIGatewayTokenResponse {
   token: string
   url: string
 }
@@ -35,13 +35,17 @@ export const fetchAIGatewayToken = async ({
   siteId: string
 }): Promise<AIGatewayTokenResponse | null> => {
   try {
+    if (!api.accessToken) {
+      return null
+    }
+
     // TODO: update once available in openApi
     const url = `${api.scheme}://${api.host}/api/v1/sites/${siteId}/ai-gateway/token`
 
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${api.accessToken ?? ''}`,
+        Authorization: `Bearer ${api.accessToken}`,
         'Content-Type': 'application/json',
       },
     })
@@ -72,10 +76,10 @@ export const fetchAIGatewayToken = async ({
 }
 
 export const setupAIGateway = async (config: AIGatewayConfig): Promise<void> => {
-  const { api, env, options, site, siteUrl } = config
+  const { api, env, siteId, siteUrl } = config
 
-  if (site.id && site.id !== 'unlinked' && siteUrl && !(options.offline || options.offlineEnv)) {
-    const aiGatewayToken = await fetchAIGatewayToken({ api, siteId: site.id })
+  if (siteId && siteId !== 'unlinked' && siteUrl) {
+    const aiGatewayToken = await fetchAIGatewayToken({ api, siteId })
     if (aiGatewayToken) {
       const aiGatewayContext = JSON.stringify({
         token: aiGatewayToken.token,
@@ -85,16 +89,14 @@ export const setupAIGateway = async (config: AIGatewayConfig): Promise<void> => 
       env.AI_GATEWAY = { sources: ['internal'], value: base64Context }
 
       // Also set process env for compatibility
-      if (typeof process !== 'undefined') {
-        process.env.AI_GATEWAY = base64Context
-      }
+      process.env.AI_GATEWAY = base64Context
     }
   }
 }
 
-export const parseAIGatewayContext = (): { token: string; url: string } | undefined => {
+export const parseAIGatewayContext = (): AIGatewayTokenResponse | undefined => {
   try {
-    const aiGatewayEnv = typeof process !== 'undefined' ? process.env.AI_GATEWAY : undefined
+    const aiGatewayEnv = process.env.AI_GATEWAY
     if (aiGatewayEnv) {
       const decodedContext = Buffer.from(aiGatewayEnv, 'base64').toString('utf8')
       const aiGatewayContext = JSON.parse(decodedContext) as { token: string; url: string }

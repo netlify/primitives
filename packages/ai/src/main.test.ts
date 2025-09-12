@@ -42,6 +42,18 @@ describe('fetchAIGatewayToken', () => {
     })
   })
 
+  test('returns null when no access token is provided', async () => {
+    const apiWithoutToken = { ...mockApi, accessToken: undefined }
+
+    const result = await fetchAIGatewayToken({
+      api: apiWithoutToken,
+      siteId: 'test-site-id',
+    })
+
+    expect(result).toBeNull()
+    expect(mockFetch).not.toHaveBeenCalled()
+  })
+
   test('returns null when API returns 404', async () => {
     mockFetch.mockResolvedValue({
       ok: false,
@@ -125,8 +137,7 @@ describe('setupAIGateway', () => {
     const config = {
       api: mockApi,
       env,
-      options: {},
-      site: { id: 'test-site' },
+      siteId: 'test-site',
       siteUrl: 'https://example.com',
     }
 
@@ -142,8 +153,7 @@ describe('setupAIGateway', () => {
     const config = {
       api: mockApi,
       env,
-      options: {},
-      site: { id: 'unlinked' },
+      siteId: 'unlinked',
       siteUrl: 'https://example.com',
     }
 
@@ -153,29 +163,13 @@ describe('setupAIGateway', () => {
     expect(process.env.AI_GATEWAY).toBeUndefined()
   })
 
-  test('skips setup when offline', async () => {
-    const env = {}
-    const config = {
-      api: mockApi,
-      env,
-      options: { offline: true },
-      site: { id: 'test-site' },
-      siteUrl: 'https://example.com',
-    }
-
-    await setupAIGateway(config)
-
-    expect(env).not.toHaveProperty('AI_GATEWAY')
-    expect(process.env.AI_GATEWAY).toBeUndefined()
-  })
 
   test('skips setup when no siteUrl', async () => {
     const env = {}
     const config = {
       api: mockApi,
       env,
-      options: {},
-      site: { id: 'test-site' },
+      siteId: 'test-site',
       siteUrl: undefined,
     }
 
