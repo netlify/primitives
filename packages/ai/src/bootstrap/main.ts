@@ -1,5 +1,4 @@
 import type { NetlifyAPI } from '@netlify/api'
-import process from 'node:process'
 
 export interface AIGatewayContext {
   token: string

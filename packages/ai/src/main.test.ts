@@ -43,7 +43,11 @@ describe('fetchAIGatewayToken', () => {
   })
 
   test('returns null when no access token is provided', async () => {
-    const apiWithoutToken = { ...mockApi, accessToken: undefined }
+    const apiWithoutToken: NetlifyAPI = {
+      scheme: mockApi.scheme,
+      host: mockApi.host,
+      accessToken: undefined,
+    } as NetlifyAPI
 
     const result = await fetchAIGatewayToken({
       api: apiWithoutToken,
@@ -160,7 +164,6 @@ describe('setupAIGateway', () => {
     expect(env).not.toHaveProperty('AI_GATEWAY')
   })
 
-
   test('skips setup when no siteUrl', async () => {
     const env = {}
     const config = {
@@ -177,7 +180,6 @@ describe('setupAIGateway', () => {
 })
 
 describe('parseAIGatewayContext', () => {
-
   test('parses valid AI Gateway context', () => {
     const contextData = { token: 'test-token', url: 'https://example.com/.netlify/ai' }
     const base64Data = Buffer.from(JSON.stringify(contextData)).toString('base64')
