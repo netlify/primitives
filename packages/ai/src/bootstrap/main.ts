@@ -82,7 +82,7 @@ export const fetchAIProviders = async ({ api }: { api: NetlifyAPI }): Promise<AI
 
     const envVars: AIProviderEnvVar[] = []
 
-    for (const [_providerName, provider] of Object.entries(data.providers)) {
+    for (const provider of Object.values(data.providers)) {
       envVars.push({
         key: provider.token_env_var,
         url: provider.url_env_var,
