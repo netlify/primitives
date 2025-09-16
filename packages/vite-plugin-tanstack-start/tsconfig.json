@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "rootDir": "./src",
     "moduleResolution": "node",
     "allowJs": true,
     "resolveJsonModule": true,
@@ -13,5 +12,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src"]
+  "include": ["src", "test"]
 }

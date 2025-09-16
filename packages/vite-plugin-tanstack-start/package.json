@@ -1,10 +1,10 @@
 {
-  "name": "@netlify/vite-plugin",
-  "version": "2.5.10",
-  "description": "Vite plugin with a local emulation of the Netlify environment",
+  "name": "@netlify/vite-plugin-tanstack-start",
+  "version": "0.0.0",
+  "description": "Vite plugin for TanStack Start on Netlify",
   "type": "module",
   "engines": {
-    "node": "^20.6.1 || >=22"
+    "node": "^22.12.0"
   },
   "main": "./dist/main.js",
   "exports": "./dist/main.js",
@@ -23,8 +23,11 @@
   },
   "keywords": [
     "netlify",
+    "tanstack",
+    "tanstack-start",
     "vite-plugin",
-    "dev"
+    "dev",
+    "build"
   ],
   "license": "MIT",
   "repository": "netlify/primitives",
@@ -33,18 +36,29 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@types/node": "^20.17.57",
+    "@netlify/dev-utils": "^4.1.3",
+    "@types/node": "^22.18.5",
+    "normalize-package-data": "^8.0.0",
     "playwright": "^1.52.0",
     "tsup": "^8.0.0",
-    "vite": "^6.3.6",
+    "vite": "^7.1.5",
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/dev": "4.5.10",
-    "@netlify/dev-utils": "^4.1.3",
-    "dedent": "^1.7.0"
+    "@netlify/dev": "^4.5.9",
+    "@netlify/vite-plugin": "^2.5.10"
   },
   "peerDependencies": {
-    "vite": "^5 || ^6 || ^7"
+    "@tanstack/react-start": "alpha",
+    "@tanstack/solid-start": "alpha",
+    "vite": ">=7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-start": {
+      "optional": true
+    },
+    "@tanstack/solid-start": {
+      "optional": true
+    }
   }
 }

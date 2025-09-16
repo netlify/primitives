@@ -2,9 +2,10 @@ import process from 'node:process'
 
 import { NetlifyDev, type Features } from '@netlify/dev'
 import { fromWebResponse, netlifyCommand } from '@netlify/dev-utils'
-import * as vite from 'vite'
+import type { Plugin } from 'vite'
 
 import { createLoggerFromViteLogger } from './lib/logger.js'
+import { createBuildPlugin } from './lib/build.js'
 
 export interface NetlifyPluginOptions extends Features {
   /**
@@ -12,17 +13,38 @@ export interface NetlifyPluginOptions extends Features {
    * same way as the Netlify production environment (default: true).
    */
   middleware?: boolean
+
+  /** @private */
+  build?: {
+    /**
+     * Prepare the server build for deployment to Netlify - no additional configuration,
+     * plugins, or adapters necessary (default: false).
+     *
+     * This is currently only supported for TanStack Start projects.
+     */
+    enabled?: boolean
+    /**
+     * Deploy SSR handler to Netlify Edge Functions instead of Netlify Functions (default: false).
+     */
+    edgeSSR?: boolean
+    /**
+     * A display name for the serverless function or edge function deployed to Netlify
+     * (default: `@netlify/vite-plugin server handler`).
+     */
+    displayName?: string
+  }
 }
 
-export default function netlify(options: NetlifyPluginOptions = {}): any {
+export default function netlify(options: NetlifyPluginOptions = {}): Plugin[] {
   // If we're already running inside the Netlify CLI, there is no need to run
   // the plugin, as the environment will already be configured.
   if (process.env.NETLIFY_DEV) {
     return []
   }
 
-  const plugin: vite.Plugin = {
+  const devPlugin: Plugin = {
     name: 'vite-plugin-netlify',
+
     async configureServer(viteDevServer) {
       // if the vite dev server's http server isn't ready (or we're in
       // middleware mode) let's not get involved
@@ -102,5 +124,6 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
     },
   }
 
-  return [plugin]
+  const { enabled, ...buildOptions } = options.build ?? {}
+  return [devPlugin, ...(enabled === true ? [createBuildPlugin(buildOptions)] : [])]
 }

@@ -43,6 +43,8 @@ jobs:
       - name: Setup npm version
         run: npm install -g npm@10
         if: "${{ matrix.node-version == '*' }}"
+      - name: Enable pnpm via corepack
+        run: corepack enable pnpm
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
@@ -57,6 +59,8 @@ jobs:
         run: npm run build --workspaces=true
       - name: Tests
         run: npm run test --workspaces=true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   test-node18:
     name: Test Node.js 18 for specific packages
     runs-on: ${{ matrix.os }}

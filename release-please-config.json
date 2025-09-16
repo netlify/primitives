@@ -22,6 +22,7 @@
     "packages/runtime-utils": {},
     "packages/static": {},
     "packages/types": {},
-    "packages/vite-plugin": {}
+    "packages/vite-plugin": {},
+    "packages/vite-plugin-tanstack-start": {}
   }
 }

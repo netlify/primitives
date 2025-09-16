@@ -15,5 +15,6 @@
   "packages/runtime-utils": "2.1.0",
   "packages/static": "3.0.10",
   "packages/types": "2.0.3",
-  "packages/vite-plugin": "2.5.10"
+  "packages/vite-plugin": "2.5.10",
+  "packages/vite-plugin-tanstack-start": "0.0.0"
 }
