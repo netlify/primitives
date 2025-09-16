@@ -7,6 +7,8 @@ import * as vite from 'vite'
 import { createLoggerFromViteLogger } from './lib/logger.js'
 import { createBuildPlugin } from './build.js'
 
+export { createRemixBuildPlugin } from './build-remix.js'
+
 export interface NetlifyPluginOptions extends Features {
   /**
    * Attach a Vite middleware that intercepts requests and handles them in the
