@@ -145,18 +145,18 @@ export const fetchAIGatewayToken = async ({
 }
 
 export const setupAIGateway = async (config: AIGatewayConfig): Promise<void> => {
-  const { api, env, siteId, siteUrl } = config
+  const { api, env, siteID, siteURL } = config
 
-  if (siteId && siteId !== 'unlinked' && siteUrl) {
+  if (siteID && siteID !== 'unlinked' && siteURL) {
     const [aiGatewayToken, envVars] = await Promise.all([
-      fetchAIGatewayToken({ api, siteId }),
+      fetchAIGatewayToken({ api, siteId: siteID }),
       fetchAIProviders({ api }),
     ])
 
     if (aiGatewayToken) {
       const aiGatewayContext = JSON.stringify({
         token: aiGatewayToken.token,
-        url: `${siteUrl}/.netlify/ai`,
+        url: `${siteURL}/.netlify/ai`,
         envVars,
       })
       const base64Context = Buffer.from(aiGatewayContext).toString('base64')

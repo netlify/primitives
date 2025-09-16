@@ -265,8 +265,8 @@ describe('setupAIGateway', () => {
     const config = {
       api: mockApi,
       env,
-      siteId: 'test-site',
-      siteUrl: 'https://example.com',
+      siteID: 'test-site',
+      siteURL: 'https://example.com',
     }
 
     await setupAIGateway(config)
@@ -288,8 +288,8 @@ describe('setupAIGateway', () => {
     const config = {
       api: mockApi,
       env,
-      siteId: 'unlinked',
-      siteUrl: 'https://example.com',
+      siteID: 'unlinked',
+      siteURL: 'https://example.com',
     }
 
     await setupAIGateway(config)
@@ -297,13 +297,13 @@ describe('setupAIGateway', () => {
     expect(env).not.toHaveProperty('AI_GATEWAY')
   })
 
-  test('skips setup when no siteUrl', async () => {
+  test('skips setup when no siteURL', async () => {
     const env = {}
     const config = {
       api: mockApi,
       env,
-      siteId: 'test-site',
-      siteUrl: undefined,
+      siteID: 'test-site',
+      siteURL: undefined,
     }
 
     await setupAIGateway(config)
