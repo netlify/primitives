@@ -8,7 +8,7 @@ export interface AIGatewayContext {
 export interface AIGatewayConfig {
   api: NetlifyAPI
   env: Record<string, { sources: string[]; value: string }>
-  siteId: string | undefined
+  siteID: string | undefined
   siteURL: string | undefined
 }
 
