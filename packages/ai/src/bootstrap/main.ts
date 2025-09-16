@@ -9,7 +9,7 @@ export interface AIGatewayConfig {
   api: NetlifyAPI
   env: Record<string, { sources: string[]; value: string }>
   siteId: string | undefined
-  siteUrl: string | undefined
+  siteURL: string | undefined
 }
 
 export interface AIProviderEnvVar {
