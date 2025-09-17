@@ -67,5 +67,14 @@
   },
   "peerDependencies": {
     "@netlify/api": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/ai"
+  },
+  "homepage": "https://github.com/netlify/primitives/tree/main/packages/ai",
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
   }
 }
