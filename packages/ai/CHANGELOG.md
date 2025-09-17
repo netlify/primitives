@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/netlify/primitives/compare/ai-v0.2.0...ai-v0.2.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* add repository field to @netlify/ai package.json ([#453](https://github.com/netlify/primitives/issues/453)) ([0cc1622](https://github.com/netlify/primitives/commit/0cc1622d560d56cb2c991d9daefe5233e99e1c63))
+
 ## [0.2.0](https://github.com/netlify/primitives/compare/ai-v0.1.0...ai-v0.2.0) (2025-09-17)
 
 
