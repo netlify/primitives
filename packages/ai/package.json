@@ -1,6 +1,6 @@
 {
   "name": "@netlify/ai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TypeScript utilities for interacting with Netlify AI features",
   "type": "module",
   "engines": {
