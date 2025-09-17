@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.0](https://github.com/netlify/primitives/compare/edge-functions-v2.17.4...edge-functions-v2.18.0) (2025-09-17)
+
+
+### Features
+
+* add AI gateway ([#450](https://github.com/netlify/primitives/issues/450)) ([aece659](https://github.com/netlify/primitives/commit/aece65980d8a016dffa24fa3e91ef0f0630ef5f8))
+
 ## [2.17.4](https://github.com/netlify/primitives/compare/edge-functions-v2.17.3...edge-functions-v2.17.4) (2025-08-28)
 
 
