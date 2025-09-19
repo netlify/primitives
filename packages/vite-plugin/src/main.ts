@@ -1,10 +1,11 @@
 import process from 'node:process'
 
 import { NetlifyDev, type Features } from '@netlify/dev'
-import { fromWebResponse, netlifyCommand } from '@netlify/dev-utils'
+import { fromWebResponse, netlifyCommand, warning } from '@netlify/dev-utils'
+import dedent from 'dedent'
 import type { Plugin } from 'vite'
 
-import { createLoggerFromViteLogger } from './lib/logger.js'
+import { createLoggerFromViteLogger, type Logger } from './lib/logger.js'
 import { createBuildPlugin } from './lib/build.js'
 
 export interface NetlifyPluginOptions extends Features {
@@ -55,7 +56,11 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       if (!viteDevServer.httpServer) {
         return
       }
+
       const logger = createLoggerFromViteLogger(viteDevServer.config.logger)
+
+      warnOnDuplicatePlugin(logger)
+
       const {
         blobs,
         edgeFunctions,
@@ -130,4 +135,18 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
   const { enabled, ...buildOptions } = options.build ?? {}
   return [devPlugin, ...(enabled === true ? [createBuildPlugin(buildOptions)] : [])]
+}
+
+const warnOnDuplicatePlugin = (logger: Logger) => {
+  if (process.env.__VITE_PLUGIN_NETLIFY_LOADED__) {
+    logger.warn(
+      warning(dedent`
+        Multiple instances of @netlify/vite-plugin have been loaded. This may cause unexpected \
+        behavior if the plugin is configured differently in each instance. If you have one \
+        instance of this plugin in your Vite config, you may safely remove it.
+      `),
+    )
+    return
+  }
+  process.env.__VITE_PLUGIN_NETLIFY_LOADED__ = 'true'
 }
