@@ -209,6 +209,17 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - if:
+          ${{ steps.release.outputs['packages/vite-plugin-tanstack-start--release_created'] || github.event_name ==
+          'workflow_dispatch' }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            npm publish packages/vite-plugin-tanstack-start/ --provenance --access=public || true
+          else
+            npm publish packages/vite-plugin-tanstack-start/ --provenance --access=public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - if: ${{ steps.release.outputs['packages/otel--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then

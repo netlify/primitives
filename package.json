@@ -19,6 +19,7 @@
     "packages/ai",
     "packages/nuxt-module",
     "packages/vite-plugin",
+    "packages/vite-plugin-tanstack-start",
     "packages/otel"
   ],
   "version": "0.0.0",

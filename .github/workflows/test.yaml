@@ -57,6 +57,8 @@ jobs:
         run: npm run build --workspaces=true
       - name: Tests
         run: npm run test --workspaces=true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   test-node18:
     name: Test Node.js 18 for specific packages
     runs-on: ${{ matrix.os }}

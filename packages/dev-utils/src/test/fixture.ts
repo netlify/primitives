@@ -9,6 +9,7 @@ import tmp from 'tmp-promise'
 const run = promisify(exec)
 export class Fixture {
   directory?: tmp.DirectoryResult
+  sourceDirectory?: string
   files: Record<string, string | Buffer>
   npmDependencies: Record<string, string>
 
@@ -40,7 +41,9 @@ export class Fixture {
     const packageJSONPath = join(directory, 'package.json')
 
     await fs.writeFile(packageJSONPath, JSON.stringify(packageJSON, null, 2))
+    console.debug('Installing npm dependencies in fixture...')
     await run('npm install', { cwd: directory })
+    console.debug('Installed npm dependencies in fixture')
   }
 
   async create() {
@@ -54,6 +57,12 @@ export class Fixture {
       if (this.directory.path.startsWith('/var/')) {
         this.directory.path = this.directory.path.replace('/var/', '/private/var/')
       }
+    }
+
+    if (this.sourceDirectory) {
+      console.debug(`Copying fixture from ${this.sourceDirectory} to ${this.directory.path}`)
+      await fs.cp(this.sourceDirectory, this.directory.path, { recursive: true })
+      console.debug('Copied fixture')
     }
 
     for (const relativePath in this.files) {
@@ -85,6 +94,12 @@ export class Fixture {
     if (process.env.CI) return
 
     await fs.rm(this.directory!.path, { force: true, recursive: true })
+  }
+
+  fromDirectory(path: string) {
+    this.sourceDirectory = path
+
+    return this
   }
 
   withFile(path: string, contents: string | Buffer) {

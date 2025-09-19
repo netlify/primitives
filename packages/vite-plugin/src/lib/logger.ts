@@ -7,3 +7,5 @@ export const createLoggerFromViteLogger = (viteLogger: ViteLogger): Logger => ({
   log: (msg?: string) => viteLogger.info(msg ?? '', { timestamp: true, environment: netlifyBanner }),
   warn: (msg?: string) => viteLogger.warn(msg ?? '', { timestamp: true, environment: netlifyBanner }),
 })
+
+export type { Logger }
