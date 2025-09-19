@@ -34,14 +34,21 @@ const prepareDeps = async (cwd: string, packagesAbsoluteDir: string): Promise<vo
   }
   normalizePackageData(packageJson)
   packageJson.overrides ??= {}
-  const { devDependencies = {} } = packageJson
+  const { dependencies = {}, devDependencies = {} } = packageJson
   for (const pkg of packages) {
+    const isDep = pkg.name in dependencies
     const isDevDep = pkg.name in devDependencies
     console.log(`📦 Injecting ${pkg.name} ${isDevDep ? 'dev ' : ''}dependency`)
     const { stdout } = await exec(`npm pack --json --ignore-scripts --pack-destination ${cwd}`, {
       cwd: join(packagesAbsoluteDir, pkg.dirName),
     })
     const [{ filename }] = JSON.parse(stdout) as { filename: string }[]
+    if (isDep) {
+      dependencies[pkg.name] = `file:${filename}`
+    }
+    if (isDevDep) {
+      devDependencies[pkg.name] = `file:${filename}`
+    }
     // Ensure that even a transitive dependency on this package is overridden.
     packageJson.overrides[pkg.name] = `file:${filename}`
   }
