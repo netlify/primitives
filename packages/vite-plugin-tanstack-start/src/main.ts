@@ -1,3 +1,4 @@
+import type { Plugin } from 'vite'
 import createNetlifyPlugin, { type NetlifyPluginOptions } from '@netlify/vite-plugin'
 
 type DevOptions = Omit<NetlifyPluginOptions, 'build' | 'middleware'>
@@ -14,13 +15,13 @@ export interface PluginOptions {
   dev?: DevOptions
 }
 
-export default function createNetlifyTanstackStartPlugin(options: PluginOptions = {}) {
+export default function createNetlifyTanstackStartPlugin(options: PluginOptions = {}): Plugin[] {
   const netlifyPlugin = createNetlifyPlugin({
     build: {
       enabled: true,
       edgeSSR: options.edgeSSR ?? false,
     },
     ...options.dev,
-  })
+  }) as Plugin[]
   return netlifyPlugin
 }
