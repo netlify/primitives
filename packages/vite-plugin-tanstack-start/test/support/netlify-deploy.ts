@@ -57,9 +57,10 @@ export const deploySite = async (projectDir: string): Promise<Deploy> => {
   // depends on some packages in this monorepo, this runs into some issues (despite no actual
   // circular dependencies). This should be easy to avoid but npm's workspaces feature is
   // too basic.
-  const cmd = `npx -y netlify deploy --site ${SITE_ID}`
+  const cmd = `npx -y netlify deploy --json --site ${SITE_ID}`
   const { stdout } = await exec(cmd, { cwd: projectDir })
   await writeFile(join(projectDir, '__deploy.log'), stdout, { encoding: 'utf-8' })
+  // NOTE: `--json` is needed because otherwise the pretty box may wrap the URL over 2+ lines
   const [url] = new RegExp(/https:.+\.netlify\.app/gm).exec(stdout) ?? []
   if (!url) {
     throw new Error('Could not extract the URL from the build logs')
