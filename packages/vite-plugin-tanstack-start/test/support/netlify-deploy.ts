@@ -60,19 +60,25 @@ export const deploySite = async (projectDir: string): Promise<Deploy> => {
   await prepareDeps(projectDir, join(import.meta.dirname, '../../../'))
 
   console.log(`🚀 Building and deploying site...`)
-  // Ideally `netlify-cli` should be installed as a dev dep, but since it in turn
-  // depends on some packages in this monorepo, this runs into some issues (despite no actual
-  // circular dependencies). This should be easy to avoid but npm's workspaces feature is
-  // too basic.
-  const cmd = `npx -y netlify deploy --json --site ${SITE_ID}`
-  const { stdout } = await exec(cmd, { cwd: projectDir })
-  await writeFile(join(projectDir, '__deploy.log'), stdout, { encoding: 'utf-8' })
-  // NOTE: `--json` is needed because otherwise the pretty box may wrap the URL over 2+ lines
-  const [url] = new RegExp(/https:.+\.netlify\.app/gm).exec(stdout) ?? []
-  if (!url) {
-    throw new Error('Could not extract the URL from the build logs')
+  try {
+    // Ideally `netlify-cli` should be installed as a dev dep, but since it in turn
+    // depends on some packages in this monorepo, this runs into some issues (despite no actual
+    // circular dependencies). This should be easy to avoid but npm's workspaces feature is
+    // too basic.
+    const cmd = `npx -y netlify deploy --json --site ${SITE_ID}`
+    const { stdout, stderr } = await exec(cmd, { cwd: projectDir })
+    await writeFile(join(projectDir, '__deploy.stdout.log'), stdout, { encoding: 'utf-8' })
+    await writeFile(join(projectDir, '__deploy.stderr.log'), stderr, { encoding: 'utf-8' })
+    // NOTE: `--json` is needed because otherwise the pretty box may wrap the URL over 2+ lines
+    const [url] = new RegExp(/https:.+\.netlify\.app/gm).exec(stdout) ?? []
+    if (!url) {
+      throw new Error('Could not extract the URL from the build logs')
+    }
+    console.log(`🌍 Deployed site is live: ${url}`)
+    const [deployId] = new URL(url).host.split('--')
+    return { url, deployId, logs: `${stdout}\n${stderr}` }
+  } catch (err) {
+    console.error('❌ Deployment failed:', err)
+    throw err
   }
-  console.log(`🌍 Deployed site is live: ${url}`)
-  const [deployId] = new URL(url).host.split('--')
-  return { url, deployId, logs: stdout }
 }
