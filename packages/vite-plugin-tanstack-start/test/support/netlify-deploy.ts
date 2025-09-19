@@ -30,10 +30,10 @@ const packages = [
  */
 const prepareDeps = async (cwd: string, packagesAbsoluteDir: string): Promise<void> => {
   const packageJson = JSON.parse(await readFile(`${cwd}/package.json`, 'utf-8')) as Package & {
-    pnpm?: { overrides: Record<string, string> }
+    overrides?: Record<string, string>
   }
   normalizePackageData(packageJson)
-  packageJson.pnpm ??= { overrides: {} }
+  packageJson.overrides ??= {}
   const { devDependencies = {} } = packageJson
   for (const pkg of packages) {
     const isDevDep = pkg.name in devDependencies
@@ -43,10 +43,10 @@ const prepareDeps = async (cwd: string, packagesAbsoluteDir: string): Promise<vo
     })
     const [{ filename }] = JSON.parse(stdout) as { filename: string }[]
     // Ensure that even a transitive dependency on this package is overridden.
-    packageJson.pnpm.overrides[pkg.name] = `file:${filename}`
+    packageJson.overrides[pkg.name] = `file:${filename}`
   }
   await writeFile(`${cwd}/package.json`, JSON.stringify(packageJson, null, 2))
-  await exec('pnpm install --no-lockfile', { cwd })
+  await exec('npm install --no-package-lock', { cwd })
 }
 
 export const deploySite = async (projectDir: string): Promise<Deploy> => {
