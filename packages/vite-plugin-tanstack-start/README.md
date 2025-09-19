@@ -24,7 +24,13 @@ The plugin accepts the following options:
 
 ```typescript
 {
-  edgeSSR: boolean, // Deploy your app to Netlify Edge Functions (default: false)
+  dev: {
+    edgeFunctions: {
+      enabled: false,
+    },
+    // ... All dev options are supported here.
+    // See https://www.npmjs.com/package/@netlify/vite-plugin.
+  },
 }
 ```
 
