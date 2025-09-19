@@ -45,7 +45,6 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/dev": "^4.5.9",
     "@netlify/vite-plugin": "^2.5.10"
   },
   "peerDependencies": {

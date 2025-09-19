@@ -1,5 +1,6 @@
-import { type Features } from '@netlify/dev'
-import createNetlifyPlugin from '@netlify/vite-plugin'
+import createNetlifyPlugin, { type NetlifyPluginOptions } from '@netlify/vite-plugin'
+
+type DevOptions = Omit<NetlifyPluginOptions, 'build' | 'middleware'>
 
 export interface PluginOptions {
   /**
@@ -10,7 +11,7 @@ export interface PluginOptions {
    * Optional configuration of Netlify dev features
    * @see {link https://www.npmjs.com/package/@netlify/vite-plugin}
    */
-  dev?: Features
+  dev?: DevOptions
 }
 
 export default function createNetlifyTanstackStartPlugin(options: PluginOptions = {}) {
