@@ -14,7 +14,10 @@ export interface NetlifyPluginOptions extends Features {
    */
   middleware?: boolean
 
-  /** @private */
+  /**
+   * DO NOT USE - build options, not meant for public use at this time.
+   * @private
+   */
   build?: {
     /**
      * Prepare the server build for deployment to Netlify - no additional configuration,
