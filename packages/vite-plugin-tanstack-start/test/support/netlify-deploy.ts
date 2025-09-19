@@ -17,7 +17,10 @@ export interface Deploy {
   logs: string
 }
 
+// TODO(serhalp): List all monorepo packages dynamically? It gets super confusing when you
+// have changes to some transitive package and it fails in a weird way...
 const packages = [
+  { name: '@netlify/dev-utils', dirName: 'dev-utils' },
   { name: '@netlify/vite-plugin', dirName: 'vite-plugin' },
   { name: '@netlify/vite-plugin-tanstack-start', dirName: 'vite-plugin-tanstack-start' },
 ]
