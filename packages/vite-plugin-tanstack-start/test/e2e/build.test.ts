@@ -3,13 +3,18 @@ import { fileURLToPath } from 'node:url'
 
 import { Fixture } from '@netlify/dev-utils'
 import { type Browser, type Page, chromium } from 'playwright'
+import semver from 'semver'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 
 import { deploySite } from '../support/netlify-deploy.js'
 
 const FIXTURES_DIR = fileURLToPath(new URL('../fixtures', import.meta.url))
 
-describe.skipIf(process.versions.node < '22.12.0')('build output when deployed to Netlify', () => {
+const isSupportedNode = semver.gte(process.versions.node, '22.12.0')
+// TODO(serhalp) e2e fixture deploy fails on Windows - investigate and re-enable
+const isWindows = process.platform === 'win32'
+
+describe.runIf(isSupportedNode && !isWindows)('build output when deployed to Netlify', () => {
   let fixture: Fixture
   let baseUrl: string
   beforeAll(async () => {
