@@ -41,7 +41,7 @@ const prepareDeps = async (cwd: string, packagesAbsoluteDir: string): Promise<vo
   for (const pkg of packages) {
     const isDep = pkg.name in dependencies
     const isDevDep = pkg.name in devDependencies
-    console.log(`📦 Injecting ${pkg.name} ${isDevDep ? 'dev ' : ''}dependency`)
+    console.log(`💉 Injecting local ${pkg.name} ${isDevDep ? 'dev ' : ''}dependency`)
     const { stdout } = await exec(`npm pack --json --ignore-scripts --pack-destination ${cwd}`, {
       cwd: join(packagesAbsoluteDir, pkg.dirName),
     })
@@ -56,7 +56,9 @@ const prepareDeps = async (cwd: string, packagesAbsoluteDir: string): Promise<vo
     packageJson.overrides[pkg.name] = `file:${filename}`
   }
   await writeFile(`${cwd}/package.json`, JSON.stringify(packageJson, null, 2))
+  console.log('📦 Installing dependencies...')
   await exec('npm install --no-package-lock', { cwd })
+  console.log('📦 Installed dependencies')
 }
 
 export const deploySite = async (projectDir: string): Promise<Deploy> => {
