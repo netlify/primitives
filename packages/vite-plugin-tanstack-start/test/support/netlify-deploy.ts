@@ -1,5 +1,5 @@
 import { exec as originalExec } from 'node:child_process'
-import { writeFile, readFile } from 'node:fs/promises'
+import { writeFile, readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { URL } from 'node:url'
 import { promisify } from 'node:util'
@@ -17,13 +17,15 @@ export interface Deploy {
   logs: string
 }
 
-// TODO(serhalp): List all monorepo packages dynamically? It gets super confusing when you
-// have changes to some transitive package and it fails in a weird way...
-const packages = [
-  { name: '@netlify/dev-utils', dirName: 'dev-utils' },
-  { name: '@netlify/vite-plugin', dirName: 'vite-plugin' },
-  { name: '@netlify/vite-plugin-tanstack-start', dirName: 'vite-plugin-tanstack-start' },
-]
+const packagesRootDir = join(import.meta.dirname, '../../../')
+const packageDirs = await readdir(packagesRootDir)
+const packages = await Promise.all(
+  packageDirs.map(async (dirName) => {
+    const packageJsonPath = join(packagesRootDir, dirName, 'package.json')
+    const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf-8')) as Package
+    return { name: packageJson.name, dirName }
+  }),
+)
 
 /**
  * Inject the current revision of this repo's packages into the fixture.
