@@ -59,7 +59,7 @@ const prepareDeps = async (cwd: string, packagesAbsoluteDir: string): Promise<vo
   }
   await writeFile(`${cwd}/package.json`, JSON.stringify(packageJson, null, 2))
   console.log('📦 Installing dependencies...')
-  await exec('npm install --no-package-lock', { cwd })
+  await exec('npm install --no-package-lock --legacy-peer-deps', { cwd })
   console.log('📦 Installed dependencies')
 }
 
