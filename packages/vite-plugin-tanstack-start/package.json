@@ -49,8 +49,8 @@
     "@netlify/vite-plugin": "^2.5.10"
   },
   "peerDependencies": {
-    "@tanstack/react-start": "alpha",
-    "@tanstack/solid-start": "alpha",
+    "@tanstack/react-start": ">=1.132.0",
+    "@tanstack/solid-start": ">=1.132.0",
     "vite": ">=7.0.0"
   },
   "peerDependenciesMeta": {
