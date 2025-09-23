@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/netlify/primitives/compare/otel-v3.4.1...otel-v4.0.0) (2025-09-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* add `spanProcessors` property ([#460](https://github.com/netlify/primitives/issues/460))
+
+### Features
+
+* add `spanProcessors` property ([#460](https://github.com/netlify/primitives/issues/460)) ([039f955](https://github.com/netlify/primitives/commit/039f955d5de232f7cc1ee57e36a04233b14a2adb))
+
 ## [3.4.1](https://github.com/netlify/primitives/compare/otel-v3.4.0...otel-v3.4.1) (2025-08-26)
 
 
