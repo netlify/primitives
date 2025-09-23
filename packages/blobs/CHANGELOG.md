@@ -1,5 +1,14 @@
 # Changelog
 
+## [10.0.11](https://github.com/netlify/primitives/compare/blobs-v10.0.10...blobs-v10.0.11) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.1.3 to 4.2.0
+
 ## [10.0.10](https://github.com/netlify/primitives/compare/blobs-v10.0.9...blobs-v10.0.10) (2025-08-28)
 
 
