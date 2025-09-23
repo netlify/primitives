@@ -3,10 +3,6 @@ import type { Instrumentation } from '@opentelemetry/instrumentation'
 import { GET_TRACER, SHUTDOWN_TRACERS } from '../constants.js'
 
 export interface TracerProviderOptions {
-  /**
-   * The request headers (checked for presence of the `x-nf-enable-tracing` header)
-   */
-  headers: Headers
   serviceName: string
   serviceVersion: string
   deploymentEnvironment: string
@@ -14,14 +10,19 @@ export interface TracerProviderOptions {
   siteId: string
   siteName: string
   instrumentations?: (Instrumentation | Promise<Instrumentation>)[]
+
+  // List of additional span processors to be used in addition to the base one.
   extraSpanProcessors?: (SpanProcessor | Promise<SpanProcessor>)[]
+
+  // Full list of span processors to be used. Unlike `extraSpanProcessors`, it
+  // does not include the base processor. When both are used, this one takes
+  // precedence.
+  spanProcessors?: (SpanProcessor | Promise<SpanProcessor>)[]
 }
 
 export const createTracerProvider = async (options: TracerProviderOptions) => {
-  if (!options.headers.has('x-nf-enable-tracing')) {
-    return
-  }
   const { version: nodeVersion } = await import('node:process')
+
   // remove the v prefix from the version to match the spec
   const runtimeVersion = nodeVersion.slice(1)
 
@@ -43,12 +44,13 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     'netlify.site.name': options.siteName,
   })
 
+  const spanProcessors = options.spanProcessors
+    ? await Promise.all(options.spanProcessors ?? [])
+    : [new SimpleSpanProcessor(new NetlifySpanExporter()), ...(await Promise.all(options.extraSpanProcessors ?? []))]
+
   const nodeTracerProvider = new NodeTracerProvider({
     resource,
-    spanProcessors: [
-      new SimpleSpanProcessor(new NetlifySpanExporter()),
-      ...(await Promise.all(options.extraSpanProcessors ?? [])),
-    ],
+    spanProcessors,
   })
 
   nodeTracerProvider.register()
