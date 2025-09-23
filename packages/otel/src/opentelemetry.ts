@@ -14,3 +14,4 @@ export type {
 } from '@opentelemetry/api'
 export type { ExportResult, ExportResultCode } from '@opentelemetry/core'
 export { SimpleSpanProcessor, BatchSpanProcessor } from '@opentelemetry/sdk-trace-node'
+export type { SpanExporter, ReadableSpan } from '@opentelemetry/sdk-trace-node'
