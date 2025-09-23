@@ -10,13 +10,6 @@ export interface TracerProviderOptions {
   siteId: string
   siteName: string
   instrumentations?: (Instrumentation | Promise<Instrumentation>)[]
-
-  // List of additional span processors to be used in addition to the base one.
-  extraSpanProcessors?: (SpanProcessor | Promise<SpanProcessor>)[]
-
-  // Full list of span processors to be used. Unlike `extraSpanProcessors`, it
-  // does not include the base processor. When both are used, this one takes
-  // precedence.
   spanProcessors?: (SpanProcessor | Promise<SpanProcessor>)[]
 }
 
@@ -27,11 +20,8 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
   const runtimeVersion = nodeVersion.slice(1)
 
   const { Resource } = await import('@opentelemetry/resources')
-  const { NodeTracerProvider, SimpleSpanProcessor } = await import('@opentelemetry/sdk-trace-node')
-
+  const { NodeTracerProvider } = await import('@opentelemetry/sdk-trace-node')
   const { registerInstrumentations } = await import('@opentelemetry/instrumentation')
-
-  const { NetlifySpanExporter } = await import('../exporters/netlify.js')
 
   const resource = new Resource({
     'service.name': options.serviceName,
@@ -44,9 +34,7 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     'netlify.site.name': options.siteName,
   })
 
-  const spanProcessors = options.spanProcessors
-    ? await Promise.all(options.spanProcessors ?? [])
-    : [new SimpleSpanProcessor(new NetlifySpanExporter()), ...(await Promise.all(options.extraSpanProcessors ?? []))]
+  const spanProcessors = await Promise.all(options.spanProcessors ?? [await getBaseSpanProcessor()])
 
   const nodeTracerProvider = new NodeTracerProvider({
     resource,
@@ -87,4 +75,11 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
       return await nodeTracerProvider.shutdown()
     },
   })
+}
+
+export const getBaseSpanProcessor = async (): Promise<SpanProcessor> => {
+  const { SimpleSpanProcessor } = await import('@opentelemetry/sdk-trace-node')
+  const { NetlifySpanExporter } = await import('../exporters/netlify.js')
+
+  return new SimpleSpanProcessor(new NetlifySpanExporter())
 }
