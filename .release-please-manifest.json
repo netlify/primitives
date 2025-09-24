@@ -16,5 +16,5 @@
   "packages/static": "3.0.11",
   "packages/types": "2.0.3",
   "packages/vite-plugin": "2.6.0",
-  "packages/vite-plugin-tanstack-start": "1.0.0"
+  "packages/vite-plugin-tanstack-start": "1.0.1"
 }
