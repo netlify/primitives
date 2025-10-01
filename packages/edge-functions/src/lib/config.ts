@@ -20,6 +20,7 @@ interface RateLimitConfig {
   aggregateBy?: RateLimitAggregator | RateLimitAggregator[]
   to?: string
   windowSize: number
+  windowLimit: number
 }
 
 /**
