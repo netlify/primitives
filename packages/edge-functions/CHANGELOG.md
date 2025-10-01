@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.2](https://github.com/netlify/primitives/compare/edge-functions-v2.18.1...edge-functions-v2.18.2) (2025-10-01)
+
+
+### Bug Fixes
+
+* add extra types for ratelimiting ([#464](https://github.com/netlify/primitives/issues/464)) ([6d9fe05](https://github.com/netlify/primitives/commit/6d9fe053bf3f99f33fd9a44f3a2457e8da9fbc4e))
+
 ## [2.18.1](https://github.com/netlify/primitives/compare/edge-functions-v2.18.0...edge-functions-v2.18.1) (2025-09-22)
 
 
