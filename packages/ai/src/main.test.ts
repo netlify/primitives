@@ -393,17 +393,14 @@ describe('setupAIGateway', () => {
     await setupAIGateway(config)
 
     // Verify that the fetchAIGatewayToken was called with the prior auth token
-    expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: 'Bearer test-token',
-          'Content-Type': 'application/json',
-          'X-Prior-Authorization': 'existing-token',
-        },
-      }
-    )
+    expect(mockFetch).toHaveBeenCalledWith('https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer test-token',
+        'Content-Type': 'application/json',
+        'X-Prior-Authorization': 'existing-token',
+      },
+    })
 
     expect(env).toHaveProperty('AI_GATEWAY')
   })
@@ -453,16 +450,13 @@ describe('setupAIGateway', () => {
     await setupAIGateway(config)
 
     // Verify that the fetchAIGatewayToken was called without prior auth token
-    expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: 'Bearer test-token',
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    expect(mockFetch).toHaveBeenCalledWith('https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer test-token',
+        'Content-Type': 'application/json',
+      },
+    })
 
     expect(env).toHaveProperty('AI_GATEWAY')
   })
@@ -506,16 +500,13 @@ describe('setupAIGateway', () => {
     await setupAIGateway(config)
 
     // Verify that the fetchAIGatewayToken was called without prior auth token
-    expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: 'Bearer test-token',
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    expect(mockFetch).toHaveBeenCalledWith('https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer test-token',
+        'Content-Type': 'application/json',
+      },
+    })
 
     expect(env).toHaveProperty('AI_GATEWAY')
   })
@@ -566,17 +557,14 @@ describe('setupAIGateway', () => {
     await setupAIGateway(config)
 
     // Verify that the fetchAIGatewayToken was called with the explicit existingToken, not the one from env
-    expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: 'Bearer test-token',
-          'Content-Type': 'application/json',
-          'X-Prior-Authorization': 'explicit-prior-token',
-        },
-      }
-    )
+    expect(mockFetch).toHaveBeenCalledWith('https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer test-token',
+        'Content-Type': 'application/json',
+        'X-Prior-Authorization': 'explicit-prior-token',
+      },
+    })
 
     expect(env).toHaveProperty('AI_GATEWAY')
   })
@@ -627,16 +615,13 @@ describe('setupAIGateway', () => {
     await setupAIGateway(config)
 
     // Verify that the fetchAIGatewayToken was called without prior auth token when existingToken is empty string
-    expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: 'Bearer test-token',
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    expect(mockFetch).toHaveBeenCalledWith('https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer test-token',
+        'Content-Type': 'application/json',
+      },
+    })
 
     expect(env).toHaveProperty('AI_GATEWAY')
   })

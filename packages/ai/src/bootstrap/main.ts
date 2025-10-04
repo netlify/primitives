@@ -184,14 +184,14 @@ export const setupAIGateway = async (config: AIGatewayConfig): Promise<{ token: 
       })
       const base64Context = Buffer.from(aiGatewayContext).toString('base64')
       env.AI_GATEWAY = { sources: ['internal'], value: base64Context }
-      
+
       return {
         token: aiGatewayToken.token,
         url: `${siteURL}/.netlify/ai`,
       }
     }
   }
-  
+
   return null
 }
 
