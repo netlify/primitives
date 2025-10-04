@@ -519,6 +519,127 @@ describe('setupAIGateway', () => {
 
     expect(env).toHaveProperty('AI_GATEWAY')
   })
+
+  test('uses existingToken parameter when provided, ignoring process.env', async () => {
+    const existingContext = {
+      token: 'existing-token-from-env',
+      url: 'https://example.com/.netlify/ai',
+      envVars: [],
+    }
+    const existingBase64 = Buffer.from(JSON.stringify(existingContext)).toString('base64')
+    process.env.AI_GATEWAY = existingBase64
+
+    const mockTokenResponse = {
+      token: 'new-ai-gateway-token',
+      url: 'https://ai-gateway.com/.netlify/ai',
+    }
+
+    const mockProvidersResponse = {
+      providers: {
+        openai: {
+          token_env_var: 'OPENAI_API_KEY',
+          url_env_var: 'OPENAI_BASE_URL',
+          models: ['gpt-4'],
+        },
+      },
+    }
+
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockTokenResponse),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockProvidersResponse),
+      })
+
+    const env = {}
+    const config = {
+      api: mockApi,
+      env,
+      siteID: 'test-site',
+      siteURL: 'https://example.com',
+      existingToken: 'explicit-prior-token',
+    }
+
+    await setupAIGateway(config)
+
+    // Verify that the fetchAIGatewayToken was called with the explicit existingToken, not the one from env
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer test-token',
+          'Content-Type': 'application/json',
+          'X-Prior-Authorization': 'explicit-prior-token',
+        },
+      }
+    )
+
+    expect(env).toHaveProperty('AI_GATEWAY')
+  })
+
+  test('uses empty existingToken parameter over process.env when explicitly set to empty string', async () => {
+    const existingContext = {
+      token: 'existing-token-from-env',
+      url: 'https://example.com/.netlify/ai',
+      envVars: [],
+    }
+    const existingBase64 = Buffer.from(JSON.stringify(existingContext)).toString('base64')
+    process.env.AI_GATEWAY = existingBase64
+
+    const mockTokenResponse = {
+      token: 'new-ai-gateway-token',
+      url: 'https://ai-gateway.com/.netlify/ai',
+    }
+
+    const mockProvidersResponse = {
+      providers: {
+        openai: {
+          token_env_var: 'OPENAI_API_KEY',
+          url_env_var: 'OPENAI_BASE_URL',
+          models: ['gpt-4'],
+        },
+      },
+    }
+
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockTokenResponse),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockProvidersResponse),
+      })
+
+    const env = {}
+    const config = {
+      api: mockApi,
+      env,
+      siteID: 'test-site',
+      siteURL: 'https://example.com',
+      existingToken: '',
+    }
+
+    await setupAIGateway(config)
+
+    // Verify that the fetchAIGatewayToken was called without prior auth token when existingToken is empty string
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://api.netlify.com/api/v1/sites/test-site/ai-gateway/token',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer test-token',
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+
+    expect(env).toHaveProperty('AI_GATEWAY')
+  })
 })
 
 describe('parseAIGatewayContext', () => {
