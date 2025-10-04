@@ -99,9 +99,11 @@ export const fetchAIProviders = async ({ api }: { api: NetlifyAPI }): Promise<AI
 export const fetchAIGatewayToken = async ({
   api,
   siteId,
+  priorAuthToken,
 }: {
   api: NetlifyAPI
   siteId: string
+  priorAuthToken?: string
 }): Promise<AIGatewayTokenResponse | null> => {
   try {
     if (!api.accessToken) {
@@ -111,12 +113,18 @@ export const fetchAIGatewayToken = async ({
     // TODO: update once available in openApi
     const url = `${api.scheme}://${api.host}/api/v1/sites/${siteId}/ai-gateway/token`
 
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${api.accessToken}`,
+      'Content-Type': 'application/json',
+    }
+
+    if (priorAuthToken) {
+      headers['X-Prior-Authorization'] = priorAuthToken
+    }
+
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        Authorization: `Bearer ${api.accessToken}`,
-        'Content-Type': 'application/json',
-      },
+      headers,
     })
 
     if (!response.ok) {
@@ -148,8 +156,17 @@ export const setupAIGateway = async (config: AIGatewayConfig): Promise<void> => 
   const { api, env, siteID, siteURL } = config
 
   if (siteID && siteID !== 'unlinked' && siteURL) {
+    // Extract existing AI_GATEWAY from process.env to check for prior auth token
+    const existingAIGateway = parseAIGatewayContext(process.env.AI_GATEWAY)
+    let priorAuthToken: string | undefined
+
+    // If there's an existing AI Gateway context with the same URL, use its token as prior auth
+    if (existingAIGateway && existingAIGateway.url === `${siteURL}/.netlify/ai`) {
+      priorAuthToken = existingAIGateway.token
+    }
+
     const [aiGatewayToken, envVars] = await Promise.all([
-      fetchAIGatewayToken({ api, siteId: siteID }),
+      fetchAIGatewayToken({ api, siteId: siteID, priorAuthToken }),
       fetchAIProviders({ api }),
     ])
 
