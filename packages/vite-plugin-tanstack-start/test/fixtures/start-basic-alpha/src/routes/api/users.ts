@@ -1,33 +1,28 @@
-
 import { createFileRoute } from '@tanstack/react-router'
 import { getRequestHeaders } from '@tanstack/react-start/server'
 import { createMiddleware, json } from '@tanstack/react-start'
 import type { User } from '~/utils/users'
 
-const userLoggerMiddleware = createMiddleware().server(
-  async ({ next, request }) => {
-    console.info('In: /users')
-    console.info('Request Headers:', getRequestHeaders())
-    const result = await next()
-    result.response.headers.set('x-users', 'true')
-    console.info('Out: /users')
-    return result
-  },
-)
+const userLoggerMiddleware = createMiddleware().server(async ({ next }) => {
+  console.info('In: /users')
+  console.info('Request Headers:', getRequestHeaders())
+  const result = await next()
+  result.response.headers.set('x-users', 'true')
+  console.info('Out: /users')
+  return result
+})
 
-const testParentMiddleware = createMiddleware().server(
-  async ({ next, request }) => {
-    console.info('In: testParentMiddleware')
-    const result = await next()
-    result.response.headers.set('x-test-parent', 'true')
-    console.info('Out: testParentMiddleware')
-    return result
-  },
-)
+const testParentMiddleware = createMiddleware().server(async ({ next }) => {
+  console.info('In: testParentMiddleware')
+  const result = await next()
+  result.response.headers.set('x-test-parent', 'true')
+  console.info('Out: testParentMiddleware')
+  return result
+})
 
 const testMiddleware = createMiddleware()
   .middleware([testParentMiddleware])
-  .server(async ({ next, request }) => {
+  .server(async ({ next }) => {
     console.info('In: testMiddleware')
     const result = await next()
     result.response.headers.set('x-test', 'true')
