@@ -9,7 +9,7 @@
   "packages/headers": "2.0.12",
   "packages/images": "1.2.8",
   "packages/nuxt-module": "0.1.19",
-  "packages/otel": "4.0.0",
+  "packages/otel": "4.1.0",
   "packages/redirects": "3.0.13",
   "packages/runtime": "4.0.16",
   "packages/runtime-utils": "2.1.0",
