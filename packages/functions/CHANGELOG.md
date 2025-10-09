@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.7](https://github.com/netlify/primitives/compare/functions-v4.2.6...functions-v4.2.7) (2025-10-01)
+
+
+### Bug Fixes
+
+* add extra types for ratelimiting ([#464](https://github.com/netlify/primitives/issues/464)) ([6d9fe05](https://github.com/netlify/primitives/commit/6d9fe053bf3f99f33fd9a44f3a2457e8da9fbc4e))
+
 ## [4.2.6](https://github.com/netlify/primitives/compare/functions-v4.2.5...functions-v4.2.6) (2025-09-22)
 
 
