@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/netlify/primitives/compare/otel-v4.0.0...otel-v4.1.0) (2025-10-09)
+
+
+### Features
+
+* extend list of exported otel classes ([#467](https://github.com/netlify/primitives/issues/467)) ([a9b059f](https://github.com/netlify/primitives/commit/a9b059f7ea6ddf8683f520f267a3216c3ab7d9a4))
+
 ## [4.0.0](https://github.com/netlify/primitives/compare/otel-v3.4.1...otel-v4.0.0) (2025-09-23)
 
 
