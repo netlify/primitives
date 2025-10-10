@@ -1,5 +1,29 @@
 # Changelog
 
+## [4.6.0](https://github.com/netlify/primitives/compare/dev-v4.5.12...dev-v4.6.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.11 to 10.1.0
+    * @netlify/dev-utils bumped from 4.2.0 to 4.3.0
+    * @netlify/edge-functions bumped from 2.18.2 to 2.19.0
+    * @netlify/functions bumped from 4.2.7 to 4.3.0
+    * @netlify/headers bumped from 2.0.12 to 2.1.0
+    * @netlify/images bumped from 1.2.8 to 1.3.0
+    * @netlify/redirects bumped from 3.0.13 to 3.1.0
+    * @netlify/runtime bumped from 4.0.16 to 4.1.0
+    * @netlify/static bumped from 3.0.11 to 3.1.0
+  * devDependencies
+    * @netlify/types bumped from 2.0.3 to 2.1.0
+
 ## [4.5.12](https://github.com/netlify/primitives/compare/dev-v4.5.11...dev-v4.5.12) (2025-10-01)
 
 

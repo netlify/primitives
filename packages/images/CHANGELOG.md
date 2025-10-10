@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/netlify/primitives/compare/images-v1.2.8...images-v1.3.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.2.0 to ^4.3.0
+
 ## [1.2.8](https://github.com/netlify/primitives/compare/images-v1.2.7...images-v1.2.8) (2025-09-22)
 
 

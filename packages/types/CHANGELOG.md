@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/netlify/primitives/compare/types-v2.0.3...types-v2.1.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
 ## [2.0.3](https://github.com/netlify/primitives/compare/types-v2.0.2...types-v2.0.3) (2025-08-28)
 
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.1.0](https://github.com/netlify/primitives/compare/redirects-v3.0.13...redirects-v3.1.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.2.0 to 4.3.0
+
 ## [3.0.13](https://github.com/netlify/primitives/compare/redirects-v3.0.12...redirects-v3.0.13) (2025-09-22)
 
 

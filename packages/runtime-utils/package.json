@@ -1,6 +1,6 @@
 {
   "name": "@netlify/runtime-utils",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Cross-environment utilities for the Netlify runtime",
   "type": "module",
   "engines": {

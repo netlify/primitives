@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.19.0](https://github.com/netlify/primitives/compare/edge-functions-v2.18.2...edge-functions-v2.19.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.2.0 to 4.3.0
+    * @netlify/runtime-utils bumped from 2.1.0 to 2.2.0
+    * @netlify/types bumped from 2.0.3 to 2.1.0
+
 ## [2.18.2](https://github.com/netlify/primitives/compare/edge-functions-v2.18.1...edge-functions-v2.18.2) (2025-10-01)
 
 
