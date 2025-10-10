@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.0](https://github.com/netlify/primitives/compare/nuxt-v0.1.19...nuxt-v0.2.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.5.12 to ^4.6.0
+    * @netlify/dev-utils bumped from ^4.2.0 to ^4.3.0
+
 ## [0.1.19](https://github.com/netlify/primitives/compare/nuxt-v0.1.18...nuxt-v0.1.19) (2025-10-01)
 
 
