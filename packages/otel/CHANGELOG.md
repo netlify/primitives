@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/netlify/primitives/compare/otel-v4.2.0...otel-v4.3.0) (2025-10-10)
+
+
+### Features
+
+* add trace to otel exports ([#473](https://github.com/netlify/primitives/issues/473)) ([ecc4ec5](https://github.com/netlify/primitives/commit/ecc4ec53e91aef20d1c2009e08582c07f5e01470))
+
 ## [4.2.0](https://github.com/netlify/primitives/compare/otel-v4.1.0...otel-v4.2.0) (2025-10-10)
 
 
