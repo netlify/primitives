@@ -19,6 +19,7 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
   // remove the v prefix from the version to match the spec
   const runtimeVersion = nodeVersion.slice(1)
 
+  const { W3CTraceContextPropagator } = await import('@opentelemetry/core')
   const { Resource } = await import('@opentelemetry/resources')
   const { NodeTracerProvider } = await import('@opentelemetry/sdk-trace-node')
   const { registerInstrumentations } = await import('@opentelemetry/instrumentation')
@@ -41,7 +42,9 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     spanProcessors,
   })
 
-  nodeTracerProvider.register()
+  nodeTracerProvider.register({
+    propagator: new W3CTraceContextPropagator(),
+  })
 
   const instrumentations = await Promise.all(options.instrumentations ?? [])
 
