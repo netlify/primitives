@@ -119,16 +119,27 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - if:
-          ${{ steps.release.outputs['packages/functions--release_created'] || github.event_name == 'workflow_dispatch'
+          ${{ steps.release.outputs['packages/functions/prod--release_created'] || github.event_name == 'workflow_dispatch'
           }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/functions/ --provenance --access=public || true
+            npm publish packages/functions/prod/ --provenance --access=public || true
           else
-            npm publish packages/functions/ --provenance --access=public
+            npm publish packages/functions/prod/ --provenance --access=public
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - if:
+          ${{ steps.release.outputs['packages/functions/dev--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            npm publish packages/functions/dev/ --provenance --access=public || true
+          else
+            npm publish packages/functions/dev/ --provenance --access=public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}          
       - if:
           ${{ steps.release.outputs['packages/headers--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |

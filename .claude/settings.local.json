@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(find:*)",
+      "Bash(mv:*)",
+      "Bash(rmdir:*)",
+      "Bash(for item in builder.ts events.ts function.ts main.test.ts main.ts registry.ts runtimes server)",
+      "Bash(do mv \"$item\" src/)",
+      "Bash(done)",
+      "Bash(npm run build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
