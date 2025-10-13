@@ -26,7 +26,7 @@
     "test": "vitest run",
     "test:dev": "vitest"
   },
-  "keywords": [],
+  "keywords": ["netlify", "functions", "serverless"],
   "license": "MIT",
   "repository": "netlify/primitives",
   "bugs": {
