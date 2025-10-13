@@ -11,7 +11,7 @@
       }
     }
   },
-  "version": "4.3.0",
+  "version": "0.0.0",
   "description": "Development utilities for Netlify Functions",
   "files": [
     "dist/**/*.js",
