@@ -12,7 +12,7 @@
     }
   },
   "version": "0.0.0",
-  "description": "Development utilities for Netlify Functions",
+  "description": "Local dev emulation of Netlify Functions",
   "files": [
     "dist/**/*.js",
     "dist/**/*.mjs",
