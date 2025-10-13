@@ -42,6 +42,7 @@
     "decache": "^4.6.2",
     "extract-zip": "^2.0.1",
     "is-stream": "^4.0.1",
+    "jwt-decode": "^4.0.0",
     "lambda-local": "^2.2.0",
     "read-package-up": "^11.0.0",
     "semver": "^7.6.3"
