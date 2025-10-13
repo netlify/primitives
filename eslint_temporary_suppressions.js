@@ -454,7 +454,7 @@ export default [
     },
   },
   {
-    files: ['packages/functions/internal.d.ts'],
+    files: ['packages/functions/prod/internal.d.ts'],
     rules: {
       'n/no-missing-import': 'off',
     },
@@ -534,7 +534,7 @@ export default [
     },
   },
   {
-    files: ['packages/functions/test/types/Handler.test-d.ts'],
+    files: ['packages/functions/prod/test/types/Handler.test-d.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
     },
