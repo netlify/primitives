@@ -1,4 +1,4 @@
-import type { HandlerResponse } from '../../src/main.js'
+import type { HandlerResponse } from '@netlify/functions'
 import { FunctionBuilder } from '../builder.js'
 import { NetlifyFunction } from '../function.js'
 import { nodeJSRuntime } from './nodejs/index.js'

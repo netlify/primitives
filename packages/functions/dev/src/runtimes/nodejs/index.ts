@@ -14,7 +14,7 @@ const BLOBS_CONTEXT_VARIABLE = 'NETLIFY_BLOBS_CONTEXT'
 
 lambdaLocal.getLogger().level = 'alert'
 
-import { HandlerEvent, HandlerResponse } from '../../../src/main.js'
+import { HandlerEvent, HandlerResponse } from '@netlify/functions'
 import { lambdaEventFromWebRequest, webResponseFromLambdaResponse } from './lambda.js'
 
 export const nodeJSRuntime: Runtime = {

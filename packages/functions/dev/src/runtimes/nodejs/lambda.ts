@@ -1,6 +1,5 @@
 import { shouldBase64Encode } from '@netlify/dev-utils'
-import { HandlerEvent } from '../../../src/function/handler_event.js'
-import { HandlerResponse } from '../../../src/function/handler_response.js'
+import { HandlerEvent, HandlerResponse } from '@netlify/functions'
 
 export const headersObjectFromWebHeaders = (webHeaders: Headers) => {
   const headers: Record<string, string> = {}
