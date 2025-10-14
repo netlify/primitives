@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.0.0](https://github.com/netlify/primitives/compare/functions-v4.3.0...functions-v5.0.0) (2025-10-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* The `/dev` export, introduced in version 3.1.0, has been removed.
+
+### Features
+
+* extract dev logic into new `@netlify/functions-dev` package ([#475](https://github.com/netlify/primitives/issues/475)) ([0730f5f](https://github.com/netlify/primitives/commit/0730f5f40ace6cd37ffc1f54a7ebb4f405bbca65))
+
 ## [4.3.0](https://github.com/netlify/primitives/compare/functions-v4.2.7...functions-v4.3.0) (2025-10-10)
 
 
