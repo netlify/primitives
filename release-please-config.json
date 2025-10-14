@@ -2,16 +2,16 @@
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "bootstrap-sha": "1e628be35d2ae079b63ec8e98ca0c6831237b677",
   "last-release-sha": "ef34aade3b10abee4a330545c8f1ca7c4d084891",
-  "plugins": [
-    "node-workspace"
-  ],
+  "plugins": ["node-workspace"],
   "release-type": "node",
   "separate-pull-requests": false,
   "packages": {
     "packages/ai": {},
     "packages/blobs": {},
     "packages/cache": {},
-    "packages/dev": {},
+    "packages/dev": {
+      "exclude-paths": ["packages/dev"]
+    },
     "packages/dev-utils": {},
     "packages/edge-functions": {},
     "packages/functions/dev": {},
@@ -27,9 +27,7 @@
     "packages/types": {},
     "packages/vite-plugin": {},
     "packages/vite-plugin-tanstack-start": {
-      "exclude-paths": [
-        "packages/vite-plugin-tanstack-start/test"
-      ]
+      "exclude-paths": ["packages/vite-plugin-tanstack-start/test"]
     }
   }
 }
