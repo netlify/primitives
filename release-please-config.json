@@ -9,7 +9,9 @@
     "packages/ai": {},
     "packages/blobs": {},
     "packages/cache": {},
-    "packages/dev": {},
+    "packages/dev": {
+      "exclude-paths": ["packages/dev"]
+    },
     "packages/dev-utils": {},
     "packages/edge-functions": {},
     "packages/functions/dev": {},
@@ -24,6 +26,8 @@
     "packages/static": {},
     "packages/types": {},
     "packages/vite-plugin": {},
-    "packages/vite-plugin-tanstack-start": {}
+    "packages/vite-plugin-tanstack-start": {
+      "exclude-paths": ["packages/vite-plugin-tanstack-start/test"]
+    }
   }
 }
