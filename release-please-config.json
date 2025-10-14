@@ -9,9 +9,7 @@
     "packages/ai": {},
     "packages/blobs": {},
     "packages/cache": {},
-    "packages/dev": {
-      "exclude-paths": ["packages/dev"]
-    },
+    "packages/dev": {},
     "packages/dev-utils": {},
     "packages/edge-functions": {},
     "packages/functions/dev": {},
