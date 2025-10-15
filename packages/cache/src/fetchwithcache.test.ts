@@ -308,6 +308,26 @@ describe('`fetchWithCache`', () => {
     expect(mockFetch.fulfilled).toBe(true)
   })
 
+  test('Accepts a custom `fetch` implementation', async () => {
+    const mockFetch = new MockFetch()
+      .get({
+        url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+        response: new Response(null, { status: 404 }),
+      })
+      .post({
+        url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+        response: new Response(null, { status: 201 }),
+      })
+      .inject()
+    const customFetch: typeof globalThis.fetch = async () => new Response('rijwiel')
+
+    const response = await fetchWithCache('https://netlify.com', { fetch: customFetch })
+    expect(await response.text()).toBe('rijwiel')
+
+    mockFetch.restore()
+    expect(mockFetch.fulfilled).toBe(true)
+  })
+
   test('Does not throw an error when response returns a 5xx error', async () => {
     const mockFetch = new MockFetch()
       .get({
