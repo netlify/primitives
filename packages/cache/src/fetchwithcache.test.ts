@@ -319,11 +319,10 @@ describe('`fetchWithCache`', () => {
         response: new Response(null, { status: 201 }),
       })
       .inject()
-    const body = 'Hello from custom fetch'
-    const customFetch: typeof globalThis.fetch = async () => new Response(body)
+    const customFetch: typeof globalThis.fetch = async () => new Response('rijwiel')
 
     const response = await fetchWithCache('https://netlify.com', { fetch: customFetch })
-    expect(await response.text()).toBe(body)
+    expect(await response.text()).toBe('rijwiel')
 
     mockFetch.restore()
     expect(mockFetch.fulfilled).toBe(true)
