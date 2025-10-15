@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.3.0](https://github.com/netlify/primitives/compare/cache-v3.2.0...cache-v3.3.0) (2025-10-15)
+
+
+### Features
+
+* add `fetch` parameter to `fetchWithCache` ([#482](https://github.com/netlify/primitives/issues/482)) ([6eff819](https://github.com/netlify/primitives/commit/6eff819fec72b74458269538e8ae48e944ee09d1))
+
+
+### Bug Fixes
+
+* make `fetchWithCache` stop throwing on uncacheable response ([#481](https://github.com/netlify/primitives/issues/481)) ([2a4da13](https://github.com/netlify/primitives/commit/2a4da13b5fde1d712484a498f4df0534770815c0))
+
 ## [3.2.0](https://github.com/netlify/primitives/compare/cache-v3.1.1...cache-v3.2.0) (2025-10-10)
 
 

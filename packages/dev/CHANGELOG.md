@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.6.2](https://github.com/netlify/primitives/compare/dev-v4.6.1...dev-v4.6.2) (2025-10-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime bumped from 4.1.0 to 4.1.1
+
 ## [4.6.1](https://github.com/netlify/primitives/compare/dev-v4.6.0...dev-v4.6.1) (2025-10-14)
 
 
