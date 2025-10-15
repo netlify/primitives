@@ -136,7 +136,10 @@ export const fetchWithCache: FetchWithCache = async (
   const cacheResponse = new Response(cacheStream, fresh)
   applyHeaders(cacheResponse.headers, cacheHeaders(cacheSettings))
 
-  const cachePut = cache.put(request, cacheResponse)
+  const cachePut = cache.put(request, cacheResponse).catch(() => {
+    // If we fail to cache the response, we want to swallow the error because
+    // we'll still return the result of `fetch`.
+  })
 
   if (onCachePut) {
     await onCachePut(cachePut)
