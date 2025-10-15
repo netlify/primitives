@@ -1,6 +1,7 @@
-import { type SpanProcessor } from '@opentelemetry/sdk-trace-node'
+import { BatchSpanProcessor, ConsoleSpanExporter, type SpanProcessor } from '@opentelemetry/sdk-trace-node'
 import type { Instrumentation } from '@opentelemetry/instrumentation'
-import { GET_TRACER, SHUTDOWN_TRACERS } from '../constants.js'
+import { GET_TRACE_CONTEXT_FORWARDER, GET_TRACER, SHUTDOWN_TRACERS } from '../constants.js'
+import { Context, context, W3CTraceContextPropagator } from '../opentelemetry.ts'
 
 export interface TracerProviderOptions {
   serviceName: string
@@ -11,6 +12,7 @@ export interface TracerProviderOptions {
   siteName: string
   instrumentations?: (Instrumentation | Promise<Instrumentation>)[]
   spanProcessors?: (SpanProcessor | Promise<SpanProcessor>)[]
+  propagationHeaders?: Headers
 }
 
 export const createTracerProvider = async (options: TracerProviderOptions) => {
@@ -43,8 +45,29 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
   })
 
   nodeTracerProvider.register({
-    propagator: new W3CTraceContextPropagator(),
+    propagator: new W3CTraceContextPropagator()
+
   })
+
+  let traceContextForwarder: (propagator: W3CTraceContextPropagator, requestHeaders: Headers) => void
+
+  if (options.propagationHeaders) {
+    traceContextForwarder = (propagator: W3CTraceContextPropagator, requestHeaders: Headers): Context => {
+      const getter = {
+        keys: (carrier: Headers) => [...carrier.keys()],
+        get: (carrier: Headers, key: string) => carrier.get(key) || undefined,
+      }
+      const extractedContext = propagator.extract(context.active(), options.propagationHeaders, getter)
+
+      propagator?.inject(context.active(), requestHeaders, {
+        set: (carrier, key, value) => {
+          carrier.set(key, value)
+        },
+      })
+
+      return extractedContext
+    }
+  }
 
   const instrumentations = await Promise.all(options.instrumentations ?? [])
 
@@ -52,6 +75,7 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     instrumentations,
     tracerProvider: nodeTracerProvider,
   })
+
 
   const { trace } = await import('@opentelemetry/api')
   const { SugaredTracer } = await import('@opentelemetry/api/experimental')
@@ -67,6 +91,15 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
       }
 
       return new SugaredTracer(trace.getTracer(pkg.name, pkg.version))
+    },
+  })
+
+  Object.defineProperty(globalThis, GET_TRACE_CONTEXT_FORWARDER, {
+    enumerable: false,
+    configurable: true,
+    writable: false,
+    value: function() {
+      return traceContextForwarder
     },
   })
 
