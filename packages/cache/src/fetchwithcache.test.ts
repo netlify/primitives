@@ -307,4 +307,26 @@ describe('`fetchWithCache`', () => {
     mockFetch.restore()
     expect(mockFetch.fulfilled).toBe(true)
   })
+
+  test('Does not throw an error when response returns a 5xx error', async () => {
+    const mockFetch = new MockFetch()
+      .get({
+        url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+        response: new Response(null, { status: 404 }),
+      })
+      .get({
+        url: 'https://netlify.com/',
+        response: new Response('Internal Server Error', { status: 500 }),
+      })
+      .inject()
+    const resourceURL = 'https://netlify.com'
+
+    const response = await fetchWithCache(resourceURL)
+
+    expect(response.status).toBe(500)
+    expect(await response.text()).toBe('Internal Server Error')
+
+    mockFetch.restore()
+    expect(mockFetch.fulfilled).toBe(true)
+  })
 })
