@@ -32,6 +32,11 @@ type CacheOptions = CacheSettings & {
   cache?: NetlifyCache | string
 
   /**
+   * A custom `fetch` implementation to be used instead of the native one.
+   */
+  fetch?: typeof globalThis.fetch
+
+  /**
    * When `fetchWithCache` fetches a new response and adds it to the cache, the
    * `Promise` it returns waits for both the network call to finish and for the
    * response to be cached. Customize this behavior by setting a `onCachePut`
@@ -114,6 +119,8 @@ export const fetchWithCache: FetchWithCache = async (
   if (cached) {
     return cached
   }
+
+  const { fetch = globalThis.fetch } = cacheOptions
 
   const fresh = await fetch(request)
   if (!fresh.body) {
