@@ -1,4 +1,4 @@
-import { BatchSpanProcessor, ConsoleSpanExporter, type SpanProcessor } from '@opentelemetry/sdk-trace-node'
+import { type SpanProcessor } from '@opentelemetry/sdk-trace-node'
 import type { Instrumentation } from '@opentelemetry/instrumentation'
 import { GET_TRACE_CONTEXT_FORWARDER, GET_TRACER, SHUTDOWN_TRACERS } from '../constants.js'
 import { Context, context, W3CTraceContextPropagator } from '../opentelemetry.ts'
@@ -55,12 +55,13 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     traceContextForwarder = (propagator: W3CTraceContextPropagator, requestHeaders: Headers): Context => {
       const getter = {
         keys: (carrier: Headers) => [...carrier.keys()],
-        get: (carrier: Headers, key: string) => carrier.get(key) || undefined,
+        get: (carrier: Headers, key: string) => carrier.get(key) ?? undefined,
       }
       const extractedContext = propagator.extract(context.active(), options.propagationHeaders, getter)
 
-      propagator?.inject(context.active(), requestHeaders, {
+      propagator.inject(context.active(), requestHeaders, {
         set: (carrier, key, value) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           carrier.set(key, value)
         },
       })
