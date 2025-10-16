@@ -85,10 +85,15 @@ describe('header exclusion', () => {
   })
 })
 
+let requestHeaders = new Headers()
+
 describe('patched fetch', () => {
   const server = setupServer(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    http.get('http://localhost:3000/ok', () => HttpResponse.json({ message: 'ok' })),
+    http.get('http://localhost:3000/ok', ({ request }) => {
+      requestHeaders = request.headers
+      return HttpResponse.json({ message: 'ok' })
+    }),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
     http.post('http://localhost:3000/ok', () => HttpResponse.json({ message: 'ok' })),
   )
@@ -98,6 +103,7 @@ describe('patched fetch', () => {
   })
 
   beforeEach(async () => {
+    requestHeaders = new Headers()
     await createTracerProvider({
       headers: new Headers({ 'x-nf-enable-tracing': 'true' }),
       serviceName: 'test-service',
@@ -161,5 +167,29 @@ describe('patched fetch', () => {
       },
     })
     await expect(fetch(req).then((r) => r.json())).resolves.toEqual({ message: 'ok' })
+  })
+
+  it('uses propagation headers to forward trace context', async () => {
+    const traceParent = "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+    await createTracerProvider({
+      propagationHeaders: new Headers({ 'traceparent': traceParent }),
+      serviceName: 'test-service',
+      serviceVersion: '1.0.0',
+      deploymentEnvironment: 'test',
+      siteUrl: 'https://example.com',
+      siteId: '12345',
+      siteName: 'example',
+      instrumentations: [new FetchInstrumentation()],
+    })
+
+    await expect(fetch('http://localhost:3000/ok', { headers: new Headers({ 'some-header': "value" }) }).then((r) => r.json())).resolves.toEqual({ message: 'ok' })
+
+    const forwardedTraceParent = requestHeaders.get("traceparent")
+    expect(forwardedTraceParent).toMatch(/^00-4bf92f3577b34da6a3ce929d0e0e4736-[0-9a-f]{16}-01$/)
+    expect(forwardedTraceParent).not.toBe(traceParent)
+
+    // ensure we do not strip existing headers
+    expect(requestHeaders.get("some-header")).toBe("value")
+
   })
 })

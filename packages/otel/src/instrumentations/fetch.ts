@@ -122,8 +122,8 @@ export class FetchInstrumentation implements Instrumentation {
       }
 
       const traceContextForwarder = getTraceContextForwarder()
-      if (options?.headers && traceContextForwarder) {
-        const headers = new Headers(options.headers)
+      if (traceContextForwarder) {
+        const headers = options?.headers ? new Headers(options.headers) : new Headers()
         const extractedContext = traceContextForwarder(new W3CTraceContextPropagator(), headers)
 
         // Replace headers in options with the mutated version
