@@ -170,9 +170,9 @@ describe('patched fetch', () => {
   })
 
   it('uses propagation headers to forward trace context', async () => {
-    const traceParent = "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+    const traceParent = '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01'
     await createTracerProvider({
-      propagationHeaders: new Headers({ 'traceparent': traceParent }),
+      propagationHeaders: new Headers({ traceparent: traceParent }),
       serviceName: 'test-service',
       serviceVersion: '1.0.0',
       deploymentEnvironment: 'test',
@@ -182,14 +182,15 @@ describe('patched fetch', () => {
       instrumentations: [new FetchInstrumentation()],
     })
 
-    await expect(fetch('http://localhost:3000/ok', { headers: new Headers({ 'some-header': "value" }) }).then((r) => r.json())).resolves.toEqual({ message: 'ok' })
+    await expect(
+      fetch('http://localhost:3000/ok', { headers: new Headers({ 'some-header': 'value' }) }).then((r) => r.json()),
+    ).resolves.toEqual({ message: 'ok' })
 
-    const forwardedTraceParent = requestHeaders.get("traceparent")
+    const forwardedTraceParent = requestHeaders.get('traceparent')
     expect(forwardedTraceParent).toMatch(/^00-4bf92f3577b34da6a3ce929d0e0e4736-[0-9a-f]{16}-01$/)
     expect(forwardedTraceParent).not.toBe(traceParent)
 
     // ensure we do not strip existing headers
-    expect(requestHeaders.get("some-header")).toBe("value")
-
+    expect(requestHeaders.get('some-header')).toBe('value')
   })
 })

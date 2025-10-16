@@ -45,8 +45,7 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
   })
 
   nodeTracerProvider.register({
-    propagator: new W3CTraceContextPropagator()
-
+    propagator: new W3CTraceContextPropagator(),
   })
 
   let traceContextForwarder: (propagator: W3CTraceContextPropagator, requestHeaders: Headers) => void
@@ -77,7 +76,6 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     tracerProvider: nodeTracerProvider,
   })
 
-
   const { trace } = await import('@opentelemetry/api')
   const { SugaredTracer } = await import('@opentelemetry/api/experimental')
   const { default: pkg } = await import('../../package.json', { with: { type: 'json' } })
@@ -99,7 +97,7 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     enumerable: false,
     configurable: true,
     writable: false,
-    value: function() {
+    value: function () {
       return traceContextForwarder
     },
   })

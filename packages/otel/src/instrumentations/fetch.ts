@@ -27,9 +27,9 @@ export class FetchInstrumentation implements Instrumentation {
     return this.config
   }
 
-  setConfig(): void { }
+  setConfig(): void {}
 
-  setMeterProvider(): void { }
+  setMeterProvider(): void {}
   setTracerProvider(provider: api.TracerProvider): void {
     this.provider = provider
   }
