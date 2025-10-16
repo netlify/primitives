@@ -48,7 +48,7 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     propagator: new W3CTraceContextPropagator(),
   })
 
-  let traceContextForwarder: (propagator: W3CTraceContextPropagator, requestHeaders: Headers) => void
+  let traceContextForwarder: (propagator: W3CTraceContextPropagator, requestHeaders: Headers) => Context
 
   if (options.propagationHeaders) {
     traceContextForwarder = (propagator: W3CTraceContextPropagator, requestHeaders: Headers): Context => {
