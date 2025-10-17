@@ -1,14 +1,24 @@
 import { type SugaredSpanOptions, type SugaredTracer } from '@opentelemetry/api/experimental'
-import { GET_TRACER, SHUTDOWN_TRACERS } from './constants.js'
+import { GET_TRACER, SHUTDOWN_TRACERS, GET_TRACE_CONTEXT_FORWARDER } from './constants.js'
 import type { Context, Span } from '@opentelemetry/api'
+import { W3CTraceContextPropagator } from '@opentelemetry/core'
 
 type GlobalThisExtended = typeof globalThis & {
   [GET_TRACER]?: (name?: string, version?: string) => SugaredTracer | undefined
   [SHUTDOWN_TRACERS]?: () => void
+  [GET_TRACE_CONTEXT_FORWARDER]?: () =>
+    | ((propagator: W3CTraceContextPropagator, requestHeaders: Headers) => Context)
+    | undefined
 }
 
 export const getTracer = (name?: string, version?: string): SugaredTracer | undefined => {
   return (globalThis as GlobalThisExtended)[GET_TRACER]?.(name, version)
+}
+
+export const getTraceContextForwarder = ():
+  | ((propagator: W3CTraceContextPropagator, requestHeaders: Headers) => Context)
+  | undefined => {
+  return (globalThis as GlobalThisExtended)[GET_TRACE_CONTEXT_FORWARDER]?.()
 }
 
 export const shutdownTracers = async (): Promise<void> => {

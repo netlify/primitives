@@ -1,7 +1,8 @@
 import * as api from '@opentelemetry/api'
 import { SugaredTracer } from '@opentelemetry/api/experimental'
-import { _globalThis } from '@opentelemetry/core'
+import { _globalThis, W3CTraceContextPropagator } from '@opentelemetry/core'
 import { InstrumentationConfig, type Instrumentation } from '@opentelemetry/instrumentation'
+import { getTraceContextForwarder } from '../main.ts'
 
 export interface FetchInstrumentationConfig extends InstrumentationConfig {
   getRequestAttributes?(headers: Request): api.Attributes
@@ -118,6 +119,23 @@ export class FetchInstrumentation implements Instrumentation {
         this.config.skipURLs?.some((skip) => (typeof skip == 'string' ? url.startsWith(skip) : skip.test(url)))
       ) {
         return await originalFetch(resource, options)
+      }
+
+      const traceContextForwarder = getTraceContextForwarder()
+      if (traceContextForwarder) {
+        const headers = options?.headers ? new Headers(options.headers) : new Headers()
+        const extractedContext = traceContextForwarder(new W3CTraceContextPropagator(), headers)
+
+        // Replace headers in options with the mutated version
+        const nextOptions: RequestInit = { ...options, headers }
+
+        return tracer.startActiveSpan('fetch', {}, extractedContext, async (span) => {
+          const request = new Request(resource, nextOptions)
+          this.annotateFromRequest(span, request)
+          const response = await originalFetch(request, nextOptions)
+          this.annotateFromResponse(span, response)
+          return response
+        })
       }
 
       return tracer.withActiveSpan('fetch', async (span) => {
