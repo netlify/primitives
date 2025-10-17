@@ -98,6 +98,25 @@ describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
       await server.close()
     })
 
+    test('does not warn about duplicate plugin instances when server restarts', async () => {
+      const mockLogger = createMockViteLogger()
+
+      const firstServer = await startTestServer({
+        customLogger: mockLogger,
+        plugins: [netlify({ middleware: false })],
+      })
+      expect(mockLogger.warn).not.toHaveBeenCalled()
+      await firstServer.server.close()
+
+      const secondServer = await startTestServer({
+        customLogger: mockLogger,
+        plugins: [netlify({ middleware: false })],
+      })
+      expect(mockLogger.warn).not.toHaveBeenCalled()
+
+      await secondServer.server.close()
+    })
+
     test('Populates Netlify runtime environment (globals and env vars)', async () => {
       const fixture = new Fixture()
         .withFile(
