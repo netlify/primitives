@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.3](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.2...vite-plugin-v2.7.3) (2025-10-17)
+
+
+### Bug Fixes
+
+* reset dupe plugin tracker on dev server close ([#486](https://github.com/netlify/primitives/issues/486)) ([df82f89](https://github.com/netlify/primitives/commit/df82f8977197ba35071624047ffb9684a6c8ae15))
+
 ## [2.7.2](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.1...vite-plugin-v2.7.2) (2025-10-15)
 
 
