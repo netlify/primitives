@@ -1,3 +1,2 @@
-dist
-dist-dev
-dev/deno/bootstrap.mjs
+dist/
+dev/src/deno/bootstrap.mjs

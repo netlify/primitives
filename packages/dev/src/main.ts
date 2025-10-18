@@ -13,7 +13,7 @@ import {
   type Logger,
   HTTPServer,
 } from '@netlify/dev-utils'
-import { EdgeFunctionsHandler } from '@netlify/edge-functions/dev'
+import { EdgeFunctionsHandler } from '@netlify/edge-functions-dev'
 import { FunctionsHandler } from '@netlify/functions-dev'
 import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
 import { ImageHandler } from '@netlify/images'

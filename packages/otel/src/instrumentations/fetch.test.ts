@@ -87,9 +87,7 @@ describe('header exclusion', () => {
 
 describe('patched fetch', () => {
   const server = setupServer(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     http.get('http://localhost:3000/ok', () => HttpResponse.json({ message: 'ok' })),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
     http.post('http://localhost:3000/ok', () => HttpResponse.json({ message: 'ok' })),
   )
 
@@ -111,7 +109,6 @@ describe('patched fetch', () => {
   })
 
   afterEach(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     server.resetHandlers()
     await shutdownTracers()
   })

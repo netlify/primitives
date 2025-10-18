@@ -336,30 +336,15 @@ export default [
     },
   },
   {
-    files: ['packages/edge-functions/dev/node/main.test.ts'],
+    files: ['packages/edge-functions/dev/src/node/main.test.ts'],
     rules: {
       '@typescript-eslint/require-await': 'off',
     },
   },
   {
-    files: ['packages/edge-functions/dev/node/main.ts'],
+    files: ['packages/edge-functions/dev/src/node/main.ts'],
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'off',
-    },
-  },
-  {
-    files: ['packages/edge-functions/src/version.test.ts'],
-    rules: {
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-    },
-  },
-  {
-    files: ['packages/edge-functions/src/version.ts'],
-    rules: {
-      '@typescript-eslint/restrict-template-expressions': 'off',
     },
   },
   {
