@@ -11,20 +11,11 @@
     ".": {
       "types": "./dist/main.d.ts",
       "default": "./dist/main.js"
-    },
-    "./dev": {
-      "types": "./dist-dev/node/main.d.ts",
-      "default": "./dist-dev/node/main.js"
-    },
-    "./version": {
-      "types": "./dist/version.d.ts",
-      "default": "./dist/version.js"
     }
   },
   "types": "./dist/main.d.ts",
   "files": [
     "dist/**/*",
-    "dist-dev/**/*",
     "deno/**/*"
   ],
   "scripts": {
@@ -50,16 +41,10 @@
     "test": "test"
   },
   "devDependencies": {
-    "execa": "^8.0.1",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/dev-utils": "4.3.0",
-    "@netlify/edge-bundler": "^14.5.2",
-    "@netlify/edge-functions-bootstrap": "2.16.0",
-    "@netlify/runtime-utils": "2.2.0",
-    "@netlify/types": "2.1.0",
-    "get-port": "^7.1.0"
+    "@netlify/types": "2.1.0"
   }
 }
