@@ -108,13 +108,24 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - if:
-          ${{ steps.release.outputs['packages/edge-functions--release_created'] || github.event_name ==
+          ${{ steps.release.outputs['packages/edge-functions/prod--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/edge-functions/ --provenance --access=public || true
+            npm publish packages/edge-functions/prod/ --provenance --access=public || true
           else
-            npm publish packages/edge-functions/ --provenance --access=public
+            npm publish packages/edge-functions/prod/ --provenance --access=public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - if:
+          ${{ steps.release.outputs['packages/edge-functions/dev--release_created'] || github.event_name ==
+          'workflow_dispatch' }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            npm publish packages/edge-functions/dev/ --provenance --access=public || true
+          else
+            npm publish packages/edge-functions/dev/ --provenance --access=public
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
