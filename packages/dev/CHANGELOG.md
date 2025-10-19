@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.6.3](https://github.com/netlify/primitives/compare/dev-v4.6.2...dev-v4.6.3) (2025-10-19)
+
+
+### Bug Fixes
+
+* use new `@netlify/edge-functions-dev` package ([4b21e44](https://github.com/netlify/primitives/commit/4b21e44dfad75525d2a8d81dca9932c35de867b1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions-dev bumped from 0.0.0 to 1.0.0
+
 ## [4.6.2](https://github.com/netlify/primitives/compare/dev-v4.6.1...dev-v4.6.2) (2025-10-15)
 
 
