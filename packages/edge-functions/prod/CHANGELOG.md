@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/netlify/primitives/compare/edge-functions-v2.19.0...edge-functions-v3.0.0) (2025-10-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* split edge-functions package
+
+### Features
+
+* split edge-functions package ([495c76d](https://github.com/netlify/primitives/commit/495c76d9933a8da15bfe754ccdbf80fcf815538f))
+
 ## [2.19.0](https://github.com/netlify/primitives/compare/edge-functions-v2.18.2...edge-functions-v2.19.0) (2025-10-10)
 
 
