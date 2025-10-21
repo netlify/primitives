@@ -1,5 +1,46 @@
 # Changelog
 
+## [1.3.0](https://github.com/netlify/primitives/compare/images-v1.2.8...images-v1.3.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.2.0 to ^4.3.0
+
+## [1.2.8](https://github.com/netlify/primitives/compare/images-v1.2.7...images-v1.2.8) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.1.3 to ^4.2.0
+
+## [1.2.7](https://github.com/netlify/primitives/compare/images-v1.2.6...images-v1.2.7) (2025-08-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.1.2 to ^4.1.3
+
+## [1.2.6](https://github.com/netlify/primitives/compare/images-v1.2.5...images-v1.2.6) (2025-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.1.1 to ^4.1.2
+
 ## [1.2.5](https://github.com/netlify/primitives/compare/images-v1.2.4...images-v1.2.5) (2025-07-29)
 
 

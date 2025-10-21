@@ -1,0 +1,50 @@
+{
+  "name": "@netlify/edge-functions-dev",
+  "version": "1.0.0",
+  "description": "Local emulation for Netlify Edge Functions",
+  "type": "module",
+  "engines": {
+    "node": ">=20.6.1"
+  },
+  "main": "./dist/node/main.js",
+  "exports": {
+    ".": {
+      "types": "./dist/node/main.d.ts",
+      "default": "./dist/node/main.js"
+    }
+  },
+  "types": "./dist/node/main.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsup-node",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "dev": "tsup-node --watch"
+  },
+  "keywords": [
+    "netlify",
+    "edge functions"
+  ],
+  "license": "MIT",
+  "repository": "netlify/primitives",
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  },
+  "author": "Netlify Inc.",
+  "dependencies": {
+    "@netlify/dev-utils": "4.3.0",
+    "@netlify/edge-bundler": "^14.5.2",
+    "@netlify/edge-functions": "3.0.0",
+    "@netlify/edge-functions-bootstrap": "2.16.0",
+    "@netlify/runtime-utils": "2.2.0",
+    "get-port": "^7.1.0"
+  },
+  "devDependencies": {
+    "execa": "^8.0.1",
+    "tsup": "^8.0.0",
+    "vitest": "^3.0.0"
+  }
+}

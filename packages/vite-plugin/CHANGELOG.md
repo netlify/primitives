@@ -1,5 +1,148 @@
 # Changelog
 
+## [2.7.4](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.3...vite-plugin-v2.7.4) (2025-10-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.6.2 to 4.6.3
+
+## [2.7.3](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.2...vite-plugin-v2.7.3) (2025-10-17)
+
+
+### Bug Fixes
+
+* reset dupe plugin tracker on dev server close ([#486](https://github.com/netlify/primitives/issues/486)) ([df82f89](https://github.com/netlify/primitives/commit/df82f8977197ba35071624047ffb9684a6c8ae15))
+
+## [2.7.2](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.1...vite-plugin-v2.7.2) (2025-10-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.6.1 to 4.6.2
+
+## [2.7.1](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.0...vite-plugin-v2.7.1) (2025-10-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.6.0 to 4.6.1
+
+## [2.7.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.6.1...vite-plugin-v2.7.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.12 to 4.6.0
+    * @netlify/dev-utils bumped from ^4.2.0 to ^4.3.0
+
+## [2.6.1](https://github.com/netlify/primitives/compare/vite-plugin-v2.6.0...vite-plugin-v2.6.1) (2025-10-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.11 to 4.5.12
+
+## [2.6.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.10...vite-plugin-v2.6.0) (2025-09-22)
+
+
+### Features
+
+* add `@netlify/vite-plugin-tanstack-start` ([#455](https://github.com/netlify/primitives/issues/455)) ([fd8b2cc](https://github.com/netlify/primitives/commit/fd8b2cc9012801c190f332089e9f4322fad95a45))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.10 to 4.5.11
+    * @netlify/dev-utils bumped from ^4.1.3 to ^4.2.0
+
+## [2.5.10](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.9...vite-plugin-v2.5.10) (2025-09-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.9 to 4.5.10
+
+## [2.5.9](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.8...vite-plugin-v2.5.9) (2025-09-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.8 to 4.5.9
+
+## [2.5.8](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.7...vite-plugin-v2.5.8) (2025-08-28)
+
+
+### Bug Fixes
+
+* **vite-plugin:** pass environmentVariables option to NetlifyDev ([#442](https://github.com/netlify/primitives/issues/442)) ([214ac26](https://github.com/netlify/primitives/commit/214ac26f0da3e598b29e8ee7c8c9434de4468703))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.7 to 4.5.8
+    * @netlify/dev-utils bumped from ^4.1.2 to ^4.1.3
+
+## [2.5.7](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.6...vite-plugin-v2.5.7) (2025-08-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.6 to 4.5.7
+
+## [2.5.6](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.5...vite-plugin-v2.5.6) (2025-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.5 to 4.5.6
+    * @netlify/dev-utils bumped from ^4.1.1 to ^4.1.2
+
+## [2.5.5](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.4...vite-plugin-v2.5.5) (2025-08-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.4 to 4.5.5
+
+## [2.5.4](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.3...vite-plugin-v2.5.4) (2025-08-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.5.3 to 4.5.4
+
 ## [2.5.3](https://github.com/netlify/primitives/compare/vite-plugin-v2.5.2...vite-plugin-v2.5.3) (2025-07-29)
 
 

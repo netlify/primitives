@@ -66,7 +66,7 @@ export class BlobsServer {
   private logger: Logger
   private onRequest?: OnRequestCallback
   private port?: number
-  private server?: HTTPServer
+  private server?: InstanceType<typeof HTTPServer>
   private token?: string
   private tokenHash: string
 
@@ -573,7 +573,7 @@ export class BlobsServer {
   async start(): Promise<{ address: string; family: string; port: number }> {
     await fs.mkdir(this.directory, { recursive: true })
 
-    const server = new HTTPServer((req) => this.handleRequest(req))
+    const server = new HTTPServer((req: Request) => this.handleRequest(req))
     const address = await server.start(this.port ?? 0)
     const port = Number.parseInt(new URL(address).port)
 

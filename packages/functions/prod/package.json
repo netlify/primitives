@@ -1,0 +1,83 @@
+{
+  "name": "@netlify/functions",
+  "main": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/main.d.cts",
+        "default": "./dist/main.cjs"
+      },
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    },
+    "./internal": {
+      "require": {
+        "types": "./dist/internal.d.cts",
+        "default": "./dist/internal.cjs"
+      },
+      "import": {
+        "types": "./dist/internal.d.ts",
+        "default": "./dist/internal.js"
+      }
+    }
+  },
+  "version": "5.0.0",
+  "description": "TypeScript utilities for interacting with Netlify Functions",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.cjs",
+    "dist/**/*.mjs",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.cts",
+    "dist/**/*.d.mts",
+    "internal.d.ts"
+  ],
+  "scripts": {
+    "dev": "tsup-node --watch",
+    "build": "tsup-node",
+    "prepack": "npm run build",
+    "test": "run-s test:ci",
+    "test:dev": "run-s build test:dev:*",
+    "test:dev:tsd": "tsd",
+    "test:dev:vitest": "vitest",
+    "test:ci": "run-s test:ci:*",
+    "test:ci:vitest": "npm run build && vitest run",
+    "publint": "npx -y publint --strict"
+  },
+  "ava": {
+    "files": [
+      "test/unit/*.js"
+    ],
+    "verbose": true
+  },
+  "tsd": {
+    "directory": "test/types/"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "repository": "netlify/primitives",
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  },
+  "author": "Netlify Inc.",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@netlify/types": "2.1.0"
+  },
+  "devDependencies": {
+    "npm-run-all2": "^5.0.0",
+    "semver": "^7.6.3",
+    "tsd": "^0.32.0",
+    "tsup": "^8.0.2",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

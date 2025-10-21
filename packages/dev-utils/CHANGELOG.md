@@ -1,5 +1,42 @@
 # Changelog
 
+## [4.3.0](https://github.com/netlify/primitives/compare/dev-utils-v4.2.0...dev-utils-v4.3.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.0.3 to 2.1.0
+
+## [4.2.0](https://github.com/netlify/primitives/compare/dev-utils-v4.1.3...dev-utils-v4.2.0) (2025-09-22)
+
+
+### Features
+
+* add `@netlify/vite-plugin-tanstack-start` ([#455](https://github.com/netlify/primitives/issues/455)) ([fd8b2cc](https://github.com/netlify/primitives/commit/fd8b2cc9012801c190f332089e9f4322fad95a45))
+
+## [4.1.3](https://github.com/netlify/primitives/compare/dev-utils-v4.1.2...dev-utils-v4.1.3) (2025-08-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.0.1 to 2.0.3
+
+## [4.1.2](https://github.com/netlify/primitives/compare/dev-utils-v4.1.1...dev-utils-v4.1.2) (2025-08-19)
+
+
+### Bug Fixes
+
+* **deps:** replace lodash.debounce with dettle ([#388](https://github.com/netlify/primitives/issues/388)) ([9c5c1e7](https://github.com/netlify/primitives/commit/9c5c1e7cd326a63818a4a09ea11b77fb5e09eed1))
+
 ## [4.1.1](https://github.com/netlify/primitives/compare/dev-utils-v4.1.0...dev-utils-v4.1.1) (2025-07-29)
 
 

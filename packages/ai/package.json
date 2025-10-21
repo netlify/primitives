@@ -1,0 +1,80 @@
+{
+  "name": "@netlify/ai",
+  "version": "0.3.0",
+  "description": "TypeScript utilities for interacting with Netlify AI features",
+  "type": "module",
+  "engines": {
+    "node": ">=20.6.1"
+  },
+  "main": "./dist/main.cjs",
+  "module": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/main.d.cts",
+        "default": "./dist/main.cjs"
+      },
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      },
+      "default": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    },
+    "./package.json": "./package.json",
+    "./bootstrap": {
+      "require": {
+        "types": "./dist/bootstrap/main.d.cts",
+        "default": "./dist/bootstrap/main.cjs"
+      },
+      "import": {
+        "types": "./dist/bootstrap/main.d.ts",
+        "default": "./dist/bootstrap/main.js"
+      },
+      "default": {
+        "types": "./dist/bootstrap/main.d.ts",
+        "default": "./dist/bootstrap/main.js"
+      }
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsup-node",
+    "dev": "tsup-node --watch",
+    "prepack": "npm run build",
+    "test": "run-s build test:ci",
+    "test:dev": "run-s build test:dev:*",
+    "test:ci": "run-s build test:ci:*",
+    "test:dev:vitest": "vitest",
+    "test:dev:vitest:watch": "vitest watch",
+    "test:ci:vitest": "vitest run",
+    "publint": "npx -y publint --strict"
+  },
+  "dependencies": {
+    "@netlify/api": "^14.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.15",
+    "npm-run-all2": "^7.0.2",
+    "tsup": "8.5.0",
+    "typescript": "5.9.2",
+    "vitest": "^3.0.0"
+  },
+  "peerDependencies": {
+    "@netlify/api": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/ai"
+  },
+  "homepage": "https://github.com/netlify/primitives/tree/main/packages/ai",
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  }
+}

@@ -13,8 +13,8 @@ import {
   type Logger,
   HTTPServer,
 } from '@netlify/dev-utils'
-import { EdgeFunctionsHandler } from '@netlify/edge-functions/dev'
-import { FunctionsHandler } from '@netlify/functions/dev'
+import { EdgeFunctionsHandler } from '@netlify/edge-functions-dev'
+import { FunctionsHandler } from '@netlify/functions-dev'
 import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
 import { ImageHandler } from '@netlify/images'
 import { RedirectsHandler } from '@netlify/redirects'
@@ -451,7 +451,7 @@ export class NetlifyDev {
     this.#config = config
 
     const runtime = await getRuntime({
-      blobs: Boolean(this.#features.blobs),
+      blobs: this.#features.blobs,
       deployID: '0',
       projectRoot: this.#projectRoot,
       siteID: siteID ?? '0',

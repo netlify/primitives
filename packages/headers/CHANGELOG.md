@@ -1,5 +1,53 @@
 # Changelog
 
+## [2.1.0](https://github.com/netlify/primitives/compare/headers-v2.0.12...headers-v2.1.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.2.0 to ^4.3.0
+
+## [2.0.12](https://github.com/netlify/primitives/compare/headers-v2.0.11...headers-v2.0.12) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.1.3 to ^4.2.0
+
+## [2.0.11](https://github.com/netlify/primitives/compare/headers-v2.0.10...headers-v2.0.11) (2025-08-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.1.2 to ^4.1.3
+
+## [2.0.10](https://github.com/netlify/primitives/compare/headers-v2.0.9...headers-v2.0.10) (2025-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.1.1 to ^4.1.2
+
+## [2.0.9](https://github.com/netlify/primitives/compare/headers-v2.0.8...headers-v2.0.9) (2025-08-14)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#411](https://github.com/netlify/primitives/issues/411)) ([bad2dce](https://github.com/netlify/primitives/commit/bad2dceae8b5e5f56d947ce2332372d148819ccc))
+
 ## [2.0.8](https://github.com/netlify/primitives/compare/headers-v2.0.7...headers-v2.0.8) (2025-07-29)
 
 

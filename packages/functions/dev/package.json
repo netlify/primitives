@@ -1,0 +1,65 @@
+{
+  "name": "@netlify/functions-dev",
+  "main": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    }
+  },
+  "version": "1.0.0",
+  "description": "Local dev emulation of Netlify Functions",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.mjs",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.mts"
+  ],
+  "scripts": {
+    "dev": "tsup-node --watch",
+    "build": "tsup-node",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:dev": "vitest"
+  },
+  "keywords": [
+    "netlify",
+    "functions",
+    "serverless"
+  ],
+  "license": "MIT",
+  "repository": "netlify/primitives",
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  },
+  "author": "Netlify Inc.",
+  "dependencies": {
+    "@netlify/blobs": "10.1.0",
+    "@netlify/dev-utils": "4.3.0",
+    "@netlify/functions": "5.0.0",
+    "@netlify/zip-it-and-ship-it": "^14.1.3",
+    "cron-parser": "^4.9.0",
+    "decache": "^4.6.2",
+    "extract-zip": "^2.0.1",
+    "is-stream": "^4.0.1",
+    "jwt-decode": "^4.0.0",
+    "lambda-local": "^2.2.0",
+    "read-package-up": "^11.0.0",
+    "semver": "^7.6.3",
+    "source-map-support": "^0.5.21"
+  },
+  "devDependencies": {
+    "@types/semver": "^7.5.8",
+    "@types/source-map-support": "^0.5.10",
+    "npm-run-all2": "^5.0.0",
+    "tsup": "^8.0.2",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20.6.1"
+  }
+}

@@ -3,10 +3,6 @@ import type { Instrumentation } from '@opentelemetry/instrumentation'
 import { GET_TRACER, SHUTDOWN_TRACERS } from '../constants.js'
 
 export interface TracerProviderOptions {
-  /**
-   * The request headers (checked for presence of the `x-nf-enable-tracing` header)
-   */
-  headers: Headers
   serviceName: string
   serviceVersion: string
   deploymentEnvironment: string
@@ -14,23 +10,19 @@ export interface TracerProviderOptions {
   siteId: string
   siteName: string
   instrumentations?: (Instrumentation | Promise<Instrumentation>)[]
-  extraSpanProcessors?: (SpanProcessor | Promise<SpanProcessor>)[]
+  spanProcessors?: (SpanProcessor | Promise<SpanProcessor>)[]
 }
 
 export const createTracerProvider = async (options: TracerProviderOptions) => {
-  if (!options.headers.has('x-nf-enable-tracing')) {
-    return
-  }
   const { version: nodeVersion } = await import('node:process')
+
   // remove the v prefix from the version to match the spec
   const runtimeVersion = nodeVersion.slice(1)
 
+  const { W3CTraceContextPropagator } = await import('@opentelemetry/core')
   const { Resource } = await import('@opentelemetry/resources')
-  const { NodeTracerProvider, SimpleSpanProcessor } = await import('@opentelemetry/sdk-trace-node')
-
+  const { NodeTracerProvider } = await import('@opentelemetry/sdk-trace-node')
   const { registerInstrumentations } = await import('@opentelemetry/instrumentation')
-
-  const { NetlifySpanExporter } = await import('../exporters/netlify.js')
 
   const resource = new Resource({
     'service.name': options.serviceName,
@@ -43,15 +35,16 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     'netlify.site.name': options.siteName,
   })
 
+  const spanProcessors = await Promise.all(options.spanProcessors ?? [await getBaseSpanProcessor()])
+
   const nodeTracerProvider = new NodeTracerProvider({
     resource,
-    spanProcessors: [
-      new SimpleSpanProcessor(new NetlifySpanExporter()),
-      ...(await Promise.all(options.extraSpanProcessors ?? [])),
-    ],
+    spanProcessors,
   })
 
-  nodeTracerProvider.register()
+  nodeTracerProvider.register({
+    propagator: new W3CTraceContextPropagator(),
+  })
 
   const instrumentations = await Promise.all(options.instrumentations ?? [])
 
@@ -85,4 +78,11 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
       return await nodeTracerProvider.shutdown()
     },
   })
+}
+
+export const getBaseSpanProcessor = async (): Promise<SpanProcessor> => {
+  const { SimpleSpanProcessor } = await import('@opentelemetry/sdk-trace-node')
+  const { NetlifySpanExporter } = await import('../exporters/netlify.js')
+
+  return new SimpleSpanProcessor(new NetlifySpanExporter())
 }

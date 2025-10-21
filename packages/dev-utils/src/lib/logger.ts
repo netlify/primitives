@@ -13,3 +13,5 @@ export const netlifyCommand = ansis.cyanBright
 export const netlifyCyan = ansis.rgb(40, 180, 170)
 
 export const netlifyBanner = netlifyCyan('⬥ Netlify')
+
+export const warning = (message: string): string => ansis.yellow(`⚠ Warning: ${message}`)

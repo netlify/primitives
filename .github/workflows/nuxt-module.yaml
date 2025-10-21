@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
     steps:
       - run: git config --global core.symlinks true
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Node.js ${{ matrix.node-version }}
@@ -29,6 +29,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+      # Use npm@10 on Node 22+ due to https://github.com/npm/cli/issues/8489
+      - name: Setup npm version
+        run: npm install -g npm@10
+        if: "${{ matrix.node-version == '*' }}"
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:

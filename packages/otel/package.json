@@ -1,6 +1,6 @@
 {
   "name": "@netlify/otel",
-  "version": "3.3.1",
+  "version": "4.3.0",
   "type": "module",
   "engines": {
     "node": "^18.14.0 || >=20.6.1"
@@ -65,6 +65,20 @@
         "types": "./dist/instrumentations/fetch.d.ts",
         "default": "./dist/instrumentations/fetch.js"
       }
+    },
+    "./opentelemetry": {
+      "require": {
+        "types": "./dist/opentelemetry.d.cts",
+        "default": "./dist/opentelemetry.cjs"
+      },
+      "import": {
+        "types": "./dist/opentelemetry.d.ts",
+        "default": "./dist/opentelemetry.js"
+      },
+      "default": {
+        "types": "./dist/opentelemetry.d.ts",
+        "default": "./dist/opentelemetry.js"
+      }
     }
   },
   "files": [
@@ -93,6 +107,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
+    "msw": "^2.10.5",
     "npm-run-all2": "^7.0.2",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"

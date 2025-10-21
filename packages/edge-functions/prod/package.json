@@ -1,0 +1,50 @@
+{
+  "name": "@netlify/edge-functions",
+  "version": "3.0.0",
+  "description": "TypeScript utilities for interacting with Netlify Edge Functions",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "./dist/main.js",
+  "exports": {
+    ".": {
+      "types": "./dist/main.d.ts",
+      "default": "./dist/main.js"
+    }
+  },
+  "types": "./dist/main.d.ts",
+  "files": [
+    "dist/**/*",
+    "deno/**/*"
+  ],
+  "scripts": {
+    "build": "tsup-node",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "test:ci": "npm run build && vitest run",
+    "dev": "tsup-node --watch",
+    "publint": "npx -y publint --strict"
+  },
+  "keywords": [
+    "netlify",
+    "edge functions"
+  ],
+  "license": "MIT",
+  "repository": "netlify/primitives",
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  },
+  "author": "Netlify Inc.",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "@netlify/types": "2.1.0"
+  }
+}

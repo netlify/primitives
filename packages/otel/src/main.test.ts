@@ -9,7 +9,6 @@ describe('`getTracer` export', () => {
   })
   test('Returns tracer if tracing has been previously activated', async () => {
     await createTracerProvider({
-      headers: new Headers({ 'x-nf-enable-tracing': 'true' }),
       serviceName: 'test-service',
       serviceVersion: '1.0.0',
       deploymentEnvironment: 'test',
@@ -27,7 +26,6 @@ describe('`shutdownTracers` export', () => {
   })
   test('Returns undefined if tracing has been previously activated', async () => {
     await createTracerProvider({
-      headers: new Headers({ 'x-nf-enable-tracing': 'true' }),
       serviceName: 'test-service',
       serviceVersion: '1.0.0',
       deploymentEnvironment: 'test',

@@ -1,0 +1,325 @@
+# Changelog
+
+## [3.0.0](https://github.com/netlify/primitives/compare/edge-functions-v2.19.0...edge-functions-v3.0.0) (2025-10-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* split edge-functions package
+
+### Features
+
+* split edge-functions package ([495c76d](https://github.com/netlify/primitives/commit/495c76d9933a8da15bfe754ccdbf80fcf815538f))
+
+## [2.19.0](https://github.com/netlify/primitives/compare/edge-functions-v2.18.2...edge-functions-v2.19.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.2.0 to 4.3.0
+    * @netlify/runtime-utils bumped from 2.1.0 to 2.2.0
+    * @netlify/types bumped from 2.0.3 to 2.1.0
+
+## [2.18.2](https://github.com/netlify/primitives/compare/edge-functions-v2.18.1...edge-functions-v2.18.2) (2025-10-01)
+
+
+### Bug Fixes
+
+* add extra types for ratelimiting ([#464](https://github.com/netlify/primitives/issues/464)) ([6d9fe05](https://github.com/netlify/primitives/commit/6d9fe053bf3f99f33fd9a44f3a2457e8da9fbc4e))
+
+## [2.18.1](https://github.com/netlify/primitives/compare/edge-functions-v2.18.0...edge-functions-v2.18.1) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.1.3 to 4.2.0
+
+## [2.18.0](https://github.com/netlify/primitives/compare/edge-functions-v2.17.4...edge-functions-v2.18.0) (2025-09-17)
+
+
+### Features
+
+* add AI gateway ([#450](https://github.com/netlify/primitives/issues/450)) ([aece659](https://github.com/netlify/primitives/commit/aece65980d8a016dffa24fa3e91ef0f0630ef5f8))
+
+## [2.17.4](https://github.com/netlify/primitives/compare/edge-functions-v2.17.3...edge-functions-v2.17.4) (2025-08-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.1.2 to 4.1.3
+    * @netlify/types bumped from 2.0.2 to 2.0.3
+
+## [2.17.3](https://github.com/netlify/primitives/compare/edge-functions-v2.17.2...edge-functions-v2.17.3) (2025-08-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/edge-functions-bootstrap to ^2.16.0 ([#410](https://github.com/netlify/primitives/issues/410)) ([4ddfeec](https://github.com/netlify/primitives/commit/4ddfeec097be72e2939a9dca303cb094a0af00af))
+
+## [2.17.2](https://github.com/netlify/primitives/compare/edge-functions-v2.17.1...edge-functions-v2.17.2) (2025-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.1.1 to 4.1.2
+
+## [2.17.1](https://github.com/netlify/primitives/compare/edge-functions-v2.17.0...edge-functions-v2.17.1) (2025-08-14)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#411](https://github.com/netlify/primitives/issues/411)) ([bad2dce](https://github.com/netlify/primitives/commit/bad2dceae8b5e5f56d947ce2332372d148819ccc))
+
+## [2.17.0](https://github.com/netlify/primitives/compare/edge-functions-v2.16.3...edge-functions-v2.17.0) (2025-08-01)
+
+
+### Features
+
+* accept `IncomingMessage` in handler ([#267](https://github.com/netlify/primitives/issues/267)) ([aa84022](https://github.com/netlify/primitives/commit/aa84022cf9ecb2258dce39b87b0a21ec73524914))
+* add `serverAddress` to request handler ([#308](https://github.com/netlify/primitives/issues/308)) ([fa811f2](https://github.com/netlify/primitives/commit/fa811f24d473d471108f560abc484d17ea11bd70))
+* add support for edge functions ([#233](https://github.com/netlify/primitives/issues/233)) ([c80d77d](https://github.com/netlify/primitives/commit/c80d77ddf59e394f9d8a84a96275c25c1b9aefc0))
+* improve error handling in edge functions ([#246](https://github.com/netlify/primitives/issues/246)) ([c0be696](https://github.com/netlify/primitives/commit/c0be6963c8bd9a49bb967040c29580e7facaae03))
+* support header matching in edge functions ([#361](https://github.com/netlify/primitives/issues/361)) ([05791fb](https://github.com/netlify/primitives/commit/05791fba0498326bc764dbde39943983c13962c8))
+
+
+### Bug Fixes
+
+* add missing await and let server process be collected ([#319](https://github.com/netlify/primitives/issues/319)) ([1724d50](https://github.com/netlify/primitives/commit/1724d507b844a3b8e1ccb0b6c84a7e80d70d4d4c))
+* clean up edge functions server ([#310](https://github.com/netlify/primitives/issues/310)) ([243f3b4](https://github.com/netlify/primitives/commit/243f3b472d1350eb6a80d8f736385750de8bc0d4))
+* declare `Netlify` global in edge functions types ([#330](https://github.com/netlify/primitives/issues/330)) ([0546bb6](https://github.com/netlify/primitives/commit/0546bb6eccf0e61aae64973cef788cc75d2965d8))
+* **deps:** update dependency @netlify/edge-bundler to ^14.0.5 ([#243](https://github.com/netlify/primitives/issues/243)) ([44f18de](https://github.com/netlify/primitives/commit/44f18de491828e08d13d59622a7ec0554cffa21b))
+* **deps:** update dependency @netlify/edge-functions-bootstrap to ^2.14.0 ([#314](https://github.com/netlify/primitives/issues/314)) ([f52f332](https://github.com/netlify/primitives/commit/f52f332abcd51093dbd6d7ab05cccff931a22a52))
+* **deps:** update netlify packages ([#290](https://github.com/netlify/primitives/issues/290)) ([ca10da6](https://github.com/netlify/primitives/commit/ca10da69a916ef29bb6251822548f9dbefb58d06))
+* **deps:** update netlify packages ([#333](https://github.com/netlify/primitives/issues/333)) ([0fa1f1e](https://github.com/netlify/primitives/commit/0fa1f1e8d717cbc5c797c19b64b4fa4ffbdaf992))
+* **edge:** note when stopped so we can kill process in early init ([#313](https://github.com/netlify/primitives/issues/313)) ([3062d40](https://github.com/netlify/primitives/commit/3062d400e4b8387c43c6c03713c58d3b29325a5d))
+* fix `@netlify/edge-functions` exports ([#289](https://github.com/netlify/primitives/issues/289)) ([cfb8fac](https://github.com/netlify/primitives/commit/cfb8fac01437452168686f64a2afe76c990fe63e))
+* fix edge functions workers ([#298](https://github.com/netlify/primitives/issues/298)) ([0666593](https://github.com/netlify/primitives/commit/0666593a6d3d8cf85a0718025e5c0b11c120563c))
+* handle 304 responses from edge functions ([#364](https://github.com/netlify/primitives/issues/364)) ([08e2543](https://github.com/netlify/primitives/commit/08e254325163707a397c8dddc0761df6aad63fd7))
+* move deno typescript files to mjs + jsdoc ([#260](https://github.com/netlify/primitives/issues/260)) ([32fd66a](https://github.com/netlify/primitives/commit/32fd66a28f3cac321fd24fbab0b59fd46e126920))
+* pass run options to Deno script as arg ([#263](https://github.com/netlify/primitives/issues/263)) ([ec414cc](https://github.com/netlify/primitives/commit/ec414ccae9e40585b0cf5aa3bfe26992499fe47c))
+* reinstate missing edge functions types ([#280](https://github.com/netlify/primitives/issues/280)) ([f4360c9](https://github.com/netlify/primitives/commit/f4360c955812e7b96dfb1b0f8112d70496488ee2))
+* revamp dev and vite plugin logging ([#269](https://github.com/netlify/primitives/issues/269)) ([de9b46c](https://github.com/netlify/primitives/commit/de9b46c1cb1c7b2bf6437ab516134e44203d83b7))
+
+## [2.16.3](https://github.com/netlify/primitives/compare/edge-functions-v2.16.2...edge-functions-v2.16.3) (2025-07-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.1.0 to 4.1.1
+
+## [2.16.2](https://github.com/netlify/primitives/compare/edge-functions-v2.16.1...edge-functions-v2.16.2) (2025-07-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.0.0 to 4.1.0
+
+## [2.16.1](https://github.com/netlify/primitives/compare/edge-functions-v2.16.0...edge-functions-v2.16.1) (2025-07-21)
+
+
+### Bug Fixes
+
+* handle 304 responses from edge functions ([#364](https://github.com/netlify/primitives/issues/364)) ([08e2543](https://github.com/netlify/primitives/commit/08e254325163707a397c8dddc0761df6aad63fd7))
+
+## [2.16.0](https://github.com/netlify/primitives/compare/edge-functions-v2.15.8...edge-functions-v2.16.0) (2025-07-18)
+
+
+### Features
+
+* support header matching in edge functions ([#361](https://github.com/netlify/primitives/issues/361)) ([05791fb](https://github.com/netlify/primitives/commit/05791fba0498326bc764dbde39943983c13962c8))
+
+## [2.15.8](https://github.com/netlify/primitives/compare/edge-functions-v2.15.7...edge-functions-v2.15.8) (2025-07-17)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#333](https://github.com/netlify/primitives/issues/333)) ([0fa1f1e](https://github.com/netlify/primitives/commit/0fa1f1e8d717cbc5c797c19b64b4fa4ffbdaf992))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.3.0 to 4.0.0
+
+## [2.15.7](https://github.com/netlify/primitives/compare/edge-functions-v2.15.6...edge-functions-v2.15.7) (2025-07-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.2.2 to 3.3.0
+
+## [2.15.6](https://github.com/netlify/primitives/compare/edge-functions-v2.15.5...edge-functions-v2.15.6) (2025-07-07)
+
+
+### Bug Fixes
+
+* declare `Netlify` global in edge functions types ([#330](https://github.com/netlify/primitives/issues/330)) ([0546bb6](https://github.com/netlify/primitives/commit/0546bb6eccf0e61aae64973cef788cc75d2965d8))
+
+## [2.15.5](https://github.com/netlify/primitives/compare/edge-functions-v2.15.4...edge-functions-v2.15.5) (2025-07-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.2.1 to 3.2.2
+
+## [2.15.4](https://github.com/netlify/primitives/compare/edge-functions-v2.15.3...edge-functions-v2.15.4) (2025-06-26)
+
+
+### Bug Fixes
+
+* add missing await and let server process be collected ([#319](https://github.com/netlify/primitives/issues/319)) ([1724d50](https://github.com/netlify/primitives/commit/1724d507b844a3b8e1ccb0b6c84a7e80d70d4d4c))
+
+## [2.15.3](https://github.com/netlify/primitives/compare/edge-functions-v2.15.2...edge-functions-v2.15.3) (2025-06-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/edge-functions-bootstrap to ^2.14.0 ([#314](https://github.com/netlify/primitives/issues/314)) ([f52f332](https://github.com/netlify/primitives/commit/f52f332abcd51093dbd6d7ab05cccff931a22a52))
+
+## [2.15.2](https://github.com/netlify/primitives/compare/edge-functions-v2.15.1...edge-functions-v2.15.2) (2025-06-25)
+
+
+### Bug Fixes
+
+* **edge:** note when stopped so we can kill process in early init ([#313](https://github.com/netlify/primitives/issues/313)) ([3062d40](https://github.com/netlify/primitives/commit/3062d400e4b8387c43c6c03713c58d3b29325a5d))
+
+## [2.15.1](https://github.com/netlify/primitives/compare/edge-functions-v2.15.0...edge-functions-v2.15.1) (2025-06-18)
+
+
+### Bug Fixes
+
+* clean up edge functions server ([#310](https://github.com/netlify/primitives/issues/310)) ([243f3b4](https://github.com/netlify/primitives/commit/243f3b472d1350eb6a80d8f736385750de8bc0d4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.2.0 to 3.2.1
+
+## [2.15.0](https://github.com/netlify/primitives/compare/edge-functions-v2.14.5...edge-functions-v2.15.0) (2025-06-17)
+
+
+### Features
+
+* add `serverAddress` to request handler ([#308](https://github.com/netlify/primitives/issues/308)) ([fa811f2](https://github.com/netlify/primitives/commit/fa811f24d473d471108f560abc484d17ea11bd70))
+
+## [2.14.5](https://github.com/netlify/primitives/compare/edge-functions-v2.14.4...edge-functions-v2.14.5) (2025-06-06)
+
+
+### Bug Fixes
+
+* fix edge functions workers ([#298](https://github.com/netlify/primitives/issues/298)) ([0666593](https://github.com/netlify/primitives/commit/0666593a6d3d8cf85a0718025e5c0b11c120563c))
+
+## [2.14.4](https://github.com/netlify/primitives/compare/edge-functions-v2.14.3...edge-functions-v2.14.4) (2025-06-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.1.1 to 3.2.0
+
+## [2.14.3](https://github.com/netlify/primitives/compare/edge-functions-v2.14.2...edge-functions-v2.14.3) (2025-06-06)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#290](https://github.com/netlify/primitives/issues/290)) ([ca10da6](https://github.com/netlify/primitives/commit/ca10da69a916ef29bb6251822548f9dbefb58d06))
+* fix `@netlify/edge-functions` exports ([#289](https://github.com/netlify/primitives/issues/289)) ([cfb8fac](https://github.com/netlify/primitives/commit/cfb8fac01437452168686f64a2afe76c990fe63e))
+
+## [2.14.2](https://github.com/netlify/primitives/compare/edge-functions-v2.14.1...edge-functions-v2.14.2) (2025-06-04)
+
+
+### Bug Fixes
+
+* reinstate missing edge functions types ([#280](https://github.com/netlify/primitives/issues/280)) ([f4360c9](https://github.com/netlify/primitives/commit/f4360c955812e7b96dfb1b0f8112d70496488ee2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.0.1 to 2.0.2
+
+## [2.14.1](https://github.com/netlify/primitives/compare/edge-functions-v2.14.0...edge-functions-v2.14.1) (2025-06-03)
+
+
+### Bug Fixes
+
+* revamp dev and vite plugin logging ([#269](https://github.com/netlify/primitives/issues/269)) ([de9b46c](https://github.com/netlify/primitives/commit/de9b46c1cb1c7b2bf6437ab516134e44203d83b7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.1.0 to 3.1.1
+
+## [2.14.0](https://github.com/netlify/primitives/compare/edge-functions-v2.13.2...edge-functions-v2.14.0) (2025-06-03)
+
+
+### Features
+
+* accept `IncomingMessage` in handler ([#267](https://github.com/netlify/primitives/issues/267)) ([aa84022](https://github.com/netlify/primitives/commit/aa84022cf9ecb2258dce39b87b0a21ec73524914))
+
+## [2.13.2](https://github.com/netlify/primitives/compare/edge-functions-v2.13.1...edge-functions-v2.13.2) (2025-06-03)
+
+
+### Bug Fixes
+
+* pass run options to Deno script as arg ([#263](https://github.com/netlify/primitives/issues/263)) ([ec414cc](https://github.com/netlify/primitives/commit/ec414ccae9e40585b0cf5aa3bfe26992499fe47c))
+
+## [2.13.1](https://github.com/netlify/primitives/compare/edge-functions-v2.13.0...edge-functions-v2.13.1) (2025-06-02)
+
+
+### Bug Fixes
+
+* move deno typescript files to mjs + jsdoc ([#260](https://github.com/netlify/primitives/issues/260)) ([32fd66a](https://github.com/netlify/primitives/commit/32fd66a28f3cac321fd24fbab0b59fd46e126920))
+
+## [2.13.0](https://github.com/netlify/primitives/compare/edge-functions-v2.12.0...edge-functions-v2.13.0) (2025-06-02)
+
+
+### Features
+
+* add support for edge functions ([#233](https://github.com/netlify/primitives/issues/233)) ([c80d77d](https://github.com/netlify/primitives/commit/c80d77ddf59e394f9d8a84a96275c25c1b9aefc0))
+* improve error handling in edge functions ([#246](https://github.com/netlify/primitives/issues/246)) ([c0be696](https://github.com/netlify/primitives/commit/c0be6963c8bd9a49bb967040c29580e7facaae03))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/edge-bundler to ^14.0.5 ([#243](https://github.com/netlify/primitives/issues/243)) ([44f18de](https://github.com/netlify/primitives/commit/44f18de491828e08d13d59622a7ec0554cffa21b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 3.0.0 to 3.1.0
+    * @netlify/runtime-utils bumped from 2.0.0 to 2.1.0
+  * devDependencies
+    * @netlify/types bumped from 1.2.0 to 2.0.1
+
+## Changelog

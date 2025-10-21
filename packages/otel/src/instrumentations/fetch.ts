@@ -1,12 +1,14 @@
 import * as api from '@opentelemetry/api'
-import { InstrumentationConfig, type Instrumentation } from '@opentelemetry/instrumentation'
-import { _globalThis } from '@opentelemetry/core'
 import { SugaredTracer } from '@opentelemetry/api/experimental'
+import { _globalThis } from '@opentelemetry/core'
+import { InstrumentationConfig, type Instrumentation } from '@opentelemetry/instrumentation'
 
 export interface FetchInstrumentationConfig extends InstrumentationConfig {
-  getRequestAttributes?(request: Request | RequestInit): api.Attributes
+  getRequestAttributes?(headers: Request): api.Attributes
   getResponseAttributes?(response: Response): api.Attributes
-  skipURLs?: string[]
+  skipURLs?: (string | RegExp)[]
+  skipHeaders?: (string | RegExp)[] | true
+  redactHeaders?: (string | RegExp)[] | true
 }
 
 export class FetchInstrumentation implements Instrumentation {
@@ -34,16 +36,6 @@ export class FetchInstrumentation implements Instrumentation {
     return this.provider
   }
 
-  private annotateFromResponse(span: api.Span, response: Response): void {
-    const extras = this.config.getResponseAttributes?.(response) ?? {}
-    // these are based on @opentelemetry/semantic-convention 1.36
-    span.setAttributes({
-      ...extras,
-      'http.response.status_code': response.status,
-      ...this.prepareHeaders('response', response.headers),
-    })
-  }
-
   private annotateFromRequest(span: api.Span, request: Request): void {
     const extras = this.config.getRequestAttributes?.(request) ?? {}
     const url = new URL(request.url)
@@ -53,15 +45,50 @@ export class FetchInstrumentation implements Instrumentation {
       'http.request.method': request.method,
       'url.full': url.href,
       'url.host': url.host,
-      'url.scheme': url.protocol.replace(':', ''),
+      'url.scheme': url.protocol.slice(0, -1),
       'server.address': url.hostname,
       'server.port': url.port,
       ...this.prepareHeaders('request', request.headers),
     })
   }
 
+  private annotateFromResponse(span: api.Span, response: Response): void {
+    const extras = this.config.getResponseAttributes?.(response) ?? {}
+
+    // these are based on @opentelemetry/semantic-convention 1.36
+    span.setAttributes({
+      ...extras,
+      'http.response.status_code': response.status,
+      ...this.prepareHeaders('response', response.headers),
+    })
+  }
+
   private prepareHeaders(type: 'request' | 'response', headers: Headers): api.Attributes {
-    return Object.fromEntries(Array.from(headers.entries()).map(([key, value]) => [`${type}.header.${key}`, value]))
+    if (this.config.skipHeaders === true) {
+      return {}
+    }
+    const everything = ['*', '/.*/']
+    const skips = this.config.skipHeaders ?? []
+    const redacts = this.config.redactHeaders ?? []
+    const everythingSkipped = skips.some((skip) => everything.includes(skip.toString()))
+    const attributes: api.Attributes = {}
+    if (everythingSkipped) return attributes
+    const entries = headers.entries()
+    for (const [key, value] of entries) {
+      if (skips.some((skip) => (typeof skip == 'string' ? skip == key : skip.test(key)))) {
+        continue
+      }
+      const attributeKey = `http.${type}.header.${key}`
+      if (
+        redacts === true ||
+        redacts.some((redact) => (typeof redact == 'string' ? redact == key : redact.test(key)))
+      ) {
+        attributes[attributeKey] = 'REDACTED'
+      } else {
+        attributes[attributeKey] = value
+      }
+    }
+    return attributes
   }
 
   private getTracer(): SugaredTracer | undefined {
@@ -86,14 +113,17 @@ export class FetchInstrumentation implements Instrumentation {
     _globalThis.fetch = async (resource: RequestInfo | URL, options?: RequestInit): Promise<Response> => {
       const url = typeof resource === 'string' ? resource : resource instanceof URL ? resource.href : resource.url
       const tracer = this.getTracer()
-      if (!tracer || this.config.skipURLs?.some((skip) => url.startsWith(skip))) {
+      if (
+        !tracer ||
+        this.config.skipURLs?.some((skip) => (typeof skip == 'string' ? url.startsWith(skip) : skip.test(url)))
+      ) {
         return await originalFetch(resource, options)
       }
 
       return tracer.withActiveSpan('fetch', async (span) => {
         const request = new Request(resource, options)
         this.annotateFromRequest(span, request)
-        const response = await originalFetch(resource, options)
+        const response = await originalFetch(request, options)
         this.annotateFromResponse(span, response)
         return response
       })

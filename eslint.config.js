@@ -23,6 +23,9 @@ export default tseslint.config(
   includeIgnoreFile(path.resolve(__dirname, '.gitignore')),
   ...packageIgnores,
   {
+    ignores: ['**/fixtures/*'],
+  },
+  {
     // Uses its own eslint setup
     ignores: ['packages/nuxt-module/'],
   },
@@ -34,7 +37,7 @@ export default tseslint.config(
 
   // TODO: Move this to `edge-functions` package.
   {
-    ignores: ['packages/**/deno', 'packages/edge-functions/bootstrap-bundle.mjs'],
+    ignores: ['packages/**/deno', 'packages/edge-functions/dev/bootstrap-bundle.mjs'],
   },
 
   // JavaScript-specific rules
@@ -115,6 +118,9 @@ export default tseslint.config(
 
             // Custom assertion functions
             'assertNetlifyToml',
+
+            // Vitest type testing functions
+            'expectTypeOf',
           ],
         },
       ],

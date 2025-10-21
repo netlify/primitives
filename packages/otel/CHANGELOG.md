@@ -1,5 +1,51 @@
 # Changelog
 
+## [4.3.0](https://github.com/netlify/primitives/compare/otel-v4.2.0...otel-v4.3.0) (2025-10-10)
+
+
+### Features
+
+* add trace to otel exports ([#473](https://github.com/netlify/primitives/issues/473)) ([ecc4ec5](https://github.com/netlify/primitives/commit/ecc4ec53e91aef20d1c2009e08582c07f5e01470))
+
+## [4.2.0](https://github.com/netlify/primitives/compare/otel-v4.1.0...otel-v4.2.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+## [4.1.0](https://github.com/netlify/primitives/compare/otel-v4.0.0...otel-v4.1.0) (2025-10-09)
+
+
+### Features
+
+* extend list of exported otel classes ([#467](https://github.com/netlify/primitives/issues/467)) ([a9b059f](https://github.com/netlify/primitives/commit/a9b059f7ea6ddf8683f520f267a3216c3ab7d9a4))
+
+## [4.0.0](https://github.com/netlify/primitives/compare/otel-v3.4.1...otel-v4.0.0) (2025-09-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* add `spanProcessors` property ([#460](https://github.com/netlify/primitives/issues/460))
+
+### Features
+
+* add `spanProcessors` property ([#460](https://github.com/netlify/primitives/issues/460)) ([039f955](https://github.com/netlify/primitives/commit/039f955d5de232f7cc1ee57e36a04233b14a2adb))
+
+## [3.4.1](https://github.com/netlify/primitives/compare/otel-v3.4.0...otel-v3.4.1) (2025-08-26)
+
+
+### Bug Fixes
+
+* don't reüse used request in otel fetch ([#435](https://github.com/netlify/primitives/issues/435)) ([6d755f6](https://github.com/netlify/primitives/commit/6d755f6a081169f5b59b132c03e65bf955debc91))
+
+## [3.4.0](https://github.com/netlify/primitives/compare/otel-v3.3.1...otel-v3.4.0) (2025-08-05)
+
+
+### Features
+
+* Add skipping and redacting of headers ([#404](https://github.com/netlify/primitives/issues/404)) ([7bcfe6d](https://github.com/netlify/primitives/commit/7bcfe6d636869edbf035da8a815d00a5979044c8))
+
 ## [3.3.1](https://github.com/netlify/primitives/compare/otel-v3.3.0...otel-v3.3.1) (2025-07-29)
 
 
