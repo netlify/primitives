@@ -6,6 +6,7 @@
     "packages/types",
     "packages/dev-utils",
     "packages/runtime-utils",
+    "packages/otel",
     "packages/blobs",
     "packages/cache",
     "packages/edge-functions/prod",
@@ -21,8 +22,7 @@
     "packages/ai",
     "packages/nuxt-module",
     "packages/vite-plugin",
-    "packages/vite-plugin-tanstack-start",
-    "packages/otel"
+    "packages/vite-plugin-tanstack-start"
   ],
   "version": "0.0.0",
   "scripts": {

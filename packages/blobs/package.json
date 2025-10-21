@@ -77,6 +77,7 @@
   },
   "dependencies": {
     "@netlify/dev-utils": "4.3.0",
+    "@netlify/otel": "^4.3.0",
     "@netlify/runtime-utils": "2.2.0"
   }
 }
