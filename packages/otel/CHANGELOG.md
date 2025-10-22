@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.1](https://github.com/netlify/primitives/compare/otel-v4.3.0...otel-v4.3.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* export enums by reference instead of as types ([#497](https://github.com/netlify/primitives/issues/497)) ([292304a](https://github.com/netlify/primitives/commit/292304a5536791a8d186f2cbebf8f5f854fbf7db))
+
 ## [4.3.0](https://github.com/netlify/primitives/compare/otel-v4.2.0...otel-v4.3.0) (2025-10-10)
 
 
