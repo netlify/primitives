@@ -50,7 +50,7 @@ describe('fetchAIGatewayToken', () => {
   })
 
   test('returns null when API returns 404', async () => {
-    const error: any = new Error('Not Found')
+    const error = new Error('Not Found') as Error & { status: number }
     error.status = 404
     mockGetAIGatewayToken.mockRejectedValue(error)
 
@@ -158,7 +158,7 @@ describe('fetchAIProviders', () => {
   })
 
   test('returns empty array when API returns 404', async () => {
-    const error: any = new Error('Not Found')
+    const error = new Error('Not Found') as Error & { status: number }
     error.status = 404
     mockGetAIGatewayProviders.mockRejectedValue(error)
 
