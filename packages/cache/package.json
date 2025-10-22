@@ -1,6 +1,6 @@
 {
   "name": "@netlify/cache",
-  "version": "3.1.1",
+  "version": "3.3.0",
   "description": "TypeScript utilities for interacting with the Netlify cache",
   "type": "module",
   "engines": {
@@ -68,13 +68,13 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@netlify/dev-utils": "4.2.0",
-    "@netlify/types": "2.0.3",
+    "@netlify/dev-utils": "4.3.0",
+    "@netlify/types": "2.1.0",
     "npm-run-all2": "^7.0.2",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/runtime-utils": "2.1.0"
+    "@netlify/runtime-utils": "2.2.0"
   }
 }

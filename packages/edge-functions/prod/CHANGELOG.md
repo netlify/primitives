@@ -1,5 +1,46 @@
 # Changelog
 
+## [3.0.1](https://github.com/netlify/primitives/compare/edge-functions-v3.0.0...edge-functions-v3.0.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* **types:** allow `global.Netlify` declaration merging ([#494](https://github.com/netlify/primitives/issues/494)) ([bd39b15](https://github.com/netlify/primitives/commit/bd39b15ee03ba88362ccd3a83f61530c03b2ceaa))
+
+## [3.0.0](https://github.com/netlify/primitives/compare/edge-functions-v2.19.0...edge-functions-v3.0.0) (2025-10-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* split edge-functions package
+
+### Features
+
+* split edge-functions package ([495c76d](https://github.com/netlify/primitives/commit/495c76d9933a8da15bfe754ccdbf80fcf815538f))
+
+## [2.19.0](https://github.com/netlify/primitives/compare/edge-functions-v2.18.2...edge-functions-v2.19.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.2.0 to 4.3.0
+    * @netlify/runtime-utils bumped from 2.1.0 to 2.2.0
+    * @netlify/types bumped from 2.0.3 to 2.1.0
+
+## [2.18.2](https://github.com/netlify/primitives/compare/edge-functions-v2.18.1...edge-functions-v2.18.2) (2025-10-01)
+
+
+### Bug Fixes
+
+* add extra types for ratelimiting ([#464](https://github.com/netlify/primitives/issues/464)) ([6d9fe05](https://github.com/netlify/primitives/commit/6d9fe053bf3f99f33fd9a44f3a2457e8da9fbc4e))
+
 ## [2.18.1](https://github.com/netlify/primitives/compare/edge-functions-v2.18.0...edge-functions-v2.18.1) (2025-09-22)
 
 

@@ -1,5 +1,46 @@
 # Changelog
 
+## [5.0.1](https://github.com/netlify/primitives/compare/functions-v5.0.0...functions-v5.0.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* **types:** allow `global.Netlify` declaration merging ([#494](https://github.com/netlify/primitives/issues/494)) ([bd39b15](https://github.com/netlify/primitives/commit/bd39b15ee03ba88362ccd3a83f61530c03b2ceaa))
+
+## [5.0.0](https://github.com/netlify/primitives/compare/functions-v4.3.0...functions-v5.0.0) (2025-10-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* The `/dev` export, introduced in version 3.1.0, has been removed.
+
+### Features
+
+* extract dev logic into new `@netlify/functions-dev` package ([#475](https://github.com/netlify/primitives/issues/475)) ([0730f5f](https://github.com/netlify/primitives/commit/0730f5f40ace6cd37ffc1f54a7ebb4f405bbca65))
+
+## [4.3.0](https://github.com/netlify/primitives/compare/functions-v4.2.7...functions-v4.3.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.0.11 to 10.1.0
+    * @netlify/dev-utils bumped from 4.2.0 to 4.3.0
+    * @netlify/types bumped from 2.0.3 to 2.1.0
+
+## [4.2.7](https://github.com/netlify/primitives/compare/functions-v4.2.6...functions-v4.2.7) (2025-10-01)
+
+
+### Bug Fixes
+
+* add extra types for ratelimiting ([#464](https://github.com/netlify/primitives/issues/464)) ([6d9fe05](https://github.com/netlify/primitives/commit/6d9fe053bf3f99f33fd9a44f3a2457e8da9fbc4e))
+
 ## [4.2.6](https://github.com/netlify/primitives/compare/functions-v4.2.5...functions-v4.2.6) (2025-09-22)
 
 

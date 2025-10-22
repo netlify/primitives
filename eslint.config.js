@@ -37,7 +37,7 @@ export default tseslint.config(
 
   // TODO: Move this to `edge-functions` package.
   {
-    ignores: ['packages/**/deno', 'packages/edge-functions/bootstrap-bundle.mjs'],
+    ignores: ['packages/**/deno', 'packages/edge-functions/dev/bootstrap-bundle.mjs'],
   },
 
   // JavaScript-specific rules

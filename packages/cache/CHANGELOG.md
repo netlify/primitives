@@ -1,5 +1,34 @@
 # Changelog
 
+## [3.3.0](https://github.com/netlify/primitives/compare/cache-v3.2.0...cache-v3.3.0) (2025-10-15)
+
+
+### Features
+
+* add `fetch` parameter to `fetchWithCache` ([#482](https://github.com/netlify/primitives/issues/482)) ([6eff819](https://github.com/netlify/primitives/commit/6eff819fec72b74458269538e8ae48e944ee09d1))
+
+
+### Bug Fixes
+
+* make `fetchWithCache` stop throwing on uncacheable response ([#481](https://github.com/netlify/primitives/issues/481)) ([2a4da13](https://github.com/netlify/primitives/commit/2a4da13b5fde1d712484a498f4df0534770815c0))
+
+## [3.2.0](https://github.com/netlify/primitives/compare/cache-v3.1.1...cache-v3.2.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 2.1.0 to 2.2.0
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.2.0 to 4.3.0
+    * @netlify/types bumped from 2.0.3 to 2.1.0
+
 ## [3.1.1](https://github.com/netlify/primitives/compare/cache-v3.1.0...cache-v3.1.1) (2025-09-22)
 
 

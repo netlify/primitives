@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.3.0](https://github.com/netlify/primitives/compare/dev-utils-v4.2.0...dev-utils-v4.3.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.0.3 to 2.1.0
+
 ## [4.2.0](https://github.com/netlify/primitives/compare/dev-utils-v4.1.3...dev-utils-v4.2.0) (2025-09-22)
 
 

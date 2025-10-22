@@ -9,7 +9,7 @@ import semver from 'semver'
 
 import { BuildResult } from './builder.js'
 import { Runtime } from './runtimes/index.js'
-import { HandlerContext } from '../src/main.js'
+import { HandlerContext } from '@netlify/functions'
 
 export type FunctionBuildCache = MemoizeCache<FunctionResult>
 

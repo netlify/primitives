@@ -1,5 +1,65 @@
 # Changelog
 
+## [0.2.4](https://github.com/netlify/primitives/compare/nuxt-v0.2.3...nuxt-v0.2.4) (2025-10-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.6.3 to ^4.6.4
+
+## [0.2.3](https://github.com/netlify/primitives/compare/nuxt-v0.2.2...nuxt-v0.2.3) (2025-10-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.6.2 to ^4.6.3
+
+## [0.2.2](https://github.com/netlify/primitives/compare/nuxt-v0.2.1...nuxt-v0.2.2) (2025-10-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.6.1 to ^4.6.2
+
+## [0.2.1](https://github.com/netlify/primitives/compare/nuxt-v0.2.0...nuxt-v0.2.1) (2025-10-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.6.0 to ^4.6.1
+
+## [0.2.0](https://github.com/netlify/primitives/compare/nuxt-v0.1.19...nuxt-v0.2.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.5.12 to ^4.6.0
+    * @netlify/dev-utils bumped from ^4.2.0 to ^4.3.0
+
+## [0.1.19](https://github.com/netlify/primitives/compare/nuxt-v0.1.18...nuxt-v0.1.19) (2025-10-01)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.5.11 to ^4.5.12
+
 ## [0.1.18](https://github.com/netlify/primitives/compare/nuxt-v0.1.17...nuxt-v0.1.18) (2025-09-22)
 
 

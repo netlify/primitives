@@ -88,9 +88,9 @@ jobs:
       - name: Build
         # NOTE: These are run in the specified order, so they must be in topological order
         run: >-
-          npm run build -w ./packages/types -w ./packages/dev-utils -w ./packages/runtime-utils -w ./packages/blobs -w
-          ./packages/edge-functions -w ./packages/functions
+          npm run build -w ./packages/types -w ./packages/dev-utils -w ./packages/runtime-utils -w ./packages/otel -w
+          ./packages/blobs -w ./packages/edge-functions -w ./packages/functions
       - name: Tests
         run: >-
-          npm run test -w ./packages/types -w ./packages/dev-utils -w ./packages/runtime-utils -w ./packages/blobs -w
-          ./packages/edge-functions -w ./packages/functions
+          npm run test -w ./packages/types -w ./packages/dev-utils -w ./packages/runtime-utils -w ./packages/otel -w
+          ./packages/blobs -w ./packages/edge-functions -w ./packages/functions

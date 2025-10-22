@@ -91,6 +91,11 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
       await netlifyDev.start()
 
       viteDevServer.httpServer.once('close', () => {
+        // The whole vite dev instance has stopped, so reset the duplicate plugin tracker.
+        // For example, this happens when a user makes a change to `vite.config.ts` and a new server starts.
+        // We shouldn't print a false positive warning in these cases.
+        delete process.env.__VITE_PLUGIN_NETLIFY_LOADED__
+
         netlifyDev.stop()
       })
 

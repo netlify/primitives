@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 
@@ -15,8 +15,6 @@ import { NetlifyFunction } from '../../function.js'
 import { BuildCache, BuildResult, FunctionBuilder } from '../../builder.js'
 
 const require = createRequire(import.meta.url)
-
-const serveFunctionsFolder = path.join('.netlify', 'functions-serve')
 
 const addFunctionsConfigDefaults = (config: FunctionsConfig): FunctionsConfig => ({
   ...config,

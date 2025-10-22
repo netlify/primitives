@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.3.0](https://github.com/netlify/primitives/compare/otel-v4.2.0...otel-v4.3.0) (2025-10-10)
+
+
+### Features
+
+* add trace to otel exports ([#473](https://github.com/netlify/primitives/issues/473)) ([ecc4ec5](https://github.com/netlify/primitives/commit/ecc4ec53e91aef20d1c2009e08582c07f5e01470))
+
+## [4.2.0](https://github.com/netlify/primitives/compare/otel-v4.1.0...otel-v4.2.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+## [4.1.0](https://github.com/netlify/primitives/compare/otel-v4.0.0...otel-v4.1.0) (2025-10-09)
+
+
+### Features
+
+* extend list of exported otel classes ([#467](https://github.com/netlify/primitives/issues/467)) ([a9b059f](https://github.com/netlify/primitives/commit/a9b059f7ea6ddf8683f520f267a3216c3ab7d9a4))
+
 ## [4.0.0](https://github.com/netlify/primitives/compare/otel-v3.4.1...otel-v4.0.0) (2025-09-23)
 
 
