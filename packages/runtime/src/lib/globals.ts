@@ -4,9 +4,8 @@ import type { Context, NetlifyGlobal } from '@netlify/types'
 import { GlobalScope } from './util.js'
 
 declare global {
-  // Using `var` so that the declaration is hoisted in such a way that we can
-  // reference it before it's initialized.
-
+  // Using `var` instead of `const` to allow TypeScript declaration merging.
+  // Multiple packages can declare the same global with `var`, but `const` cannot be redeclared.
   var Netlify: NetlifyGlobal
 }
 

@@ -1,7 +1,9 @@
 import type { NetlifyGlobal } from '@netlify/types'
 
 declare global {
-  const Netlify: NetlifyGlobal
+  // Using `var` instead of `const` to allow TypeScript declaration merging.
+  // Multiple packages can declare the same global with `var`, but `const` cannot be redeclared.
+  var Netlify: NetlifyGlobal
 }
 
 export { builder } from './lib/builder.js'
