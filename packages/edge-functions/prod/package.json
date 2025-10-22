@@ -1,6 +1,6 @@
 {
   "name": "@netlify/edge-functions",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "TypeScript utilities for interacting with Netlify Edge Functions",
   "type": "module",
   "engines": {

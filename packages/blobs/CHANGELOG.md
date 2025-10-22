@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.2.0](https://github.com/netlify/primitives/compare/blobs-v10.1.0...blobs-v10.2.0) (2025-10-22)
+
+
+### Features
+
+* add instrumentation to @netlify/blobs ([#384](https://github.com/netlify/primitives/issues/384)) ([9fe3782](https://github.com/netlify/primitives/commit/9fe3782bebeaf73f4265ea5eeb761abe9e657e09))
+
 ## [10.1.0](https://github.com/netlify/primitives/compare/blobs-v10.0.11...blobs-v10.1.0) (2025-10-10)
 
 

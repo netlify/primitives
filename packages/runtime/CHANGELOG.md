@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.1.2](https://github.com/netlify/primitives/compare/runtime-v4.1.1...runtime-v4.1.2) (2025-10-22)
+
+
+### Bug Fixes
+
+* **types:** allow `global.Netlify` declaration merging ([#494](https://github.com/netlify/primitives/issues/494)) ([bd39b15](https://github.com/netlify/primitives/commit/bd39b15ee03ba88362ccd3a83f61530c03b2ceaa))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^10.1.0 to ^10.2.0
+
 ## [4.1.1](https://github.com/netlify/primitives/compare/runtime-v4.1.0...runtime-v4.1.1) (2025-10-15)
 
 

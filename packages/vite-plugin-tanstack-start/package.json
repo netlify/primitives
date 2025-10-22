@@ -1,6 +1,6 @@
 {
   "name": "@netlify/vite-plugin-tanstack-start",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Vite plugin for TanStack Start on Netlify",
   "type": "module",
   "engines": {
@@ -46,7 +46,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/vite-plugin": "^2.7.4"
+    "@netlify/vite-plugin": "^2.7.5"
   },
   "peerDependencies": {
     "@tanstack/react-start": ">=1.132.0",
