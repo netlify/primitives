@@ -1,3 +1,5 @@
+import { getTracer, withActiveSpan } from '@netlify/otel'
+import { SpanStatusCode } from '@netlify/otel/opentelemetry'
 import { base64Encode } from '@netlify/runtime-utils'
 
 import { EnvironmentOptions, RequestContext, Operation, RequestContextFactory } from './environment.js'
@@ -105,11 +107,18 @@ export class NetlifyCache implements Cache {
     const context = this.#getContext({ operation: Operation.Delete })
 
     if (context) {
-      const resourceURL = extractAndValidateURL(request)
+      await withActiveSpan(getTracer(), 'cache.delete', async (span) => {
+        const resourceURL = extractAndValidateURL(request)
 
-      await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
-        headers: this[getInternalHeaders](context),
-        method: 'DELETE',
+        span?.setAttributes({
+          'cache.store': this.#name,
+          'cache.key': resourceURL.toString(),
+        })
+
+        await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
+          headers: this[getInternalHeaders](context),
+          method: 'DELETE',
+        })
       })
     }
 
@@ -129,21 +138,30 @@ export class NetlifyCache implements Cache {
         return
       }
 
-      const resourceURL = extractAndValidateURL(request)
-      const cacheURL = `${context.url}/${toCacheKey(resourceURL)}`
-      const response = await fetch(cacheURL, {
-        headers: {
-          ...(request instanceof Request ? this[serializeRequestHeaders](request.headers) : {}),
-          ...this[getInternalHeaders](context),
-        },
-        method: 'GET',
+      return await withActiveSpan(getTracer(), 'cache.read', async (span) => {
+        const resourceURL = extractAndValidateURL(request)
+        const cacheURL = `${context.url}/${toCacheKey(resourceURL)}`
+
+        span?.setAttributes({
+          'cache.store': this.#name,
+          'cache.key': resourceURL.toString(),
+        })
+
+        const response = await fetch(cacheURL, {
+          headers: {
+            ...(request instanceof Request ? this[serializeRequestHeaders](request.headers) : {}),
+            ...this[getInternalHeaders](context),
+          },
+          method: 'GET',
+        })
+
+        if (!response.ok) {
+          span?.setStatus({ code: SpanStatusCode.ERROR })
+          return
+        }
+
+        return response
       })
-
-      if (!response.ok) {
-        return
-      }
-
-      return response
     } catch {
       // no-op
     }
@@ -182,26 +200,38 @@ export class NetlifyCache implements Cache {
       return
     }
 
-    const resourceURL = extractAndValidateURL(request)
+    await withActiveSpan(getTracer(), 'cache.write', async (span) => {
+      const resourceURL = extractAndValidateURL(request)
 
-    const cacheResponse = await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
-      body: response.body,
-      headers: {
-        ...this[getInternalHeaders](context),
-        [HEADERS.ResourceHeaders]: this[serializeResponseHeaders](response.headers),
-        [HEADERS.ResourceStatus]: response.status.toString(),
-      },
-      // @ts-expect-error https://github.com/whatwg/fetch/pull/1457
-      duplex: 'half',
-      method: 'POST',
+      span?.setAttributes({
+        'cache.store': this.#name,
+        'cache.key': resourceURL.toString(),
+      })
+
+      const cacheResponse = await fetch(`${context.url}/${toCacheKey(resourceURL)}`, {
+        body: response.body,
+        headers: {
+          ...this[getInternalHeaders](context),
+          [HEADERS.ResourceHeaders]: this[serializeResponseHeaders](response.headers),
+          [HEADERS.ResourceStatus]: response.status.toString(),
+        },
+        // @ts-expect-error https://github.com/whatwg/fetch/pull/1457
+        duplex: 'half',
+        method: 'POST',
+      })
+
+      if (!cacheResponse.ok) {
+        const errorDetail = cacheResponse.headers?.get(HEADERS.ErrorDetail) ?? ''
+        const errorMessage = ERROR_CODES[errorDetail as keyof typeof ERROR_CODES] || GENERIC_ERROR
+
+        span?.setStatus({
+          code: SpanStatusCode.ERROR,
+          message: errorMessage,
+        })
+
+        context.logger?.(`Failed to write to the cache: ${errorMessage}`)
+      }
     })
-
-    if (!cacheResponse.ok) {
-      const errorDetail = cacheResponse.headers?.get(HEADERS.ErrorDetail) ?? ''
-      const errorMessage = ERROR_CODES[errorDetail as keyof typeof ERROR_CODES] || GENERIC_ERROR
-
-      context.logger?.(`Failed to write to the cache: ${errorMessage}`)
-    }
   }
 }
 

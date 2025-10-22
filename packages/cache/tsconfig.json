@@ -3,7 +3,7 @@
     "allowImportingTsExtensions": true,
     "emitDeclarationOnly": true,
     "target": "ES2020",
-    "module": "es2020",
+    "module": "NodeNext",
     "allowJs": true,
     "declaration": true,
     "declarationMap": false,
@@ -11,7 +11,7 @@
     "outDir": "./dist",
     "removeComments": false,
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
