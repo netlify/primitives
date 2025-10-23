@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/netlify/primitives/compare/ai-v0.3.0...ai-v0.3.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* update AI endpoints to use api client ([#495](https://github.com/netlify/primitives/issues/495)) ([f270b1f](https://github.com/netlify/primitives/commit/f270b1fa3912bcdac30699523a582ca1de5e04ad))
+
 ## [0.3.0](https://github.com/netlify/primitives/compare/ai-v0.2.1...ai-v0.3.0) (2025-10-10)
 
 
