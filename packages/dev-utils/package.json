@@ -43,7 +43,7 @@
   "author": "Netlify Inc.",
   "devDependencies": {
     "@netlify/types": "2.1.0",
-    "@types/node": "^18.19.110",
+    "@types/node": "^22.0.0",
     "@types/parse-gitignore": "^1.0.2",
     "@types/write-file-atomic": "^4.0.3",
     "execa": "^8.0.1",
