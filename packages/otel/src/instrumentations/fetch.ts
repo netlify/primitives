@@ -61,6 +61,7 @@ export class FetchInstrumentation implements Instrumentation {
       'http.response.status_code': response.status,
       ...this.prepareHeaders('response', response.headers),
     })
+    span.setStatus({ code: response.status >= 400 ? api.SpanStatusCode.ERROR : api.SpanStatusCode.UNSET })
   }
 
   private prepareHeaders(type: 'request' | 'response', headers: Headers): api.Attributes {
