@@ -75,6 +75,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
+    "@netlify/otel": "^4.3.1",
     "@netlify/runtime-utils": "2.2.0"
   }
 }
