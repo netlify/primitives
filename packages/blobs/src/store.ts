@@ -1,4 +1,5 @@
 import { getTracer, withActiveSpan } from '@netlify/otel'
+import { SpanStatusCode } from '@netlify/otel/opentelemetry'
 import { ListResponse, ListResponseBlob } from './backend/list.ts'
 import { Client, type Conditions } from './client.ts'
 import type { ConsistencyMode } from './consistency.ts'
@@ -179,10 +180,12 @@ export class Store {
       })
 
       if (res.status === 404) {
+        span?.setStatus({ code: SpanStatusCode.ERROR })
         return null
       }
 
       if (res.status !== 200) {
+        span?.setStatus({ code: SpanStatusCode.ERROR })
         throw new BlobsInternalError(res)
       }
 
@@ -207,6 +210,7 @@ export class Store {
         return res.body
       }
 
+      span?.setStatus({ code: SpanStatusCode.ERROR })
       throw new BlobsInternalError(res)
     })
   }
@@ -225,10 +229,12 @@ export class Store {
       })
 
       if (res.status === 404) {
+        span?.setStatus({ code: SpanStatusCode.ERROR })
         return null
       }
 
       if (res.status !== 200 && res.status !== 304) {
+        span?.setStatus({ code: SpanStatusCode.ERROR })
         throw new BlobsInternalError(res)
       }
 
@@ -310,10 +316,12 @@ export class Store {
       })
 
       if (res.status === 404) {
+        span?.setStatus({ code: SpanStatusCode.ERROR })
         return null
       }
 
       if (res.status !== 200 && res.status !== 304) {
+        span?.setStatus({ code: SpanStatusCode.ERROR })
         throw new BlobsInternalError(res)
       }
 
@@ -422,6 +430,7 @@ export class Store {
         }
       }
 
+      span?.setStatus({ code: SpanStatusCode.ERROR })
       throw new BlobsInternalError(res)
     })
   }
@@ -469,6 +478,7 @@ export class Store {
         }
       }
 
+      span?.setStatus({ code: SpanStatusCode.ERROR })
       throw new BlobsInternalError(res)
     })
   }
@@ -603,6 +613,7 @@ export class Store {
               let directories: string[] = []
 
               if (![200, 204, 404].includes(res.status)) {
+                span?.setStatus({ code: SpanStatusCode.ERROR })
                 throw new BlobsInternalError(res)
               }
 
