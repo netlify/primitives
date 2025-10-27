@@ -146,6 +146,14 @@ export class Store {
     }
   }
 
+  async deleteAll() {
+    const res = await this.client.makeRequest({ method: HTTPMethod.DELETE, storeName: this.name })
+
+    if (res.status !== 200) {
+      throw new BlobsInternalError(res)
+    }
+  }
+
   async get(key: string, options?: GetOptions & { type?: 'arrayBuffer' }): Promise<ArrayBuffer>
   async get(key: string, options?: GetOptions & { type?: 'blob' }): Promise<Blob>
   async get(key: string, options?: GetOptions & { type?: 'json' }): Promise<any>
