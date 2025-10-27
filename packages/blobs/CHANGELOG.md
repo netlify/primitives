@@ -1,5 +1,19 @@
 # Changelog
 
+## [10.3.0](https://github.com/netlify/primitives/compare/blobs-v10.2.1...blobs-v10.3.0) (2025-10-27)
+
+
+### Features
+
+* add `deleteAll` method to Blobs ([#503](https://github.com/netlify/primitives/issues/503)) ([6ad0891](https://github.com/netlify/primitives/commit/6ad0891e84b87b5e659655de786a109dfac64198))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/otel bumped from ^4.3.1 to ^4.3.2
+
 ## [10.2.1](https://github.com/netlify/primitives/compare/blobs-v10.2.0...blobs-v10.2.1) (2025-10-22)
 
 
