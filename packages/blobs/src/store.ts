@@ -1,5 +1,6 @@
 import { getTracer, withActiveSpan } from '@netlify/otel'
-import { ListResponse, ListResponseBlob } from './backend/list.ts'
+import type { DeleteStoreResponse } from './backend/delete_store.ts'
+import type { ListResponse, ListResponseBlob } from './backend/list.ts'
 import { Client, type Conditions } from './client.ts'
 import type { ConsistencyMode } from './consistency.ts'
 import { getMetadataFromResponse, Metadata } from './metadata.ts'
@@ -57,6 +58,10 @@ export interface ListOptions {
   directories?: boolean
   paginate?: boolean
   prefix?: string
+}
+
+export interface DeleteStoreResult {
+  deletedBlobs: number
 }
 
 interface BaseSetOptions {
@@ -143,6 +148,24 @@ export class Store {
 
     if (![200, 204, 404].includes(res.status)) {
       throw new BlobsInternalError(res)
+    }
+  }
+
+  async deleteAll(): Promise<DeleteStoreResult> {
+    const res = await this.client.makeRequest({ method: HTTPMethod.DELETE, storeName: this.name })
+
+    if (res.status !== 200) {
+      throw new BlobsInternalError(res)
+    }
+
+    const data = (await res.json()) as DeleteStoreResponse
+
+    if (typeof data.blobs_deleted !== 'number') {
+      throw new BlobsInternalError(res)
+    }
+
+    return {
+      deletedBlobs: data.blobs_deleted,
     }
   }
 

@@ -101,10 +101,15 @@ export class BlobsServer {
     }
 
     const url = new URL(apiMatch?.url ?? req.url ?? '', this.address)
-    const { dataPath, key, metadataPath } = this.getLocalPaths(url)
+    const { dataPath, key, metadataPath, rootPath } = this.getLocalPaths(url)
 
-    if (!dataPath || !key) {
+    if (!dataPath || !rootPath) {
       return new Response(null, { status: 400 })
+    }
+
+    // If there's no key, we're deleting all blobs from the store.
+    if (!key) {
+      return this.deleteAll(rootPath)
     }
 
     // Try to delete the metadata file, if one exists.
@@ -126,6 +131,56 @@ export class BlobsServer {
     }
 
     return new Response(null, { status: 204 })
+  }
+
+  private async deleteAll(rootPath: string): Promise<Response> {
+    let blobsDeleted = 0
+
+    try {
+      // Count the number of blobs before deleting.
+      try {
+        const countResult: ListResponse = {
+          blobs: [],
+          directories: [],
+        }
+
+        await BlobsServer.walk({
+          directories: false,
+          path: rootPath,
+          prefix: '',
+          rootPath,
+          result: countResult,
+        })
+
+        blobsDeleted = countResult.blobs?.length ?? 0
+      } catch (error: unknown) {
+        // If the directory doesn't exist, there are no blobs to delete.
+        if (!isNodeError(error) || error.code !== 'ENOENT') {
+          throw error
+        }
+      }
+
+      // Delete all data files in the store.
+      await fs.rm(rootPath, { force: true, recursive: true })
+
+      // Extract site ID and store name from rootPath to delete metadata.
+      const pathParts = rootPath.split(sep)
+      const storeName = pathParts[pathParts.length - 1]
+      const siteID = pathParts[pathParts.length - 2]
+      const metadataStorePath = resolve(this.directory, 'metadata', siteID, storeName)
+
+      // Delete all metadata files in the store.
+      await fs.rm(metadataStorePath, { force: true, recursive: true })
+    } catch (error: unknown) {
+      // An `ENOENT` error means the store doesn't exist, which is acceptable.
+      if (!isNodeError(error) || error.code !== 'ENOENT') {
+        this.logDebug('Error when deleting store:', error)
+
+        return new Response(null, { status: 500 })
+      }
+    }
+
+    return Response.json({ blobs_deleted: blobsDeleted })
   }
 
   private async get(req: Request): Promise<Response> {
