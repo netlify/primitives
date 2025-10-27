@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.2](https://github.com/netlify/primitives/compare/otel-v4.3.1...otel-v4.3.2) (2025-10-27)
+
+
+### Bug Fixes
+
+* set span error states when fetch operations fail ([#501](https://github.com/netlify/primitives/issues/501)) ([63938b0](https://github.com/netlify/primitives/commit/63938b089d7f060f6d0ecde69afc0f716a36bbf8))
+
 ## [4.3.1](https://github.com/netlify/primitives/compare/otel-v4.3.0...otel-v4.3.1) (2025-10-22)
 
 
