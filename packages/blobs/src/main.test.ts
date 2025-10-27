@@ -1500,7 +1500,7 @@ describe('deleteAll', () => {
       const mockStore = new MockFetch()
         .delete({
           headers: { authorization: `Bearer ${apiToken}` },
-          response: new Response(null, { status: 200 }),
+          response: Response.json({ blobs_deleted: 3 }),
           url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production`,
         })
         .inject()
@@ -1511,9 +1511,10 @@ describe('deleteAll', () => {
         siteID,
       })
 
-      await blobs.deleteAll()
+      const res = await blobs.deleteAll()
 
       expect(mockStore.fulfilled).toBeTruthy()
+      expect(res.deletedBlobs).toBe(3)
     })
 
     test('Throws when the API returns a non-200 status code', async () => {
@@ -1541,7 +1542,7 @@ describe('deleteAll', () => {
       const mockStore = new MockFetch()
         .delete({
           headers: { authorization: `Bearer ${apiToken}` },
-          response: new Response(null, { status: 200 }),
+          response: Response.json({ blobs_deleted: 3 }),
           url: `https://api.netlify.com/api/v1/blobs/${siteID}/oldie`,
         })
         .inject()
@@ -1552,9 +1553,10 @@ describe('deleteAll', () => {
         siteID,
       })
 
-      await blobs.deleteAll()
+      const res = await blobs.deleteAll()
 
       expect(mockStore.fulfilled).toBeTruthy()
+      expect(res.deletedBlobs).toBe(3)
     })
   })
 
@@ -1563,7 +1565,7 @@ describe('deleteAll', () => {
       const mockStore = new MockFetch()
         .delete({
           headers: { authorization: `Bearer ${edgeToken}` },
-          response: new Response(null, { status: 200 }),
+          response: Response.json({ blobs_deleted: 3 }),
           url: `${edgeURL}/${siteID}/site:production`,
         })
         .inject()
@@ -1575,9 +1577,10 @@ describe('deleteAll', () => {
         siteID,
       })
 
-      await blobs.deleteAll()
+      const res = await blobs.deleteAll()
 
       expect(mockStore.fulfilled).toBeTruthy()
+      expect(res.deletedBlobs).toBe(3)
     })
 
     test('Throws when the edge URL returns a non-200 status code', async () => {
