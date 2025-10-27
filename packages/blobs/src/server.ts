@@ -103,13 +103,13 @@ export class BlobsServer {
     const url = new URL(apiMatch?.url ?? req.url ?? '', this.address)
     const { dataPath, key, metadataPath, rootPath } = this.getLocalPaths(url)
 
-    // If there's no key, we're deleting all blobs from the store.
-    if (!key && rootPath) {
-      return this.deleteAll(rootPath)
+    if (!dataPath || !rootPath) {
+      return new Response(null, { status: 400 })
     }
 
-    if (!dataPath || !key) {
-      return new Response(null, { status: 400 })
+    // If there's no key, we're deleting all blobs from the store.
+    if (!key) {
+      return this.deleteAll(rootPath)
     }
 
     // Try to delete the metadata file, if one exists.
