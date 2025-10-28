@@ -46,7 +46,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@netlify/api": "^14.0.4",
+    "@netlify/api": "^14.0.8",
     "@netlify/types": "2.1.0",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
