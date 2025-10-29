@@ -198,6 +198,7 @@ export class Store {
       })
 
       span?.setAttributes({
+        'blobs.response.body.size': res.headers.get('content-length') ?? undefined,
         'blobs.response.status': res.status,
       })
 
@@ -328,6 +329,7 @@ export class Store {
       const responseETag = res?.headers.get('etag') ?? undefined
 
       span?.setAttributes({
+        'blobs.response.body.size': res.headers.get('content-length') ?? undefined,
         'blobs.response.etag': responseETag,
         'blobs.response.status': res.status,
       })
