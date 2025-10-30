@@ -582,11 +582,15 @@ export class NetlifyDev {
     }
 
     if (this.#features.static) {
+      // If custom static directories are provided (e.g., by vite-plugin during dev),
+      // use only those directories. Otherwise, use the build.publish directory from config.
+      const directories =
+        this.#staticHandlerAdditionalDirectories.length > 0
+          ? this.#staticHandlerAdditionalDirectories
+          : [this.#config?.config.build.publish ?? this.#projectRoot]
+
       this.#staticHandler = new StaticHandler({
-        directory: [
-          this.#config?.config.build.publish ?? this.#projectRoot,
-          ...this.#staticHandlerAdditionalDirectories,
-        ],
+        directory: directories,
       })
     }
 
