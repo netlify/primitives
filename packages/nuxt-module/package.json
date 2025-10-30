@@ -44,7 +44,11 @@
     "dev"
   ],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/nuxt-module"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },

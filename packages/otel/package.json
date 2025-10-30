@@ -101,7 +101,11 @@
     "cdn"
   ],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/otel"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
