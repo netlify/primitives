@@ -1,5 +1,14 @@
 # Changelog
 
+## [10.3.2](https://github.com/netlify/primitives/compare/blobs-v10.3.1...blobs-v10.3.2) (2025-11-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 2.2.0 to 2.2.1
+
 ## [10.3.1](https://github.com/netlify/primitives/compare/blobs-v10.3.0...blobs-v10.3.1) (2025-10-29)
 
 
