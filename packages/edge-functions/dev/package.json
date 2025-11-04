@@ -1,6 +1,6 @@
 {
   "name": "@netlify/edge-functions-dev",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Local emulation for Netlify Edge Functions",
   "type": "module",
   "engines": {
@@ -29,7 +29,11 @@
     "edge functions"
   ],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/edge-functions/dev"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },

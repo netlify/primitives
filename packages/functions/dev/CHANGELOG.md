@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.4](https://github.com/netlify/primitives/compare/functions-dev-v1.0.3...functions-dev-v1.0.4) (2025-10-29)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#504](https://github.com/netlify/primitives/issues/504)) ([3586853](https://github.com/netlify/primitives/commit/35868533dd9f878b4162685131219419ca33bd8a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.3.0 to 10.3.1
+
 ## [1.0.3](https://github.com/netlify/primitives/compare/functions-dev-v1.0.2...functions-dev-v1.0.3) (2025-10-27)
 
 

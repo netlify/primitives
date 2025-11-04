@@ -11,7 +11,7 @@
       }
     }
   },
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Local dev emulation of Netlify Functions",
   "files": [
     "dist/**/*.js",
@@ -32,13 +32,17 @@
     "serverless"
   ],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/functions/dev"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/blobs": "10.3.0",
+    "@netlify/blobs": "10.3.1",
     "@netlify/dev-utils": "4.3.0",
     "@netlify/functions": "5.0.1",
     "@netlify/zip-it-and-ship-it": "^14.1.11",

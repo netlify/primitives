@@ -1,6 +1,6 @@
 {
   "name": "@netlify/vite-plugin",
-  "version": "2.7.7",
+  "version": "2.7.8",
   "description": "Vite plugin with a local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -27,7 +27,11 @@
     "dev"
   ],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/vite-plugin"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
@@ -40,7 +44,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/dev": "4.6.6",
+    "@netlify/dev": "4.6.7",
     "@netlify/dev-utils": "^4.3.0",
     "dedent": "^1.7.0"
   },

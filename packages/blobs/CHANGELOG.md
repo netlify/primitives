@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.3.1](https://github.com/netlify/primitives/compare/blobs-v10.3.0...blobs-v10.3.1) (2025-10-29)
+
+
+### Bug Fixes
+
+* instrument content-length in .get and .getWithMetadata ([#507](https://github.com/netlify/primitives/issues/507)) ([a2424f4](https://github.com/netlify/primitives/commit/a2424f49147c156d57120d773bf69ff3a0ab6447))
+
 ## [10.3.0](https://github.com/netlify/primitives/compare/blobs-v10.2.1...blobs-v10.3.0) (2025-10-27)
 
 

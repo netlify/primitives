@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev",
-  "version": "4.6.6",
+  "version": "4.6.7",
   "description": "Emulation of the Netlify environment for local development",
   "type": "module",
   "engines": {
@@ -40,7 +40,11 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/dev"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
@@ -52,15 +56,15 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/blobs": "10.3.0",
+    "@netlify/blobs": "10.3.1",
     "@netlify/config": "^23.2.0",
     "@netlify/dev-utils": "4.3.0",
-    "@netlify/edge-functions-dev": "1.0.1",
-    "@netlify/functions-dev": "1.0.3",
+    "@netlify/edge-functions-dev": "1.0.2",
+    "@netlify/functions-dev": "1.0.4",
     "@netlify/headers": "2.1.0",
     "@netlify/images": "1.3.0",
     "@netlify/redirects": "3.1.0",
-    "@netlify/runtime": "4.1.4",
+    "@netlify/runtime": "4.1.5",
     "@netlify/static": "3.1.0",
     "ulid": "^3.0.0"
   }

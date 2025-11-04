@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.6.7](https://github.com/netlify/primitives/compare/dev-v4.6.6...dev-v4.6.7) (2025-10-29)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#504](https://github.com/netlify/primitives/issues/504)) ([3586853](https://github.com/netlify/primitives/commit/35868533dd9f878b4162685131219419ca33bd8a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.3.0 to 10.3.1
+    * @netlify/edge-functions-dev bumped from 1.0.1 to 1.0.2
+    * @netlify/functions-dev bumped from 1.0.3 to 1.0.4
+    * @netlify/runtime bumped from 4.1.4 to 4.1.5
+
 ## [4.6.6](https://github.com/netlify/primitives/compare/dev-v4.6.5...dev-v4.6.6) (2025-10-27)
 
 

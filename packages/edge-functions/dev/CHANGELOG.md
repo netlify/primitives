@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.1...edge-functions-dev-v1.0.2) (2025-10-29)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#504](https://github.com/netlify/primitives/issues/504)) ([3586853](https://github.com/netlify/primitives/commit/35868533dd9f878b4162685131219419ca33bd8a))
+
 ## [1.0.1](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.0...edge-functions-dev-v1.0.1) (2025-10-22)
 
 
