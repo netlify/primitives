@@ -5,6 +5,7 @@ import { env } from 'node:process'
 
 import type { EnvironmentContext as BlobsContext } from '@netlify/blobs'
 import { DevEventHandler, watchDebounced } from '@netlify/dev-utils'
+import { SYNCHRONOUS_FUNCTION_TIMEOUT, BACKGROUND_FUNCTION_TIMEOUT } from '@netlify/functions'
 import { ListedFunction, listFunctions, Manifest } from '@netlify/zip-it-and-ship-it'
 import extractZip from 'extract-zip'
 
@@ -25,16 +26,6 @@ import { runtimes } from './runtimes/index.js'
 
 export const DEFAULT_FUNCTION_URL_EXPRESSION = /^\/.netlify\/(functions|builders)\/([^/]+).*/
 const TYPES_PACKAGE = '@netlify/functions'
-
-/**
- * Default timeout for synchronous functions in seconds
- */
-const SYNCHRONOUS_FUNCTION_TIMEOUT = 30
-
-/**
- * Default timeout for background functions in seconds
- */
-const BACKGROUND_FUNCTION_TIMEOUT = 900
 
 export interface FunctionRegistryOptions {
   blobsContext?: BlobsContext
