@@ -1,6 +1,6 @@
 {
   "name": "@netlify/runtime",
-  "version": "4.0.10",
+  "version": "4.1.5",
   "description": "Netlify compute runtime",
   "type": "module",
   "engines": {
@@ -23,19 +23,23 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/runtime"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/blobs": "^10.0.6",
-    "@netlify/cache": "3.0.7",
-    "@netlify/runtime-utils": "2.1.0",
-    "@netlify/types": "2.0.2"
+    "@netlify/blobs": "^10.3.1",
+    "@netlify/cache": "3.3.0",
+    "@netlify/runtime-utils": "2.2.0",
+    "@netlify/types": "2.1.0"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "^4.0.0",
+    "@netlify/dev-utils": "^4.3.0",
     "@types/node": "^20.17.57",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"

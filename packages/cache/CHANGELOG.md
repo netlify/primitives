@@ -1,5 +1,87 @@
 # Changelog
 
+## [3.3.0](https://github.com/netlify/primitives/compare/cache-v3.2.0...cache-v3.3.0) (2025-10-15)
+
+
+### Features
+
+* add `fetch` parameter to `fetchWithCache` ([#482](https://github.com/netlify/primitives/issues/482)) ([6eff819](https://github.com/netlify/primitives/commit/6eff819fec72b74458269538e8ae48e944ee09d1))
+
+
+### Bug Fixes
+
+* make `fetchWithCache` stop throwing on uncacheable response ([#481](https://github.com/netlify/primitives/issues/481)) ([2a4da13](https://github.com/netlify/primitives/commit/2a4da13b5fde1d712484a498f4df0534770815c0))
+
+## [3.2.0](https://github.com/netlify/primitives/compare/cache-v3.1.1...cache-v3.2.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 2.1.0 to 2.2.0
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.2.0 to 4.3.0
+    * @netlify/types bumped from 2.0.3 to 2.1.0
+
+## [3.1.1](https://github.com/netlify/primitives/compare/cache-v3.1.0...cache-v3.1.1) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.1.3 to 4.2.0
+
+## [3.1.0](https://github.com/netlify/primitives/compare/cache-v3.0.11...cache-v3.1.0) (2025-09-05)
+
+
+### Features
+
+* expose `cacheHeaders` method ([#445](https://github.com/netlify/primitives/issues/445)) ([54eda15](https://github.com/netlify/primitives/commit/54eda159219675696d0bdf34f471e0c2e84fe923))
+
+## [3.0.11](https://github.com/netlify/primitives/compare/cache-v3.0.10...cache-v3.0.11) (2025-08-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.1.2 to 4.1.3
+    * @netlify/types bumped from 2.0.2 to 2.0.3
+
+## [3.0.10](https://github.com/netlify/primitives/compare/cache-v3.0.9...cache-v3.0.10) (2025-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.1.1 to 4.1.2
+
+## [3.0.9](https://github.com/netlify/primitives/compare/cache-v3.0.8...cache-v3.0.9) (2025-07-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.1.0 to 4.1.1
+
+## [3.0.8](https://github.com/netlify/primitives/compare/cache-v3.0.7...cache-v3.0.8) (2025-07-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.0.0 to 4.1.0
+
 ## [3.0.7](https://github.com/netlify/primitives/compare/cache-v3.0.6...cache-v3.0.7) (2025-07-17)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@netlify/headers",
-  "version": "2.0.6",
+  "version": "2.1.0",
   "description": "TypeScript implementation of Netlify's headers engine",
   "type": "module",
   "engines": {
@@ -26,18 +26,22 @@
     "headers"
   ],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/headers"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@netlify/dev-utils": "^4.0.0",
+    "@netlify/dev-utils": "^4.3.0",
     "@types/node": "^20.17.57",
     "tsup": "^8.0.0",
     "vitest": "^3.1.4"
   },
   "dependencies": {
-    "@netlify/headers-parser": "^9.0.1"
+    "@netlify/headers-parser": "^9.0.2"
   }
 }

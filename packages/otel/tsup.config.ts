@@ -6,7 +6,13 @@ export default defineConfig([
   {
     clean: true,
     format: ['cjs', 'esm'],
-    entry: ['src/bootstrap/main.ts', 'src/main.ts'],
+    entry: [
+      'src/bootstrap/main.ts',
+      'src/main.ts',
+      'src/exporters/netlify.ts',
+      'src/instrumentations/fetch.ts',
+      'src/opentelemetry.ts',
+    ],
     tsconfig: 'tsconfig.json',
     splitting: false,
     bundle: true,

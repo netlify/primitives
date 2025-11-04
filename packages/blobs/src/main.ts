@@ -11,4 +11,5 @@ export type {
   ListResultBlob,
   SetOptions,
   BlobResponseType,
+  DeleteStoreResult,
 } from './store.ts'

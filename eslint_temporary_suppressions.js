@@ -336,40 +336,25 @@ export default [
     },
   },
   {
-    files: ['packages/edge-functions/dev/node/main.test.ts'],
+    files: ['packages/edge-functions/dev/src/node/main.test.ts'],
     rules: {
       '@typescript-eslint/require-await': 'off',
     },
   },
   {
-    files: ['packages/edge-functions/dev/node/main.ts'],
+    files: ['packages/edge-functions/dev/src/node/main.ts'],
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'off',
     },
   },
   {
-    files: ['packages/edge-functions/src/version.test.ts'],
-    rules: {
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-    },
-  },
-  {
-    files: ['packages/edge-functions/src/version.ts'],
-    rules: {
-      '@typescript-eslint/restrict-template-expressions': 'off',
-    },
-  },
-  {
-    files: ['packages/functions/dev/events.ts'],
+    files: ['packages/functions/dev/src/events.ts'],
     rules: {
       '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
   {
-    files: ['packages/functions/dev/function.ts'],
+    files: ['packages/functions/dev/src/function.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -382,14 +367,14 @@ export default [
     },
   },
   {
-    files: ['packages/functions/dev/main.test.ts'],
+    files: ['packages/functions/dev/src/main.test.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
     },
   },
   {
-    files: ['packages/functions/dev/main.ts'],
+    files: ['packages/functions/dev/src/main.ts'],
     rules: {
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       '@typescript-eslint/no-misused-spread': 'off',
@@ -398,7 +383,7 @@ export default [
     },
   },
   {
-    files: ['packages/functions/dev/registry.ts'],
+    files: ['packages/functions/dev/src/registry.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -412,14 +397,14 @@ export default [
     },
   },
   {
-    files: ['packages/functions/dev/runtimes/index.ts'],
+    files: ['packages/functions/dev/src/runtimes/index.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {
-    files: ['packages/functions/dev/runtimes/nodejs/builder.ts'],
+    files: ['packages/functions/dev/src/runtimes/nodejs/builder.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
       'n/no-missing-import': 'off',
@@ -431,13 +416,13 @@ export default [
     },
   },
   {
-    files: ['packages/functions/dev/runtimes/nodejs/config.ts'],
+    files: ['packages/functions/dev/src/runtimes/nodejs/config.ts'],
     rules: {
       '@typescript-eslint/prefer-reduce-type-parameter': 'off',
     },
   },
   {
-    files: ['packages/functions/dev/runtimes/nodejs/index.ts'],
+    files: ['packages/functions/dev/src/runtimes/nodejs/index.ts'],
     rules: {
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -447,20 +432,20 @@ export default [
     },
   },
   {
-    files: ['packages/functions/dev/runtimes/nodejs/lambda.ts'],
+    files: ['packages/functions/dev/src/runtimes/nodejs/lambda.ts'],
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/require-await': 'off',
     },
   },
   {
-    files: ['packages/functions/internal.d.ts'],
+    files: ['packages/functions/prod/internal.d.ts'],
     rules: {
       'n/no-missing-import': 'off',
     },
   },
   {
-    files: ['packages/functions/src/function/handler.ts'],
+    files: ['packages/functions/prod/src/function/handler.ts'],
     rules: {
       '@typescript-eslint/prefer-function-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
@@ -468,19 +453,19 @@ export default [
     },
   },
   {
-    files: ['packages/functions/src/function/handler_context.ts'],
+    files: ['packages/functions/prod/src/function/handler_context.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {
-    files: ['packages/functions/src/function/handler_response.ts'],
+    files: ['packages/functions/prod/src/function/handler_response.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {
-    files: ['packages/functions/src/lib/builder.test.ts'],
+    files: ['packages/functions/prod/src/lib/builder.test.ts'],
     rules: {
       'n/no-missing-import': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -490,7 +475,7 @@ export default [
     },
   },
   {
-    files: ['packages/functions/src/lib/builder.ts'],
+    files: ['packages/functions/prod/src/lib/builder.ts'],
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
@@ -498,7 +483,7 @@ export default [
     },
   },
   {
-    files: ['packages/functions/src/lib/purge_cache.test.ts'],
+    files: ['packages/functions/prod/src/lib/purge_cache.test.ts'],
     rules: {
       'n/no-missing-import': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -506,7 +491,7 @@ export default [
     },
   },
   {
-    files: ['packages/functions/src/lib/purge_cache.ts'],
+    files: ['packages/functions/prod/src/lib/purge_cache.ts'],
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
@@ -514,13 +499,13 @@ export default [
     },
   },
   {
-    files: ['packages/functions/src/lib/schedule.ts'],
+    files: ['packages/functions/prod/src/lib/schedule.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
     },
   },
   {
-    files: ['packages/functions/src/lib/system_logger.test.ts'],
+    files: ['packages/functions/prod/src/lib/system_logger.test.ts'],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
@@ -528,13 +513,13 @@ export default [
     },
   },
   {
-    files: ['packages/functions/src/lib/system_logger.ts'],
+    files: ['packages/functions/prod/src/lib/system_logger.ts'],
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'off',
     },
   },
   {
-    files: ['packages/functions/test/types/Handler.test-d.ts'],
+    files: ['packages/functions/prod/test/types/Handler.test-d.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
     },
@@ -557,11 +542,9 @@ export default [
     },
   },
   {
-    files: ['packages/otel/src/bootstrap/netlify_span_exporter.ts'],
+    files: ['packages/otel/src/exporters/netlify.ts'],
     rules: {
       '@typescript-eslint/unbound-method': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-confusing-void-expression': 'off',
     },
   },
   {

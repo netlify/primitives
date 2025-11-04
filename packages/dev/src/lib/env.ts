@@ -8,7 +8,7 @@ export type EnvironmentVariableSource = 'account' | 'addons' | 'configFile' | 'g
  * These all match possible `context` values returned by the Envelope API.
  * Note that a user may also specify a branch name with the special `branch:my-branch-name` format.
  */
-export const SUPPORTED_CONTEXTS = ['all', 'production', 'deploy-preview', 'branch-deploy', 'dev'] as const
+export const SUPPORTED_CONTEXTS = ['all', 'production', 'deploy-preview', 'branch-deploy', 'dev', 'dev-server'] as const
 
 /**
  * Additional aliases for the user-provided env `context` option.

@@ -1,6 +1,6 @@
 {
   "name": "@netlify/otel",
-  "version": "3.1.0",
+  "version": "4.3.2",
   "type": "module",
   "engines": {
     "node": "^18.14.0 || >=20.6.1"
@@ -37,6 +37,48 @@
         "types": "./dist/bootstrap/main.d.ts",
         "default": "./dist/bootstrap/main.js"
       }
+    },
+    "./exporter-netlify": {
+      "require": {
+        "types": "./dist/exporters/netlify.d.cts",
+        "default": "./dist/exporters/netlify.cjs"
+      },
+      "import": {
+        "types": "./dist/exporters/netlify.d.ts",
+        "default": "./dist/exporters/netlify.js"
+      },
+      "default": {
+        "types": "./dist/exporters/netlify.d.ts",
+        "default": "./dist/exporters/netlify.js"
+      }
+    },
+    "./instrumentation-fetch": {
+      "require": {
+        "types": "./dist/instrumentations/fetch.d.cts",
+        "default": "./dist/instrumentations/fetch.cjs"
+      },
+      "import": {
+        "types": "./dist/instrumentations/fetch.d.ts",
+        "default": "./dist/instrumentations/fetch.js"
+      },
+      "default": {
+        "types": "./dist/instrumentations/fetch.d.ts",
+        "default": "./dist/instrumentations/fetch.js"
+      }
+    },
+    "./opentelemetry": {
+      "require": {
+        "types": "./dist/opentelemetry.d.cts",
+        "default": "./dist/opentelemetry.cjs"
+      },
+      "import": {
+        "types": "./dist/opentelemetry.d.ts",
+        "default": "./dist/opentelemetry.js"
+      },
+      "default": {
+        "types": "./dist/opentelemetry.d.ts",
+        "default": "./dist/opentelemetry.js"
+      }
     }
   },
   "files": [
@@ -59,12 +101,17 @@
     "cdn"
   ],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/otel"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "devDependencies": {
+    "msw": "^2.10.5",
     "npm-run-all2": "^7.0.2",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
@@ -72,6 +119,7 @@
   "dependencies": {
     "@opentelemetry/api": "1.9.0",
     "@opentelemetry/core": "1.30.1",
+    "@opentelemetry/instrumentation": "^0.203.0",
     "@opentelemetry/otlp-transformer": "0.57.2",
     "@opentelemetry/resources": "1.30.1",
     "@opentelemetry/sdk-trace-node": "1.30.1"

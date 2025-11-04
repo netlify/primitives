@@ -1,5 +1,102 @@
 # Changelog
 
+## [10.3.1](https://github.com/netlify/primitives/compare/blobs-v10.3.0...blobs-v10.3.1) (2025-10-29)
+
+
+### Bug Fixes
+
+* instrument content-length in .get and .getWithMetadata ([#507](https://github.com/netlify/primitives/issues/507)) ([a2424f4](https://github.com/netlify/primitives/commit/a2424f49147c156d57120d773bf69ff3a0ab6447))
+
+## [10.3.0](https://github.com/netlify/primitives/compare/blobs-v10.2.1...blobs-v10.3.0) (2025-10-27)
+
+
+### Features
+
+* add `deleteAll` method to Blobs ([#503](https://github.com/netlify/primitives/issues/503)) ([6ad0891](https://github.com/netlify/primitives/commit/6ad0891e84b87b5e659655de786a109dfac64198))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/otel bumped from ^4.3.1 to ^4.3.2
+
+## [10.2.1](https://github.com/netlify/primitives/compare/blobs-v10.2.0...blobs-v10.2.1) (2025-10-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/otel bumped from ^4.3.0 to ^4.3.1
+
+## [10.2.0](https://github.com/netlify/primitives/compare/blobs-v10.1.0...blobs-v10.2.0) (2025-10-22)
+
+
+### Features
+
+* add instrumentation to @netlify/blobs ([#384](https://github.com/netlify/primitives/issues/384)) ([9fe3782](https://github.com/netlify/primitives/commit/9fe3782bebeaf73f4265ea5eeb761abe9e657e09))
+
+## [10.1.0](https://github.com/netlify/primitives/compare/blobs-v10.0.11...blobs-v10.1.0) (2025-10-10)
+
+
+### Features
+
+* Adds W3C trace context propagation to tracer provider ([#471](https://github.com/netlify/primitives/issues/471)) ([afe4656](https://github.com/netlify/primitives/commit/afe4656df5c3bed13ae8c3357205c07efa27c698))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.2.0 to 4.3.0
+    * @netlify/runtime-utils bumped from 2.1.0 to 2.2.0
+
+## [10.0.11](https://github.com/netlify/primitives/compare/blobs-v10.0.10...blobs-v10.0.11) (2025-09-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.1.3 to 4.2.0
+
+## [10.0.10](https://github.com/netlify/primitives/compare/blobs-v10.0.9...blobs-v10.0.10) (2025-08-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.1.2 to 4.1.3
+
+## [10.0.9](https://github.com/netlify/primitives/compare/blobs-v10.0.8...blobs-v10.0.9) (2025-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.1.1 to 4.1.2
+
+## [10.0.8](https://github.com/netlify/primitives/compare/blobs-v10.0.7...blobs-v10.0.8) (2025-07-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.1.0 to 4.1.1
+
+## [10.0.7](https://github.com/netlify/primitives/compare/blobs-v10.0.6...blobs-v10.0.7) (2025-07-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.0.0 to 4.1.0
+
 ## [10.0.6](https://github.com/netlify/primitives/compare/blobs-v10.0.5...blobs-v10.0.6) (2025-07-17)
 
 

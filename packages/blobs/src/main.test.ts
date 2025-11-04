@@ -1494,6 +1494,120 @@ describe('delete', () => {
   })
 })
 
+describe('deleteAll', () => {
+  describe('With API credentials', () => {
+    test('Deletes all blobs from the store', async () => {
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: Response.json({ blobs_deleted: 3 }),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production`,
+        })
+        .inject()
+
+      const blobs = getStore({
+        name: 'production',
+        token: apiToken,
+        siteID,
+      })
+
+      const res = await blobs.deleteAll()
+
+      expect(mockStore.fulfilled).toBeTruthy()
+      expect(res.deletedBlobs).toBe(3)
+    })
+
+    test('Throws when the API returns a non-200 status code', async () => {
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(null, { status: 401 }),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production`,
+        })
+        .inject()
+
+      const blobs = getStore({
+        name: 'production',
+        token: apiToken,
+        siteID,
+      })
+
+      await expect(async () => await blobs.deleteAll()).rejects.toThrowError(
+        `Netlify Blobs has generated an internal error (401 status code)`,
+      )
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('Works with legacy namespaced stores', async () => {
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: Response.json({ blobs_deleted: 3 }),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/oldie`,
+        })
+        .inject()
+
+      const blobs = getStore({
+        name: 'netlify-internal/legacy-namespace/oldie',
+        token: apiToken,
+        siteID,
+      })
+
+      const res = await blobs.deleteAll()
+
+      expect(mockStore.fulfilled).toBeTruthy()
+      expect(res.deletedBlobs).toBe(3)
+    })
+  })
+
+  describe('With edge credentials', () => {
+    test('Deletes all blobs from the store', async () => {
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: Response.json({ blobs_deleted: 3 }),
+          url: `${edgeURL}/${siteID}/site:production`,
+        })
+        .inject()
+
+      const blobs = getStore({
+        edgeURL,
+        name: 'production',
+        token: edgeToken,
+        siteID,
+      })
+
+      const res = await blobs.deleteAll()
+
+      expect(mockStore.fulfilled).toBeTruthy()
+      expect(res.deletedBlobs).toBe(3)
+    })
+
+    test('Throws when the edge URL returns a non-200 status code', async () => {
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(null, { status: 401 }),
+          url: `${edgeURL}/${siteID}/site:production`,
+        })
+        .inject()
+
+      const blobs = getStore({
+        edgeURL,
+        name: 'production',
+        token: edgeToken,
+        siteID,
+      })
+
+      await expect(async () => await blobs.deleteAll()).rejects.toThrowError(
+        `Netlify Blobs has generated an internal error (401 status code)`,
+      )
+
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+  })
+})
+
 describe('Deploy scope', () => {
   test('Returns a deploy-scoped store if the `deployID` parameter is supplied and the environment context is present', async () => {
     const mockToken = 'some-token'

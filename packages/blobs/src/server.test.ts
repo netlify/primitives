@@ -553,3 +553,54 @@ test('Handles conditional writes', async () => {
   await server.stop()
   await fs.rm(directory.path, { force: true, recursive: true })
 })
+
+test('Deletes all blobs from a store', async () => {
+  const directory = await tmp.dir()
+  const server = new BlobsServer({
+    directory: directory.path,
+    token,
+  })
+  const { port } = await server.start()
+  const store = getStore({
+    edgeURL: `http://localhost:${port}`,
+    name: 'my-store',
+    token,
+    siteID,
+  })
+
+  const metadata = {
+    name: 'test-metadata',
+  }
+
+  // Add multiple blobs to the store
+  await store.set('key1', 'value 1')
+  await store.set('key2', 'value 2', { metadata })
+  await store.set('parent/child', 'value 3')
+  await store.set('parent/another/nested', 'value 4')
+
+  // Verify blobs exist
+  const list1 = await store.list()
+  expect(list1.blobs.length).toBe(4)
+
+  // Verify metadata exists
+  const entry = await store.getMetadata('key2')
+  expect(entry?.metadata).toEqual(metadata)
+
+  const deleteResult1 = await store.deleteAll()
+  expect(deleteResult1.deletedBlobs).toBe(4)
+
+  const list2 = await store.list()
+  expect(list2.blobs.length).toBe(0)
+
+  const deleteResult2 = await store.deleteAll()
+  expect(deleteResult2.deletedBlobs).toBe(0)
+
+  expect(await store.get('key1')).toBe(null)
+  expect(await store.get('key2')).toBe(null)
+  expect(await store.get('parent/child')).toBe(null)
+  expect(await store.get('parent/another/nested')).toBe(null)
+  expect(await store.getMetadata('key2')).toBe(null)
+
+  await server.stop()
+  await fs.rm(directory.path, { force: true, recursive: true })
+})

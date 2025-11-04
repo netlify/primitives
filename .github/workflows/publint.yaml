@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - run: git config --global core.symlinks true
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Node.js
@@ -22,6 +22,9 @@ jobs:
         with:
           node-version: lts/*
           cache: 'npm'
+      # Use npm@10 on Node 22+ due to https://github.com/npm/cli/issues/8489
+      - name: Setup npm version
+        run: npm install -g npm@10
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:

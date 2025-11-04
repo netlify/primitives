@@ -1,6 +1,6 @@
 {
   "name": "@netlify/static",
-  "version": "3.0.6",
+  "version": "3.1.0",
   "description": "TypeScript implementtion of Netlify's static file serving logic",
   "type": "module",
   "engines": {
@@ -23,7 +23,11 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/static"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
@@ -32,7 +36,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "^4.0.0",
+    "@netlify/dev-utils": "^4.3.0",
     "@types/mime-types": "^2.1.4",
     "tsup": "^8.5.0",
     "vitest": "^3.1.4"

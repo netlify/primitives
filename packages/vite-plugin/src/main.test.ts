@@ -70,6 +70,53 @@ describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
   })
 
   describe('configureServer', { timeout: 15_000 }, () => {
+    test('does not warn on single plugin instance', async () => {
+      const mockLogger = createMockViteLogger()
+      const { server } = await startTestServer({
+        customLogger: mockLogger,
+        plugins: [netlify({ middleware: false })],
+      })
+
+      expect(mockLogger.warn).not.toHaveBeenCalled()
+
+      await server.close()
+    })
+
+    test('warns on duplicate plugin instances', async () => {
+      const mockLogger = createMockViteLogger()
+      const { server } = await startTestServer({
+        customLogger: mockLogger,
+        plugins: [netlify({ middleware: false }), netlify({ middleware: false })],
+      })
+
+      expect(mockLogger.warn).toHaveBeenCalledOnce()
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect.stringMatching(/Multiple instances of @netlify\/vite-plugin have been loaded/),
+        expect.objectContaining({}),
+      )
+
+      await server.close()
+    })
+
+    test('does not warn about duplicate plugin instances when server restarts', async () => {
+      const mockLogger = createMockViteLogger()
+
+      const firstServer = await startTestServer({
+        customLogger: mockLogger,
+        plugins: [netlify({ middleware: false })],
+      })
+      expect(mockLogger.warn).not.toHaveBeenCalled()
+      await firstServer.server.close()
+
+      const secondServer = await startTestServer({
+        customLogger: mockLogger,
+        plugins: [netlify({ middleware: false })],
+      })
+      expect(mockLogger.warn).not.toHaveBeenCalled()
+
+      await secondServer.server.close()
+    })
+
     test('Populates Netlify runtime environment (globals and env vars)', async () => {
       const fixture = new Fixture()
         .withFile(
@@ -208,7 +255,7 @@ defined on your team and site and much more. Run npx netlify init to get started
       expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
       expect(mockLogger.info).toHaveBeenNthCalledWith(
         2,
-        'Middleware loaded. Emulating features: blobs, environmentVariables, functions, headers, images, redirects, static.',
+        'Middleware loaded. Emulating features: blobs, environmentVariables, functions, geolocation, headers, images, redirects, static.',
         expect.objectContaining({}),
       )
       expect(mockLogger.info).toHaveBeenNthCalledWith(
@@ -530,7 +577,7 @@ defined on your team and site and much more. Run npx netlify init to get started
             'vite.config.js',
             `import { defineConfig } from 'vite';
              import netlify from '@netlify/vite-plugin';
-  
+
              export default defineConfig({
                plugins: [
                  netlify({
@@ -567,7 +614,7 @@ defined on your team and site and much more. Run npx netlify init to get started
 
               return new Response(entry)
             }
-  
+
             export const config = {
               path: "/blob"
             }
@@ -603,7 +650,7 @@ defined on your team and site and much more. Run npx netlify init to get started
             'vite.config.js',
             `import { defineConfig } from 'vite';
              import netlify from '@netlify/vite-plugin';
-  
+
              export default defineConfig({
                plugins: [
                  netlify({
@@ -628,10 +675,10 @@ defined on your team and site and much more. Run npx netlify init to get started
             export default async (req, context) => {
               const res = await context.next()
               const text = await res.text()
-              
+
               return new Response(text.toUpperCase(), res)
             }
-  
+
             export const config = {
               path: "/*"
             }

@@ -1,6 +1,6 @@
 {
   "name": "@netlify/vite-plugin",
-  "version": "2.4.5",
+  "version": "2.7.8",
   "description": "Vite plugin with a local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -17,7 +17,7 @@
     "prepack": "npm run build",
     "test": "vitest run",
     "test:dev": "vitest",
-    "test:ci": "npm run build && vitest run",
+    "test:ci": "vitest run",
     "dev": "tsup-node --watch",
     "publint": "npx -y publint --strict"
   },
@@ -27,7 +27,11 @@
     "dev"
   ],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/vite-plugin"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
@@ -36,13 +40,13 @@
     "@types/node": "^20.17.57",
     "playwright": "^1.52.0",
     "tsup": "^8.0.0",
-    "vite": "^6.3.4",
+    "vite": "^6.3.6",
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/dev": "4.4.5",
-    "@netlify/dev-utils": "^4.0.0",
-    "chalk": "^5.4.1"
+    "@netlify/dev": "4.6.7",
+    "@netlify/dev-utils": "^4.3.0",
+    "dedent": "^1.7.0"
   },
   "peerDependencies": {
     "vite": "^5 || ^6 || ^7"
