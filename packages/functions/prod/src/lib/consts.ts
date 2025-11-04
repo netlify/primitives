@@ -1,5 +1,3 @@
-import type { SiteConfig } from '@netlify/types'
-
 const BUILDER_FUNCTIONS_FLAG = true
 const HTTP_STATUS_METHOD_NOT_ALLOWED = 405
 const HTTP_STATUS_OK = 200
