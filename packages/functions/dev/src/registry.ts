@@ -26,6 +26,16 @@ import { runtimes } from './runtimes/index.js'
 export const DEFAULT_FUNCTION_URL_EXPRESSION = /^\/.netlify\/(functions|builders)\/([^/]+).*/
 const TYPES_PACKAGE = '@netlify/functions'
 
+/**
+ * Default timeout for synchronous functions in seconds
+ */
+const SYNCHRONOUS_FUNCTION_TIMEOUT = 30
+
+/**
+ * Default timeout for background functions in seconds
+ */
+const BACKGROUND_FUNCTION_TIMEOUT = 900
+
 export interface FunctionRegistryOptions {
   blobsContext?: BlobsContext
   destPath: string
@@ -37,7 +47,7 @@ export interface FunctionRegistryOptions {
   manifest?: Manifest
   projectRoot: string
   settings: any
-  timeouts: any
+  timeouts?: { syncFunctions?: number; backgroundFunctions?: number }
   watch?: boolean
 }
 
@@ -100,7 +110,14 @@ export class FunctionsRegistry {
     this.handleEvent = eventHandler ?? (() => {})
     this.internalFunctionsPath = internalFunctionsPath
     this.projectRoot = projectRoot
-    this.timeouts = timeouts
+
+    // Calculate timeouts from config if not provided as override
+    const siteTimeout = config?.siteInfo?.functions_timeout ?? config?.siteInfo?.functions_config?.timeout
+    this.timeouts = {
+      syncFunctions: timeouts?.syncFunctions ?? siteTimeout ?? SYNCHRONOUS_FUNCTION_TIMEOUT,
+      backgroundFunctions: timeouts?.backgroundFunctions ?? siteTimeout ?? BACKGROUND_FUNCTION_TIMEOUT,
+    }
+
     this.settings = settings
     this.watch = watch === true
 

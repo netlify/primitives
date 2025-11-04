@@ -15,12 +15,10 @@ import {
 } from '@netlify/dev-utils'
 import { EdgeFunctionsHandler } from '@netlify/edge-functions-dev'
 import { FunctionsHandler } from '@netlify/functions-dev'
-import { SYNCHRONOUS_FUNCTION_TIMEOUT, BACKGROUND_FUNCTION_TIMEOUT } from '@netlify/functions'
 import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
 import { ImageHandler } from '@netlify/images'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
-import type { SiteConfig } from '@netlify/types'
 
 import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
@@ -146,38 +144,6 @@ interface NetlifyDevOptions extends Features {
 }
 
 const notFoundHandler = async () => new Response('Not found', { status: 404 })
-
-/**
- * Get the effective function timeout considering site-specific configuration
- */
-const getFunctionTimeout = (siteConfig: SiteConfig | undefined, isBackground = false): number => {
-  // Check for site-specific timeout configuration
-  const siteTimeout = siteConfig?.functionsTimeout ?? siteConfig?.functionsConfig?.timeout
-
-  if (siteTimeout !== undefined) {
-    return siteTimeout
-  }
-
-  // Use default timeout based on function type
-  return isBackground ? BACKGROUND_FUNCTION_TIMEOUT : SYNCHRONOUS_FUNCTION_TIMEOUT
-}
-
-/**
- * Get timeout configuration for functions
- */
-const getFunctionTimeouts = (config: Config | undefined): { syncFunctions: number; backgroundFunctions: number } => {
-  const siteConfig: SiteConfig | undefined = config?.siteInfo
-    ? {
-        functionsTimeout: config.siteInfo.functions_timeout,
-        functionsConfig: config.siteInfo.functions_config,
-      }
-    : undefined
-
-  return {
-    syncFunctions: getFunctionTimeout(siteConfig, false),
-    backgroundFunctions: getFunctionTimeout(siteConfig, true),
-  }
-}
 
 type Config = Awaited<ReturnType<typeof resolveConfig>>
 
@@ -582,8 +548,6 @@ export class NetlifyDev {
         state,
       })
 
-      const timeouts = getFunctionTimeouts(this.#config)
-
       this.#functionsHandler = new FunctionsHandler({
         config: this.#config,
         destPath: this.#functionsServePath,
@@ -591,7 +555,6 @@ export class NetlifyDev {
         projectRoot: this.#projectRoot,
         settings: {},
         siteId: this.#siteID,
-        timeouts,
         userFunctionsPath: userFunctionsPathExists ? userFunctionsPath : undefined,
       })
     }
