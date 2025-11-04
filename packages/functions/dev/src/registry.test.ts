@@ -1,7 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
 import { SYNCHRONOUS_FUNCTION_TIMEOUT, BACKGROUND_FUNCTION_TIMEOUT } from '@netlify/functions'
-
 import { FunctionsRegistry } from './registry.js'
 
 describe('FunctionsRegistry timeout configuration', () => {
@@ -13,7 +12,7 @@ describe('FunctionsRegistry timeout configuration', () => {
       settings: {},
     })
 
-    expect(registry['timeouts']).toEqual({
+    expect(registry.timeouts).toEqual({
       syncFunctions: SYNCHRONOUS_FUNCTION_TIMEOUT,
       backgroundFunctions: BACKGROUND_FUNCTION_TIMEOUT,
     })
@@ -31,7 +30,7 @@ describe('FunctionsRegistry timeout configuration', () => {
       settings: {},
     })
 
-    expect(registry['timeouts']).toEqual({
+    expect(registry.timeouts).toEqual({
       syncFunctions: 60,
       backgroundFunctions: 60,
     })
@@ -51,7 +50,7 @@ describe('FunctionsRegistry timeout configuration', () => {
       settings: {},
     })
 
-    expect(registry['timeouts']).toEqual({
+    expect(registry.timeouts).toEqual({
       syncFunctions: 45,
       backgroundFunctions: 45,
     })
@@ -72,7 +71,7 @@ describe('FunctionsRegistry timeout configuration', () => {
       settings: {},
     })
 
-    expect(registry['timeouts']).toEqual({
+    expect(registry.timeouts).toEqual({
       syncFunctions: 60,
       backgroundFunctions: 60,
     })
@@ -94,7 +93,7 @@ describe('FunctionsRegistry timeout configuration', () => {
       },
     })
 
-    expect(registry['timeouts']).toEqual({
+    expect(registry.timeouts).toEqual({
       syncFunctions: 120,
       backgroundFunctions: 1800,
     })
@@ -115,7 +114,7 @@ describe('FunctionsRegistry timeout configuration', () => {
       },
     })
 
-    expect(registry['timeouts']).toEqual({
+    expect(registry.timeouts).toEqual({
       syncFunctions: 120,
       backgroundFunctions: 60,
     })
@@ -131,7 +130,7 @@ describe('FunctionsRegistry timeout configuration', () => {
       settings: {},
     })
 
-    expect(registry['timeouts']).toEqual({
+    expect(registry.timeouts).toEqual({
       syncFunctions: SYNCHRONOUS_FUNCTION_TIMEOUT,
       backgroundFunctions: BACKGROUND_FUNCTION_TIMEOUT,
     })
@@ -145,7 +144,7 @@ describe('FunctionsRegistry timeout configuration', () => {
       settings: {},
     })
 
-    expect(registry['timeouts']).toEqual({
+    expect(registry.timeouts).toEqual({
       syncFunctions: SYNCHRONOUS_FUNCTION_TIMEOUT,
       backgroundFunctions: BACKGROUND_FUNCTION_TIMEOUT,
     })
