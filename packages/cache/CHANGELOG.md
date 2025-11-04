@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.3.1](https://github.com/netlify/primitives/compare/cache-v3.3.0...cache-v3.3.1) (2025-11-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 2.2.0 to 2.2.1
+
 ## [3.3.0](https://github.com/netlify/primitives/compare/cache-v3.2.0...cache-v3.3.0) (2025-10-15)
 
 
