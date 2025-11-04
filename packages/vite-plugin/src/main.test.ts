@@ -705,6 +705,72 @@ defined on your team and site and much more. Run npx netlify init to get started
         await server.close()
         await fixture.destroy()
       })
+
+      test('Ignores SPA redirect in dev mode to allow Vite to serve JS modules', async () => {
+        const fixture = new Fixture()
+          .withFile(
+            'netlify.toml',
+            `[[redirects]]
+              from = "/*"
+              to = "/index.html"
+              status = 200`,
+          )
+          .withFile(
+            'vite.config.js',
+            `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
+
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                   middleware: true,
+                 })
+               ]
+             });`,
+          )
+          .withFile(
+            'index.html',
+            `<!DOCTYPE html>
+             <html>
+               <head><title>SPA App</title></head>
+               <body>
+                 <div id="app"></div>
+                 <script type="module" src="/src/main.js"></script>
+               </body>
+             </html>`,
+          )
+          .withFile('src/main.js', `document.getElementById('app').textContent = 'Hello from SPA'`)
+        const directory = await fixture.create()
+        await fixture
+          .withPackages({
+            vite: viteVersion,
+            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+          })
+          .create()
+
+        const { server, url } = await startTestServer({
+          root: directory,
+        })
+
+        // The JS module should load correctly (not be redirected to index.html)
+        const jsResponse = await page.goto(`${url}/src/main.js`)
+        expect(jsResponse?.status()).toBe(200)
+        expect(await jsResponse?.text()).toContain("document.getElementById('app').textContent = 'Hello from SPA'")
+        expect(jsResponse?.headers()['content-type']).toContain('javascript')
+
+        // The root route should still work (Vite handles it) and JS should execute
+        await page.goto(url)
+        await page.waitForSelector('#app')
+        expect(await page.textContent('#app')).toBe('Hello from SPA')
+
+        // A client-side route should also work (Vite handles it) and JS should execute
+        await page.goto(`${url}/some-route`)
+        await page.waitForSelector('#app')
+        expect(await page.textContent('#app')).toBe('Hello from SPA')
+
+        await server.close()
+        await fixture.destroy()
+      })
     })
 
     describe('With @vitejs/plugin-react', () => {

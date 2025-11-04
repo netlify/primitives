@@ -56,6 +56,7 @@ export class RedirectsHandler {
       configPath,
       configRedirects,
       geoCountry,
+      ignoreSPARedirect: true,
       jwtRoleClaim,
       jwtSecret,
       projectDir,

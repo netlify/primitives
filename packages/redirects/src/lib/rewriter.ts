@@ -23,6 +23,7 @@ export const createRewriter = async function ({
   configPath,
   configRedirects,
   geoCountry,
+  ignoreSPARedirect = false,
   jwtRoleClaim,
   jwtSecret,
   projectDir,
@@ -31,6 +32,7 @@ export const createRewriter = async function ({
   configPath?: string | undefined
   configRedirects: Redirect[]
   geoCountry?: string | undefined
+  ignoreSPARedirect?: boolean
   jwtRoleClaim: string
   jwtSecret: string
   projectDir: string
@@ -40,7 +42,23 @@ export const createRewriter = async function ({
   const redirectsFiles = [
     ...new Set([path.resolve(publicDir ?? '', REDIRECTS_FILE_NAME), path.resolve(projectDir, REDIRECTS_FILE_NAME)]),
   ]
-  const redirects = await parseRedirects({ configRedirects, redirectsFiles, configPath })
+  let redirects = await parseRedirects({ configRedirects, redirectsFiles, configPath })
+
+  // Hacky solution: Filter out the SPA redirect pattern when requested.
+  // This prevents the redirect from interfering with local dev servers like Vite,
+  // while still allowing it to work in production.
+  // See: https://github.com/netlify/primitives/issues/325
+  if (ignoreSPARedirect) {
+    redirects = redirects.filter((redirect) => {
+      // Filter out redirects that match the SPA pattern: from "/*" to "/index.html" with status 200
+      const isSPARedirect =
+        redirect.from === '/*' &&
+        redirect.to === '/index.html' &&
+        (redirect.status === 200 || redirect.status === undefined)
+
+      return !isSPARedirect
+    })
+  }
 
   const getMatcher = async (): Promise<RedirectMatcher> => {
     if (matcher) return matcher
