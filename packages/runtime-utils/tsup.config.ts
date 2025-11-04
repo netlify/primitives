@@ -7,7 +7,10 @@ export default defineConfig([
     clean: true,
     entry: ['src/main.ts'],
     outDir: 'dist',
-    format: ['esm'],
+    // We build both CJS and ESM because @netlify/blobs is dual-format and depends on this package.
+    // When @netlify/blobs becomes ESM-only, we can remove CJS here and go ESM-only too.
+    // See: https://github.com/netlify/primitives/issues/437
+    format: ['cjs', 'esm'],
     dts: true,
     splitting: false,
     watch: argv.includes('--watch'),
