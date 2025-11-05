@@ -335,4 +335,224 @@ describe('`EdgeFunctionsHandler`', () => {
 
     await fixture.destroy()
   })
+
+  test.skip('Handles POST requests with body', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/echo.mjs',
+        `export default async (req) => {
+          const body = await req.text()
+          return Response.json({
+            method: req.method,
+            body: body,
+            contentType: req.headers.get('content-type')
+          })
+        }
+           
+        export const config = { path: "/echo" };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const requestBody = JSON.stringify({ message: 'Hello from POST' })
+    const req = new Request('https://site.netlify/echo', {
+      method: 'POST',
+      body: requestBody,
+      headers: {
+        'content-type': 'application/json',
+        'x-nf-request-id': 'req-id',
+      },
+    })
+
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req, serverAddress)
+
+    expect(res?.status).toBe(200)
+    expect(await res?.json()).toStrictEqual({
+      method: 'POST',
+      body: requestBody,
+      contentType: 'application/json',
+    })
+
+    await fixture.destroy()
+  })
+
+  test.skip('Handles PUT requests', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/update.mjs',
+        `export default async (req) => {
+          const body = await req.json()
+          return Response.json({
+            method: req.method,
+            updated: body
+          })
+        }
+           
+        export const config = { path: "/api/update" };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const req = new Request('https://site.netlify/api/update', {
+      method: 'PUT',
+      body: JSON.stringify({ id: 456, value: 'new value' }),
+      headers: {
+        'content-type': 'application/json',
+        'x-nf-request-id': 'req-id',
+      },
+    })
+
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req, serverAddress)
+
+    expect(res?.status).toBe(200)
+    expect(await res?.json()).toStrictEqual({
+      method: 'PUT',
+      updated: { id: 456, value: 'new value' },
+    })
+
+    await fixture.destroy()
+  })
+
+  test.skip('Handles DELETE requests', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/delete.mjs',
+        `export default async (req) => {
+          return Response.json({
+            method: req.method,
+            message: 'Resource deleted'
+          })
+        }
+           
+        export const config = { path: "/api/delete/:id" };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const req = new Request('https://site.netlify/api/delete/789', {
+      method: 'DELETE',
+      headers: {
+        'x-nf-request-id': 'req-id',
+      },
+    })
+
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req, serverAddress)
+
+    expect(res?.status).toBe(200)
+    expect(await res?.json()).toStrictEqual({
+      method: 'DELETE',
+      message: 'Resource deleted',
+    })
+
+    await fixture.destroy()
+  })
+
+  test.skip('Handles PATCH requests', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/patch.mjs',
+        `export default async (req) => {
+          const body = await req.json()
+          return Response.json({
+            method: req.method,
+            patched: body
+          })
+        }
+           
+        export const config = { path: "/api/patch" };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const req = new Request('https://site.netlify/api/patch', {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'inactive' }),
+      headers: {
+        'content-type': 'application/json',
+        'x-nf-request-id': 'req-id',
+      },
+    })
+
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req, serverAddress)
+
+    expect(res?.status).toBe(200)
+    expect(await res?.json()).toStrictEqual({
+      method: 'PATCH',
+      patched: { status: 'inactive' },
+    })
+
+    await fixture.destroy()
+  })
 })

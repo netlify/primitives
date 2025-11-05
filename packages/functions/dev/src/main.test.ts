@@ -203,4 +203,188 @@ describe('Functions with the v2 API syntax', () => {
 
     await fixture.destroy()
   })
+
+  test('Handles POST requests with body', async () => {
+    const fixture = new Fixture().withFile(
+      'netlify/functions/echo.mjs',
+      `export default async (req) => {
+        const body = await req.text()
+        return new Response(JSON.stringify({
+          method: req.method,
+          body: body
+        }), {
+          headers: { 'Content-Type': 'application/json' }
+        })
+      }`,
+    )
+
+    const directory = await fixture.create()
+    const destPath = join(directory, 'functions-serve')
+    const functions = new FunctionsHandler({
+      accountId: 'account-123',
+      config: {},
+      destPath,
+      geolocation: {},
+      projectRoot: directory,
+      settings: {},
+      timeouts: {},
+      userFunctionsPath: 'netlify/functions',
+    })
+
+    const requestBody = JSON.stringify({ message: 'Hello from POST' })
+    const req = new Request('https://site.netlify/.netlify/functions/echo', {
+      method: 'POST',
+      body: requestBody,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const match = await functions.match(req, destPath)
+    const res = await match!.handle(req)
+    expect(res?.status).toBe(200)
+    
+    const responseData = await res?.json()
+    expect(responseData).toEqual({
+      method: 'POST',
+      body: requestBody,
+    })
+
+    await fixture.destroy()
+  })
+
+  test('Handles PUT requests', async () => {
+    const fixture = new Fixture().withFile(
+      'netlify/functions/update.mjs',
+      `export default async (req) => {
+        const body = await req.json()
+        return Response.json({
+          method: req.method,
+          updated: body
+        })
+      }
+      
+      export const config = { path: "/api/update" }`,
+    )
+
+    const directory = await fixture.create()
+    const destPath = join(directory, 'functions-serve')
+    const functions = new FunctionsHandler({
+      accountId: 'account-123',
+      config: {},
+      destPath,
+      geolocation: {},
+      projectRoot: directory,
+      settings: {},
+      timeouts: {},
+      userFunctionsPath: 'netlify/functions',
+    })
+
+    const req = new Request('https://site.netlify/api/update', {
+      method: 'PUT',
+      body: JSON.stringify({ id: 123, name: 'Updated Name' }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const match = await functions.match(req, destPath)
+    const res = await match!.handle(req)
+    expect(res?.status).toBe(200)
+    
+    const responseData = await res?.json()
+    expect(responseData).toEqual({
+      method: 'PUT',
+      updated: { id: 123, name: 'Updated Name' },
+    })
+
+    await fixture.destroy()
+  })
+
+  test('Handles DELETE requests', async () => {
+    const fixture = new Fixture().withFile(
+      'netlify/functions/delete.mjs',
+      `export default async (req) => {
+        return Response.json({
+          method: req.method,
+          message: 'Resource deleted'
+        })
+      }
+      
+      export const config = { path: "/api/delete/:id" }`,
+    )
+
+    const directory = await fixture.create()
+    const destPath = join(directory, 'functions-serve')
+    const functions = new FunctionsHandler({
+      accountId: 'account-123',
+      config: {},
+      destPath,
+      geolocation: {},
+      projectRoot: directory,
+      settings: {},
+      timeouts: {},
+      userFunctionsPath: 'netlify/functions',
+    })
+
+    const req = new Request('https://site.netlify/api/delete/42', {
+      method: 'DELETE',
+    })
+    const match = await functions.match(req, destPath)
+    const res = await match!.handle(req)
+    expect(res?.status).toBe(200)
+    
+    const responseData = await res?.json()
+    expect(responseData).toEqual({
+      method: 'DELETE',
+      message: 'Resource deleted',
+    })
+
+    await fixture.destroy()
+  })
+
+  test('Handles PATCH requests', async () => {
+    const fixture = new Fixture().withFile(
+      'netlify/functions/patch.mjs',
+      `export default async (req) => {
+        const body = await req.json()
+        return Response.json({
+          method: req.method,
+          patched: body
+        })
+      }
+      
+      export const config = { path: "/api/patch" }`,
+    )
+
+    const directory = await fixture.create()
+    const destPath = join(directory, 'functions-serve')
+    const functions = new FunctionsHandler({
+      accountId: 'account-123',
+      config: {},
+      destPath,
+      geolocation: {},
+      projectRoot: directory,
+      settings: {},
+      timeouts: {},
+      userFunctionsPath: 'netlify/functions',
+    })
+
+    const req = new Request('https://site.netlify/api/patch', {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'active' }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const match = await functions.match(req, destPath)
+    const res = await match!.handle(req)
+    expect(res?.status).toBe(200)
+    
+    const responseData = await res?.json()
+    expect(responseData).toEqual({
+      method: 'PATCH',
+      patched: { status: 'active' },
+    })
+
+    await fixture.destroy()
+  })
 })
