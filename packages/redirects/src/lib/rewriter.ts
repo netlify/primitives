@@ -51,10 +51,8 @@ export const createRewriter = async function ({
   if (ignoreSPARedirect) {
     redirects = redirects.filter((redirect) => {
       // Filter out redirects that match the SPA pattern: from "/*" to "/index.html" with status 200
-      const isSPARedirect =
-        redirect.from === '/*' &&
-        redirect.to === '/index.html' &&
-        (redirect.status === 200 || redirect.status === undefined)
+      // See https://docs.netlify.com/manage/routing/redirects/rewrites-proxies/#history-pushstate-and-single-page-apps,
+      const isSPARedirect = redirect.origin === '/*' && redirect.to === '/index.html' && redirect.status === 200
 
       return !isSPARedirect
     })
