@@ -1,6 +1,6 @@
 {
   "name": "@netlify/cache",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "TypeScript utilities for interacting with the Netlify cache",
   "type": "module",
   "engines": {
@@ -62,7 +62,11 @@
     "cachestorage"
   ],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/cache"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
@@ -75,6 +79,6 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/runtime-utils": "2.2.0"
+    "@netlify/runtime-utils": "2.2.1"
   }
 }

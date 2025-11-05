@@ -1,6 +1,6 @@
 {
   "name": "@netlify/nuxt",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Nuxt module providing local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -44,13 +44,17 @@
     "dev"
   ],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/nuxt-module"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/dev": "^4.6.7",
+    "@netlify/dev": "^4.6.8",
     "@netlify/dev-utils": "^4.3.0",
     "@nuxt/kit": "^4.0.0",
     "h3": "^1.15.3"

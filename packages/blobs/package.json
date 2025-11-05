@@ -1,6 +1,6 @@
 {
   "name": "@netlify/blobs",
-  "version": "10.3.1",
+  "version": "10.3.2",
   "description": "TypeScript client for Netlify Blobs",
   "type": "module",
   "engines": {
@@ -58,7 +58,11 @@
   },
   "keywords": [],
   "license": "MIT",
-  "repository": "netlify/primitives",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/blobs"
+  },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
@@ -78,6 +82,6 @@
   "dependencies": {
     "@netlify/dev-utils": "4.3.0",
     "@netlify/otel": "^4.3.2",
-    "@netlify/runtime-utils": "2.2.0"
+    "@netlify/runtime-utils": "2.2.1"
   }
 }
