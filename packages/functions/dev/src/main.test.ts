@@ -263,7 +263,7 @@ describe('Functions with the v2 API syntax', () => {
         })
       }
       
-      export const config = { path: "/api/update" }`,
+      export const config = { path: "/api/update" };`,
     )
 
     const directory = await fixture.create()
@@ -309,7 +309,7 @@ describe('Functions with the v2 API syntax', () => {
         })
       }
       
-      export const config = { path: "/api/delete/:id" }`,
+      export const config = { path: "/api/delete/:id" };`,
     )
 
     const directory = await fixture.create()
@@ -352,7 +352,7 @@ describe('Functions with the v2 API syntax', () => {
         })
       }
       
-      export const config = { path: "/api/patch" }`,
+      export const config = { path: "/api/patch" };`,
     )
 
     const directory = await fixture.create()

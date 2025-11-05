@@ -360,7 +360,7 @@ describe('`EdgeFunctionsHandler`', () => {
             contentType: req.headers.get('content-type')
           })
         }
-           
+
         export const config = { path: "/echo" };`,
       )
 
@@ -417,7 +417,7 @@ describe('`EdgeFunctionsHandler`', () => {
             updated: body
           })
         }
-           
+
         export const config = { path: "/api/update" };`,
       )
 
@@ -471,7 +471,7 @@ describe('`EdgeFunctionsHandler`', () => {
             message: 'Resource deleted'
           })
         }
-           
+
         export const config = { path: "/api/delete/:id" };`,
       )
 
@@ -524,7 +524,7 @@ describe('`EdgeFunctionsHandler`', () => {
             patched: body
           })
         }
-           
+
         export const config = { path: "/api/patch" };`,
       )
 
