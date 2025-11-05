@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/netlify/primitives/compare/runtime-utils-v2.2.0...runtime-utils-v2.2.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* add CJS support to @netlify/runtime-utils to fix ERR_REQUIRE_ESM ([#510](https://github.com/netlify/primitives/issues/510)) ([a6c3a26](https://github.com/netlify/primitives/commit/a6c3a268d13fc60849f16b5cba6064710366c096)), closes [#437](https://github.com/netlify/primitives/issues/437)
+
 ## [2.2.0](https://github.com/netlify/primitives/compare/runtime-utils-v2.1.0...runtime-utils-v2.2.0) (2025-10-10)
 
 
