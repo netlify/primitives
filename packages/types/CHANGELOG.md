@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/netlify/primitives/compare/types-v2.1.0...types-v2.2.0) (2025-11-05)
+
+
+### Features
+
+* implement functions timeout defaults and overrides in dev ([#346](https://github.com/netlify/primitives/issues/346)) ([c17753e](https://github.com/netlify/primitives/commit/c17753ec35bdef076db563fa37c1a4222bd5c149))
+
 ## [2.1.0](https://github.com/netlify/primitives/compare/types-v2.0.3...types-v2.1.0) (2025-10-10)
 
 
