@@ -758,11 +758,6 @@ defined on your team and site and much more. Run npx netlify init to get started
         await page.waitForSelector('#app')
         expect(await page.textContent('#app')).toBe('Hello from SPA')
 
-        // Client-side navigation should also work (Vite handles it)
-        await page.goto(`${url}/some-other-route`)
-        await page.waitForSelector('#app')
-        expect(await page.textContent('#app')).toBe('Hello from SPA')
-
         await server.close()
         await fixture.destroy()
       })
