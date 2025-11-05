@@ -705,6 +705,230 @@ defined on your team and site and much more. Run npx netlify init to get started
         await server.close()
         await fixture.destroy()
       })
+
+      test('Handles POST requests to functions', async () => {
+        const fixture = new Fixture()
+          .withFile(
+            'vite.config.js',
+            `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
+
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                   middleware: true,
+                 })
+               ]
+             });`,
+          )
+          .withFile(
+            'index.html',
+            `<!DOCTYPE html>
+             <html>
+               <head><title>Hello World</title></head>
+               <body>
+                 <h1>Hello from the browser</h1>
+               </body>
+             </html>`,
+          )
+          .withFile(
+            'netlify/functions/submit.mjs',
+            `export default async (req) => {
+              const body = await req.json()
+              return Response.json({
+                method: req.method,
+                received: body
+              })
+            }
+            
+            export const config = {
+              path: "/api/submit"
+            }`,
+          )
+
+        const directory = await fixture.create()
+        await fixture
+          .withPackages({
+            vite: viteVersion,
+            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+          })
+          .create()
+
+        const mockLogger = createMockViteLogger()
+        const { server, url } = await startTestServer({
+          root: directory,
+          logLevel: 'info',
+          customLogger: mockLogger,
+        })
+
+        const response = await fetch(`${url}/api/submit`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: 'Test', value: 123 }),
+        })
+
+        expect(response.status).toBe(200)
+        const data = await response.json()
+        expect(data).toEqual({
+          method: 'POST',
+          received: { name: 'Test', value: 123 },
+        })
+
+        await server.close()
+        await fixture.destroy()
+      })
+
+      test('Handles PUT requests to functions', async () => {
+        const fixture = new Fixture()
+          .withFile(
+            'vite.config.js',
+            `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
+
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                   middleware: true,
+                 })
+               ]
+             });`,
+          )
+          .withFile(
+            'index.html',
+            `<!DOCTYPE html>
+             <html>
+               <head><title>Hello World</title></head>
+               <body>
+                 <h1>Hello from the browser</h1>
+               </body>
+             </html>`,
+          )
+          .withFile(
+            'netlify/functions/update.mjs',
+            `export default async (req, context) => {
+              const body = await req.json()
+              return Response.json({
+                method: req.method,
+                id: context.params.id,
+                updated: body
+              })
+            }
+            
+            export const config = {
+              path: "/api/items/:id"
+            }`,
+          )
+
+        const directory = await fixture.create()
+        await fixture
+          .withPackages({
+            vite: viteVersion,
+            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+          })
+          .create()
+
+        const mockLogger = createMockViteLogger()
+        const { server, url } = await startTestServer({
+          root: directory,
+          logLevel: 'info',
+          customLogger: mockLogger,
+        })
+
+        const response = await fetch(`${url}/api/items/42`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: 'completed' }),
+        })
+
+        expect(response.status).toBe(200)
+        const data = await response.json()
+        expect(data).toEqual({
+          method: 'PUT',
+          id: '42',
+          updated: { status: 'completed' },
+        })
+
+        await server.close()
+        await fixture.destroy()
+      })
+
+      test('Handles POST requests to edge functions', async () => {
+        const fixture = new Fixture()
+          .withFile(
+            'vite.config.js',
+            `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
+
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                   middleware: true,
+                 })
+               ]
+             });`,
+          )
+          .withFile(
+            'index.html',
+            `<!DOCTYPE html>
+             <html>
+               <head><title>Hello World</title></head>
+               <body>
+                 <h1>Hello from the browser</h1>
+               </body>
+             </html>`,
+          )
+          .withFile(
+            'netlify/edge-functions/echo.mjs',
+            `export default async (req) => {
+              const body = await req.text()
+              return Response.json({
+                method: req.method,
+                body: body
+              })
+            }
+            
+            export const config = {
+              path: "/api/echo"
+            }`,
+          )
+
+        const directory = await fixture.create()
+        await fixture
+          .withPackages({
+            vite: viteVersion,
+            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+          })
+          .create()
+
+        const mockLogger = createMockViteLogger()
+        const { server, url } = await startTestServer({
+          root: directory,
+          logLevel: 'info',
+          customLogger: mockLogger,
+        })
+
+        const response = await fetch(`${url}/api/echo`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message: 'Hello Edge Function' }),
+        })
+
+        expect(response.status).toBe(200)
+        const data = await response.json()
+        expect(data).toEqual({
+          method: 'POST',
+          body: JSON.stringify({ message: 'Hello Edge Function' }),
+        })
+
+        await server.close()
+        await fixture.destroy()
+      })
     })
 
     describe('With @vitejs/plugin-react', () => {

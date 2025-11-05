@@ -739,6 +739,159 @@ describe('Handling requests', () => {
       await dev.stop()
       await fixture.destroy()
     })
+
+    test('Handles POST requests to functions', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+        publish = "public"
+        `,
+        )
+        .withFile(
+          'netlify/functions/submit.mjs',
+          `export default async (req) => {
+            const body = await req.json()
+            return Response.json({
+              method: req.method,
+              received: body
+            })
+          }
+          
+          export const config = { path: "/api/submit" };`,
+        )
+      const directory = await fixture.create()
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
+      })
+
+      await dev.start()
+
+      const req = new Request('https://site.netlify/api/submit', {
+        method: 'POST',
+        body: JSON.stringify({ name: 'Test User', email: 'test@example.com' }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const res = await dev.handle(req)
+
+      await dev.stop()
+
+      expect(res?.status).toBe(200)
+      const responseData = await res?.json()
+      expect(responseData).toEqual({
+        method: 'POST',
+        received: { name: 'Test User', email: 'test@example.com' },
+      })
+
+      await fixture.destroy()
+    })
+
+    test('Handles PUT requests to functions', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+        publish = "public"
+        `,
+        )
+        .withFile(
+          'netlify/functions/update.mjs',
+          `export default async (req, context) => {
+            const body = await req.json()
+            return Response.json({
+              method: req.method,
+              id: context.params.id,
+              updated: body
+            })
+          }
+          
+          export const config = { path: "/api/items/:id" };`,
+        )
+      const directory = await fixture.create()
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
+      })
+
+      await dev.start()
+
+      const req = new Request('https://site.netlify/api/items/42', {
+        method: 'PUT',
+        body: JSON.stringify({ title: 'Updated Title' }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const res = await dev.handle(req)
+
+      await dev.stop()
+
+      expect(res?.status).toBe(200)
+      const responseData = await res?.json()
+      expect(responseData).toEqual({
+        method: 'PUT',
+        id: '42',
+        updated: { title: 'Updated Title' },
+      })
+
+      await fixture.destroy()
+    })
+
+    test('Handles DELETE requests to functions', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+        publish = "public"
+        `,
+        )
+        .withFile(
+          'netlify/functions/delete.mjs',
+          `export default async (req, context) => {
+            return Response.json({
+              method: req.method,
+              deleted: context.params.id
+            })
+          }
+          
+          export const config = { path: "/api/items/:id" };`,
+        )
+      const directory = await fixture.create()
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
+      })
+
+      await dev.start()
+
+      const req = new Request('https://site.netlify/api/items/99', {
+        method: 'DELETE',
+      })
+      const res = await dev.handle(req)
+
+      await dev.stop()
+
+      expect(res?.status).toBe(200)
+      const responseData = await res?.json()
+      expect(responseData).toEqual({
+        method: 'DELETE',
+        deleted: '99',
+      })
+
+      await fixture.destroy()
+    })
   })
 
   describe('With linked site', () => {
