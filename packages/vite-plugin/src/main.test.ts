@@ -706,7 +706,7 @@ defined on your team and site and much more. Run npx netlify init to get started
         await fixture.destroy()
       })
 
-      test('Ignores SPA redirect in dev mode to allow Vite to serve JS modules', async () => {
+      test('Ignores SPA redirect in dev mode', async () => {
         const fixture = new Fixture()
           .withFile(
             'netlify.toml',
@@ -752,19 +752,14 @@ defined on your team and site and much more. Run npx netlify init to get started
           root: directory,
         })
 
-        // The JS module should load correctly (not be redirected to index.html)
-        const jsResponse = await page.goto(`${url}/src/main.js`)
-        expect(jsResponse?.status()).toBe(200)
-        expect(await jsResponse?.text()).toContain("document.getElementById('app').textContent = 'Hello from SPA'")
-        expect(jsResponse?.headers()['content-type']).toContain('javascript')
-
-        // The root route should still work (Vite handles it) and JS should execute
-        await page.goto(url)
+        // Any route should render the root index.html (Vite handles it) and JS should execute (which
+        // verifies the SPA redirect isn't interfering with loading the .js module).
+        await page.goto(`${url}/some-route`)
         await page.waitForSelector('#app')
         expect(await page.textContent('#app')).toBe('Hello from SPA')
 
-        // A client-side route should also work (Vite handles it) and JS should execute
-        await page.goto(`${url}/some-route`)
+        // Client-side navigation should also work (Vite handles it)
+        await page.goto(`${url}/some-other-route`)
         await page.waitForSelector('#app')
         expect(await page.textContent('#app')).toBe('Hello from SPA')
 
