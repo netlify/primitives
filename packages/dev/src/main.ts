@@ -555,7 +555,6 @@ export class NetlifyDev {
         projectRoot: this.#projectRoot,
         settings: {},
         siteId: this.#siteID,
-        timeouts: {},
         userFunctionsPath: userFunctionsPathExists ? userFunctionsPath : undefined,
       })
     }
