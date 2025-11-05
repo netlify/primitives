@@ -1,13 +1,11 @@
 import { diag, type DiagLogger } from '@opentelemetry/api'
 import { BindOnceFuture, ExportResult, ExportResultCode } from '@opentelemetry/core'
-import { JsonTraceSerializer } from '@opentelemetry/otlp-transformer'
 import type { SpanExporter, ReadableSpan } from '@opentelemetry/sdk-trace-node'
 import { TRACE_PREFIX } from '../constants.ts'
 
 export class NetlifySpanExporter implements SpanExporter {
   #shutdownOnce: BindOnceFuture<void>
   #logger: DiagLogger
-  static #decoder = new TextDecoder()
 
   constructor() {
     this.#shutdownOnce = new BindOnceFuture(this.#shutdown, this)
@@ -27,7 +25,7 @@ export class NetlifySpanExporter implements SpanExporter {
       return
     }
 
-    console.log(TRACE_PREFIX, NetlifySpanExporter.#decoder.decode(JsonTraceSerializer.serializeRequest(spans)))
+    console.log(TRACE_PREFIX, spanToJSONString(spans))
     resultCallback({ code: ExportResultCode.SUCCESS })
   }
 
@@ -45,4 +43,58 @@ export class NetlifySpanExporter implements SpanExporter {
     this.#logger.debug('Shutting down')
     return Promise.resolve()
   }
+}
+
+// Replaces JsonTraceSerializer.serializeRequest(spans)
+const spanToJSONString = (spans: ReadableSpan[]): string => {
+  const serializedSpan = {
+    resourceSpans: spans.map((span) => {
+      const spanContext = span.spanContext()
+
+      return {
+        resource: {
+          attributes: Object.entries(span.resource.attributes).map(([key, value]) => {
+            return {
+              key: key,
+              value: {
+                stringValue: value?.toString() ?? '',
+              },
+            }
+          }),
+          droppedAttributesCount: span.droppedAttributesCount,
+        },
+        scopeSpans: [
+          {
+            scope: {
+              name: span.instrumentationLibrary.name,
+              version: span.instrumentationLibrary.version,
+            },
+            spans: [
+              {
+                traceId: spanContext.traceId,
+                spanId: spanContext.spanId,
+                name: span.name,
+                kind: span.kind,
+                startTimeUnixNano: span.startTime.join(''),
+                endTimeUnixNano: span.endTime.join(''),
+                droppedAttributesCount: span.droppedAttributesCount,
+                droppedEventsCount: span.droppedEventsCount,
+                droppedLinksCount: span.droppedLinksCount,
+                status: {
+                  code: span.status.code,
+                  message: span.status.message,
+                },
+                // TODO
+                // "attributes": span.attributes,
+                // "events": span.events,
+                // "links": span.links,
+              },
+            ],
+          },
+        ],
+      }
+    }),
+  }
+
+  return JSON.stringify(serializedSpan)
 }
