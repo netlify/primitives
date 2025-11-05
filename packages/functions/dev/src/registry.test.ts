@@ -18,7 +18,7 @@ describe('FunctionsRegistry timeout configuration', () => {
     })
   })
 
-  test('uses functions_timeout from siteInfo when provided', () => {
+  test('uses functions_timeout from siteInfo for sync functions only', () => {
     const registry = new FunctionsRegistry({
       config: {
         siteInfo: {
@@ -32,11 +32,11 @@ describe('FunctionsRegistry timeout configuration', () => {
 
     expect(registry.timeouts).toEqual({
       syncFunctions: 60,
-      backgroundFunctions: 60,
+      backgroundFunctions: BACKGROUND_FUNCTION_TIMEOUT,
     })
   })
 
-  test('uses functions_config.timeout from siteInfo when provided', () => {
+  test('uses functions_config.timeout from siteInfo for sync functions only', () => {
     const registry = new FunctionsRegistry({
       config: {
         siteInfo: {
@@ -52,11 +52,11 @@ describe('FunctionsRegistry timeout configuration', () => {
 
     expect(registry.timeouts).toEqual({
       syncFunctions: 45,
-      backgroundFunctions: 45,
+      backgroundFunctions: BACKGROUND_FUNCTION_TIMEOUT,
     })
   })
 
-  test('prefers functions_timeout over functions_config.timeout', () => {
+  test('prefers functions_timeout over functions_config.timeout for sync functions', () => {
     const registry = new FunctionsRegistry({
       config: {
         siteInfo: {
@@ -73,7 +73,7 @@ describe('FunctionsRegistry timeout configuration', () => {
 
     expect(registry.timeouts).toEqual({
       syncFunctions: 60,
-      backgroundFunctions: 60,
+      backgroundFunctions: BACKGROUND_FUNCTION_TIMEOUT,
     })
   })
 
@@ -116,7 +116,7 @@ describe('FunctionsRegistry timeout configuration', () => {
 
     expect(registry.timeouts).toEqual({
       syncFunctions: 120,
-      backgroundFunctions: 60,
+      backgroundFunctions: BACKGROUND_FUNCTION_TIMEOUT,
     })
   })
 

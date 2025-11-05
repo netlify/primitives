@@ -106,7 +106,9 @@ export class FunctionsRegistry {
     const siteTimeout = config?.siteInfo?.functions_timeout ?? config?.siteInfo?.functions_config?.timeout
     this.timeouts = {
       syncFunctions: timeouts?.syncFunctions ?? siteTimeout ?? SYNCHRONOUS_FUNCTION_TIMEOUT,
-      backgroundFunctions: timeouts?.backgroundFunctions ?? siteTimeout ?? BACKGROUND_FUNCTION_TIMEOUT,
+      // NOTE: This isn't documented, but the generically named "functions timeout" config fields only
+      // apply to synchronous Netlify Functions.
+      backgroundFunctions: timeouts?.backgroundFunctions ?? BACKGROUND_FUNCTION_TIMEOUT,
     }
 
     this.settings = settings
