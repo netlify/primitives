@@ -473,12 +473,17 @@ export class NetlifyDev {
       if (config.env.AI_GATEWAY) {
         runtime.env.set('AI_GATEWAY', config.env.AI_GATEWAY.value)
 
-        // Parse and inject individual provider keys (OPENAI_API_KEY, etc.)
+        // Parse and inject AI Gateway env vars
         const aiGatewayContext = parseAIGatewayContext(config.env.AI_GATEWAY.value)
-        if (aiGatewayContext?.envVars) {
-          for (const envVar of aiGatewayContext.envVars) {
-            runtime.env.set(envVar.key, aiGatewayContext.token)
-            runtime.env.set(envVar.url, aiGatewayContext.url)
+        if (aiGatewayContext) {
+          runtime.env.set('NETLIFY_AI_GATEWAY_KEY', aiGatewayContext.token)
+          runtime.env.set('NETLIFY_AI_GATEWAY_URL', aiGatewayContext.url)
+
+          if (aiGatewayContext.envVars) {
+            for (const envVar of aiGatewayContext.envVars) {
+              runtime.env.set(envVar.key, aiGatewayContext.token)
+              runtime.env.set(envVar.url, aiGatewayContext.url)
+            }
           }
         }
       }
