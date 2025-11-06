@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.7.1](https://github.com/netlify/primitives/compare/dev-v4.7.0...dev-v4.7.1) (2025-11-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/redirects bumped from 3.1.1 to 3.1.2
+
 ## [4.7.0](https://github.com/netlify/primitives/compare/dev-v4.6.8...dev-v4.7.0) (2025-11-05)
 
 

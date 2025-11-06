@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.7.11](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.10...vite-plugin-v2.7.11) (2025-11-06)
+
+
+### Bug Fixes
+
+* ignore SPA redirect in dev mode to allow Vite to take over ([#514](https://github.com/netlify/primitives/issues/514)) ([510642b](https://github.com/netlify/primitives/commit/510642b575b10e1595f19bbeab475ffcaa35b1f2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.7.0 to 4.7.1
+
 ## [2.7.10](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.9...vite-plugin-v2.7.10) (2025-11-05)
 
 
