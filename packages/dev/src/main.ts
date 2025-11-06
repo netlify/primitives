@@ -4,7 +4,6 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { parseAIGatewayContext, setupAIGateway } from '@netlify/ai/bootstrap'
-import { NetlifyAPI } from '@netlify/api'
 import { resolveConfig } from '@netlify/config'
 import {
   ensureNetlifyIgnore,
