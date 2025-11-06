@@ -3,6 +3,8 @@ import { IncomingMessage } from 'node:http'
 import path from 'node:path'
 import process from 'node:process'
 
+import { parseAIGatewayContext, setupAIGateway } from '@netlify/ai/bootstrap'
+import { NetlifyAPI } from '@netlify/api'
 import { resolveConfig } from '@netlify/config'
 import {
   ensureNetlifyIgnore,
@@ -458,6 +460,30 @@ export class NetlifyDev {
     })
 
     this.#cleanupJobs.push(() => runtime.stop())
+
+    // Bootstrap AI Gateway: Fetch AI Gateway tokens and inject them into env
+    if (this.#features.environmentVariables && config?.api && siteID && config?.siteInfo?.url) {
+      await setupAIGateway({
+        api: config.api,
+        env: config.env || {},
+        siteID,
+        siteURL: config.siteInfo.url,
+      })
+
+      // Inject AI_GATEWAY into process.env via runtime
+      if (config.env.AI_GATEWAY) {
+        runtime.env.set('AI_GATEWAY', config.env.AI_GATEWAY.value)
+
+        // Parse and inject individual provider keys (OPENAI_API_KEY, etc.)
+        const aiGatewayContext = parseAIGatewayContext(config.env.AI_GATEWAY.value)
+        if (aiGatewayContext?.envVars) {
+          for (const envVar of aiGatewayContext.envVars) {
+            runtime.env.set(envVar.key, aiGatewayContext.token)
+            runtime.env.set(envVar.url, aiGatewayContext.url)
+          }
+        }
+      }
+    }
 
     let serverAddress: string | undefined
 
