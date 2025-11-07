@@ -56,6 +56,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
+    "@netlify/ai": "^0.3.3",
     "@netlify/blobs": "10.3.3",
     "@netlify/config": "^23.2.0",
     "@netlify/dev-utils": "4.3.1",
