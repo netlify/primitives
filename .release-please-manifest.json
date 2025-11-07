@@ -2,7 +2,7 @@
   "packages/ai": "0.3.3",
   "packages/blobs": "10.3.3",
   "packages/cache": "3.3.2",
-  "packages/dev": "4.7.1",
+  "packages/dev": "4.8.0",
   "packages/dev-utils": "4.3.1",
   "packages/edge-functions/dev": "1.0.4",
   "packages/edge-functions/prod": "3.0.2",
@@ -10,13 +10,13 @@
   "packages/functions/dev": "1.1.0",
   "packages/headers": "2.1.1",
   "packages/images": "1.3.1",
-  "packages/nuxt-module": "0.2.10",
+  "packages/nuxt-module": "0.2.11",
   "packages/otel": "4.3.2",
   "packages/redirects": "3.1.2",
   "packages/runtime": "4.1.7",
   "packages/runtime-utils": "2.2.1",
   "packages/static": "3.1.1",
   "packages/types": "2.2.0",
-  "packages/vite-plugin": "2.7.11",
-  "packages/vite-plugin-tanstack-start": "1.1.11"
+  "packages/vite-plugin": "2.7.12",
+  "packages/vite-plugin-tanstack-start": "1.1.12"
 }
