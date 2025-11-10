@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.0](https://github.com/netlify/primitives/compare/dev-v4.7.1...dev-v4.8.0) (2025-11-07)
+
+
+### Features
+
+* add AI Gateway support to @netlify/dev for Vite plugin ([#524](https://github.com/netlify/primitives/issues/524)) ([e6823d4](https://github.com/netlify/primitives/commit/e6823d44ade93211f4eee57d131772720d260c78))
+
 ## [4.7.1](https://github.com/netlify/primitives/compare/dev-v4.7.0...dev-v4.7.1) (2025-11-06)
 
 
