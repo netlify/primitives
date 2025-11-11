@@ -5,6 +5,10 @@ export const normalizeHeaders = (headers: IncomingHttpHeaders): HeadersInit => {
   const result: [string, string][] = []
 
   for (const [key, value] of Object.entries(headers)) {
+    // Skip HTTP/2 pseudo-headers (headers starting with ':')
+    if (key.startsWith(':')) {
+      continue;
+    }
     if (Array.isArray(value)) {
       result.push([key, value.join(',')])
     } else if (typeof value === 'string') {
