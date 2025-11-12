@@ -95,9 +95,8 @@ describe('patched fetch', () => {
     server.listen({ onUnhandledRequest: 'error' })
   })
 
-  beforeEach(async () => {
-    await createTracerProvider({
-      headers: new Headers({ 'x-nf-enable-tracing': 'true' }),
+  beforeEach(() => {
+    createTracerProvider({
       serviceName: 'test-service',
       serviceVersion: '1.0.0',
       deploymentEnvironment: 'test',
@@ -118,8 +117,7 @@ describe('patched fetch', () => {
   })
 
   it('can GET url', async () => {
-    await createTracerProvider({
-      headers: new Headers({ 'x-nf-enable-tracing': 'true' }),
+    createTracerProvider({
       serviceName: 'test-service',
       serviceVersion: '1.0.0',
       deploymentEnvironment: 'test',
