@@ -25,7 +25,7 @@ export class NetlifySpanExporter implements SpanExporter {
       return
     }
 
-    console.log(TRACE_PREFIX, JSON.stringify(serialize(spans)))
+    console.log(TRACE_PREFIX, JSON.stringify(serializeSpans(spans)))
     resultCallback({ code: ExportResultCode.SUCCESS })
   }
 
@@ -46,11 +46,10 @@ export class NetlifySpanExporter implements SpanExporter {
 }
 
 // Replaces JsonTraceSerializer.serializeRequest(spans)
-const serialize = (spans: ReadableSpan[]): Record<string, unknown> => {
+export function serializeSpans(spans: ReadableSpan[]): Record<string, unknown> {
   return {
     resourceSpans: spans.map((span) => {
       const spanContext = span.spanContext()
-
       return {
         resource: {
           attributes: toAttributes(span.resource.attributes),
