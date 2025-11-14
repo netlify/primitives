@@ -23,6 +23,9 @@ jobs:
             # But there is a blocking bug in 20.6.0, fixed in 20.6.1:
             # https://github.com/nuxt/nuxt/issues/23020#issuecomment-1719828889
             node-version: '20.6.1'
+          - os: ubuntu-latest
+            # Explicitly test the latest major release.
+            node-version: '24'
       fail-fast: false
     steps:
       # Increasing the maximum number of open files. See:
@@ -42,7 +45,7 @@ jobs:
       # Use npm@10 on Node 22+ due to https://github.com/npm/cli/issues/8489
       - name: Setup npm version
         run: npm install -g npm@10
-        if: "${{ matrix.node-version == '*' }}"
+        if: "${{ matrix.node-version == '*' || matrix.node-version == '24' }}"
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
