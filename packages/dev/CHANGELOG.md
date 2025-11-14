@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.8.1](https://github.com/netlify/primitives/compare/dev-v4.8.0...dev-v4.8.1) (2025-11-14)
+
+
+### Bug Fixes
+
+* handle HTTP/2 requests with pseudo-headers ([#534](https://github.com/netlify/primitives/issues/534)) ([7b5ce83](https://github.com/netlify/primitives/commit/7b5ce83ca2fb8df59a41dc81921c29566a39a1cb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.3.3 to 10.4.0
+    * @netlify/dev-utils bumped from 4.3.1 to 4.3.2
+    * @netlify/edge-functions-dev bumped from 1.0.4 to 1.0.5
+    * @netlify/functions-dev bumped from 1.1.0 to 1.1.1
+    * @netlify/headers bumped from 2.1.1 to 2.1.2
+    * @netlify/images bumped from 1.3.1 to 1.3.2
+    * @netlify/redirects bumped from 3.1.2 to 3.1.3
+    * @netlify/runtime bumped from 4.1.7 to 4.1.8
+    * @netlify/static bumped from 3.1.1 to 3.1.2
+
 ## [4.8.0](https://github.com/netlify/primitives/compare/dev-v4.7.1...dev-v4.8.0) (2025-11-07)
 
 

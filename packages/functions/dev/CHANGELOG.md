@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.1](https://github.com/netlify/primitives/compare/functions-dev-v1.1.0...functions-dev-v1.1.1) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.3.3 to 10.4.0
+    * @netlify/dev-utils bumped from 4.3.1 to 4.3.2
+
 ## [1.1.0](https://github.com/netlify/primitives/compare/functions-dev-v1.0.5...functions-dev-v1.1.0) (2025-11-05)
 
 
