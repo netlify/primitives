@@ -4,7 +4,7 @@
   "description": "Vite plugin for TanStack Start on Netlify",
   "type": "module",
   "engines": {
-    "node": "^22.12.0"
+    "node": "^22.12.0 || >=24.0.0"
   },
   "main": "./dist/main.js",
   "exports": "./dist/main.js",
