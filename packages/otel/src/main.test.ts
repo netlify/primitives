@@ -7,8 +7,8 @@ describe('`getTracer` export', () => {
   test('Returns undefined if tracing has not been previously activated', () => {
     expect(getTracer()).toBeUndefined()
   })
-  test('Returns tracer if tracing has been previously activated', async () => {
-    await createTracerProvider({
+  test('Returns tracer if tracing has been previously activated', () => {
+    createTracerProvider({
       serviceName: 'test-service',
       serviceVersion: '1.0.0',
       deploymentEnvironment: 'test',
@@ -25,7 +25,7 @@ describe('`shutdownTracers` export', () => {
     await expect(shutdownTracers()).resolves.toBeUndefined()
   })
   test('Returns undefined if tracing has been previously activated', async () => {
-    await createTracerProvider({
+    createTracerProvider({
       serviceName: 'test-service',
       serviceVersion: '1.0.0',
       deploymentEnvironment: 'test',
