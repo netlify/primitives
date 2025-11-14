@@ -180,7 +180,7 @@ export class BlobsServer {
       }
     }
 
-    return Response.json({ blobs_deleted: blobsDeleted })
+    return Response.json({ blobs_deleted: blobsDeleted, has_more: false })
   }
 
   private async get(req: Request): Promise<Response> {
