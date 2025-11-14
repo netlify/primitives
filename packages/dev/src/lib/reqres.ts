@@ -1,8 +1,20 @@
-import { IncomingHttpHeaders, IncomingMessage } from 'node:http'
+import { IncomingMessage } from 'node:http'
 import { Readable } from 'node:stream'
 
-export const normalizeHeaders = (headers: IncomingHttpHeaders): HeadersInit => {
+export const normalizeHeaders = (request: IncomingMessage) => {
   const result: [string, string][] = []
+  let headers = request.headers
+
+  // Handle HTTP/2 pseudo-headers: https://www.rfc-editor.org/rfc/rfc9113.html#name-request-pseudo-header-field
+  // In certain versions of Node.js, the built-in `Request` constructor from undici throws
+  // if a header starts with a colon.
+  if (request.httpVersionMajor >= 2) {
+    headers = { ...headers }
+    delete headers[':authority']
+    delete headers[':method']
+    delete headers[':path']
+    delete headers[':scheme']
+  }
 
   for (const [key, value] of Object.entries(headers)) {
     if (Array.isArray(value)) {
@@ -43,11 +55,14 @@ export const getNormalizedRequestFromNodeRequest = (
       ? null
       : (Readable.toWeb(input) as unknown as ReadableStream<unknown>)
 
+  const normalizedHeaders = normalizeHeaders(input)
+  normalizedHeaders.push(['x-nf-request-id', requestID])
+
   return new Request(fullUrl, {
     body,
     // @ts-expect-error Not typed!
     duplex: 'half',
-    headers: normalizeHeaders({ ...input.headers, 'x-nf-request-id': requestID }),
+    headers: normalizedHeaders,
     method,
   })
 }

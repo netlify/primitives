@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.1.0](https://github.com/netlify/primitives/compare/functions-v5.0.1...functions-v5.1.0) (2025-11-05)
+
+
+### Features
+
+* implement functions timeout defaults and overrides in dev ([#346](https://github.com/netlify/primitives/issues/346)) ([c17753e](https://github.com/netlify/primitives/commit/c17753ec35bdef076db563fa37c1a4222bd5c149))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 2.1.0 to 2.2.0
+
 ## [5.0.1](https://github.com/netlify/primitives/compare/functions-v5.0.0...functions-v5.0.1) (2025-10-22)
 
 

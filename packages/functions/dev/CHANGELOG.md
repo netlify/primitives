@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.1.0](https://github.com/netlify/primitives/compare/functions-dev-v1.0.5...functions-dev-v1.1.0) (2025-11-05)
+
+
+### Features
+
+* implement functions timeout defaults and overrides in dev ([#346](https://github.com/netlify/primitives/issues/346)) ([c17753e](https://github.com/netlify/primitives/commit/c17753ec35bdef076db563fa37c1a4222bd5c149))
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#515](https://github.com/netlify/primitives/issues/515)) ([67034cc](https://github.com/netlify/primitives/commit/67034cce9f80e35582f328b1990d0f26e7181cff))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.3.2 to 10.3.3
+    * @netlify/dev-utils bumped from 4.3.0 to 4.3.1
+    * @netlify/functions bumped from 5.0.1 to 5.1.0
+
 ## [1.0.5](https://github.com/netlify/primitives/compare/functions-dev-v1.0.4...functions-dev-v1.0.5) (2025-11-04)
 
 

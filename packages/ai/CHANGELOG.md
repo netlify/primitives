@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.3](https://github.com/netlify/primitives/compare/ai-v0.3.2...ai-v0.3.3) (2025-11-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/api to v14.0.10 ([#521](https://github.com/netlify/primitives/issues/521)) ([61869e9](https://github.com/netlify/primitives/commit/61869e902052157006031d64089afb90c298b92c))
+* **deps:** update netlify packages ([#515](https://github.com/netlify/primitives/issues/515)) ([67034cc](https://github.com/netlify/primitives/commit/67034cce9f80e35582f328b1990d0f26e7181cff))
+
 ## [0.3.2](https://github.com/netlify/primitives/compare/ai-v0.3.1...ai-v0.3.2) (2025-10-29)
 
 

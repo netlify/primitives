@@ -1,5 +1,51 @@
 # Changelog
 
+## [4.8.0](https://github.com/netlify/primitives/compare/dev-v4.7.1...dev-v4.8.0) (2025-11-07)
+
+
+### Features
+
+* add AI Gateway support to @netlify/dev for Vite plugin ([#524](https://github.com/netlify/primitives/issues/524)) ([e6823d4](https://github.com/netlify/primitives/commit/e6823d44ade93211f4eee57d131772720d260c78))
+
+## [4.7.1](https://github.com/netlify/primitives/compare/dev-v4.7.0...dev-v4.7.1) (2025-11-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/redirects bumped from 3.1.1 to 3.1.2
+
+## [4.7.0](https://github.com/netlify/primitives/compare/dev-v4.6.8...dev-v4.7.0) (2025-11-05)
+
+
+### Features
+
+* implement functions timeout defaults and overrides in dev ([#346](https://github.com/netlify/primitives/issues/346)) ([c17753e](https://github.com/netlify/primitives/commit/c17753ec35bdef076db563fa37c1a4222bd5c149))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/api to v14.0.10 ([#521](https://github.com/netlify/primitives/issues/521)) ([61869e9](https://github.com/netlify/primitives/commit/61869e902052157006031d64089afb90c298b92c))
+* **deps:** update netlify packages ([#515](https://github.com/netlify/primitives/issues/515)) ([67034cc](https://github.com/netlify/primitives/commit/67034cce9f80e35582f328b1990d0f26e7181cff))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.3.2 to 10.3.3
+    * @netlify/dev-utils bumped from 4.3.0 to 4.3.1
+    * @netlify/edge-functions-dev bumped from 1.0.3 to 1.0.4
+    * @netlify/functions-dev bumped from 1.0.5 to 1.1.0
+    * @netlify/headers bumped from 2.1.0 to 2.1.1
+    * @netlify/images bumped from 1.3.0 to 1.3.1
+    * @netlify/redirects bumped from 3.1.0 to 3.1.1
+    * @netlify/runtime bumped from 4.1.6 to 4.1.7
+    * @netlify/static bumped from 3.1.0 to 3.1.1
+  * devDependencies
+    * @netlify/types bumped from 2.1.0 to 2.2.0
+
 ## [4.6.8](https://github.com/netlify/primitives/compare/dev-v4.6.7...dev-v4.6.8) (2025-11-04)
 
 

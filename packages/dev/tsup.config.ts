@@ -13,5 +13,6 @@ export default defineConfig([
     watch: argv.includes('--watch'),
     platform: 'node',
     bundle: true,
+    external: ['@netlify/ai'],
   },
 ])

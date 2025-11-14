@@ -1,4 +1,6 @@
 import { readFile } from 'node:fs/promises'
+import { IncomingMessage } from 'node:http'
+import { Socket } from 'node:net'
 import { resolve } from 'node:path'
 
 import { createImageServerHandler, Fixture, generateImage, getImageResponseSize, HTTPServer } from '@netlify/dev-utils'
@@ -12,6 +14,48 @@ import { withMockApi } from '../test/mock-api.js'
 describe('Handling requests', () => {
   afterEach(() => {
     vi.unstubAllEnvs()
+  })
+
+  test('Handles HTTP/2 Node.js requests', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+         publish = "public"
+      `,
+      )
+      .withFile('public/index.html', 'Hello from static file')
+    const directory = await fixture.create()
+    const dev = new NetlifyDev({
+      projectRoot: directory,
+      geolocation: { enabled: false },
+    })
+    await dev.start()
+
+    const nodeReq = new IncomingMessage(new Socket())
+    nodeReq.httpVersionMajor = 2
+    nodeReq.httpVersionMinor = 0
+    nodeReq.method = 'GET'
+    nodeReq.url = '/index.html'
+    nodeReq.headers = {
+      accept: 'text/html',
+      host: 'example.netlify.app',
+      'user-agent': 'test-agent',
+      // These four HTTP/2 pseudo request headers are required per the HTTP/2 spec:
+      // https://www.rfc-editor.org/rfc/rfc9113.html#name-request-pseudo-header-field
+      // These show up here like any other header on Node.js IncomingMessage objects,
+      ':method': 'GET',
+      ':path': '/index.html',
+      ':scheme': 'https',
+      ':authority': 'example.netlify.app',
+    }
+    const result = await dev.handleAndIntrospectNodeRequest(nodeReq)
+
+    expect(result?.response.ok).toBe(true)
+    expect(await result?.response.text()).toBe('Hello from static file')
+
+    await dev.stop()
+    await fixture.destroy()
   })
 
   describe('No linked site', () => {
