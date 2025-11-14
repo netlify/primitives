@@ -1500,7 +1500,7 @@ describe('deleteAll', () => {
       const mockStore = new MockFetch()
         .delete({
           headers: { authorization: `Bearer ${apiToken}` },
-          response: Response.json({ blobs_deleted: 3 }),
+          response: Response.json({ blobs_deleted: 3, has_more: false }),
           url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production`,
         })
         .inject()
@@ -1542,7 +1542,7 @@ describe('deleteAll', () => {
       const mockStore = new MockFetch()
         .delete({
           headers: { authorization: `Bearer ${apiToken}` },
-          response: Response.json({ blobs_deleted: 3 }),
+          response: Response.json({ blobs_deleted: 3, has_more: false }),
           url: `https://api.netlify.com/api/v1/blobs/${siteID}/oldie`,
         })
         .inject()
@@ -1565,7 +1565,7 @@ describe('deleteAll', () => {
       const mockStore = new MockFetch()
         .delete({
           headers: { authorization: `Bearer ${edgeToken}` },
-          response: Response.json({ blobs_deleted: 3 }),
+          response: Response.json({ blobs_deleted: 3, has_more: false }),
           url: `${edgeURL}/${siteID}/site:production`,
         })
         .inject()
@@ -1604,6 +1604,33 @@ describe('deleteAll', () => {
       )
 
       expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('Handles paginated deletion with multiple batches', async () => {
+      const mockStore = new MockFetch()
+        .delete({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: Response.json({ blobs_deleted: 100, has_more: true }),
+          url: `${edgeURL}/${siteID}/site:production`,
+        })
+        .delete({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: Response.json({ blobs_deleted: 50, has_more: false }),
+          url: `${edgeURL}/${siteID}/site:production`,
+        })
+        .inject()
+
+      const blobs = getStore({
+        edgeURL,
+        name: 'production',
+        token: edgeToken,
+        siteID,
+      })
+
+      const res = await blobs.deleteAll()
+
+      expect(mockStore.fulfilled).toBeTruthy()
+      expect(res.deletedBlobs).toBe(150)
     })
   })
 })

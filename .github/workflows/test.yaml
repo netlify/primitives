@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        node-version: ['*']
+        node-version: ['24']
         include:
           - os: ubuntu-latest
             # Many of our dependencies require 20.6.0, so we use the same minimum.
@@ -42,7 +42,7 @@ jobs:
       # Use npm@10 on Node 22+ due to https://github.com/npm/cli/issues/8489
       - name: Setup npm version
         run: npm install -g npm@10
-        if: "${{ matrix.node-version == '*' }}"
+        if: "${{ matrix.node-version == '24' }}"
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:

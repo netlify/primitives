@@ -152,20 +152,28 @@ export class Store {
   }
 
   async deleteAll(): Promise<DeleteStoreResult> {
-    const res = await this.client.makeRequest({ method: HTTPMethod.DELETE, storeName: this.name })
+    let totalDeletedBlobs = 0
+    let hasMore = true
 
-    if (res.status !== 200) {
-      throw new BlobsInternalError(res)
-    }
+    while (hasMore) {
+      const res = await this.client.makeRequest({ method: HTTPMethod.DELETE, storeName: this.name })
 
-    const data = (await res.json()) as DeleteStoreResponse
+      if (res.status !== 200) {
+        throw new BlobsInternalError(res)
+      }
 
-    if (typeof data.blobs_deleted !== 'number') {
-      throw new BlobsInternalError(res)
+      const data = (await res.json()) as DeleteStoreResponse
+
+      if (typeof data.blobs_deleted !== 'number') {
+        throw new BlobsInternalError(res)
+      }
+
+      totalDeletedBlobs += data.blobs_deleted
+      hasMore = typeof data.has_more === 'boolean' && data.has_more
     }
 
     return {
-      deletedBlobs: data.blobs_deleted,
+      deletedBlobs: totalDeletedBlobs,
     }
   }
 
