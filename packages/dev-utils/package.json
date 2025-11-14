@@ -68,7 +68,7 @@
     "parse-gitignore": "^2.0.0",
     "semver": "^7.7.2",
     "tmp-promise": "^3.0.3",
-    "uuid": "^11.1.0",
+    "uuid": "^13.0.0",
     "write-file-atomic": "^5.0.1"
   }
 }
