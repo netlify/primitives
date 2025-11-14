@@ -23,9 +23,6 @@ jobs:
             # But there is a blocking bug in 20.6.0, fixed in 20.6.1:
             # https://github.com/nuxt/nuxt/issues/23020#issuecomment-1719828889
             node-version: '20.6.1'
-          - os: ubuntu-latest
-            # Explicitly test the latest major release.
-            node-version: '24'
       fail-fast: false
     steps:
       # Increasing the maximum number of open files. See:
