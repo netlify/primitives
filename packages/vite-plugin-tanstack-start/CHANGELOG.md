@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0](https://github.com/netlify/primitives/compare/vite-plugin-tanstack-start-v1.1.12...vite-plugin-tanstack-start-v1.2.0) (2025-11-14)
+
+
+### Features
+
+* support node.js 24 ([#533](https://github.com/netlify/primitives/issues/533)) ([5d361ec](https://github.com/netlify/primitives/commit/5d361ec35325e191f41c0f185f7a2a348d19b5aa))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/vite-plugin bumped from ^2.7.12 to ^2.7.13
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.3.1 to ^4.3.2
+
 ## [1.1.12](https://github.com/netlify/primitives/compare/vite-plugin-tanstack-start-v1.1.11...vite-plugin-tanstack-start-v1.1.12) (2025-11-07)
 
 

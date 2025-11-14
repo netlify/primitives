@@ -1,5 +1,19 @@
 # Changelog
 
+## [10.4.0](https://github.com/netlify/primitives/compare/blobs-v10.3.3...blobs-v10.4.0) (2025-11-14)
+
+
+### Features
+
+* delete Blobs stores in batches ([#532](https://github.com/netlify/primitives/issues/532)) ([640b529](https://github.com/netlify/primitives/commit/640b529bbf9ff42e6eecd70412ea2f6dc1678ccd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.3.1 to 4.3.2
+
 ## [10.3.3](https://github.com/netlify/primitives/compare/blobs-v10.3.2...blobs-v10.3.3) (2025-11-05)
 
 

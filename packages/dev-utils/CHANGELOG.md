@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.2](https://github.com/netlify/primitives/compare/dev-utils-v4.3.1...dev-utils-v4.3.2) (2025-11-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency uuid to v13 ([#539](https://github.com/netlify/primitives/issues/539)) ([aedb279](https://github.com/netlify/primitives/commit/aedb279a24ad41d1db5db98d1e0e976e4a2db98a))
+
 ## [4.3.1](https://github.com/netlify/primitives/compare/dev-utils-v4.3.0...dev-utils-v4.3.1) (2025-11-05)
 
 

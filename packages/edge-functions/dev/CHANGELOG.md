@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.5](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.4...edge-functions-dev-v1.0.5) (2025-11-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/edge-bundler to ^14.8.7 ([#541](https://github.com/netlify/primitives/issues/541)) ([6fee541](https://github.com/netlify/primitives/commit/6fee541e05d67920ce500aafd8e7788c303bb7c0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.3.1 to 4.3.2
+
 ## [1.0.4](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.3...edge-functions-dev-v1.0.4) (2025-11-05)
 
 
