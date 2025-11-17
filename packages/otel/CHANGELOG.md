@@ -1,5 +1,21 @@
 # Changelog
 
+## [5.0.0](https://github.com/netlify/primitives/compare/otel-v4.3.2...otel-v5.0.0) (2025-11-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* use static imports ([#530](https://github.com/netlify/primitives/issues/530))
+
+### Features
+
+* use static imports ([#530](https://github.com/netlify/primitives/issues/530)) ([c78f7ad](https://github.com/netlify/primitives/commit/c78f7ad0189ec52eb6eebbf59da0eefd795e979b))
+
+
+### Bug Fixes
+
+* replace otlp exporter with local implementation ([#531](https://github.com/netlify/primitives/issues/531)) ([2d6b30a](https://github.com/netlify/primitives/commit/2d6b30a260064e4de56a681e398bf06778a2978c))
+
 ## [4.3.2](https://github.com/netlify/primitives/compare/otel-v4.3.1...otel-v4.3.2) (2025-10-27)
 
 

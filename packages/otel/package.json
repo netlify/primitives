@@ -1,6 +1,6 @@
 {
   "name": "@netlify/otel",
-  "version": "4.3.2",
+  "version": "5.0.0",
   "type": "module",
   "engines": {
     "node": "^18.14.0 || >=20.6.1"
