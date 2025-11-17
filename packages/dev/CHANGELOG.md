@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.8.2](https://github.com/netlify/primitives/compare/dev-v4.8.1...dev-v4.8.2) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.4.0 to 10.4.1
+    * @netlify/functions-dev bumped from 1.1.1 to 1.1.2
+    * @netlify/runtime bumped from 4.1.8 to 4.1.9
+
 ## [4.8.1](https://github.com/netlify/primitives/compare/dev-v4.8.0...dev-v4.8.1) (2025-11-14)
 
 

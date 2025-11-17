@@ -1,5 +1,14 @@
 # Changelog
 
+## [10.4.1](https://github.com/netlify/primitives/compare/blobs-v10.4.0...blobs-v10.4.1) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/otel bumped from ^4.3.2 to ^5.0.0
+
 ## [10.4.0](https://github.com/netlify/primitives/compare/blobs-v10.3.3...blobs-v10.4.0) (2025-11-14)
 
 
