@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.3](https://github.com/netlify/primitives/compare/dev-v4.8.2...dev-v4.8.3) (2025-11-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/config to v24 ([#415](https://github.com/netlify/primitives/issues/415)) ([5225265](https://github.com/netlify/primitives/commit/52252659d4809f8d9157739431674edb44e960a5))
+
 ## [4.8.2](https://github.com/netlify/primitives/compare/dev-v4.8.1...dev-v4.8.2) (2025-11-17)
 
 
