@@ -1,4 +1,6 @@
-import { trace } from '@opentelemetry/api'
+import process from 'node:process'
+
+import { trace } from '@opentelemetry/api/trace-api'
 import { SugaredTracer } from '@opentelemetry/api/experimental'
 import { Resource } from '@opentelemetry/resources'
 import { type Instrumentation, registerInstrumentations } from '@opentelemetry/instrumentation'
@@ -8,7 +10,6 @@ import { NodeTracerProvider, SimpleSpanProcessor, type SpanProcessor } from '@op
 import { GET_TRACER, SHUTDOWN_TRACERS } from '../constants.js'
 import { NetlifySpanExporter } from '../exporters/netlify.js'
 import packageJson from '../../package.json' with { type: 'json' }
-import process from 'node:process'
 
 export interface TracerProviderOptions {
   serviceName: string
@@ -22,6 +23,9 @@ export interface TracerProviderOptions {
 }
 
 export const createTracerProvider = (options: TracerProviderOptions) => {
+  // Prevent multiple tracers from being created
+  if (Object.getOwnPropertyNames(globalThis).includes(GET_TRACER)) return
+
   // remove the v prefix from the version to match the spec
   const runtimeVersion = process.version.slice(1)
 

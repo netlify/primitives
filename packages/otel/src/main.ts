@@ -1,6 +1,7 @@
-import { type SugaredSpanOptions, type SugaredTracer } from '@opentelemetry/api/experimental'
-import { GET_TRACER, SHUTDOWN_TRACERS } from './constants.js'
 import type { Context, Span } from '@opentelemetry/api'
+import type { SugaredSpanOptions, SugaredTracer } from '@opentelemetry/api/experimental'
+
+import { GET_TRACER, SHUTDOWN_TRACERS } from './constants.js'
 
 type GlobalThisExtended = typeof globalThis & {
   [GET_TRACER]?: (name?: string, version?: string) => SugaredTracer | undefined
