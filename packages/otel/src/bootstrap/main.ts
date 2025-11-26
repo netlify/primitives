@@ -1,6 +1,6 @@
 import process from 'node:process'
 
-import { trace } from '@opentelemetry/api/trace-api'
+import { trace } from '@opentelemetry/api'
 import { SugaredTracer } from '@opentelemetry/api/experimental'
 import { Resource } from '@opentelemetry/resources'
 import { type Instrumentation, registerInstrumentations } from '@opentelemetry/instrumentation'
