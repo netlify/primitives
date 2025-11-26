@@ -69,11 +69,7 @@ export function decodeName(string: string): string {
 
 // Allow users to pass in their own active span or defaults to creating a new active span
 export function withSpan<F extends (span?: Span) => ReturnType<F>>(span: Span | undefined, name: string, fn: F) {
-  if (span) {
-    // Standardize the name of the user's span with our local blob operations
-    span.updateName(name)
-    return fn(span)
-  }
+  if (span) return fn(span)
 
   return withActiveSpan(getTracer(), name, (span) => {
     return fn(span)
