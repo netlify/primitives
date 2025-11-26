@@ -24,7 +24,7 @@ export interface TracerProviderOptions {
 
 export const createTracerProvider = (options: TracerProviderOptions) => {
   // Prevent multiple tracers from being created
-  if (Object.getOwnPropertyNames(globalThis).includes(GET_TRACER)) return
+  if (Object.prototype.hasOwnProperty.call(globalThis, GET_TRACER)) return
 
   // remove the v prefix from the version to match the spec
   const runtimeVersion = process.version.slice(1)
