@@ -1124,7 +1124,7 @@ describe('Environment variable injection', () => {
       `,
       )
       .withFile(
-        'netlify/edge-functions/env-test.mjs',
+        'netlify/functions/env-test.mjs',
         `export default async (req, context) => Response.json({
            NETLIFY_LOCAL: Netlify.env.get("NETLIFY_LOCAL"),
            CONTEXT: Netlify.env.get("CONTEXT"),
@@ -1142,7 +1142,7 @@ describe('Environment variable injection', () => {
         enabled: true,
         injectUserEnv: false,
       },
-      edgeFunctions: {},
+      edgeFunctions: { enabled: false },
       geolocation: { enabled: false },
     })
 
@@ -1168,7 +1168,7 @@ describe('Environment variable injection', () => {
         enabled: true,
         injectUserEnv: true,
       },
-      edgeFunctions: {},
+      edgeFunctions: { enabled: false },
       geolocation: { enabled: false },
     })
 
