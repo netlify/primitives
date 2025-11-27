@@ -53,6 +53,15 @@ export interface Features {
    */
   environmentVariables?: {
     enabled?: boolean
+    /**
+     * Whether to inject user-defined environment variables from the linked site.
+     * When false, only platform environment variables (NETLIFY_LOCAL, CONTEXT, SITE_ID, etc.)
+     * are injected. When true, all environment variables including user-defined ones
+     * from Netlify UI, account, and config files are injected.
+     *
+     * {@default} true
+     */
+    injectUserEnv?: boolean
   }
 
   /**
@@ -181,6 +190,7 @@ export class NetlifyDev {
     blobs: boolean
     edgeFunctions: boolean
     environmentVariables: boolean
+    environmentVariablesInjectUserEnv: boolean
     functions: boolean
     geolocation: boolean
     headers: boolean
@@ -216,6 +226,7 @@ export class NetlifyDev {
       blobs: options.blobs?.enabled !== false,
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
+      environmentVariablesInjectUserEnv: options.environmentVariables?.injectUserEnv !== false,
       functions: options.functions?.enabled !== false,
       geolocation: options.geolocation?.enabled !== false,
       headers: options.headers?.enabled !== false,
@@ -517,6 +528,7 @@ export class NetlifyDev {
         accountSlug: config?.siteInfo?.account_slug,
         baseVariables: config?.env || {},
         envAPI: runtime.env,
+        injectUserEnv: this.#features.environmentVariablesInjectUserEnv,
         netlifyAPI: config?.api,
         siteID,
       })
