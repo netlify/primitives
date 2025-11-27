@@ -1126,11 +1126,11 @@ describe('Environment variable injection', () => {
       .withFile(
         'netlify/functions/env-test.mjs',
         `export default async (req, context) => Response.json({
-           NETLIFY_LOCAL: Netlify.env.get("NETLIFY_LOCAL"),
-           CONTEXT: Netlify.env.get("CONTEXT"),
-           MY_USER_VAR: Netlify.env.get("MY_USER_VAR"),
-         });
-         export const config = { path: "/env-test" };`,
+          NETLIFY_LOCAL: Netlify.env.get("NETLIFY_LOCAL"),
+          CONTEXT: Netlify.env.get("CONTEXT"),
+          MY_USER_VAR: Netlify.env.get("MY_USER_VAR"),
+        });
+        export const config = { path: "/env-test" };`,
       )
       .withStateFile({ siteId: 'site_id' })
     const directory = await fixture.create()

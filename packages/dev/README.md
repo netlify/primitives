@@ -30,7 +30,12 @@ import { NetlifyDev } from '@netlify/dev'
 const devServer = new NetlifyDev({
   blobs: { enabled: true },
   edgeFunctions: { enabled: true },
-  environmentVariables: { enabled: true },
+  environmentVariables: {
+    enabled: true,
+    // OPTIONAL: control whether user-defined environment variables are injected
+    // When false, only platform env vars (NETLIFY_LOCAL, CONTEXT, SITE_ID, etc.) are injected
+    injectUserEnv: true, // default: true
+  },
   functions: { enabled: true },
   redirects: { enabled: true },
   staticFiles: {

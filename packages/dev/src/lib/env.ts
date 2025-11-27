@@ -54,6 +54,15 @@ interface InjectEnvironmentVariablesOptions {
 }
 
 /**
+ * Determines if an environment variable is a platform variable.
+ * Platform variables are from 'general' or 'internal' sources and include
+ * documented runtime variables like NETLIFY_LOCAL, CONTEXT, SITE_ID, etc.
+ */
+const isPlatformEnvironmentVariable = (variable: EnvironmentVariable): boolean => {
+  return variable.sources.includes('general') || variable.sources.includes('internal')
+}
+
+/**
  * Inject user-defined environment variables (from various sources, see `@netlify/config`)
  * into the provided `envAPI` (which may be a proxy to `process.env`, affecting the current proc),
  * if `siteID` and `accountSlug` are provided.
@@ -89,8 +98,7 @@ export const injectEnvVariables = async ({
   // `@netlify/config` and/or Envelope. These have not been populated on the actual env yet.
   for (const [key, variable] of Object.entries(variables)) {
     // If injectUserEnv is false, only inject platform env vars (from 'general' and 'internal' sources)
-    const isPlatformVar = variable.sources.includes('general') || variable.sources.includes('internal')
-    if (!injectUserEnv && !isPlatformVar) {
+    if (!injectUserEnv && !isPlatformEnvironmentVariable(variable)) {
       continue
     }
 
