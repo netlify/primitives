@@ -35,7 +35,7 @@ The plugin accepts the following options:
   - `enabled` (boolean, default: `true`): Enable environment variable injection
   - `injectUserEnv` (boolean, default: `true`): Inject user-defined environment variables. When `false`, only platform
     environment variables (like `NETLIFY_LOCAL`, `CONTEXT`, `SITE_ID`) are injected, excluding user-defined variables
-    from Netlify UI or config files
+    from Netlify account settings, Netlify UI, config files, and addons
 - `functions`: Configure serverless functions
 - `headers`: Configure response headers
 - `images`: Configure Image CDN functionality
