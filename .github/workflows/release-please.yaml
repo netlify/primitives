@@ -28,7 +28,7 @@ jobs:
         with:
           token: ${{ steps.get-token.outputs.token }}
         if: github.event_name == 'push'
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         if: ${{ steps.release.outputs.releases_created || github.event_name == 'workflow_dispatch' }}
         with:
           token: ${{ steps.get-token.outputs.token }}
