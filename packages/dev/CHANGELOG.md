@@ -1,5 +1,24 @@
 # Changelog
 
+## [4.8.3](https://github.com/netlify/primitives/compare/dev-v4.8.2...dev-v4.8.3) (2025-12-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/config to v24 ([#415](https://github.com/netlify/primitives/issues/415)) ([5225265](https://github.com/netlify/primitives/commit/52252659d4809f8d9157739431674edb44e960a5))
+* **deps:** update netlify packages ([#549](https://github.com/netlify/primitives/issues/549)) ([ec4fb29](https://github.com/netlify/primitives/commit/ec4fb2978af5cf75c12645ade9f771bc94a796e2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.3 to ^0.3.4
+    * @netlify/blobs bumped from 10.4.1 to 10.4.2
+    * @netlify/edge-functions-dev bumped from 1.0.5 to 1.0.6
+    * @netlify/functions-dev bumped from 1.1.2 to 1.1.3
+    * @netlify/runtime bumped from 4.1.9 to 4.1.10
+
 ## [4.8.2](https://github.com/netlify/primitives/compare/dev-v4.8.1...dev-v4.8.2) (2025-11-17)
 
 

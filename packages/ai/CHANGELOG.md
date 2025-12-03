@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/netlify/primitives/compare/ai-v0.3.3...ai-v0.3.4) (2025-12-03)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#549](https://github.com/netlify/primitives/issues/549)) ([ec4fb29](https://github.com/netlify/primitives/commit/ec4fb2978af5cf75c12645ade9f771bc94a796e2))
+
 ## [0.3.3](https://github.com/netlify/primitives/compare/ai-v0.3.2...ai-v0.3.3) (2025-11-05)
 
 

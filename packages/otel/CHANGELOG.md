@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.1](https://github.com/netlify/primitives/compare/otel-v5.0.0...otel-v5.0.1) (2025-12-03)
+
+
+### Bug Fixes
+
+* prevent multiple instances of the tracer provider ([#545](https://github.com/netlify/primitives/issues/545)) ([0225010](https://github.com/netlify/primitives/commit/0225010a8d2caf553a4313d43889f9409a7fba94))
+
 ## [5.0.0](https://github.com/netlify/primitives/compare/otel-v4.3.2...otel-v5.0.0) (2025-11-17)
 
 
