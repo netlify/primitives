@@ -50,7 +50,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@netlify/api": "^14.0.10",
+    "@netlify/api": "^14.0.11",
     "@netlify/types": "2.2.0",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
@@ -58,7 +58,7 @@
   "dependencies": {
     "@netlify/ai": "^0.3.3",
     "@netlify/blobs": "10.4.1",
-    "@netlify/config": "^24.0.9",
+    "@netlify/config": "^24.1.1",
     "@netlify/dev-utils": "4.3.2",
     "@netlify/edge-functions-dev": "1.0.5",
     "@netlify/functions-dev": "1.1.2",

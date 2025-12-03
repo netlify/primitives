@@ -36,7 +36,7 @@ jobs:
       - name: Checkout tag for manual publish
         if: github.event_name == 'workflow_dispatch'
         run: git checkout ${{ github.event.inputs.tag }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '*'
           cache: 'npm'
@@ -50,7 +50,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: 2.2.4
+          deno-version: 2.5.6
       - run: npm ci
         if: ${{ steps.release.outputs.releases_created || github.event_name == 'workflow_dispatch' }}
       - name: Build packages
