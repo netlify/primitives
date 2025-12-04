@@ -1,3 +1,5 @@
+import * as diagnosticsChannel from 'diagnostics_channel'
+
 import * as api from '@opentelemetry/api'
 import { SugaredTracer } from '@opentelemetry/api/experimental'
 import { _globalThis } from '@opentelemetry/core'
@@ -14,9 +16,11 @@ export interface FetchInstrumentationConfig extends InstrumentationConfig {
 export class FetchInstrumentation implements Instrumentation {
   instrumentationName = '@netlify/otel/instrumentation-fetch'
   instrumentationVersion = '1.0.0'
-  private originalFetch: typeof fetch | null = null
   private config: FetchInstrumentationConfig
   private provider?: api.TracerProvider
+
+  declare private _channelSubs: ListenerRecord[]
+  private _recordFromReq = new WeakMap<UndiciRequest, api.Span>()
 
   constructor(config: FetchInstrumentationConfig = {}) {
     this.config = config
@@ -36,60 +40,50 @@ export class FetchInstrumentation implements Instrumentation {
     return this.provider
   }
 
-  private annotateFromRequest(span: api.Span, request: Request): void {
-    const extras = this.config.getRequestAttributes?.(request) ?? {}
-    const url = new URL(request.url)
+  private annotateFromRequest(span: api.Span, request: UndiciRequest): void {
+    // const extras = this.config.getRequestAttributes?.(request) ?? {}
+    const url = new URL(request.path, request.origin)
+
     // these are based on @opentelemetry/semantic-convention 1.36
     span.setAttributes({
-      ...extras,
+      // ...extras,
       'http.request.method': request.method,
       'url.full': url.href,
       'url.host': url.host,
       'url.scheme': url.protocol.slice(0, -1),
       'server.address': url.hostname,
       'server.port': url.port,
-      ...this.prepareHeaders('request', request.headers),
     })
   }
 
-  private annotateFromResponse(span: api.Span, response: Response): void {
-    const extras = this.config.getResponseAttributes?.(response) ?? {}
+  private annotateFromResponse(span: api.Span, response: UndiciResponse): void {
+    // const extras = this.config.getResponseAttributes?.(response) ?? {}
 
     // these are based on @opentelemetry/semantic-convention 1.36
     span.setAttributes({
-      ...extras,
-      'http.response.status_code': response.status,
-      ...this.prepareHeaders('response', response.headers),
+      // ...extras,
+      'http.response.status_code': response.statusCode,
+      'http.response.header.content-length': this.getContentLength(response),
     })
-    span.setStatus({ code: response.status >= 400 ? api.SpanStatusCode.ERROR : api.SpanStatusCode.UNSET })
+
+    span.setStatus({
+      code: response.statusCode >= 400 ? api.SpanStatusCode.ERROR : api.SpanStatusCode.UNSET,
+    })
   }
 
-  private prepareHeaders(type: 'request' | 'response', headers: Headers): api.Attributes {
-    if (this.config.skipHeaders === true) {
-      return {}
+  private getContentLength(response: UndiciResponse) {
+    for (let idx = 0; idx < response.headers.length; idx = idx + 2) {
+      const name = response.headers[idx].toString().toLowerCase()
+
+      if (name !== 'content-length') continue
+
+      const value = response.headers[idx + 1]
+      const contentLength = Number(value.toString())
+
+      if (!isNaN(contentLength)) return contentLength
     }
-    const everything = ['*', '/.*/']
-    const skips = this.config.skipHeaders ?? []
-    const redacts = this.config.redactHeaders ?? []
-    const everythingSkipped = skips.some((skip) => everything.includes(skip.toString()))
-    const attributes: api.Attributes = {}
-    if (everythingSkipped) return attributes
-    const entries = headers.entries()
-    for (const [key, value] of entries) {
-      if (skips.some((skip) => (typeof skip == 'string' ? skip == key : skip.test(key)))) {
-        continue
-      }
-      const attributeKey = `http.${type}.header.${key}`
-      if (
-        redacts === true ||
-        redacts.some((redact) => (typeof redact == 'string' ? redact == key : redact.test(key)))
-      ) {
-        attributes[attributeKey] = 'REDACTED'
-      } else {
-        attributes[attributeKey] = value
-      }
-    }
-    return attributes
+
+    return undefined
   }
 
   private getTracer(): SugaredTracer | undefined {
@@ -105,39 +99,132 @@ export class FetchInstrumentation implements Instrumentation {
     return new SugaredTracer(tracer)
   }
 
-  /**
-   * patch global fetch
-   */
   enable(): void {
-    const originalFetch = _globalThis.fetch
-    this.originalFetch = originalFetch
-    _globalThis.fetch = async (resource: RequestInfo | URL, options?: RequestInit): Promise<Response> => {
-      const url = typeof resource === 'string' ? resource : resource instanceof URL ? resource.href : resource.url
-      const tracer = this.getTracer()
-      if (
-        !tracer ||
-        this.config.skipURLs?.some((skip) => (typeof skip == 'string' ? url.startsWith(skip) : skip.test(url)))
-      ) {
-        return await originalFetch(resource, options)
-      }
-
-      return tracer.withActiveSpan('fetch', async (span) => {
-        const request = new Request(resource, options)
-        this.annotateFromRequest(span, request)
-        const response = await originalFetch(request, options)
-        this.annotateFromResponse(span, response)
-        return response
-      })
-    }
+    // https://undici.nodejs.org/#/docs/api/DiagnosticsChannel?id=diagnostics-channel-support
+    this.subscribe('undici:request:create', this.onRequestCreated.bind(this))
+    this.subscribe('undici:request:headers', this.onResponseHeaders.bind(this))
+    this.subscribe('undici:request:trailers', this.onDone.bind(this))
+    this.subscribe('undici:request:error', this.onError.bind(this))
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private subscribe(channelName: string, onMessage: (message: any, name: string | symbol) => void) {
+    diagnosticsChannel.subscribe(channelName, onMessage)
+
+    const unsubscribe = () => diagnosticsChannel.unsubscribe(channelName, onMessage)
+    this._channelSubs.push({ name: channelName, unsubscribe })
+  }
+
+  disable() {
+    this._channelSubs.forEach((sub) => {
+      sub.unsubscribe()
+    })
+    this._channelSubs.length = 0
+  }
+
+  private onRequestCreated({ request }: RequestMessage): void {
+    const tracer = this.getTracer()
+    if (!tracer) return
+
+    const activeCtx = api.context.active()
+
+    if (request.method === 'CONNECT') return
+
+    const span = tracer.startSpan(
+      // TODO - filter down request methods
+      request.method,
+      {
+        kind: api.SpanKind.CLIENT,
+      },
+      activeCtx,
+    )
+
+    this.annotateFromRequest(span, request)
+
+    this._recordFromReq.set(request, span)
+  }
+
+  private onResponseHeaders({ request, response }: ResponseHeadersMessage): void {
+    const span = this._recordFromReq.get(request)
+
+    if (!span) return
+
+    this.annotateFromResponse(span, response)
+  }
+
+  private onError({ request, error }: RequestErrorMessage): void {
+    const span = this._recordFromReq.get(request)
+    if (!span) return
+
+    span.recordException(error)
+    span.setStatus({
+      code: api.SpanStatusCode.ERROR,
+      message: error.message,
+    })
+
+    span.end()
+    this._recordFromReq.delete(request)
+  }
+
+  private onDone({ request }: RequestTrailersMessage): void {
+    const span = this._recordFromReq.get(request)
+
+    if (!span) return
+
+    span.end()
+    this._recordFromReq.delete(request)
+  }
+}
+
+interface ListenerRecord {
+  name: string
+  unsubscribe: () => void
+}
+
+interface RequestMessage {
+  request: UndiciRequest
+}
+
+interface ResponseHeadersMessage {
+  request: UndiciRequest
+  response: UndiciResponse
+}
+
+interface RequestErrorMessage {
+  request: UndiciRequest
+  error: Error
+}
+
+interface RequestTrailersMessage {
+  request: UndiciRequest
+  response: UndiciResponse
+}
+
+interface UndiciRequest {
+  origin: string
+  method: string
+  path: string
   /**
-   * unpatch global fetch
+   * Serialized string of headers in the form `name: value\r\n` for v5
+   * Array of strings `[key1, value1, key2, value2]`, where values are
+   * `string | string[]` for v6
    */
-  disable(): void {
-    if (this.originalFetch) {
-      _globalThis.fetch = this.originalFetch
-      this.originalFetch = null
-    }
-  }
+  headers: string | (string | string[])[]
+  /**
+   * Helper method to add headers (from v6)
+   */
+  addHeader: (name: string, value: string) => void
+  throwOnError: boolean
+  completed: boolean
+  aborted: boolean
+  idempotent: boolean
+  contentLength: number | null
+  contentType: string | null
+  body: unknown
+}
+
+interface UndiciResponse {
+  headers: Buffer[]
+  statusCode: number
+  statusText: string
 }
