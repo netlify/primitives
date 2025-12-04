@@ -129,10 +129,10 @@ export class FetchInstrumentation implements Instrumentation {
 
   enable(): void {
     // https://undici.nodejs.org/#/docs/api/DiagnosticsChannel?id=diagnostics-channel-support
-    this.subscribe('undici:request:create', this.onRequestCreated.bind(this))
-    this.subscribe('undici:request:headers', this.onResponseHeaders.bind(this))
-    this.subscribe('undici:request:trailers', this.onDone.bind(this))
-    this.subscribe('undici:request:error', this.onError.bind(this))
+    this.subscribe('undici:request:create', this.onRequestCreate.bind(this))
+    this.subscribe('undici:request:headers', this.onRequestHeaders.bind(this))
+    this.subscribe('undici:request:trailers', this.onRequestEnd.bind(this))
+    this.subscribe('undici:request:error', this.onRequestError.bind(this))
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -150,7 +150,7 @@ export class FetchInstrumentation implements Instrumentation {
     this._channelSubs.length = 0
   }
 
-  private onRequestCreated({ request }: { request: FetchRequest }): void {
+  private onRequestCreate({ request }: { request: FetchRequest }): void {
     const tracer = this.getTracer()
     const url = new URL(request.path, request.origin)
 
@@ -177,14 +177,14 @@ export class FetchInstrumentation implements Instrumentation {
     this._recordFromReq.set(request, span)
   }
 
-  private onResponseHeaders({ request, response }: { request: FetchRequest; response: FetchResponse }): void {
+  private onRequestHeaders({ request, response }: { request: FetchRequest; response: FetchResponse }): void {
     const span = this._recordFromReq.get(request)
     if (!span) return
 
     this.annotateFromResponse(span, response)
   }
 
-  private onError({ request, error }: { request: FetchRequest; error: Error }): void {
+  private onRequestError({ request, error }: { request: FetchRequest; error: Error }): void {
     const span = this._recordFromReq.get(request)
     if (!span) return
 
@@ -198,7 +198,7 @@ export class FetchInstrumentation implements Instrumentation {
     this._recordFromReq.delete(request)
   }
 
-  private onDone({ request }: { request: FetchRequest; response: FetchResponse }): void {
+  private onRequestEnd({ request }: { request: FetchRequest; response: FetchResponse }): void {
     const span = this._recordFromReq.get(request)
     if (!span) return
 
