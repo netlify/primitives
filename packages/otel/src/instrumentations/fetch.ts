@@ -128,6 +128,9 @@ export class FetchInstrumentation implements Instrumentation {
   }
 
   enable(): void {
+    // Avoid to duplicate subscriptions
+    if (this._channelSubs.length > 0) return
+
     // https://undici.nodejs.org/#/docs/api/DiagnosticsChannel?id=diagnostics-channel-support
     this.subscribe('undici:request:create', this.onRequestCreate.bind(this))
     this.subscribe('undici:request:headers', this.onRequestHeaders.bind(this))
