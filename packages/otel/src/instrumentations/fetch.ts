@@ -6,8 +6,8 @@ import { _globalThis } from '@opentelemetry/core'
 import { InstrumentationConfig, type Instrumentation } from '@opentelemetry/instrumentation'
 
 export interface FetchInstrumentationConfig extends InstrumentationConfig {
-  getRequestAttributes?(headers: Request): api.Attributes
-  getResponseAttributes?(response: Response): api.Attributes
+  getRequestAttributes?(request: FetchRequest): api.Attributes
+  getResponseAttributes?(response: FetchResponse): api.Attributes
   skipURLs?: (string | RegExp)[]
   skipHeaders?: (string | RegExp)[] | true
   redactHeaders?: (string | RegExp)[] | true
@@ -20,7 +20,7 @@ export class FetchInstrumentation implements Instrumentation {
   private provider?: api.TracerProvider
 
   declare private _channelSubs: ListenerRecord[]
-  private _recordFromReq = new WeakMap<UndiciRequest, api.Span>()
+  private _recordFromReq = new WeakMap<FetchRequest, api.Span>()
 
   constructor(config: FetchInstrumentationConfig = {}) {
     this.config = config
@@ -40,30 +40,31 @@ export class FetchInstrumentation implements Instrumentation {
     return this.provider
   }
 
-  private annotateFromRequest(span: api.Span, request: UndiciRequest): void {
-    // const extras = this.config.getRequestAttributes?.(request) ?? {}
+  private annotateFromRequest(span: api.Span, request: FetchRequest): void {
+    const extras = this.config.getRequestAttributes?.(request) ?? {}
     const url = new URL(request.path, request.origin)
 
     // these are based on @opentelemetry/semantic-convention 1.36
     span.setAttributes({
-      // ...extras,
+      ...extras,
       'http.request.method': request.method,
       'url.full': url.href,
       'url.host': url.host,
       'url.scheme': url.protocol.slice(0, -1),
       'server.address': url.hostname,
       'server.port': url.port,
+      ...this.prepareHeaders('request', request.headers),
     })
   }
 
-  private annotateFromResponse(span: api.Span, response: UndiciResponse): void {
-    // const extras = this.config.getResponseAttributes?.(response) ?? {}
+  private annotateFromResponse(span: api.Span, response: FetchResponse): void {
+    const extras = this.config.getResponseAttributes?.(response) ?? {}
 
     // these are based on @opentelemetry/semantic-convention 1.36
     span.setAttributes({
-      // ...extras,
+      ...extras,
       'http.response.status_code': response.statusCode,
-      'http.response.header.content-length': this.getContentLength(response),
+      ...this.prepareHeaders('response', response.headers),
     })
 
     span.setStatus({
@@ -71,19 +72,46 @@ export class FetchInstrumentation implements Instrumentation {
     })
   }
 
-  private getContentLength(response: UndiciResponse) {
-    for (let idx = 0; idx < response.headers.length; idx = idx + 2) {
-      const name = response.headers[idx].toString().toLowerCase()
+  private prepareHeaders(
+    type: 'request' | 'response',
+    headers: FetchRequest['headers'] | FetchResponse['headers'],
+  ): api.Attributes {
+    if (this.config.skipHeaders === true) {
+      return {}
+    }
+    const everything = ['*', '/.*/']
+    const skips = this.config.skipHeaders ?? []
+    const redacts = this.config.redactHeaders ?? []
+    const everythingSkipped = skips.some((skip) => everything.includes(skip.toString()))
+    const attributes: api.Attributes = {}
+    if (everythingSkipped) return attributes
+    for (let idx = 0; idx < headers.length; idx = idx + 2) {
+      const key = headers[idx].toString().toLowerCase()
+      const value = headers[idx + 1].toString()
+      if (skips.some((skip) => (typeof skip == 'string' ? skip == key : skip.test(key)))) {
+        continue
+      }
+      const attributeKey = `http.${type}.header.${key}`
+      if (
+        redacts === true ||
+        redacts.some((redact) => (typeof redact == 'string' ? redact == key : redact.test(key)))
+      ) {
+        attributes[attributeKey] = 'REDACTED'
+      } else {
+        attributes[attributeKey] = value
+      }
+    }
+    return attributes
+  }
 
-      if (name !== 'content-length') continue
+  private getRequestMethod(original: string): string {
+    const acceptedMethods = ['HEAD', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 
-      const value = response.headers[idx + 1]
-      const contentLength = Number(value.toString())
-
-      if (!isNaN(contentLength)) return contentLength
+    if (acceptedMethods.includes(original.toUpperCase())) {
+      return original.toUpperCase()
     }
 
-    return undefined
+    return '_OTHER'
   }
 
   private getTracer(): SugaredTracer | undefined {
@@ -122,17 +150,22 @@ export class FetchInstrumentation implements Instrumentation {
     this._channelSubs.length = 0
   }
 
-  private onRequestCreated({ request }: RequestMessage): void {
+  private onRequestCreated({ request }: { request: FetchRequest }): void {
     const tracer = this.getTracer()
-    if (!tracer) return
+    const url = new URL(request.path, request.origin)
+
+    if (
+      !tracer ||
+      request.method === 'CONNECT' ||
+      this.config.skipURLs?.some((skip) => (typeof skip == 'string' ? url.href.startsWith(skip) : skip.test(url.href)))
+    ) {
+      return
+    }
 
     const activeCtx = api.context.active()
 
-    if (request.method === 'CONNECT') return
-
     const span = tracer.startSpan(
-      // TODO - filter down request methods
-      request.method,
+      this.getRequestMethod(request.method),
       {
         kind: api.SpanKind.CLIENT,
       },
@@ -144,15 +177,14 @@ export class FetchInstrumentation implements Instrumentation {
     this._recordFromReq.set(request, span)
   }
 
-  private onResponseHeaders({ request, response }: ResponseHeadersMessage): void {
+  private onResponseHeaders({ request, response }: { request: FetchRequest; response: FetchResponse }): void {
     const span = this._recordFromReq.get(request)
-
     if (!span) return
 
     this.annotateFromResponse(span, response)
   }
 
-  private onError({ request, error }: RequestErrorMessage): void {
+  private onError({ request, error }: { request: FetchRequest; error: Error }): void {
     const span = this._recordFromReq.get(request)
     if (!span) return
 
@@ -166,9 +198,8 @@ export class FetchInstrumentation implements Instrumentation {
     this._recordFromReq.delete(request)
   }
 
-  private onDone({ request }: RequestTrailersMessage): void {
+  private onDone({ request }: { request: FetchRequest; response: FetchResponse }): void {
     const span = this._recordFromReq.get(request)
-
     if (!span) return
 
     span.end()
@@ -181,38 +212,12 @@ interface ListenerRecord {
   unsubscribe: () => void
 }
 
-interface RequestMessage {
-  request: UndiciRequest
-}
-
-interface ResponseHeadersMessage {
-  request: UndiciRequest
-  response: UndiciResponse
-}
-
-interface RequestErrorMessage {
-  request: UndiciRequest
-  error: Error
-}
-
-interface RequestTrailersMessage {
-  request: UndiciRequest
-  response: UndiciResponse
-}
-
-interface UndiciRequest {
+// https://github.com/open-telemetry/opentelemetry-js-contrib/blob/main/packages/instrumentation-undici/src/types.ts
+interface FetchRequest {
   origin: string
   method: string
   path: string
-  /**
-   * Serialized string of headers in the form `name: value\r\n` for v5
-   * Array of strings `[key1, value1, key2, value2]`, where values are
-   * `string | string[]` for v6
-   */
   headers: string | (string | string[])[]
-  /**
-   * Helper method to add headers (from v6)
-   */
   addHeader: (name: string, value: string) => void
   throwOnError: boolean
   completed: boolean
@@ -223,7 +228,7 @@ interface UndiciRequest {
   body: unknown
 }
 
-interface UndiciResponse {
+interface FetchResponse {
   headers: Buffer[]
   statusCode: number
   statusText: string
