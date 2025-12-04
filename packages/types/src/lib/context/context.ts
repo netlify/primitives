@@ -16,6 +16,7 @@ export interface Context {
     context: string
     id: string
     published: boolean
+    skewProtectionToken?: string
   }
   geo: Geo
   ip: string
