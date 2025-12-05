@@ -14,11 +14,7 @@ describe('header exclusion', () => {
     // eslint-disable-next-line @typescript-eslint/dot-notation
     const attributes = instrumentation['prepareHeaders'](
       'request',
-      new Headers({
-        a: 'a',
-        b: 'b',
-        authorization: 'secret',
-      }),
+      ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
     )
     expect(attributes).toEqual({
       'http.request.header.a': 'a',
@@ -33,11 +29,7 @@ describe('header exclusion', () => {
     // eslint-disable-next-line @typescript-eslint/dot-notation
     const empty = everything['prepareHeaders'](
       'request',
-      new Headers({
-        a: 'a',
-        b: 'b',
-        authorization: 'secret',
-      }),
+      ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
     )
     expect(empty).toEqual({})
   })
@@ -50,13 +42,9 @@ describe('header exclusion', () => {
     // eslint-disable-next-line @typescript-eslint/dot-notation
     const attributes = instrumentation['prepareHeaders'](
       'request',
-      new Headers({
-        a: 'a',
-        b: 'b',
-        authorization: 'a secret',
-      }),
+      ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
     )
-    expect(attributes['http.request.header.authorization']).not.toBe('a secret')
+    expect(attributes['http.request.header.authorization']).not.toBe('secret')
     expect(attributes['http.request.header.authorization']).toBeTypeOf('string')
     expect(attributes['http.request.header.a']).toBe('a')
     expect(attributes['http.request.header.b']).toBe('b')
@@ -70,11 +58,7 @@ describe('header exclusion', () => {
     // eslint-disable-next-line @typescript-eslint/dot-notation
     const attributes = instrumentation['prepareHeaders'](
       'request',
-      new Headers({
-        a: 'a',
-        b: 'b',
-        authorization: 'a secret',
-      }),
+      ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
     )
     expect(attributes['http.request.header.authorization']).not.toBe('a secret')
     expect(attributes['http.request.header.a']).not.toBe('a')
