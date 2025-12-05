@@ -24,6 +24,7 @@ export class FetchInstrumentation implements Instrumentation {
 
   constructor(config: FetchInstrumentationConfig = {}) {
     this.config = config
+    this._channelSubs = []
   }
 
   getConfig(): FetchInstrumentationConfig {
