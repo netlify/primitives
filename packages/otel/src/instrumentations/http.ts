@@ -1,15 +1,14 @@
 import * as diagnosticsChannel from 'diagnostics_channel'
-import type { ClientRequest, IncomingMessage } from 'http'
+import type { ClientRequest, IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders } from 'http'
 
 import * as api from '@opentelemetry/api'
 import { SugaredTracer } from '@opentelemetry/api/experimental'
 import { _globalThis } from '@opentelemetry/core'
 import { Instrumentation, InstrumentationConfig } from '@opentelemetry/instrumentation'
-import { context, SpanKind } from '@netlify/otel/opentelemetry'
 
 export interface HttpInstrumentationConfig extends InstrumentationConfig {
-  getRequestAttributes?(headers: Request): api.Attributes
-  getResponseAttributes?(response: Response): api.Attributes
+  getRequestAttributes?(request: ClientRequest): api.Attributes
+  getResponseAttributes?(response: IncomingMessage): api.Attributes
   skipURLs?: (string | RegExp)[]
   skipHeaders?: (string | RegExp)[] | true
   redactHeaders?: (string | RegExp)[] | true
@@ -43,33 +42,75 @@ export class HttpInstrumentation implements Instrumentation {
   }
 
   private annotateFromRequest(span: api.Span, request: ClientRequest): void {
-    // const extras = this.config.getRequestAttributes?.(request) ?? {};
+    const extras = this.config.getRequestAttributes?.(request) ?? {}
     const url = new URL(request.path, `${request.protocol}//${request.host}`)
 
     // these are based on @opentelemetry/semantic-convention 1.36
     span.setAttributes({
-      // ...extras,
+      ...extras,
       'http.request.method': request.method,
       'url.full': url.href,
       'url.host': url.host,
       'url.scheme': url.protocol.slice(0, -1),
       'server.address': url.hostname,
+      ...this.prepareHeaders('request', request.getHeaders()),
     })
   }
 
   private annotateFromResponse(span: api.Span, response: IncomingMessage): void {
-    // const extras = this.config.getResponseAttributes?.(response) ?? {};
+    const extras = this.config.getResponseAttributes?.(response) ?? {}
 
     // these are based on @opentelemetry/semantic-convention 1.36
     span.setAttributes({
-      // ...extras,
+      ...extras,
       'http.response.status_code': response.statusCode,
-      'http.response.header.content-length': response.headers['content-length'],
+      ...this.prepareHeaders('response', response.headers),
     })
 
     span.setStatus({
       code: response.statusCode && response.statusCode >= 400 ? api.SpanStatusCode.ERROR : api.SpanStatusCode.UNSET,
     })
+  }
+
+  private prepareHeaders(
+    type: 'request' | 'response',
+    headers: IncomingHttpHeaders | OutgoingHttpHeaders,
+  ): api.Attributes {
+    if (this.config.skipHeaders === true) {
+      return {}
+    }
+    const everything = ['*', '/.*/']
+    const skips = this.config.skipHeaders ?? []
+    const redacts = this.config.redactHeaders ?? []
+    const everythingSkipped = skips.some((skip) => everything.includes(skip.toString()))
+    const attributes: api.Attributes = {}
+    if (everythingSkipped) return attributes
+    const entries = Object.entries(headers)
+    for (const [key, value] of entries) {
+      if (skips.some((skip) => (typeof skip == 'string' ? skip == key : skip.test(key)))) {
+        continue
+      }
+      const attributeKey = `http.${type}.header.${key}`
+      if (
+        redacts === true ||
+        redacts.some((redact) => (typeof redact == 'string' ? redact == key : redact.test(key)))
+      ) {
+        attributes[attributeKey] = 'REDACTED'
+      } else {
+        attributes[attributeKey] = value
+      }
+    }
+    return attributes
+  }
+
+  private getRequestMethod(original: string): string {
+    const acceptedMethods = ['HEAD', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+
+    if (acceptedMethods.includes(original.toUpperCase())) {
+      return original.toUpperCase()
+    }
+
+    return '_OTHER'
   }
 
   getTracer() {
@@ -105,13 +146,11 @@ export class HttpInstrumentation implements Instrumentation {
     if (!tracer) return
 
     const span = tracer.startSpan(
-      // TODO - filter down request methods
-      request.method,
+      this.getRequestMethod(request.method),
       {
-        kind: SpanKind.CLIENT,
-        attributes: {},
+        kind: api.SpanKind.CLIENT,
       },
-      context.active(),
+      api.context.active(),
     )
 
     this.annotateFromRequest(span, request)
