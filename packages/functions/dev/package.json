@@ -45,7 +45,7 @@
     "@netlify/blobs": "10.4.2",
     "@netlify/dev-utils": "4.3.2",
     "@netlify/functions": "5.1.0",
-    "@netlify/zip-it-and-ship-it": "^14.1.14",
+    "@netlify/zip-it-and-ship-it": "^14.1.15",
     "cron-parser": "^4.9.0",
     "decache": "^4.6.2",
     "extract-zip": "^2.0.1",
