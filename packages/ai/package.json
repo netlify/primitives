@@ -61,7 +61,7 @@
   "devDependencies": {
     "@types/node": "20.14.15",
     "npm-run-all2": "^7.0.2",
-    "tsup": "8.5.0",
+    "tsup": "8.5.1",
     "typescript": "5.9.2",
     "vitest": "^3.0.0"
   },
