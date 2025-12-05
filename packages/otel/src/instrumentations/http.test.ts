@@ -60,7 +60,7 @@ describe('header exclusion', () => {
       b: 'b',
       authorization: 'secret',
     })
-    expect(attributes['http.request.header.authorization']).not.toBe('a secret')
+    expect(attributes['http.request.header.authorization']).not.toBe('secret')
     expect(attributes['http.request.header.a']).not.toBe('a')
     expect(attributes['http.request.header.b']).not.toBe('b')
     expect(attributes['http.request.header.authorization']).toBeTypeOf('string')
