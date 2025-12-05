@@ -166,14 +166,12 @@ export class FetchInstrumentation implements Instrumentation {
       return
     }
 
-    const activeCtx = api.context.active()
-
     const span = tracer.startSpan(
       this.getRequestMethod(request.method),
       {
         kind: api.SpanKind.CLIENT,
       },
-      activeCtx,
+      api.context.active(),
     )
 
     this.annotateFromRequest(span, request)
