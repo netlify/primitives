@@ -42,8 +42,24 @@ interface InjectEnvironmentVariablesOptions {
   accountSlug?: string
   baseVariables: Record<string, EnvironmentVariable>
   envAPI: EnvironmentVariables
+  /**
+   * Whether to inject user-defined environment variables.
+   * When false, only platform environment variables (from 'general' and 'internal' sources)
+   * are injected. When true, all environment variables are injected.
+   * @default true
+   */
+  injectUserEnv?: boolean
   netlifyAPI?: NetlifyAPI
   siteID?: string
+}
+
+/**
+ * Determines if an environment variable is a platform variable.
+ * Platform variables are from 'general' or 'internal' sources and include
+ * documented runtime variables like NETLIFY_LOCAL, CONTEXT, SITE_ID, etc.
+ */
+const isPlatformEnvironmentVariable = (variable: EnvironmentVariable): boolean => {
+  return variable.sources.includes('general') || variable.sources.includes('internal')
 }
 
 /**
@@ -61,6 +77,7 @@ export const injectEnvVariables = async ({
   accountSlug,
   baseVariables = {},
   envAPI,
+  injectUserEnv = true,
   netlifyAPI,
   siteID,
 }: InjectEnvironmentVariablesOptions) => {
@@ -80,6 +97,11 @@ export const injectEnvVariables = async ({
   // Inject env vars which come from multiple `source`s and have been collected from
   // `@netlify/config` and/or Envelope. These have not been populated on the actual env yet.
   for (const [key, variable] of Object.entries(variables)) {
+    // If injectUserEnv is false, only inject platform env vars (from 'general' and 'internal' sources)
+    if (!injectUserEnv && !isPlatformEnvironmentVariable(variable)) {
+      continue
+    }
+
     const existsInProcess = envAPI.has(key)
     const [usedSource, ...overriddenSources] = existsInProcess ? ['process', ...variable.sources] : variable.sources
     const isInternal = variable.sources.includes('internal')
