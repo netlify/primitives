@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.1.0](https://github.com/netlify/primitives/compare/otel-v5.0.1...otel-v5.1.0) (2025-12-05)
+
+
+### Features
+
+* HttpInstrumentation ([#555](https://github.com/netlify/primitives/issues/555)) ([a666b89](https://github.com/netlify/primitives/commit/a666b89259be76fb8d88b5a4b87f7895ca8f6480))
+* non-conflicting fetch instrumentation ([#554](https://github.com/netlify/primitives/issues/554)) ([412986e](https://github.com/netlify/primitives/commit/412986e35e65da8b31ad5048d4e2a7eae1b2f6f0))
+
 ## [5.0.1](https://github.com/netlify/primitives/compare/otel-v5.0.0...otel-v5.0.1) (2025-12-03)
 
 

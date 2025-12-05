@@ -1,6 +1,6 @@
 {
   "name": "@netlify/runtime",
-  "version": "4.1.10",
+  "version": "4.1.11",
   "description": "Netlify compute runtime",
   "type": "module",
   "engines": {
@@ -33,13 +33,13 @@
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/blobs": "^10.4.2",
-    "@netlify/cache": "3.3.3",
+    "@netlify/blobs": "^10.4.3",
+    "@netlify/cache": "3.3.4",
     "@netlify/runtime-utils": "2.2.1",
-    "@netlify/types": "2.2.0"
+    "@netlify/types": "2.3.0"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "^4.3.2",
+    "@netlify/dev-utils": "^4.3.3",
     "@types/node": "^20.17.57",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
