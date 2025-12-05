@@ -25,6 +25,7 @@ export class HttpInstrumentation implements Instrumentation {
 
   constructor(config = {}) {
     this.config = config
+    this._channelSubs = []
   }
 
   getConfig() {
@@ -128,6 +129,9 @@ export class HttpInstrumentation implements Instrumentation {
   }
 
   enable() {
+    // Avoid to duplicate subscriptions
+    if (this._channelSubs.length > 0) return
+
     // https://nodejs.org/docs/latest-v20.x/api/diagnostics_channel.html#http
     this.subscribe('http.client.request.start', this.onRequest.bind(this))
     this.subscribe('http.client.response.finish', this.onResponse.bind(this))
