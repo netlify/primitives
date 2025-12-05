@@ -66,6 +66,20 @@
         "default": "./dist/instrumentations/fetch.js"
       }
     },
+    "./instrumentation-http": {
+      "require": {
+        "types": "./dist/instrumentations/http.d.cts",
+        "default": "./dist/instrumentations/http.cjs"
+      },
+      "import": {
+        "types": "./dist/instrumentations/http.d.ts",
+        "default": "./dist/instrumentations/http.js"
+      },
+      "default": {
+        "types": "./dist/instrumentations/http.d.ts",
+        "default": "./dist/instrumentations/http.js"
+      }
+    },
     "./opentelemetry": {
       "require": {
         "types": "./dist/opentelemetry.d.cts",
