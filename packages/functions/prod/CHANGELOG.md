@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.1.1](https://github.com/netlify/primitives/compare/functions-v5.1.0...functions-v5.1.1) (2025-12-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 2.2.0 to 2.3.0
+
 ## [5.1.0](https://github.com/netlify/primitives/compare/functions-v5.0.1...functions-v5.1.0) (2025-11-05)
 
 

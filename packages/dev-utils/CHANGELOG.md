@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.3.3](https://github.com/netlify/primitives/compare/dev-utils-v4.3.2...dev-utils-v4.3.3) (2025-12-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.2.0 to 2.3.0
+
 ## [4.3.2](https://github.com/netlify/primitives/compare/dev-utils-v4.3.1...dev-utils-v4.3.2) (2025-11-14)
 
 
