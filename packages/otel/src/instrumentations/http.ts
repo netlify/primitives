@@ -147,7 +147,14 @@ export class HttpInstrumentation implements Instrumentation {
 
   private onRequest({ request }: { request: ClientRequest }): void {
     const tracer = this.getTracer()
-    if (!tracer) return
+    const url = new URL(request.path, `${request.protocol}//${request.host}`)
+
+    if (
+      !tracer ||
+      this.config.skipURLs?.some((skip) => (typeof skip == 'string' ? url.href.startsWith(skip) : skip.test(url.href)))
+    ) {
+      return
+    }
 
     const span = tracer.startSpan(
       this.getRequestMethod(request.method),
