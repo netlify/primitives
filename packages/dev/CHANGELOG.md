@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.8.4](https://github.com/netlify/primitives/compare/dev-v4.8.3...dev-v4.8.4) (2025-12-08)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#557](https://github.com/netlify/primitives/issues/557)) ([60644bf](https://github.com/netlify/primitives/commit/60644bf6863a0ba41d9e73b0d8d1cfa90205c963))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.4 to ^0.3.5
+    * @netlify/blobs bumped from 10.4.2 to 10.4.3
+    * @netlify/dev-utils bumped from 4.3.2 to 4.3.3
+    * @netlify/edge-functions-dev bumped from 1.0.6 to 1.0.7
+    * @netlify/functions-dev bumped from 1.1.3 to 1.1.4
+    * @netlify/headers bumped from 2.1.2 to 2.1.3
+    * @netlify/images bumped from 1.3.2 to 1.3.3
+    * @netlify/redirects bumped from 3.1.3 to 3.1.4
+    * @netlify/runtime bumped from 4.1.10 to 4.1.11
+    * @netlify/static bumped from 3.1.2 to 3.1.3
+  * devDependencies
+    * @netlify/types bumped from 2.2.0 to 2.3.0
+
 ## [4.8.3](https://github.com/netlify/primitives/compare/dev-v4.8.2...dev-v4.8.3) (2025-12-03)
 
 
