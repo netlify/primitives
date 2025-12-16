@@ -112,7 +112,7 @@ describe('fetch instrumentation (integration)', () => {
     await server.stop()
   })
 
-  it('can GET url', async () => {
+  it('GET', async () => {
     const headers = new Headers({ a: 'a' })
     headers.append('b', 'b')
     headers.set('c', 'c')

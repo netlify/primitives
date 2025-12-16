@@ -117,7 +117,7 @@ describe('http instrumentation (integration)', () => {
     await server.stop()
   })
 
-  it.skipIf(process.version.startsWith('v18'))('can GET url', async () => {
+  it.skipIf(process.version.startsWith('v18'))('GET', async () => {
     const request = (options: object): Promise<{ statusCode?: number; body?: string }> =>
       new Promise((resolve, reject) => {
         // Inspired from https://gist.github.com/ktheory/df3440b01d4b9d3197180d5254d7fb65
