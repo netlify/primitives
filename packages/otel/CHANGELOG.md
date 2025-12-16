@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.1](https://github.com/netlify/primitives/compare/otel-v5.1.0...otel-v5.1.1) (2025-12-16)
+
+
+### Bug Fixes
+
+* instrumentation headers type safety ([#560](https://github.com/netlify/primitives/issues/560)) ([0352005](https://github.com/netlify/primitives/commit/0352005c2613fdb9683ba41e43af7f54018eb719))
+
 ## [5.1.0](https://github.com/netlify/primitives/compare/otel-v5.0.1...otel-v5.1.0) (2025-12-08)
 
 
