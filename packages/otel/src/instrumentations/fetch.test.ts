@@ -135,8 +135,8 @@ describe('fetch instrumentation (integration)', () => {
       }),
     )
 
-    // Request headers are skipped in Node 18
-    if (!process.version.startsWith('v18')) {
+    // Skip request headers when values are a single string instead of a string array
+    if (!process.version.startsWith('v18') && process.version !== 'v20.6.1') {
       expect(resultSpan.attributes).toEqual(
         expect.objectContaining({
           'http.request.header.a': 'a',
