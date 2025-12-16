@@ -146,55 +146,66 @@ export class HttpInstrumentation implements Instrumentation {
   }
 
   private onRequest({ request }: { request: ClientRequest }): void {
-    const tracer = this.getTracer()
-    const url = new URL(request.path, `${request.protocol}//${request.host}`)
+    // If our code raises an exception, we don't want this to affect user code
+    try {
+      const tracer = this.getTracer()
+      const url = new URL(request.path, `${request.protocol}//${request.host}`)
 
-    if (
-      !tracer ||
-      this.config.skipURLs?.some((skip) => (typeof skip == 'string' ? url.href.startsWith(skip) : skip.test(url.href)))
-    ) {
-      return
-    }
+      if (
+        !tracer ||
+        this.config.skipURLs?.some((skip) =>
+          typeof skip == 'string' ? url.href.startsWith(skip) : skip.test(url.href),
+        )
+      ) {
+        return
+      }
 
-    const span = tracer.startSpan(
-      this.getRequestMethod(request.method),
-      {
-        kind: api.SpanKind.CLIENT,
-      },
-      api.context.active(),
-    )
+      const span = tracer.startSpan(
+        this.getRequestMethod(request.method),
+        {
+          kind: api.SpanKind.CLIENT,
+        },
+        api.context.active(),
+      )
 
-    this.annotateFromRequest(span, request)
+      this.annotateFromRequest(span, request)
 
-    this._recordFromReq.set(request, span)
+      this._recordFromReq.set(request, span)
+    } catch {}
   }
 
   private onResponse({ request, response }: { request: ClientRequest; response: IncomingMessage }): void {
-    const span = this._recordFromReq.get(request)
+    // If our code raises an exception, we don't want this to affect user code
+    try {
+      const span = this._recordFromReq.get(request)
 
-    if (!span) return
+      if (!span) return
 
-    this.annotateFromResponse(span, response)
+      this.annotateFromResponse(span, response)
 
-    span.end()
+      span.end()
 
-    this._recordFromReq.delete(request)
+      this._recordFromReq.delete(request)
+    } catch {}
   }
 
   private onError({ request, error }: { request: ClientRequest; error: Error }): void {
-    const span = this._recordFromReq.get(request)
+    // If our code raises an exception, we don't want this to affect user code
+    try {
+      const span = this._recordFromReq.get(request)
 
-    if (!span) return
+      if (!span) return
 
-    span.recordException(error)
-    span.setStatus({
-      code: api.SpanStatusCode.ERROR,
-      message: error.name,
-    })
+      span.recordException(error)
+      span.setStatus({
+        code: api.SpanStatusCode.ERROR,
+        message: error.name,
+      })
 
-    span.end()
+      span.end()
 
-    this._recordFromReq.delete(request)
+      this._recordFromReq.delete(request)
+    } catch {}
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

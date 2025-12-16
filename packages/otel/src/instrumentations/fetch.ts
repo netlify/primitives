@@ -73,33 +73,37 @@ export class FetchInstrumentation implements Instrumentation {
     })
   }
 
-  private prepareHeaders(
-    type: 'request' | 'response',
-    headers: FetchRequest['headers'] | FetchResponse['headers'],
-  ): api.Attributes {
-    if (this.config.skipHeaders === true) {
-      return {}
-    }
+  private prepareHeaders(type: 'request' | 'response', headers: unknown): api.Attributes {
+    // Low enough versions of Undici return a single string for response headers instead of an array of strings
+    if (!Array.isArray(headers)) return {}
+
+    if (this.config.skipHeaders === true) return {}
     const everything = ['*', '/.*/']
     const skips = this.config.skipHeaders ?? []
     const redacts = this.config.redactHeaders ?? []
     const everythingSkipped = skips.some((skip) => everything.includes(skip.toString()))
     const attributes: api.Attributes = {}
     if (everythingSkipped) return attributes
-    for (let idx = 0; idx < headers.length; idx = idx + 2) {
-      const key = headers[idx].toString().toLowerCase()
-      const value = headers[idx + 1].toString()
-      if (skips.some((skip) => (typeof skip == 'string' ? skip == key : skip.test(key)))) {
+    for (let idx = 0; idx + 1 < headers.length; idx = idx + 2) {
+      const key: unknown = headers[idx]
+      const value: unknown = headers[idx + 1]
+
+      // Type safety - ensure we are handling only known request/response header shapes
+      if (typeof key !== 'string' && !Buffer.isBuffer(key)) continue
+      if (typeof value !== 'string' && !Buffer.isBuffer(value)) continue
+
+      const headerKey = key.toString().toLowerCase()
+      if (skips.some((skip) => (typeof skip == 'string' ? skip == headerKey : skip.test(headerKey)))) {
         continue
       }
-      const attributeKey = `http.${type}.header.${key}`
+      const attributeKey = `http.${type}.header.${headerKey}`
       if (
         redacts === true ||
-        redacts.some((redact) => (typeof redact == 'string' ? redact == key : redact.test(key)))
+        redacts.some((redact) => (typeof redact == 'string' ? redact == headerKey : redact.test(headerKey)))
       ) {
         attributes[attributeKey] = 'REDACTED'
       } else {
-        attributes[attributeKey] = value
+        attributes[attributeKey] = value.toString()
       }
     }
     return attributes
@@ -155,57 +159,71 @@ export class FetchInstrumentation implements Instrumentation {
   }
 
   private onRequestCreate({ request }: { request: FetchRequest }): void {
-    const tracer = this.getTracer()
-    const url = new URL(request.path, request.origin)
+    // If our code raises an exception, we don't want this to affect user code
+    try {
+      const tracer = this.getTracer()
+      const url = new URL(request.path, request.origin)
 
-    if (
-      !tracer ||
-      request.method === 'CONNECT' ||
-      this.config.skipURLs?.some((skip) => (typeof skip == 'string' ? url.href.startsWith(skip) : skip.test(url.href)))
-    ) {
-      return
-    }
+      if (
+        !tracer ||
+        request.method === 'CONNECT' ||
+        this.config.skipURLs?.some((skip) =>
+          typeof skip == 'string' ? url.href.startsWith(skip) : skip.test(url.href),
+        )
+      ) {
+        return
+      }
 
-    const span = tracer.startSpan(
-      this.getRequestMethod(request.method),
-      {
-        kind: api.SpanKind.CLIENT,
-      },
-      api.context.active(),
-    )
+      const span = tracer.startSpan(
+        this.getRequestMethod(request.method),
+        {
+          kind: api.SpanKind.CLIENT,
+        },
+        api.context.active(),
+      )
 
-    this.annotateFromRequest(span, request)
+      this.annotateFromRequest(span, request)
 
-    this._recordFromReq.set(request, span)
+      this._recordFromReq.set(request, span)
+    } catch {}
   }
 
   private onRequestHeaders({ request, response }: { request: FetchRequest; response: FetchResponse }): void {
-    const span = this._recordFromReq.get(request)
-    if (!span) return
+    // If our code raises an exception, we don't want this to affect user code
+    try {
+      const span = this._recordFromReq.get(request)
+      if (!span) return
 
-    this.annotateFromResponse(span, response)
+      this.annotateFromResponse(span, response)
+    } catch {}
   }
 
   private onRequestError({ request, error }: { request: FetchRequest; error: Error }): void {
-    const span = this._recordFromReq.get(request)
-    if (!span) return
+    // If our code raises an exception, we don't want this to affect user code
+    try {
+      const span = this._recordFromReq.get(request)
+      if (!span) return
 
-    span.recordException(error)
-    span.setStatus({
-      code: api.SpanStatusCode.ERROR,
-      message: error.message,
-    })
+      span.recordException(error)
+      span.setStatus({
+        code: api.SpanStatusCode.ERROR,
+        message: error.message,
+      })
 
-    span.end()
-    this._recordFromReq.delete(request)
+      span.end()
+      this._recordFromReq.delete(request)
+    } catch {}
   }
 
   private onRequestEnd({ request }: { request: FetchRequest; response: FetchResponse }): void {
-    const span = this._recordFromReq.get(request)
-    if (!span) return
+    // If our code raises an exception, we don't want this to affect user code
+    try {
+      const span = this._recordFromReq.get(request)
+      if (!span) return
 
-    span.end()
-    this._recordFromReq.delete(request)
+      span.end()
+      this._recordFromReq.delete(request)
+    } catch {}
   }
 }
 
@@ -219,7 +237,7 @@ interface FetchRequest {
   origin: string
   method: string
   path: string
-  headers: string | (string | string[])[]
+  headers: unknown
   addHeader: (name: string, value: string) => void
   throwOnError: boolean
   completed: boolean
@@ -231,7 +249,7 @@ interface FetchRequest {
 }
 
 interface FetchResponse {
-  headers: Buffer[]
+  headers: unknown
   statusCode: number
   statusText: string
 }
