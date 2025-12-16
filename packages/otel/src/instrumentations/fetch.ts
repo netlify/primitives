@@ -73,13 +73,11 @@ export class FetchInstrumentation implements Instrumentation {
     })
   }
 
-  private prepareHeaders(
-    type: 'request' | 'response',
-    headers: FetchRequest['headers'] | FetchResponse['headers'],
-  ): api.Attributes {
-    if (this.config.skipHeaders === true) {
-      return {}
-    }
+  private prepareHeaders(type: 'request' | 'response', headers: unknown): api.Attributes {
+    // Low enough versions of Undici return a single string for response headers instead of an array of strings
+    if (!Array.isArray(headers)) return {}
+
+    if (this.config.skipHeaders === true) return {}
     const everything = ['*', '/.*/']
     const skips = this.config.skipHeaders ?? []
     const redacts = this.config.redactHeaders ?? []
@@ -87,19 +85,25 @@ export class FetchInstrumentation implements Instrumentation {
     const attributes: api.Attributes = {}
     if (everythingSkipped) return attributes
     for (let idx = 0; idx < headers.length; idx = idx + 2) {
-      const key = headers[idx].toString().toLowerCase()
-      const value = headers[idx + 1].toString()
-      if (skips.some((skip) => (typeof skip == 'string' ? skip == key : skip.test(key)))) {
+      const key: unknown = headers[idx]
+      const value: unknown = headers[idx + 1]
+
+      // Type safety - ensure we are handling only known request/response header shapes
+      if (typeof key !== 'string' && !Buffer.isBuffer(key)) continue
+      if (typeof value !== 'string' && !Buffer.isBuffer(value)) continue
+
+      const headerKey = key.toString().toLowerCase()
+      if (skips.some((skip) => (typeof skip == 'string' ? skip == headerKey : skip.test(headerKey)))) {
         continue
       }
-      const attributeKey = `http.${type}.header.${key}`
+      const attributeKey = `http.${type}.header.${headerKey}`
       if (
         redacts === true ||
-        redacts.some((redact) => (typeof redact == 'string' ? redact == key : redact.test(key)))
+        redacts.some((redact) => (typeof redact == 'string' ? redact == headerKey : redact.test(headerKey)))
       ) {
         attributes[attributeKey] = 'REDACTED'
       } else {
-        attributes[attributeKey] = value
+        attributes[attributeKey] = value.toString()
       }
     }
     return attributes
@@ -219,7 +223,7 @@ interface FetchRequest {
   origin: string
   method: string
   path: string
-  headers: string | (string | string[])[]
+  headers: unknown
   addHeader: (name: string, value: string) => void
   throwOnError: boolean
   completed: boolean
@@ -231,7 +235,7 @@ interface FetchRequest {
 }
 
 interface FetchResponse {
-  headers: Buffer[]
+  headers: unknown
   statusCode: number
   statusText: string
 }
