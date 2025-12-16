@@ -84,7 +84,7 @@ export class FetchInstrumentation implements Instrumentation {
     const everythingSkipped = skips.some((skip) => everything.includes(skip.toString()))
     const attributes: api.Attributes = {}
     if (everythingSkipped) return attributes
-    for (let idx = 0; idx < headers.length; idx = idx + 2) {
+    for (let idx = 0; idx + 1 < headers.length; idx = idx + 2) {
       const key: unknown = headers[idx]
       const value: unknown = headers[idx + 1]
 
