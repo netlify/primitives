@@ -213,6 +213,30 @@ describe('get', () => {
       expect(mockStore.fulfilled).toBeTruthy()
     })
 
+    test('Accepts a string name and an options object as separate parameters', async () => {
+      const mockStore = new MockFetch()
+        .get({
+          headers: { accept: 'application/json;type=signed-url', authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .get({
+          response: new Response(value),
+          url: signedURL,
+        })
+        .inject()
+
+      const blobs = getStore('production', {
+        token: apiToken,
+        siteID,
+      })
+
+      const string = await blobs.get(key)
+      expect(string).toBe(value)
+
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
     describe('Conditional writes', () => {
       test('Returns `modified: false` when `onlyIfNew` is true and key exists', async () => {
         const mockStore = new MockFetch()
@@ -382,6 +406,27 @@ describe('get', () => {
       })
 
       expect(await blobs.get(key)).toBeNull()
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('Accepts a string name and an options object', async () => {
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(value),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
+
+      const blobs = getStore('production', {
+        edgeURL,
+        token: edgeToken,
+        siteID,
+      })
+
+      const string = await blobs.get(key)
+      expect(string).toBe(value)
+
       expect(mockStore.fulfilled).toBeTruthy()
     })
 
@@ -1849,6 +1894,28 @@ describe('Deploy scope', () => {
     expect(mockStore.fulfilled).toBeTruthy()
   })
 
+  test('Returns a named deploy-scoped store if `getDeployStore` receives a string name and an options object', async () => {
+    const mockStoreName = 'my-store'
+    const mockStore = new MockFetch()
+      .get({
+        headers: { authorization: `Bearer ${apiToken}` },
+        response: new Response(JSON.stringify({ url: signedURL })),
+        url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}:${mockStoreName}/${key}?region=auto`,
+      })
+      .get({
+        response: new Response(value),
+        url: signedURL,
+      })
+      .inject()
+
+    const deployStore = getDeployStore(mockStoreName, { deployID, siteID, token: apiToken })
+
+    const string = await deployStore.get(key)
+    expect(string).toBe(value)
+
+    expect(mockStore.fulfilled).toBeTruthy()
+  })
+
   test('Throws if the deploy ID fails validation', async () => {
     const mockRegion = 'us-east-2'
     const mockToken = 'some-token'
@@ -1989,6 +2056,56 @@ describe(`getStore`, () => {
     expect(() => getStore('production')).toThrowError(
       'Netlify Blobs could not find a `fetch` client in the global scope. You can either update your runtime to a version that includes `fetch` (like Node.js 18.0.0 or above), or you can supply your own implementation using the `fetch` property.',
     )
+  })
+
+  test('Uses explicit siteID and token from options instead of context values', async () => {
+    const contextSiteID = 'context-site-id'
+    const contextToken = 'context-token'
+    const explicitSiteID = 'explicit-site-id'
+    const explicitToken = 'explicit-token'
+
+    const mockStore = new MockFetch()
+      .get({
+        headers: { accept: 'application/json;type=signed-url', authorization: `Bearer ${explicitToken}` },
+        response: new Response(JSON.stringify({ url: signedURL })),
+        url: `https://api.netlify.com/api/v1/blobs/${explicitSiteID}/site:production/${key}`,
+      })
+      .get({
+        response: new Response(value),
+        url: signedURL,
+      })
+      .get({
+        headers: { accept: 'application/json;type=signed-url', authorization: `Bearer ${explicitToken}` },
+        response: new Response(JSON.stringify({ url: signedURL })),
+        url: `https://api.netlify.com/api/v1/blobs/${explicitSiteID}/site:production/${key}`,
+      })
+      .get({
+        response: new Response(value),
+        url: signedURL,
+      })
+      .inject()
+
+    const context = {
+      siteID: contextSiteID,
+      token: contextToken,
+    }
+
+    env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
+
+    const store1 = getStore({
+      name: 'production',
+      siteID: explicitSiteID,
+      token: explicitToken,
+    })
+    expect(await store1.get(key)).toBe(value)
+
+    const store2 = getStore('production', {
+      siteID: explicitSiteID,
+      token: explicitToken,
+    })
+    expect(await store2.get(key)).toBe(value)
+
+    expect(mockStore.fulfilled).toBeTruthy()
   })
 })
 
