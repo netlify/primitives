@@ -12,16 +12,20 @@ export interface GetDeployStoreOptions extends Partial<ClientOptions> {
 /**
  * Gets a reference to a deploy-scoped store.
  */
-export const getDeployStore = (input: GetDeployStoreOptions | string = {}): Store => {
+export const getDeployStore: {
+  (input?: GetDeployStoreOptions): Store
+  (name: string): Store
+  (name: string, options: Omit<GetDeployStoreOptions, 'name'>): Store
+} = (input: GetDeployStoreOptions | string = {}, options?: Omit<GetDeployStoreOptions, 'name'>): Store => {
   const context = getEnvironmentContext()
-  const options = typeof input === 'string' ? { name: input } : input
-  const deployID = options.deployID ?? context.deployID
+  const mergedOptions = typeof input === 'string' ? { name: input, ...options } : input
+  const deployID = mergedOptions.deployID ?? context.deployID
 
   if (!deployID) {
     throw new MissingBlobsEnvironmentError(['deployID'])
   }
 
-  const clientOptions = getClientOptions(options, context)
+  const clientOptions = getClientOptions(mergedOptions, context)
 
   if (!clientOptions.region) {
     // If a region hasn't been supplied and we're dealing with an edge request,
@@ -43,7 +47,7 @@ export const getDeployStore = (input: GetDeployStoreOptions | string = {}): Stor
 
   const client = new Client(clientOptions)
 
-  return new Store({ client, deployID, name: options.name })
+  return new Store({ client, deployID, name: mergedOptions.name })
 }
 
 export interface GetStoreOptions extends Partial<ClientOptions> {
@@ -58,10 +62,11 @@ export interface GetStoreOptions extends Partial<ClientOptions> {
  */
 export const getStore: {
   (name: string): Store
+  (name: string, options: Omit<GetStoreOptions, 'name'>): Store
   (options: GetStoreOptions): Store
-} = (input) => {
+} = (input: string | GetStoreOptions, options?: Omit<GetStoreOptions, 'name'>) => {
   if (typeof input === 'string') {
-    const clientOptions = getClientOptions({})
+    const clientOptions = getClientOptions(options ?? {})
     const client = new Client(clientOptions)
 
     return new Store({ client, name: input })

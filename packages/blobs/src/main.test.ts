@@ -213,6 +213,30 @@ describe('get', () => {
       expect(mockStore.fulfilled).toBeTruthy()
     })
 
+    test('Accepts a string name and an options object as separate parameters', async () => {
+      const mockStore = new MockFetch()
+        .get({
+          headers: { accept: 'application/json;type=signed-url', authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .get({
+          response: new Response(value),
+          url: signedURL,
+        })
+        .inject()
+
+      const blobs = getStore('production', {
+        token: apiToken,
+        siteID,
+      })
+
+      const string = await blobs.get(key)
+      expect(string).toBe(value)
+
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
     describe('Conditional writes', () => {
       test('Returns `modified: false` when `onlyIfNew` is true and key exists', async () => {
         const mockStore = new MockFetch()
@@ -382,6 +406,27 @@ describe('get', () => {
       })
 
       expect(await blobs.get(key)).toBeNull()
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('Accepts a string name and an options object', async () => {
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${edgeToken}` },
+          response: new Response(value),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
+
+      const blobs = getStore('production', {
+        edgeURL,
+        token: edgeToken,
+        siteID,
+      })
+
+      const string = await blobs.get(key)
+      expect(string).toBe(value)
+
       expect(mockStore.fulfilled).toBeTruthy()
     })
 
@@ -1845,6 +1890,28 @@ describe('Deploy scope', () => {
 
     const stream = await deployStore.get(key, { type: 'stream' })
     expect(await streamToString(stream as unknown as NodeJS.ReadableStream)).toBe(value)
+
+    expect(mockStore.fulfilled).toBeTruthy()
+  })
+
+  test('Returns a named deploy-scoped store if `getDeployStore` receives a string name and an options object', async () => {
+    const mockStoreName = 'my-store'
+    const mockStore = new MockFetch()
+      .get({
+        headers: { authorization: `Bearer ${apiToken}` },
+        response: new Response(JSON.stringify({ url: signedURL })),
+        url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}:${mockStoreName}/${key}?region=auto`,
+      })
+      .get({
+        response: new Response(value),
+        url: signedURL,
+      })
+      .inject()
+
+    const deployStore = getDeployStore(mockStoreName, { deployID, siteID, token: apiToken })
+
+    const string = await deployStore.get(key)
+    expect(string).toBe(value)
 
     expect(mockStore.fulfilled).toBeTruthy()
   })
