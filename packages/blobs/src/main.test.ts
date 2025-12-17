@@ -2057,6 +2057,56 @@ describe(`getStore`, () => {
       'Netlify Blobs could not find a `fetch` client in the global scope. You can either update your runtime to a version that includes `fetch` (like Node.js 18.0.0 or above), or you can supply your own implementation using the `fetch` property.',
     )
   })
+
+  test('Uses explicit siteID and token from options instead of context values', async () => {
+    const contextSiteID = 'context-site-id'
+    const contextToken = 'context-token'
+    const explicitSiteID = 'explicit-site-id'
+    const explicitToken = 'explicit-token'
+
+    const mockStore = new MockFetch()
+      .get({
+        headers: { accept: 'application/json;type=signed-url', authorization: `Bearer ${explicitToken}` },
+        response: new Response(JSON.stringify({ url: signedURL })),
+        url: `https://api.netlify.com/api/v1/blobs/${explicitSiteID}/site:production/${key}`,
+      })
+      .get({
+        response: new Response(value),
+        url: signedURL,
+      })
+      .get({
+        headers: { accept: 'application/json;type=signed-url', authorization: `Bearer ${explicitToken}` },
+        response: new Response(JSON.stringify({ url: signedURL })),
+        url: `https://api.netlify.com/api/v1/blobs/${explicitSiteID}/site:production/${key}`,
+      })
+      .get({
+        response: new Response(value),
+        url: signedURL,
+      })
+      .inject()
+
+    const context = {
+      siteID: contextSiteID,
+      token: contextToken,
+    }
+
+    env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
+
+    const store1 = getStore({
+      name: 'production',
+      siteID: explicitSiteID,
+      token: explicitToken,
+    })
+    expect(await store1.get(key)).toBe(value)
+
+    const store2 = getStore('production', {
+      siteID: explicitSiteID,
+      token: explicitToken,
+    })
+    expect(await store2.get(key)).toBe(value)
+
+    expect(mockStore.fulfilled).toBeTruthy()
+  })
 })
 
 describe('Region configuration in deploy-scoped stores', () => {
