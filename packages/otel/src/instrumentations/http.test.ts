@@ -1,20 +1,22 @@
+import * as http from 'http'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, test } from 'vitest'
-import { FetchInstrumentation } from './fetch.ts'
-import { ReadableSpan, SimpleSpanProcessor, SpanExporter } from '@opentelemetry/sdk-trace-node'
-import { createTracerProvider } from '../bootstrap/main.ts'
+import { HttpInstrumentation } from './http.ts'
 import { HTTPServer } from '@netlify/dev-utils'
+import { SpanExporter, ReadableSpan, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-node'
+import { createTracerProvider } from '../bootstrap/main.ts'
 
 describe('header exclusion', () => {
   test('skips configured headers', () => {
-    const instrumentation = new FetchInstrumentation({
+    const instrumentation = new HttpInstrumentation({
       skipHeaders: ['authorization'],
     })
 
     // eslint-disable-next-line @typescript-eslint/dot-notation
-    const attributes = instrumentation['prepareHeaders'](
-      'request',
-      ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
-    )
+    const attributes = instrumentation['prepareHeaders']('request', {
+      a: 'a',
+      b: 'b',
+      authorization: 'secret',
+    })
     expect(attributes).toEqual({
       'http.request.header.a': 'a',
       'http.request.header.b': 'b',
@@ -22,27 +24,29 @@ describe('header exclusion', () => {
   })
 
   test('it skips all headers if so configured', () => {
-    const everything = new FetchInstrumentation({
+    const everything = new HttpInstrumentation({
       skipHeaders: true,
     })
     // eslint-disable-next-line @typescript-eslint/dot-notation
-    const empty = everything['prepareHeaders'](
-      'request',
-      ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
-    )
+    const empty = everything['prepareHeaders']('request', {
+      a: 'a',
+      b: 'b',
+      authorization: 'secret',
+    })
     expect(empty).toEqual({})
   })
 
   test('redacts configured headers', () => {
-    const instrumentation = new FetchInstrumentation({
+    const instrumentation = new HttpInstrumentation({
       redactHeaders: ['authorization'],
     })
 
     // eslint-disable-next-line @typescript-eslint/dot-notation
-    const attributes = instrumentation['prepareHeaders'](
-      'request',
-      ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
-    )
+    const attributes = instrumentation['prepareHeaders']('request', {
+      a: 'a',
+      b: 'b',
+      authorization: 'secret',
+    })
     expect(attributes['http.request.header.authorization']).not.toBe('secret')
     expect(attributes['http.request.header.authorization']).toBeTypeOf('string')
     expect(attributes['http.request.header.a']).toBe('a')
@@ -50,15 +54,16 @@ describe('header exclusion', () => {
   })
 
   test('redacts everything if so requested', () => {
-    const instrumentation = new FetchInstrumentation({
+    const instrumentation = new HttpInstrumentation({
       redactHeaders: true,
     })
 
     // eslint-disable-next-line @typescript-eslint/dot-notation
-    const attributes = instrumentation['prepareHeaders'](
-      'request',
-      ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
-    )
+    const attributes = instrumentation['prepareHeaders']('request', {
+      a: 'a',
+      b: 'b',
+      authorization: 'secret',
+    })
     expect(attributes['http.request.header.authorization']).not.toBe('secret')
     expect(attributes['http.request.header.a']).not.toBe('a')
     expect(attributes['http.request.header.b']).not.toBe('b')
@@ -68,7 +73,7 @@ describe('header exclusion', () => {
   })
 })
 
-describe('fetch instrumentation (integration)', () => {
+describe('http instrumentation (integration)', () => {
   let serverAddress: string
   let server: HTTPServer
 
@@ -103,7 +108,7 @@ describe('fetch instrumentation (integration)', () => {
       siteUrl: 'https://example.com',
       siteId: '12345',
       siteName: 'example',
-      instrumentations: [new FetchInstrumentation()],
+      instrumentations: [new HttpInstrumentation()],
       spanProcessors: [new SimpleSpanProcessor(exporter)],
     })
   })
@@ -112,12 +117,37 @@ describe('fetch instrumentation (integration)', () => {
     await server.stop()
   })
 
-  it('GET', async () => {
-    const headers = new Headers({ a: 'a' })
-    headers.append('b', 'b')
-    headers.set('c', 'c')
+  it.skipIf(process.version.startsWith('v18'))('GET', async () => {
+    const request = (options: object): Promise<{ statusCode?: number; body?: string }> =>
+      new Promise((resolve, reject) => {
+        // Inspired from https://gist.github.com/ktheory/df3440b01d4b9d3197180d5254d7fb65
+        const req = http.request(options, (res) => {
+          const chunks: string[] = []
 
-    await expect(fetch(serverAddress, { headers }).then((r) => r.text())).resolves.toEqual('OK')
+          res.on('data', (chunk: string) => chunks.push(chunk))
+          res.on('error', reject)
+          res.on('end', () => {
+            const { statusCode } = res
+            const body = chunks.join('')
+            resolve({ statusCode, body })
+          })
+        })
+
+        req.on('error', reject)
+        req.end()
+      })
+
+    const options = {
+      hostname: 'localhost',
+      port: serverAddress.split(':')[2],
+      headers: {
+        a: 'a',
+        b: 'b',
+        c: 'c',
+      },
+    }
+
+    await expect(request(options).then((r) => r.body)).resolves.toEqual('OK')
 
     const resultSpan = exporter.exported[0][0]
 
@@ -125,31 +155,20 @@ describe('fetch instrumentation (integration)', () => {
 
     expect(resultSpan.attributes).toEqual(
       expect.objectContaining({
+        'http.request.header.a': 'a',
+        'http.request.header.b': 'b',
+        'http.request.header.c': 'c',
         'http.request.method': 'GET',
         'http.response.header.connection': 'keep-alive',
         'http.response.header.content-type': 'text/plain;charset=UTF-8',
         'http.response.header.keep-alive': 'timeout=5',
         'http.response.header.transfer-encoding': 'chunked',
         'http.response.status_code': 200,
+        'server.address': 'localhost',
+        'url.full': 'http://localhost/',
+        'url.host': 'localhost',
         'url.scheme': 'http',
       }),
     )
-
-    // Skip request headers when values are a single string instead of a string array
-    if (!process.version.startsWith('v18') && process.version !== 'v20.6.1') {
-      expect(resultSpan.attributes).toEqual(
-        expect.objectContaining({
-          'http.request.header.a': 'a',
-          'http.request.header.b': 'b',
-          'http.request.header.c': 'c',
-
-          'http.request.header.accept': '*/*',
-          'http.request.header.accept-encoding': 'gzip, deflate',
-          'http.request.header.accept-language': '*',
-          'http.request.header.sec-fetch-mode': 'cors',
-          'http.request.header.user-agent': 'node',
-        }),
-      )
-    }
   })
 })

@@ -31,11 +31,11 @@ jobs:
         run: sudo ulimit -Sn 65536
         if: "${{ matrix.os == 'macOS-latest' }}"
       - run: git config --global core.symlinks true
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
@@ -46,7 +46,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: 2.2.4
+          deno-version: 2.5.6
       - name: Setup Deno dependencies
         run: deno cache https://deno.land/x/eszip@v0.55.2/eszip.ts
       - name: Install dependencies
@@ -69,18 +69,18 @@ jobs:
       fail-fast: false
     steps:
       - run: git config --global core.symlinks true
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Node.js 18.14.0
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 18.14.0
           cache: 'npm'
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: 2.2.4
+          deno-version: 2.5.6
       - name: Setup Deno dependencies
         run: deno cache https://deno.land/x/eszip@v0.55.2/eszip.ts
       - name: Install dependencies

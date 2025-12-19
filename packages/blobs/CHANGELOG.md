@@ -1,5 +1,45 @@
 # Changelog
 
+## [10.5.0](https://github.com/netlify/primitives/compare/blobs-v10.4.4...blobs-v10.5.0) (2025-12-17)
+
+
+### Features
+
+* add overload to `getStore` and `getDeployStore` ([#567](https://github.com/netlify/primitives/issues/567)) ([c3fba21](https://github.com/netlify/primitives/commit/c3fba211f99b8e072d902e823e87325a7aa7af92))
+
+## [10.4.4](https://github.com/netlify/primitives/compare/blobs-v10.4.3...blobs-v10.4.4) (2025-12-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/otel bumped from ^5.1.0 to ^5.1.1
+
+## [10.4.3](https://github.com/netlify/primitives/compare/blobs-v10.4.2...blobs-v10.4.3) (2025-12-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.3.2 to 4.3.3
+    * @netlify/otel bumped from ^5.0.1 to ^5.1.0
+
+## [10.4.2](https://github.com/netlify/primitives/compare/blobs-v10.4.1...blobs-v10.4.2) (2025-12-03)
+
+
+### Bug Fixes
+
+* allow active spans to be passed in as an option ([#544](https://github.com/netlify/primitives/issues/544)) ([ba74c4a](https://github.com/netlify/primitives/commit/ba74c4ab5fa2ab97e216ff59f2e1a8eff0405d4c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/otel bumped from ^5.0.0 to ^5.0.1
+
 ## [10.4.1](https://github.com/netlify/primitives/compare/blobs-v10.4.0...blobs-v10.4.1) (2025-11-17)
 
 
