@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.5.0](https://github.com/netlify/primitives/compare/blobs-v10.4.4...blobs-v10.5.0) (2025-12-17)
+
+
+### Features
+
+* add overload to `getStore` and `getDeployStore` ([#567](https://github.com/netlify/primitives/issues/567)) ([c3fba21](https://github.com/netlify/primitives/commit/c3fba211f99b8e072d902e823e87325a7aa7af92))
+
 ## [10.4.4](https://github.com/netlify/primitives/compare/blobs-v10.4.3...blobs-v10.4.4) (2025-12-16)
 
 

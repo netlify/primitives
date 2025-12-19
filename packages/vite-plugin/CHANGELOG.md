@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.7.18](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.17...vite-plugin-v2.7.18) (2025-12-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.8.5 to 4.8.6
+
 ## [2.7.17](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.16...vite-plugin-v2.7.17) (2025-12-16)
 
 

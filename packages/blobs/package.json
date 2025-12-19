@@ -1,6 +1,6 @@
 {
   "name": "@netlify/blobs",
-  "version": "10.4.4",
+  "version": "10.5.0",
   "description": "TypeScript client for Netlify Blobs",
   "type": "module",
   "engines": {
