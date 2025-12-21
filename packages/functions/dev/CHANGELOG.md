@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.7](https://github.com/netlify/primitives/compare/functions-dev-v1.1.6...functions-dev-v1.1.7) (2025-12-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions bumped from 5.1.1 to 5.1.2
+
 ## [1.1.6](https://github.com/netlify/primitives/compare/functions-dev-v1.1.5...functions-dev-v1.1.6) (2025-12-17)
 
 
