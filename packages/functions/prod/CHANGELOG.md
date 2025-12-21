@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.2](https://github.com/netlify/primitives/compare/functions-v5.1.1...functions-v5.1.2) (2025-12-21)
+
+
+### Bug Fixes
+
+* avoid emitting global awslambda namespace ([#569](https://github.com/netlify/primitives/issues/569)) ([a90dc42](https://github.com/netlify/primitives/commit/a90dc428e4c2236f78170ac3bbca457784c48607))
+
 ## [5.1.1](https://github.com/netlify/primitives/compare/functions-v5.1.0...functions-v5.1.1) (2025-12-08)
 
 

@@ -11,7 +11,7 @@
       }
     }
   },
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Local dev emulation of Netlify Functions",
   "files": [
     "dist/**/*.js",
@@ -44,7 +44,7 @@
   "dependencies": {
     "@netlify/blobs": "10.5.0",
     "@netlify/dev-utils": "4.3.3",
-    "@netlify/functions": "5.1.1",
+    "@netlify/functions": "5.1.2",
     "@netlify/zip-it-and-ship-it": "^14.1.15",
     "cron-parser": "^4.9.0",
     "decache": "^4.6.2",
