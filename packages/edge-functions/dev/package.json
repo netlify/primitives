@@ -1,6 +1,6 @@
 {
   "name": "@netlify/edge-functions-dev",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Local emulation for Netlify Edge Functions",
   "type": "module",
   "engines": {

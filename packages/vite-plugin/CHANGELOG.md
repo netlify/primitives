@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.7.20](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.19...vite-plugin-v2.7.20) (2026-01-19)
+
+
+### Bug Fixes
+
+* expect bundle entry in its env's outDir ([#573](https://github.com/netlify/primitives/issues/573)) ([a66e648](https://github.com/netlify/primitives/commit/a66e648521c3659c0fef7fd148ca3ee9c6984dd9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.8.7 to 4.8.8
+
 ## [2.7.19](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.18...vite-plugin-v2.7.19) (2025-12-21)
 
 
