@@ -462,30 +462,47 @@ export class NetlifyDev {
 
     // Bootstrap AI Gateway: Fetch AI Gateway tokens and inject them into env
     if (this.#features.environmentVariables && config?.api && siteID && config?.siteInfo?.url) {
-      await setupAIGateway({
-        api: config.api,
-        env: config.env || {},
-        siteID,
-        siteURL: config.siteInfo.url,
-      })
+      let aiGatewayDisabled = false
+      try {
+        const accounts = await config.api.listAccountsForUser()
+        const account = accounts.find(
+          (acc: { slug?: string }) => acc.slug === config.siteInfo?.account_slug,
+        )
+        aiGatewayDisabled =
+          (account?.capabilities as { ai_gateway_disabled?: { included?: boolean } })?.ai_gateway_disabled?.included ??
+          false
+      } catch {
+        // If we can't fetch accounts, proceed with AI Gateway enabled
+      }
 
-      // Inject AI_GATEWAY into process.env via runtime
-      if (config.env.AI_GATEWAY) {
-        runtime.env.set('AI_GATEWAY', config.env.AI_GATEWAY.value)
+      if (!aiGatewayDisabled) {
+        await setupAIGateway({
+          api: config.api,
+          env: config.env || {},
+          siteID,
+          siteURL: config.siteInfo.url,
+        })
 
-        // Parse and inject AI Gateway env vars
-        const aiGatewayContext = parseAIGatewayContext(config.env.AI_GATEWAY.value)
-        if (aiGatewayContext) {
-          runtime.env.set('NETLIFY_AI_GATEWAY_KEY', aiGatewayContext.token)
-          runtime.env.set('NETLIFY_AI_GATEWAY_URL', aiGatewayContext.url)
+        // Inject AI_GATEWAY into process.env via runtime
+        if (config.env.AI_GATEWAY) {
+          runtime.env.set('AI_GATEWAY', config.env.AI_GATEWAY.value)
 
-          if (aiGatewayContext.envVars) {
-            for (const envVar of aiGatewayContext.envVars) {
-              runtime.env.set(envVar.key, aiGatewayContext.token)
-              runtime.env.set(envVar.url, aiGatewayContext.url)
+          // Parse and inject AI Gateway env vars
+          const aiGatewayContext = parseAIGatewayContext(config.env.AI_GATEWAY.value)
+          if (aiGatewayContext) {
+            runtime.env.set('NETLIFY_AI_GATEWAY_KEY', aiGatewayContext.token)
+            runtime.env.set('NETLIFY_AI_GATEWAY_URL', aiGatewayContext.url)
+
+            if (aiGatewayContext.envVars) {
+              for (const envVar of aiGatewayContext.envVars) {
+                runtime.env.set(envVar.key, aiGatewayContext.token)
+                runtime.env.set(envVar.url, aiGatewayContext.url)
+              }
             }
           }
         }
+      } else {
+        this.#logger?.log('AI Gateway is disabled for this account')
       }
     }
 
