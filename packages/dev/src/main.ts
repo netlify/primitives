@@ -464,13 +464,12 @@ export class NetlifyDev {
     if (this.#features.environmentVariables && config?.api && siteID && config?.siteInfo?.url) {
       let aiGatewayDisabled = false
       try {
-        const accounts = await config.api.listAccountsForUser()
-        const account = accounts.find(
-          (acc: { slug?: string }) => acc.slug === config.siteInfo?.account_slug,
-        )
+        const api = config.api as import('@netlify/api').NetlifyAPI
+        const accounts = await api.listAccountsForUser()
+        const account = accounts.find((acc) => acc.slug === config.siteInfo?.account_slug)
         aiGatewayDisabled =
-          (account?.capabilities as { ai_gateway_disabled?: { included?: boolean } })?.ai_gateway_disabled?.included ??
-          false
+          (account?.capabilities as { ai_gateway_disabled?: { included?: boolean } } | undefined)?.ai_gateway_disabled
+            ?.included ?? false
       } catch {
         // If we can't fetch accounts, proceed with AI Gateway enabled
       }
