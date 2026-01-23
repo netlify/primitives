@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@types/node": "20.14.15",
-    "npm-run-all2": "^7.0.2",
+    "npm-run-all2": "^8.0.0",
     "tsup": "8.5.1",
     "typescript": "5.9.3",
     "vitest": "^3.0.0"
