@@ -39,7 +39,7 @@ worker.addEventListener('message', async (e) => {
 
     await Promise.allSettled(imports)
 
-    const res = await handleRequest(req, functions, {
+    const res = await handleRequest(req, () => Promise.resolve(functions), {
       // @ts-ignore TODO: Figure out why `fetchRewrites` is not being picked up
       // as part of the type.
       fetchRewrites,
