@@ -766,6 +766,7 @@ describe('Handling requests', () => {
         params: {
           '0': 'two/three',
         },
+        path: '/hello/terminate/*',
         server: {
           region: 'dev',
         },
@@ -1038,8 +1039,7 @@ describe('Handling requests', () => {
           params: {
             '0': 'two/three',
           },
-          // TODO: This doesn't exist in edge functions but it should.
-          // path: '/hello/terminate/*',
+          path: '/hello/terminate/*',
           server: {
             region: 'dev',
           },
