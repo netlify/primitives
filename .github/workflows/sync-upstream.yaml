@@ -1,0 +1,68 @@
+name: Sync from upstream
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync from upstream (excluding private paths)
+        run: |
+          # Paths to preserve from the private repo (not overwritten by upstream)
+          PRESERVE_PATHS=(
+            ".github"
+            "renovate.json5"
+            "renovate.json"
+            ".renovate.json"
+            ".renovaterc"
+            ".renovaterc.json"
+          )
+
+          # Remember current HEAD so we can restore preserved paths
+          PRIVATE_HEAD=$(git rev-parse HEAD)
+
+          git remote add upstream https://github.com/netlify/primitives.git
+          git fetch upstream main
+
+          # Build pathspec exclusions for diff check
+          EXCLUDE_PATHSPEC=""
+          for path in "${PRESERVE_PATHS[@]}"; do
+            EXCLUDE_PATHSPEC="$EXCLUDE_PATHSPEC ':!$path'"
+          done
+
+          # Check if there's anything to sync (ignoring preserved paths)
+          if eval "git diff --quiet HEAD upstream/main -- $EXCLUDE_PATHSPEC"; then
+            echo "Already up to date (ignoring preserved paths)"
+            exit 0
+          fi
+
+          # Merge from upstream
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git merge upstream/main -m "Sync from upstream"
+
+          # Restore preserved paths from our previous state
+          for path in "${PRESERVE_PATHS[@]}"; do
+            # Check if path existed in our private repo
+            if git ls-tree -r $PRIVATE_HEAD --name-only | grep -q "^$path"; then
+              git checkout $PRIVATE_HEAD -- "$path"
+            else
+              # Path didn't exist in private repo - remove if upstream added it
+              git rm -rf --ignore-unmatch "$path"
+            fi
+          done
+
+          # Amend merge commit if preserved paths changed
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit --amend --no-edit
+          fi
+
+          git push origin main
