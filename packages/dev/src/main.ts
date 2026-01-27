@@ -129,6 +129,15 @@ export interface Features {
      */
     directories?: string[]
   }
+
+  /**
+   * Configuration options for Netlify AI Gateway.
+   *
+   * {@link} https://docs.netlify.com/ai/overview/
+   */
+  aiGateway?: {
+    enabled?: boolean
+  }
 }
 
 interface NetlifyDevOptions extends Features {
@@ -178,6 +187,7 @@ export class NetlifyDev {
   #functionsServePath: string
   #config?: Config
   #features: {
+    aiGateway: boolean
     blobs: boolean
     edgeFunctions: boolean
     environmentVariables: boolean
@@ -213,6 +223,7 @@ export class NetlifyDev {
     this.#cleanupJobs = []
     this.#geolocationConfig = options.geolocation
     this.#features = {
+      aiGateway: options.aiGateway?.enabled !== false,
       blobs: options.blobs?.enabled !== false,
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
@@ -376,6 +387,7 @@ export class NetlifyDev {
       scheme: this.#apiScheme,
       siteId: this.#siteID,
       token: this.#apiToken,
+      includeAccountCapabilities: this.#features.aiGateway,
     })
 
     return config
@@ -460,48 +472,46 @@ export class NetlifyDev {
 
     this.#cleanupJobs.push(() => runtime.stop())
 
-    // Bootstrap AI Gateway: Fetch AI Gateway tokens and inject them into env
-    if (this.#features.environmentVariables && config?.api && siteID && config?.siteInfo?.url) {
-      let aiGatewayDisabled = false
-      try {
-        const api = config.api as import('@netlify/api').NetlifyAPI
-        const accounts = await api.listAccountsForUser()
-        const account = accounts.find((acc) => acc.slug === config.siteInfo?.account_slug)
-        aiGatewayDisabled =
-          (account?.capabilities as { ai_gateway_disabled?: { included?: boolean } } | undefined)?.ai_gateway_disabled
-            ?.included ?? false
-      } catch {
-        // If we can't fetch accounts, proceed with AI Gateway enabled
+    // Check if AI Gateway is disabled at account level
+    if (this.#features.aiGateway && config?.accounts) {
+      type AccountWithCapabilities = {
+        slug?: string
+        capabilities?: { ai_gateway_disabled?: { included?: boolean } }
       }
+      const account = (config.accounts as AccountWithCapabilities[]).find(
+        (acc) => acc.slug === config.siteInfo?.account_slug,
+      )
+      if (account?.capabilities?.ai_gateway_disabled?.included) {
+        this.#features.aiGateway = false
+      }
+    }
 
-      if (!aiGatewayDisabled) {
-        await setupAIGateway({
-          api: config.api,
-          env: config.env || {},
-          siteID,
-          siteURL: config.siteInfo.url,
-        })
+    // Bootstrap AI Gateway: Fetch AI Gateway tokens and inject them into env
+    if (this.#features.aiGateway && config?.api && siteID && config?.siteInfo?.url) {
+      await setupAIGateway({
+        api: config.api,
+        env: config.env || {},
+        siteID,
+        siteURL: config.siteInfo.url,
+      })
 
-        // Inject AI_GATEWAY into process.env via runtime
-        if (config.env.AI_GATEWAY) {
-          runtime.env.set('AI_GATEWAY', config.env.AI_GATEWAY.value)
+      // Inject AI_GATEWAY into process.env via runtime
+      if (config.env.AI_GATEWAY) {
+        runtime.env.set('AI_GATEWAY', config.env.AI_GATEWAY.value)
 
-          // Parse and inject AI Gateway env vars
-          const aiGatewayContext = parseAIGatewayContext(config.env.AI_GATEWAY.value)
-          if (aiGatewayContext) {
-            runtime.env.set('NETLIFY_AI_GATEWAY_KEY', aiGatewayContext.token)
-            runtime.env.set('NETLIFY_AI_GATEWAY_URL', aiGatewayContext.url)
+        // Parse and inject AI Gateway env vars
+        const aiGatewayContext = parseAIGatewayContext(config.env.AI_GATEWAY.value)
+        if (aiGatewayContext) {
+          runtime.env.set('NETLIFY_AI_GATEWAY_KEY', aiGatewayContext.token)
+          runtime.env.set('NETLIFY_AI_GATEWAY_URL', aiGatewayContext.url)
 
-            if (aiGatewayContext.envVars) {
-              for (const envVar of aiGatewayContext.envVars) {
-                runtime.env.set(envVar.key, aiGatewayContext.token)
-                runtime.env.set(envVar.url, aiGatewayContext.url)
-              }
+          if (aiGatewayContext.envVars) {
+            for (const envVar of aiGatewayContext.envVars) {
+              runtime.env.set(envVar.key, aiGatewayContext.token)
+              runtime.env.set(envVar.url, aiGatewayContext.url)
             }
           }
         }
-      } else {
-        this.#logger?.log('AI Gateway is disabled for this account')
       }
     }
 
