@@ -387,7 +387,6 @@ export class NetlifyDev {
       scheme: this.#apiScheme,
       siteId: this.#siteID,
       token: this.#apiToken,
-      includeAccountCapabilities: this.#features.aiGateway,
     })
 
     return config
@@ -473,17 +472,8 @@ export class NetlifyDev {
     this.#cleanupJobs.push(() => runtime.stop())
 
     // Check if AI Gateway is disabled at account level
-    if (this.#features.aiGateway && this.#features.environmentVariables && config?.accounts) {
-      type AccountWithCapabilities = {
-        slug?: string
-        capabilities?: { ai_gateway_disabled?: { included?: boolean } }
-      }
-      const account = (config.accounts as AccountWithCapabilities[]).find(
-        (acc) => acc.slug === config.siteInfo?.account_slug,
-      )
-      if (account?.capabilities?.ai_gateway_disabled?.included) {
-        this.#features.aiGateway = false
-      }
+    if (this.#features.aiGateway && config?.siteInfo?.capabilities?.ai_gateway_disabled) {
+      this.#features.aiGateway = false
     }
 
     // Bootstrap AI Gateway: Fetch AI Gateway tokens and inject them into env
