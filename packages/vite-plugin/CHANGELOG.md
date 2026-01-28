@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.8.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.20...vite-plugin-v2.8.0) (2026-01-28)
+
+
+### Features
+
+* ai gateway disabled check ([#577](https://github.com/netlify/primitives/issues/577)) ([5c2a8ce](https://github.com/netlify/primitives/commit/5c2a8ce6aa9b324cd44a24c519086855299e780c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.8.8 to 4.9.0
+
 ## [2.7.20](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.19...vite-plugin-v2.7.20) (2026-01-19)
 
 
