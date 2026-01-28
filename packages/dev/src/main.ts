@@ -471,7 +471,7 @@ export class NetlifyDev {
 
     this.#cleanupJobs.push(() => runtime.stop())
 
-    // Check if AI Gateway is disabled at account level
+    // Check if AI Gateway is disabled at account level (setting passed to site level capabilities)
     if (this.#features.aiGateway && config?.siteInfo?.capabilities?.ai_gateway_disabled) {
       this.#features.aiGateway = false
     }
