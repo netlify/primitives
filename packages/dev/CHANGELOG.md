@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.9.0](https://github.com/netlify/primitives/compare/dev-v4.8.8...dev-v4.9.0) (2026-01-28)
+
+
+### Features
+
+* ai gateway disabled check ([#577](https://github.com/netlify/primitives/issues/577)) ([5c2a8ce](https://github.com/netlify/primitives/commit/5c2a8ce6aa9b324cd44a24c519086855299e780c))
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#576](https://github.com/netlify/primitives/issues/576)) ([1c6ff24](https://github.com/netlify/primitives/commit/1c6ff247318b8cdb1961ce76e96fe423a4ec8cd7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.5 to ^0.3.6
+    * @netlify/edge-functions-dev bumped from 1.0.8 to 1.0.9
+    * @netlify/functions-dev bumped from 1.1.8 to 1.1.9
+
 ## [4.8.8](https://github.com/netlify/primitives/compare/dev-v4.8.7...dev-v4.8.8) (2026-01-19)
 
 
