@@ -93,7 +93,8 @@ export class NetlifyDB {
         },
 
         async onMessage(data: Uint8Array, { isAuthenticated }: ConnectionState): Promise<MessageResponse> {
-          // Only process messages after authentication
+          // Skip startup/handshake messages handled by pg-gateway, as PGLite
+          // doesn't expect them.
           if (!isAuthenticated) {
             return
           }
