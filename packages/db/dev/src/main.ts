@@ -53,8 +53,6 @@ export class NetlifyDB {
         this.server?.off('error', reject)
 
         const { address, port } = this.server?.address() as AddressInfo
-
-        // Use localhost instead of raw IPv6 address (::1) for URL compatibility
         const host = address === '::1' || address === '127.0.0.1' ? 'localhost' : address
 
         resolve(`postgres://${host}:${String(port)}/postgres`)
