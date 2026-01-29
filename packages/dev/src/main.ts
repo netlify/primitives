@@ -5,6 +5,7 @@ import process from 'node:process'
 
 import { parseAIGatewayContext, setupAIGateway } from '@netlify/ai/bootstrap'
 import { resolveConfig } from '@netlify/config'
+import { NetlifyDB } from '@netlify/db-dev'
 import {
   ensureNetlifyIgnore,
   getAPIToken,
@@ -34,6 +35,15 @@ export interface Features {
    * {@link} https://docs.netlify.com/blobs/overview/
    */
   blobs?: {
+    enabled?: boolean
+  }
+
+  /**
+   * Configuration options for Netlify DB.
+   *
+   * {@link} https://docs.netlify.com/db/overview/
+   */
+  db?: {
     enabled?: boolean
   }
 
@@ -179,6 +189,7 @@ export class NetlifyDev {
   #config?: Config
   #features: {
     blobs: boolean
+    db: boolean
     edgeFunctions: boolean
     environmentVariables: boolean
     functions: boolean
@@ -214,6 +225,7 @@ export class NetlifyDev {
     this.#geolocationConfig = options.geolocation
     this.#features = {
       blobs: options.blobs?.enabled !== false,
+      db: options.db?.enabled !== false,
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
@@ -459,6 +471,16 @@ export class NetlifyDev {
     })
 
     this.#cleanupJobs.push(() => runtime.stop())
+
+    if (this.#features.db) {
+      const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
+      const db = new NetlifyDB({ directory: dbDirectory })
+      const connectionString = await db.start()
+
+      runtime.env.set('NETLIFY_DB_URL', connectionString)
+
+      this.#cleanupJobs.push(() => db.stop())
+    }
 
     // Bootstrap AI Gateway: Fetch AI Gateway tokens and inject them into env
     if (this.#features.environmentVariables && config?.api && siteID && config?.siteInfo?.url) {
