@@ -7,11 +7,18 @@ import { fromNodeSocket } from 'pg-gateway/node'
 
 const DEFAULT_HOST = 'localhost'
 
+type Logger = (...message: unknown[]) => void
+
 export interface NetlifyDBOptions {
   /**
    * Directory for data persistence. If not provided, uses in-memory storage.
    */
   directory?: string
+
+  /**
+   * Function to log messages. Defaults to `console.log`.
+   */
+  logger?: Logger
 
   /**
    * Port to run the database server on. If not provided, picks a random available port.
@@ -22,11 +29,13 @@ export interface NetlifyDBOptions {
 export class NetlifyDB {
   private db?: PGlite
   private directory?: string
+  private logger: Logger
   private port?: number
   private server?: Server
 
-  constructor({ directory, port }: NetlifyDBOptions = {}) {
+  constructor({ directory, logger, port }: NetlifyDBOptions = {}) {
     this.directory = directory
+    this.logger = logger ?? console.log
     this.port = port
   }
 
@@ -102,8 +111,12 @@ export class NetlifyDB {
           return db.execProtocolRaw(data)
         },
       })
-    } catch {
-      // Connection errors are expected when clients disconnect
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('ECONNRESET')) {
+        return
+      }
+
+      this.logger('Unexpected connection error:', error)
     }
   }
 }
