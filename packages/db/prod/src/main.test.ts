@@ -34,9 +34,12 @@ describe('getDatabase', () => {
 
     getDatabase()
 
-    expect(postgres).toHaveBeenCalledWith('postgres://user:pass@localhost:5432/mydb', expect.objectContaining({
-      onnotice: expect.any(Function),
-    }))
+    expect(postgres).toHaveBeenCalledWith(
+      'postgres://user:pass@localhost:5432/mydb',
+      expect.objectContaining({
+        onnotice: expect.any(Function),
+      }),
+    )
   })
 
   it('allows override via connectionString option', async () => {
@@ -45,9 +48,12 @@ describe('getDatabase', () => {
 
     getDatabase({ connectionString: 'postgres://other:pass@localhost:5432/otherdb' })
 
-    expect(postgres).toHaveBeenCalledWith('postgres://other:pass@localhost:5432/otherdb', expect.objectContaining({
-      onnotice: expect.any(Function),
-    }))
+    expect(postgres).toHaveBeenCalledWith(
+      'postgres://other:pass@localhost:5432/otherdb',
+      expect.objectContaining({
+        onnotice: expect.any(Function),
+      }),
+    )
   })
 
   it('uses connectionString option when env var is not set', async () => {
@@ -55,9 +61,12 @@ describe('getDatabase', () => {
 
     getDatabase({ connectionString: 'postgres://custom:pass@localhost:5432/customdb' })
 
-    expect(postgres).toHaveBeenCalledWith('postgres://custom:pass@localhost:5432/customdb', expect.objectContaining({
-      onnotice: expect.any(Function),
-    }))
+    expect(postgres).toHaveBeenCalledWith(
+      'postgres://custom:pass@localhost:5432/customdb',
+      expect.objectContaining({
+        onnotice: expect.any(Function),
+      }),
+    )
   })
 
   it('suppresses notices by default', async () => {
