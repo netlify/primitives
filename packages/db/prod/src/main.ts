@@ -4,16 +4,17 @@ import type { Sql } from 'postgres'
 import { getEnvironment, MissingDatabaseConnectionError } from './environment.js'
 
 export interface GetDatabaseOptions {
-  /** Override the NETLIFY_DB_URL connection string */
+  /**
+   * Override the default connection string found in the Netlify environment.
+   */
   connectionString?: string
-  /** Enable debug mode to log PostgreSQL notices */
+
+  /**
+   * Enable debug mode to log messages emitted by the Postgres engine.
+   */
   debug?: boolean
 }
 
-/**
- * Returns a postgres client configured with the `NETLIFY_DB_URL` environment
- * variable, or with a custom connection string if provided.
- */
 export function getDatabase(options: GetDatabaseOptions = {}): Sql {
   const connectionString = options.connectionString ?? getEnvironment().get('NETLIFY_DB_URL')
 
