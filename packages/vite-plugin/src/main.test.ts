@@ -255,7 +255,7 @@ defined on your team and site and much more. Run npx netlify init to get started
       expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
       expect(mockLogger.info).toHaveBeenNthCalledWith(
         2,
-        'Middleware loaded. Emulating features: blobs, environmentVariables, functions, geolocation, headers, images, redirects, static.',
+        'Middleware loaded. Emulating features: aiGateway, blobs, environmentVariables, functions, geolocation, headers, images, redirects, static.',
         expect.objectContaining({}),
       )
       expect(mockLogger.info).toHaveBeenNthCalledWith(
