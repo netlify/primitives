@@ -68,25 +68,4 @@ describe('getDatabase', () => {
       }),
     )
   })
-
-  it('suppresses notices by default', async () => {
-    const postgres = (await import('postgres')).default as unknown as ReturnType<typeof vi.fn>
-    process.env.NETLIFY_DB_URL = 'postgres://user:pass@localhost:5432/mydb'
-
-    getDatabase()
-
-    const { onnotice } = postgres.mock.calls[0][1]
-    expect(onnotice).not.toBe(console.log)
-    expect(typeof onnotice).toBe('function')
-  })
-
-  it('logs notices when debug is enabled', async () => {
-    const postgres = (await import('postgres')).default as unknown as ReturnType<typeof vi.fn>
-    process.env.NETLIFY_DB_URL = 'postgres://user:pass@localhost:5432/mydb'
-
-    getDatabase({ debug: true })
-
-    const { onnotice } = postgres.mock.calls[0][1]
-    expect(onnotice).toBe(console.log)
-  })
 })

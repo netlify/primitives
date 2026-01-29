@@ -1,5 +1,3 @@
-export { getEnvironment } from '@netlify/runtime-utils'
-
 export class MissingDatabaseConnectionError extends Error {
   constructor() {
     super(

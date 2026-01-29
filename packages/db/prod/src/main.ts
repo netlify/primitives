@@ -1,7 +1,9 @@
 import postgres from 'postgres'
 import type { Sql } from 'postgres'
 
-import { getEnvironment, MissingDatabaseConnectionError } from './environment.js'
+import { getEnvironment } from '@netlify/runtime-utils'
+
+import { MissingDatabaseConnectionError } from './environment.js'
 
 export interface GetDatabaseOptions {
   /**
