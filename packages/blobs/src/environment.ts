@@ -1,7 +1,5 @@
 import { base64Decode, base64Encode, getEnvironment } from '@netlify/runtime-utils'
 
-export { getEnvironment }
-
 declare global {
   // Using `var` so that the declaration is hoisted in such a way that we can
   // reference it before it's initialized.
