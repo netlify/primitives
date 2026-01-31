@@ -10,7 +10,7 @@
     "sourceMap": false,
     "removeComments": false,
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },

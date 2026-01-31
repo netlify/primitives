@@ -50,8 +50,10 @@
   },
   "author": "Netlify Inc.",
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.0",
     "@netlify/runtime-utils": "2.2.1",
-    "postgres": "^3.4.0"
+    "pg": "^8.13.0",
+    "waddler": "^0.1.1"
   },
   "devDependencies": {
     "npm-run-all2": "^5.0.0",

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:waddler.drizzle.team)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:neon.com)",
+      "Bash(npm view:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(python3:*)",
+      "Bash(npx vitest:*)",
+      "Bash(find:*)"
+    ]
+  }
+}
