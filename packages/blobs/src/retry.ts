@@ -1,4 +1,4 @@
-import { getEnvironment } from './environment.ts'
+import { getEnvironment } from '@netlify/runtime-utils'
 import type { Fetcher } from './types.ts'
 
 const DEFAULT_RETRY_DELAY = getEnvironment().get('NODE_ENV') === 'test' ? 1 : 5000
