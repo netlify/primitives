@@ -13,9 +13,22 @@
         "types": "./dist/main.d.ts",
         "default": "./dist/main.js"
       }
+    },
+    "./drizzle": {
+      "require": {
+        "types": "./dist/drizzle.d.cts",
+        "default": "./dist/drizzle.cjs"
+      },
+      "import": {
+        "types": "./dist/drizzle.d.ts",
+        "default": "./dist/drizzle.js"
+      }
     }
   },
-  "version": "1.0.0",
+  "version": "0.0.1-beta.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "TypeScript utilities for interacting with Netlify DB",
   "files": [
     "dist/**/*.js",
