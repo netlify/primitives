@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.10.0](https://github.com/netlify/primitives/compare/dev-v4.9.0...dev-v4.10.0) (2026-02-06)
+
+
+### Features
+
+* move `getEnvironment` to `runtime-utils` ([#579](https://github.com/netlify/primitives/issues/579)) ([639ba5f](https://github.com/netlify/primitives/commit/639ba5f5d5659bcf96894dc627a87af42c8fc19f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.5.0 to 10.6.0
+    * @netlify/edge-functions-dev bumped from 1.0.9 to 1.0.10
+    * @netlify/functions-dev bumped from 1.1.9 to 1.1.10
+    * @netlify/runtime bumped from 4.1.13 to 4.1.14
+
 ## [4.9.0](https://github.com/netlify/primitives/compare/dev-v4.8.8...dev-v4.9.0) (2026-01-28)
 
 

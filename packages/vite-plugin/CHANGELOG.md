@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.9.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.8.0...vite-plugin-v2.9.0) (2026-02-06)
+
+
+### Features
+
+* move `getEnvironment` to `runtime-utils` ([#579](https://github.com/netlify/primitives/issues/579)) ([639ba5f](https://github.com/netlify/primitives/commit/639ba5f5d5659bcf96894dc627a87af42c8fc19f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.9.0 to 4.10.0
+
 ## [2.8.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.20...vite-plugin-v2.8.0) (2026-01-28)
 
 
