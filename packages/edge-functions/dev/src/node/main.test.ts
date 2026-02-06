@@ -87,6 +87,7 @@ describe('`EdgeFunctionsHandler`', () => {
         timezone: 'UTC',
       },
       params: {},
+      path: '/echo',
       server: { region: 'dev' },
       site: { id: '123', name: 'test', url: serverAddress },
       url: `${serverAddress}/echo`,
