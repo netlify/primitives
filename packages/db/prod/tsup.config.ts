@@ -12,5 +12,12 @@ export default defineConfig({
   watch: argv.includes('--watch'),
   platform: 'node',
   bundle: true,
-  external: ['@neondatabase/serverless', 'pg', 'waddler', 'waddler/node-postgres', 'waddler/neon-http', 'waddler/neon-serverless'],
+  external: [
+    '@neondatabase/serverless',
+    'pg',
+    'waddler',
+    'waddler/node-postgres',
+    'waddler/neon-http',
+    'waddler/neon-serverless',
+  ],
 })
