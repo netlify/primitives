@@ -39,15 +39,6 @@ export interface Features {
   }
 
   /**
-   * Configuration options for Netlify DB.
-   *
-   * {@link} https://docs.netlify.com/db/overview/
-   */
-  db?: {
-    enabled?: boolean
-  }
-
-  /**
    * Configuration options for environment variables.
    *
    * {@link} https://docs.netlify.com/edge-functions/overview/
@@ -236,7 +227,7 @@ export class NetlifyDev {
     this.#features = {
       aiGateway: options.aiGateway?.enabled !== false,
       blobs: options.blobs?.enabled !== false,
-      db: options.db?.enabled !== false,
+      db: process.env.EXPERIMENTAL_NETLIFY_DB_ENABLED === '1',
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
