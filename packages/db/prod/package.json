@@ -25,7 +25,7 @@
       }
     }
   },
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.2",
   "publishConfig": {
     "access": "public"
   },
@@ -64,7 +64,7 @@
   "author": "Netlify Inc.",
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
-    "@netlify/runtime-utils": "2.2.1",
+    "@netlify/runtime-utils": "2.3.0",
     "pg": "^8.13.0",
     "waddler": "^0.1.1"
   },
