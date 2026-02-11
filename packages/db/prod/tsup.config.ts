@@ -4,7 +4,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
   clean: true,
-  entry: ['src/main.ts', 'src/drizzle.ts'],
+  entry: ['src/main.ts'],
   outDir: 'dist',
   format: ['cjs', 'esm'],
   dts: true,

@@ -1,5 +1,6 @@
 import { Pool as NeonPool } from '@neondatabase/serverless'
 import pg from 'pg'
+import type { SQL } from 'waddler'
 import { waddler as waddlerNeonHttp } from 'waddler/neon-http'
 import { waddler as waddlerNodePostgres } from 'waddler/node-postgres'
 
@@ -13,7 +14,7 @@ export interface GetDatabaseOptions {
 }
 
 export interface DatabaseConnection {
-  sql: ReturnType<typeof waddlerNeonHttp> | ReturnType<typeof waddlerNodePostgres>
+  sql: SQL
   pool: pg.Pool
   connectionString: string
 }
