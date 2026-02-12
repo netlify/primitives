@@ -85,15 +85,7 @@ test('Throws if the API response does not have a successful status code', async 
 
   globalThis.fetch = mockAPI.fetcher
 
-  try {
-    await invokeLambda(myFunction)
-
-    throw new Error('Invocation should have failed')
-  } catch (error) {
-    expect((error as NodeJS.ErrnoException).message).toBe(
-      'Cache purge API call returned an unexpected status code: 500',
-    )
-  }
+  await expect(invokeLambda(myFunction)).rejects.toThrow('Cache purge API call returned an unexpected status code: 500')
 })
 
 test('Ignores purgeCache if in local dev with no token or site', async () => {

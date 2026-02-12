@@ -135,10 +135,10 @@ describe('fetch instrumentation (integration)', () => {
       }),
     )
 
-    // Skip request headers when values are a single string instead of a string array
-    if (!process.version.startsWith('v18') && process.version !== 'v20.6.1') {
-      expect(resultSpan.attributes).toEqual(
-        expect.objectContaining({
+    // Skip request headers when values are a single string instead of a string array in v18 and v20.6.1
+    const shouldCheckRequestHeaders = !process.version.startsWith('v18') && process.version !== 'v20.6.1'
+    const requestHeaderExpectation = shouldCheckRequestHeaders
+      ? {
           'http.request.header.a': 'a',
           'http.request.header.b': 'b',
           'http.request.header.c': 'c',
@@ -148,8 +148,9 @@ describe('fetch instrumentation (integration)', () => {
           'http.request.header.accept-language': '*',
           'http.request.header.sec-fetch-mode': 'cors',
           'http.request.header.user-agent': 'node',
-        }),
-      )
-    }
+        }
+      : {}
+
+    expect(resultSpan.attributes).toEqual(expect.objectContaining(requestHeaderExpectation))
   })
 })

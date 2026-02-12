@@ -89,8 +89,7 @@ describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
         plugins: [netlify({ middleware: false }), netlify({ middleware: false })],
       })
 
-      expect(mockLogger.warn).toHaveBeenCalledOnce()
-      expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect(mockLogger.warn).toHaveBeenCalledExactlyOnceWith(
         expect.stringMatching(/Multiple instances of @netlify\/vite-plugin have been loaded/),
         expect.objectContaining({}),
       )
