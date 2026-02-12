@@ -1107,3 +1107,84 @@ describe('Handling requests', () => {
     })
   })
 })
+
+describe('Environment variable injection', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  test('injectUserEnv option controls user-defined env var injection', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+         publish = "public"
+         [context.dev.environment]
+         MY_USER_VAR = "user value"
+      `,
+      )
+      .withFile(
+        'netlify/functions/env-test.mjs',
+        `export default async (req, context) => Response.json({
+          NETLIFY_LOCAL: Netlify.env.get("NETLIFY_LOCAL"),
+          CONTEXT: Netlify.env.get("CONTEXT"),
+          MY_USER_VAR: Netlify.env.get("MY_USER_VAR"),
+        });
+        export const config = { path: "/env-test" };`,
+      )
+      .withStateFile({ siteId: 'site_id' })
+    const directory = await fixture.create()
+
+    // Test with injectUserEnv: false - only platform vars should be injected
+    const devWithoutUserEnv = new NetlifyDev({
+      projectRoot: directory,
+      environmentVariables: {
+        enabled: true,
+        injectUserEnv: false,
+      },
+      edgeFunctions: { enabled: false },
+      geolocation: { enabled: false },
+    })
+
+    await devWithoutUserEnv.start()
+
+    const req1 = new Request('https://site.netlify/env-test')
+    const res1 = await devWithoutUserEnv.handle(req1)
+    const envVarsWithoutUserEnv = await res1?.json()
+
+    await devWithoutUserEnv.stop()
+
+    // Platform env vars should be present
+    expect(envVarsWithoutUserEnv).toHaveProperty('NETLIFY_LOCAL', 'true')
+    expect(envVarsWithoutUserEnv).toHaveProperty('CONTEXT', 'dev')
+
+    // User-defined env vars should NOT be present
+    expect(envVarsWithoutUserEnv.MY_USER_VAR).toBeUndefined()
+
+    // Test with injectUserEnv: true (default) - all vars should be injected
+    const devWithUserEnv = new NetlifyDev({
+      projectRoot: directory,
+      environmentVariables: {
+        enabled: true,
+        injectUserEnv: true,
+      },
+      edgeFunctions: { enabled: false },
+      geolocation: { enabled: false },
+    })
+
+    await devWithUserEnv.start()
+
+    const req2 = new Request('https://site.netlify/env-test')
+    const res2 = await devWithUserEnv.handle(req2)
+    const envVarsWithUserEnv = await res2?.json()
+
+    await devWithUserEnv.stop()
+
+    // Both platform and user-defined env vars should be present
+    expect(envVarsWithUserEnv).toHaveProperty('NETLIFY_LOCAL', 'true')
+    expect(envVarsWithUserEnv).toHaveProperty('CONTEXT', 'dev')
+    expect(envVarsWithUserEnv).toHaveProperty('MY_USER_VAR', 'user value')
+
+    await fixture.destroy()
+  })
+})
