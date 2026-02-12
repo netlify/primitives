@@ -7,6 +7,6 @@ export default defineConfig({
       NO_COLOR: 'true',
     },
     // Some of this package's tests are slow on Windows
-    testTimeout: 20_000,
+    testTimeout: 30_000,
   },
 })

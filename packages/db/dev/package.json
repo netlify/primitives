@@ -1,0 +1,60 @@
+{
+  "name": "@netlify/db-dev",
+  "main": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    }
+  },
+  "version": "1.0.0",
+  "description": "Local dev emulation of Netlify DB",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.mjs",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.mts"
+  ],
+  "scripts": {
+    "dev": "tsup-node --watch",
+    "build": "tsup-node",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:dev": "vitest"
+  },
+  "keywords": [
+    "netlify",
+    "db",
+    "database",
+    "postgres",
+    "pglite"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/db/dev"
+  },
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  },
+  "author": "Netlify Inc.",
+  "dependencies": {
+    "@electric-sql/pglite": "^0.3.15",
+    "pg-gateway": "0.3.0-beta.4"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0",
+    "pg": "^8.11.0",
+    "tmp-promise": "^3.0.3",
+    "tsup": "^8.0.2",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20.6.1"
+  }
+}

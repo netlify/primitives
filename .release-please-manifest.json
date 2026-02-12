@@ -2,6 +2,7 @@
   "packages/ai": "0.3.6",
   "packages/blobs": "10.6.0",
   "packages/cache": "3.3.5",
+  "packages/db/prod": "0.0.1-beta.2",
   "packages/dev": "4.10.0",
   "packages/dev-utils": "4.3.3",
   "packages/edge-functions/dev": "1.0.10",

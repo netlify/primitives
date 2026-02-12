@@ -59,6 +59,7 @@
     "@netlify/ai": "^0.3.6",
     "@netlify/blobs": "10.6.0",
     "@netlify/config": "^24.3.0",
+    "@netlify/db-dev": "1.0.0",
     "@netlify/dev-utils": "4.3.3",
     "@netlify/edge-functions-dev": "1.0.10",
     "@netlify/functions-dev": "1.1.10",
