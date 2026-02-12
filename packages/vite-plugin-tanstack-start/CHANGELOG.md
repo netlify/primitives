@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.2.9](https://github.com/netlify/primitives/compare/vite-plugin-tanstack-start-v1.2.8...vite-plugin-tanstack-start-v1.2.9) (2026-02-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/vite-plugin bumped from ^2.8.0 to ^2.9.0
+
+## [1.2.8](https://github.com/netlify/primitives/compare/vite-plugin-tanstack-start-v1.2.7...vite-plugin-tanstack-start-v1.2.8) (2026-01-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/vite-plugin bumped from ^2.7.20 to ^2.8.0
+
+## [1.2.7](https://github.com/netlify/primitives/compare/vite-plugin-tanstack-start-v1.2.6...vite-plugin-tanstack-start-v1.2.7) (2026-01-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/vite-plugin bumped from ^2.7.19 to ^2.7.20
+
+## [1.2.6](https://github.com/netlify/primitives/compare/vite-plugin-tanstack-start-v1.2.5...vite-plugin-tanstack-start-v1.2.6) (2025-12-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/vite-plugin bumped from ^2.7.18 to ^2.7.19
+
 ## [1.2.5](https://github.com/netlify/primitives/compare/vite-plugin-tanstack-start-v1.2.4...vite-plugin-tanstack-start-v1.2.5) (2025-12-17)
 
 

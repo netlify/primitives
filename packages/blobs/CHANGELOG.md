@@ -1,5 +1,19 @@
 # Changelog
 
+## [10.6.0](https://github.com/netlify/primitives/compare/blobs-v10.5.0...blobs-v10.6.0) (2026-02-06)
+
+
+### Features
+
+* move `getEnvironment` to `runtime-utils` ([#579](https://github.com/netlify/primitives/issues/579)) ([639ba5f](https://github.com/netlify/primitives/commit/639ba5f5d5659bcf96894dc627a87af42c8fc19f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 2.2.1 to 2.3.0
+
 ## [10.5.0](https://github.com/netlify/primitives/compare/blobs-v10.4.4...blobs-v10.5.0) (2025-12-17)
 
 

@@ -1,5 +1,67 @@
 # Changelog
 
+## [4.10.0](https://github.com/netlify/primitives/compare/dev-v4.9.0...dev-v4.10.0) (2026-02-06)
+
+
+### Features
+
+* move `getEnvironment` to `runtime-utils` ([#579](https://github.com/netlify/primitives/issues/579)) ([639ba5f](https://github.com/netlify/primitives/commit/639ba5f5d5659bcf96894dc627a87af42c8fc19f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.5.0 to 10.6.0
+    * @netlify/edge-functions-dev bumped from 1.0.9 to 1.0.10
+    * @netlify/functions-dev bumped from 1.1.9 to 1.1.10
+    * @netlify/runtime bumped from 4.1.13 to 4.1.14
+
+## [4.9.0](https://github.com/netlify/primitives/compare/dev-v4.8.8...dev-v4.9.0) (2026-01-28)
+
+
+### Features
+
+* ai gateway disabled check ([#577](https://github.com/netlify/primitives/issues/577)) ([5c2a8ce](https://github.com/netlify/primitives/commit/5c2a8ce6aa9b324cd44a24c519086855299e780c))
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#576](https://github.com/netlify/primitives/issues/576)) ([1c6ff24](https://github.com/netlify/primitives/commit/1c6ff247318b8cdb1961ce76e96fe423a4ec8cd7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.5 to ^0.3.6
+    * @netlify/edge-functions-dev bumped from 1.0.8 to 1.0.9
+    * @netlify/functions-dev bumped from 1.1.8 to 1.1.9
+
+## [4.8.8](https://github.com/netlify/primitives/compare/dev-v4.8.7...dev-v4.8.8) (2026-01-19)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#566](https://github.com/netlify/primitives/issues/566)) ([184656a](https://github.com/netlify/primitives/commit/184656af871a81bddc69e9133f22bfa945f28ebf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions-dev bumped from 1.0.7 to 1.0.8
+    * @netlify/functions-dev bumped from 1.1.7 to 1.1.8
+
+## [4.8.7](https://github.com/netlify/primitives/compare/dev-v4.8.6...dev-v4.8.7) (2025-12-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions-dev bumped from 1.1.6 to 1.1.7
+
 ## [4.8.6](https://github.com/netlify/primitives/compare/dev-v4.8.5...dev-v4.8.6) (2025-12-17)
 
 

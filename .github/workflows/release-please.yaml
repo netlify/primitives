@@ -18,7 +18,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: navikt/github-app-token-generator@793caf0d755fb4d6e88150825f680f188535cb48
+      - uses: navikt/github-app-token-generator@757386febfca7206eca81593f81558cd99bcee12
         id: get-token
         with:
           private-key: ${{ secrets.TOKENS_PRIVATE_KEY }}
@@ -257,6 +257,25 @@ jobs:
             npm publish packages/ai/ --provenance --access=public || true
           else
             npm publish packages/ai/ --provenance --access=public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - if:
+          ${{ steps.release.outputs['packages/db/prod--release_created'] || github.event_name == 'workflow_dispatch' }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            npm publish packages/db/prod/ --provenance --access=public || true
+          else
+            npm publish packages/db/prod/ --provenance --access=public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - if: ${{ steps.release.outputs['packages/db/dev--release_created'] || github.event_name == 'workflow_dispatch' }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            npm publish packages/db/dev/ --provenance --access=public || true
+          else
+            npm publish packages/db/dev/ --provenance --access=public
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

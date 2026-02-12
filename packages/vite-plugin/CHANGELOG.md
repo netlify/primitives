@@ -1,5 +1,56 @@
 # Changelog
 
+## [2.9.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.8.0...vite-plugin-v2.9.0) (2026-02-06)
+
+
+### Features
+
+* move `getEnvironment` to `runtime-utils` ([#579](https://github.com/netlify/primitives/issues/579)) ([639ba5f](https://github.com/netlify/primitives/commit/639ba5f5d5659bcf96894dc627a87af42c8fc19f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.9.0 to 4.10.0
+
+## [2.8.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.20...vite-plugin-v2.8.0) (2026-01-28)
+
+
+### Features
+
+* ai gateway disabled check ([#577](https://github.com/netlify/primitives/issues/577)) ([5c2a8ce](https://github.com/netlify/primitives/commit/5c2a8ce6aa9b324cd44a24c519086855299e780c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.8.8 to 4.9.0
+
+## [2.7.20](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.19...vite-plugin-v2.7.20) (2026-01-19)
+
+
+### Bug Fixes
+
+* expect bundle entry in its env's outDir ([#573](https://github.com/netlify/primitives/issues/573)) ([a66e648](https://github.com/netlify/primitives/commit/a66e648521c3659c0fef7fd148ca3ee9c6984dd9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.8.7 to 4.8.8
+
+## [2.7.19](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.18...vite-plugin-v2.7.19) (2025-12-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.8.6 to 4.8.7
+
 ## [2.7.18](https://github.com/netlify/primitives/compare/vite-plugin-v2.7.17...vite-plugin-v2.7.18) (2025-12-17)
 
 

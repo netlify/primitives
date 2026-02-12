@@ -5,6 +5,7 @@ import process from 'node:process'
 
 import { parseAIGatewayContext, setupAIGateway } from '@netlify/ai/bootstrap'
 import { resolveConfig } from '@netlify/config'
+import { NetlifyDB } from '@netlify/db-dev'
 import {
   ensureNetlifyIgnore,
   getAPIToken,
@@ -138,6 +139,15 @@ export interface Features {
      */
     directories?: string[]
   }
+
+  /**
+   * Configuration options for Netlify AI Gateway.
+   *
+   * {@link} https://docs.netlify.com/ai/overview/
+   */
+  aiGateway?: {
+    enabled?: boolean
+  }
 }
 
 interface NetlifyDevOptions extends Features {
@@ -187,7 +197,9 @@ export class NetlifyDev {
   #functionsServePath: string
   #config?: Config
   #features: {
+    aiGateway: boolean
     blobs: boolean
+    db: boolean
     edgeFunctions: boolean
     environmentVariables: boolean
     environmentVariablesInjectUserEnv: boolean
@@ -223,7 +235,9 @@ export class NetlifyDev {
     this.#cleanupJobs = []
     this.#geolocationConfig = options.geolocation
     this.#features = {
+      aiGateway: options.aiGateway?.enabled !== false,
       blobs: options.blobs?.enabled !== false,
+      db: process.env.EXPERIMENTAL_NETLIFY_DB_ENABLED === '1',
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       environmentVariablesInjectUserEnv: options.environmentVariables?.injectUserEnv !== false,
@@ -471,8 +485,29 @@ export class NetlifyDev {
 
     this.#cleanupJobs.push(() => runtime.stop())
 
+    if (this.#features.db) {
+      const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
+      const db = new NetlifyDB({ directory: dbDirectory })
+      const connectionString = await db.start()
+
+      runtime.env.set('NETLIFY_DB_URL', connectionString)
+
+      this.#cleanupJobs.push(() => db.stop())
+    }
+
+    // Check if AI Gateway is disabled at account level (setting passed to site level capabilities)
+    if (this.#features.aiGateway && config?.siteInfo?.capabilities?.ai_gateway_disabled) {
+      this.#features.aiGateway = false
+    }
+
     // Bootstrap AI Gateway: Fetch AI Gateway tokens and inject them into env
-    if (this.#features.environmentVariables && config?.api && siteID && config?.siteInfo?.url) {
+    if (
+      this.#features.aiGateway &&
+      this.#features.environmentVariables &&
+      config?.api &&
+      siteID &&
+      config?.siteInfo?.url
+    ) {
       await setupAIGateway({
         api: config.api,
         env: config.env || {},

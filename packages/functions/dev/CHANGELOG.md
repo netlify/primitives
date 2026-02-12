@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.1.10](https://github.com/netlify/primitives/compare/functions-dev-v1.1.9...functions-dev-v1.1.10) (2026-02-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.5.0 to 10.6.0
+
+## [1.1.9](https://github.com/netlify/primitives/compare/functions-dev-v1.1.8...functions-dev-v1.1.9) (2026-01-28)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#576](https://github.com/netlify/primitives/issues/576)) ([1c6ff24](https://github.com/netlify/primitives/commit/1c6ff247318b8cdb1961ce76e96fe423a4ec8cd7))
+
+## [1.1.8](https://github.com/netlify/primitives/compare/functions-dev-v1.1.7...functions-dev-v1.1.8) (2026-01-19)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#566](https://github.com/netlify/primitives/issues/566)) ([184656a](https://github.com/netlify/primitives/commit/184656af871a81bddc69e9133f22bfa945f28ebf))
+
+## [1.1.7](https://github.com/netlify/primitives/compare/functions-dev-v1.1.6...functions-dev-v1.1.7) (2025-12-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions bumped from 5.1.1 to 5.1.2
+
 ## [1.1.6](https://github.com/netlify/primitives/compare/functions-dev-v1.1.5...functions-dev-v1.1.6) (2025-12-17)
 
 

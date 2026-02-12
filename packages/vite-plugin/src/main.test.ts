@@ -69,7 +69,7 @@ describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
     })
   })
 
-  describe('configureServer', { timeout: 15_000 }, () => {
+  describe('configureServer', () => {
     test('does not warn on single plugin instance', async () => {
       const mockLogger = createMockViteLogger()
       const { server } = await startTestServer({
@@ -310,7 +310,7 @@ defined on your team and site and much more. Run npx netlify init to get started
       expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
       expect(mockLogger.info).toHaveBeenNthCalledWith(
         2,
-        'Middleware loaded. Emulating features: blobs, environmentVariables, functions, geolocation, headers, images, redirects, static.',
+        'Middleware loaded. Emulating features: aiGateway, blobs, environmentVariables, functions, geolocation, headers, images, redirects, static.',
         expect.objectContaining({}),
       )
       expect(mockLogger.info).toHaveBeenNthCalledWith(
