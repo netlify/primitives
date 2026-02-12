@@ -62,8 +62,7 @@ X-Frame-Thing:
     parseHeaders({ configHeaders: [], headersFiles: [invalidHeadersFile], logger }),
   ).resolves.not.toThrowError()
 
-  expect(logger.error).toHaveBeenCalledOnce()
-  expect(logger.error).toHaveBeenCalledWith(`Headers syntax errors:
+  expect(logger.error).toHaveBeenCalledExactlyOnceWith(`Headers syntax errors:
 Could not parse header line 6:
   X-Frame-Thing:
 Missing header value`)
