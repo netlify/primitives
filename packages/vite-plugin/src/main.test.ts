@@ -69,7 +69,7 @@ describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
     })
   })
 
-  describe('configureServer', { timeout: 15_000 }, () => {
+  describe('configureServer', () => {
     test('does not warn on single plugin instance', async () => {
       const mockLogger = createMockViteLogger()
       const { server } = await startTestServer({
