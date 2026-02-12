@@ -1138,9 +1138,7 @@ describe('set', () => {
       })
 
       await expect(blobs.set('', 'value')).rejects.toThrowError('Blob key must not be empty.')
-      await expect(blobs.set('/key', 'value')).rejects.toThrowError(
-        'Blob key must not start with forward slash (/).',
-      )
+      await expect(blobs.set('/key', 'value')).rejects.toThrowError('Blob key must not start with forward slash (/).')
       await expect(blobs.set('a'.repeat(801), 'value')).rejects.toThrowError(
         'Blob key must be a sequence of Unicode characters whose UTF-8 encoding is at most 600 bytes long.',
       )
