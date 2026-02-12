@@ -76,5 +76,5 @@ export default defineConfig({
 })
 ```
 
-With `injectUserEnv: false`, only platform variables like `NETLIFY_LOCAL`, `CONTEXT`, and `SITE_ID` are injected,
-which are required for platform features like `purgeCache()` to work correctly.
+With `injectUserEnv: false`, only platform variables like `NETLIFY_LOCAL`, `CONTEXT`, and `SITE_ID` are injected, which
+are required for platform features like `purgeCache()` to work correctly.

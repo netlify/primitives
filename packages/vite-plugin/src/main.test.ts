@@ -205,7 +205,7 @@ describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
       // Platform env vars should be present
       expect(process.env).toHaveProperty('NETLIFY_LOCAL', 'true')
       expect(process.env).toHaveProperty('CONTEXT', 'dev')
-      
+
       // User-defined env vars should NOT be present when injectUserEnv is false
       expect(process.env).not.toHaveProperty('MY_USER_VAR')
 

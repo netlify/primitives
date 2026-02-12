@@ -1147,7 +1147,7 @@ describe('Environment variable injection', () => {
     })
 
     await devWithoutUserEnv.start()
-    
+
     const req1 = new Request('https://site.netlify/env-test')
     const res1 = await devWithoutUserEnv.handle(req1)
     const envVarsWithoutUserEnv = await res1?.json()
@@ -1157,7 +1157,7 @@ describe('Environment variable injection', () => {
     // Platform env vars should be present
     expect(envVarsWithoutUserEnv).toHaveProperty('NETLIFY_LOCAL', 'true')
     expect(envVarsWithoutUserEnv).toHaveProperty('CONTEXT', 'dev')
-    
+
     // User-defined env vars should NOT be present
     expect(envVarsWithoutUserEnv.MY_USER_VAR).toBeUndefined()
 
