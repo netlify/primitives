@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.3.6](https://github.com/netlify/primitives/compare/ai-v0.3.5...ai-v0.3.6) (2026-01-28)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#576](https://github.com/netlify/primitives/issues/576)) ([1c6ff24](https://github.com/netlify/primitives/commit/1c6ff247318b8cdb1961ce76e96fe423a4ec8cd7))
+
+## [0.3.5](https://github.com/netlify/primitives/compare/ai-v0.3.4...ai-v0.3.5) (2025-12-08)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#557](https://github.com/netlify/primitives/issues/557)) ([60644bf](https://github.com/netlify/primitives/commit/60644bf6863a0ba41d9e73b0d8d1cfa90205c963))
+
+## [0.3.4](https://github.com/netlify/primitives/compare/ai-v0.3.3...ai-v0.3.4) (2025-12-03)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#549](https://github.com/netlify/primitives/issues/549)) ([ec4fb29](https://github.com/netlify/primitives/commit/ec4fb2978af5cf75c12645ade9f771bc94a796e2))
+
+## [0.3.3](https://github.com/netlify/primitives/compare/ai-v0.3.2...ai-v0.3.3) (2025-11-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/api to v14.0.10 ([#521](https://github.com/netlify/primitives/issues/521)) ([61869e9](https://github.com/netlify/primitives/commit/61869e902052157006031d64089afb90c298b92c))
+* **deps:** update netlify packages ([#515](https://github.com/netlify/primitives/issues/515)) ([67034cc](https://github.com/netlify/primitives/commit/67034cce9f80e35582f328b1990d0f26e7181cff))
+
 ## [0.3.2](https://github.com/netlify/primitives/compare/ai-v0.3.1...ai-v0.3.2) (2025-10-29)
 
 

@@ -1,4 +1,7 @@
 import process from 'node:process'
+import { getTracer, withActiveSpan } from '@netlify/otel'
+import type { Span } from '@netlify/otel/opentelemetry'
+
 import { NF_ERROR, NF_REQUEST_ID } from './headers.ts'
 
 export class BlobsInternalError extends Error {
@@ -62,4 +65,13 @@ export function encodeName(string: string): string {
 
 export function decodeName(string: string): string {
   return process.platform == 'win32' ? decodeWin32SafeName(string) : string
+}
+
+// Allow users to pass in their own active span or defaults to creating a new active span
+export function withSpan<F extends (span?: Span) => ReturnType<F>>(span: Span | undefined, name: string, fn: F) {
+  if (span) return fn(span)
+
+  return withActiveSpan(getTracer(), name, (span) => {
+    return fn(span)
+  })
 }

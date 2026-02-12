@@ -3,7 +3,9 @@ import { IncomingMessage } from 'node:http'
 import path from 'node:path'
 import process from 'node:process'
 
+import { parseAIGatewayContext, setupAIGateway } from '@netlify/ai/bootstrap'
 import { resolveConfig } from '@netlify/config'
+import { NetlifyDB } from '@netlify/db-dev'
 import {
   ensureNetlifyIgnore,
   getAPIToken,
@@ -128,6 +130,15 @@ export interface Features {
      */
     directories?: string[]
   }
+
+  /**
+   * Configuration options for Netlify AI Gateway.
+   *
+   * {@link} https://docs.netlify.com/ai/overview/
+   */
+  aiGateway?: {
+    enabled?: boolean
+  }
 }
 
 interface NetlifyDevOptions extends Features {
@@ -177,7 +188,9 @@ export class NetlifyDev {
   #functionsServePath: string
   #config?: Config
   #features: {
+    aiGateway: boolean
     blobs: boolean
+    db: boolean
     edgeFunctions: boolean
     environmentVariables: boolean
     functions: boolean
@@ -212,7 +225,9 @@ export class NetlifyDev {
     this.#cleanupJobs = []
     this.#geolocationConfig = options.geolocation
     this.#features = {
+      aiGateway: options.aiGateway?.enabled !== false,
       blobs: options.blobs?.enabled !== false,
+      db: process.env.EXPERIMENTAL_NETLIFY_DB_ENABLED === '1',
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
@@ -459,6 +474,56 @@ export class NetlifyDev {
 
     this.#cleanupJobs.push(() => runtime.stop())
 
+    if (this.#features.db) {
+      const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
+      const db = new NetlifyDB({ directory: dbDirectory })
+      const connectionString = await db.start()
+
+      runtime.env.set('NETLIFY_DB_URL', connectionString)
+
+      this.#cleanupJobs.push(() => db.stop())
+    }
+
+    // Check if AI Gateway is disabled at account level (setting passed to site level capabilities)
+    if (this.#features.aiGateway && config?.siteInfo?.capabilities?.ai_gateway_disabled) {
+      this.#features.aiGateway = false
+    }
+
+    // Bootstrap AI Gateway: Fetch AI Gateway tokens and inject them into env
+    if (
+      this.#features.aiGateway &&
+      this.#features.environmentVariables &&
+      config?.api &&
+      siteID &&
+      config?.siteInfo?.url
+    ) {
+      await setupAIGateway({
+        api: config.api,
+        env: config.env || {},
+        siteID,
+        siteURL: config.siteInfo.url,
+      })
+
+      // Inject AI_GATEWAY into process.env via runtime
+      if (config.env.AI_GATEWAY) {
+        runtime.env.set('AI_GATEWAY', config.env.AI_GATEWAY.value)
+
+        // Parse and inject AI Gateway env vars
+        const aiGatewayContext = parseAIGatewayContext(config.env.AI_GATEWAY.value)
+        if (aiGatewayContext) {
+          runtime.env.set('NETLIFY_AI_GATEWAY_KEY', aiGatewayContext.token)
+          runtime.env.set('NETLIFY_AI_GATEWAY_URL', aiGatewayContext.url)
+
+          if (aiGatewayContext.envVars) {
+            for (const envVar of aiGatewayContext.envVars) {
+              runtime.env.set(envVar.key, aiGatewayContext.token)
+              runtime.env.set(envVar.url, aiGatewayContext.url)
+            }
+          }
+        }
+      }
+    }
+
     let serverAddress: string | undefined
 
     // If a custom server has been provided, use it. If not, we must stand up
@@ -555,7 +620,6 @@ export class NetlifyDev {
         projectRoot: this.#projectRoot,
         settings: {},
         siteId: this.#siteID,
-        timeouts: {},
         userFunctionsPath: userFunctionsPathExists ? userFunctionsPath : undefined,
       })
     }

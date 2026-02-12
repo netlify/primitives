@@ -1,5 +1,48 @@
 # Changelog
 
+## [5.1.1](https://github.com/netlify/primitives/compare/otel-v5.1.0...otel-v5.1.1) (2025-12-16)
+
+
+### Bug Fixes
+
+* instrumentation headers type safety ([#560](https://github.com/netlify/primitives/issues/560)) ([0352005](https://github.com/netlify/primitives/commit/0352005c2613fdb9683ba41e43af7f54018eb719))
+
+## [5.1.0](https://github.com/netlify/primitives/compare/otel-v5.0.1...otel-v5.1.0) (2025-12-08)
+
+
+### Features
+
+* HttpInstrumentation ([#555](https://github.com/netlify/primitives/issues/555)) ([a666b89](https://github.com/netlify/primitives/commit/a666b89259be76fb8d88b5a4b87f7895ca8f6480))
+* non-conflicting fetch instrumentation ([#554](https://github.com/netlify/primitives/issues/554)) ([412986e](https://github.com/netlify/primitives/commit/412986e35e65da8b31ad5048d4e2a7eae1b2f6f0))
+
+
+### Bug Fixes
+
+* support skipURLs property in http instrumentation ([#559](https://github.com/netlify/primitives/issues/559)) ([d0cfcd3](https://github.com/netlify/primitives/commit/d0cfcd389b66aad18ddbcc852c9ac0db933566ae))
+
+## [5.0.1](https://github.com/netlify/primitives/compare/otel-v5.0.0...otel-v5.0.1) (2025-12-03)
+
+
+### Bug Fixes
+
+* prevent multiple instances of the tracer provider ([#545](https://github.com/netlify/primitives/issues/545)) ([0225010](https://github.com/netlify/primitives/commit/0225010a8d2caf553a4313d43889f9409a7fba94))
+
+## [5.0.0](https://github.com/netlify/primitives/compare/otel-v4.3.2...otel-v5.0.0) (2025-11-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* use static imports ([#530](https://github.com/netlify/primitives/issues/530))
+
+### Features
+
+* use static imports ([#530](https://github.com/netlify/primitives/issues/530)) ([c78f7ad](https://github.com/netlify/primitives/commit/c78f7ad0189ec52eb6eebbf59da0eefd795e979b))
+
+
+### Bug Fixes
+
+* replace otlp exporter with local implementation ([#531](https://github.com/netlify/primitives/issues/531)) ([2d6b30a](https://github.com/netlify/primitives/commit/2d6b30a260064e4de56a681e398bf06778a2978c))
+
 ## [4.3.2](https://github.com/netlify/primitives/compare/otel-v4.3.1...otel-v4.3.2) (2025-10-27)
 
 

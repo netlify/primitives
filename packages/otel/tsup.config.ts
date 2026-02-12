@@ -11,6 +11,7 @@ export default defineConfig([
       'src/main.ts',
       'src/exporters/netlify.ts',
       'src/instrumentations/fetch.ts',
+      'src/instrumentations/http.ts',
       'src/opentelemetry.ts',
     ],
     tsconfig: 'tsconfig.json',

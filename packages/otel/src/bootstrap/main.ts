@@ -1,6 +1,15 @@
-import { type SpanProcessor } from '@opentelemetry/sdk-trace-node'
-import type { Instrumentation } from '@opentelemetry/instrumentation'
+import process from 'node:process'
+
+import { trace } from '@opentelemetry/api'
+import { SugaredTracer } from '@opentelemetry/api/experimental'
+import { Resource } from '@opentelemetry/resources'
+import { type Instrumentation, registerInstrumentations } from '@opentelemetry/instrumentation'
+import { W3CTraceContextPropagator } from '@opentelemetry/core'
+import { NodeTracerProvider, SimpleSpanProcessor, type SpanProcessor } from '@opentelemetry/sdk-trace-node'
+
 import { GET_TRACER, SHUTDOWN_TRACERS } from '../constants.js'
+import { NetlifySpanExporter } from '../exporters/netlify.js'
+import packageJson from '../../package.json' with { type: 'json' }
 
 export interface TracerProviderOptions {
   serviceName: string
@@ -9,20 +18,16 @@ export interface TracerProviderOptions {
   siteUrl: string
   siteId: string
   siteName: string
-  instrumentations?: (Instrumentation | Promise<Instrumentation>)[]
-  spanProcessors?: (SpanProcessor | Promise<SpanProcessor>)[]
+  instrumentations?: Instrumentation[]
+  spanProcessors?: SpanProcessor[]
 }
 
-export const createTracerProvider = async (options: TracerProviderOptions) => {
-  const { version: nodeVersion } = await import('node:process')
+export const createTracerProvider = (options: TracerProviderOptions) => {
+  // Prevent multiple tracers from being created
+  if (Object.prototype.hasOwnProperty.call(globalThis, GET_TRACER)) return
 
   // remove the v prefix from the version to match the spec
-  const runtimeVersion = nodeVersion.slice(1)
-
-  const { W3CTraceContextPropagator } = await import('@opentelemetry/core')
-  const { Resource } = await import('@opentelemetry/resources')
-  const { NodeTracerProvider } = await import('@opentelemetry/sdk-trace-node')
-  const { registerInstrumentations } = await import('@opentelemetry/instrumentation')
+  const runtimeVersion = process.version.slice(1)
 
   const resource = new Resource({
     'service.name': options.serviceName,
@@ -35,7 +40,7 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     'netlify.site.name': options.siteName,
   })
 
-  const spanProcessors = await Promise.all(options.spanProcessors ?? [await getBaseSpanProcessor()])
+  const spanProcessors = options.spanProcessors ?? [getBaseSpanProcessor()]
 
   const nodeTracerProvider = new NodeTracerProvider({
     resource,
@@ -46,16 +51,12 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
     propagator: new W3CTraceContextPropagator(),
   })
 
-  const instrumentations = await Promise.all(options.instrumentations ?? [])
+  const instrumentations = options.instrumentations ?? []
 
   registerInstrumentations({
     instrumentations,
     tracerProvider: nodeTracerProvider,
   })
-
-  const { trace } = await import('@opentelemetry/api')
-  const { SugaredTracer } = await import('@opentelemetry/api/experimental')
-  const { default: pkg } = await import('../../package.json', { with: { type: 'json' } })
 
   Object.defineProperty(globalThis, GET_TRACER, {
     enumerable: false,
@@ -66,7 +67,7 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
         return new SugaredTracer(trace.getTracer(name, version))
       }
 
-      return new SugaredTracer(trace.getTracer(pkg.name, pkg.version))
+      return new SugaredTracer(trace.getTracer(packageJson.name, packageJson.version))
     },
   })
 
@@ -80,9 +81,6 @@ export const createTracerProvider = async (options: TracerProviderOptions) => {
   })
 }
 
-export const getBaseSpanProcessor = async (): Promise<SpanProcessor> => {
-  const { SimpleSpanProcessor } = await import('@opentelemetry/sdk-trace-node')
-  const { NetlifySpanExporter } = await import('../exporters/netlify.js')
-
+export const getBaseSpanProcessor = (): SpanProcessor => {
   return new SimpleSpanProcessor(new NetlifySpanExporter())
 }

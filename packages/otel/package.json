@@ -1,6 +1,6 @@
 {
   "name": "@netlify/otel",
-  "version": "4.3.2",
+  "version": "5.1.1",
   "type": "module",
   "engines": {
     "node": "^18.14.0 || >=20.6.1"
@@ -66,6 +66,20 @@
         "default": "./dist/instrumentations/fetch.js"
       }
     },
+    "./instrumentation-http": {
+      "require": {
+        "types": "./dist/instrumentations/http.d.cts",
+        "default": "./dist/instrumentations/http.cjs"
+      },
+      "import": {
+        "types": "./dist/instrumentations/http.d.ts",
+        "default": "./dist/instrumentations/http.js"
+      },
+      "default": {
+        "types": "./dist/instrumentations/http.d.ts",
+        "default": "./dist/instrumentations/http.js"
+      }
+    },
     "./opentelemetry": {
       "require": {
         "types": "./dist/opentelemetry.d.cts",
@@ -111,6 +125,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
+    "@netlify/dev-utils": "^4.3.3",
     "msw": "^2.10.5",
     "npm-run-all2": "^7.0.2",
     "tsup": "^8.0.0",
@@ -120,7 +135,6 @@
     "@opentelemetry/api": "1.9.0",
     "@opentelemetry/core": "1.30.1",
     "@opentelemetry/instrumentation": "^0.203.0",
-    "@opentelemetry/otlp-transformer": "0.57.2",
     "@opentelemetry/resources": "1.30.1",
     "@opentelemetry/sdk-trace-node": "1.30.1"
   }
