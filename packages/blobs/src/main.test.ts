@@ -132,7 +132,7 @@ describe('get', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.get(key)).rejects.toThrowError(
+      await expect(blobs.get(key)).rejects.toThrowError(
         `Netlify Blobs has generated an internal error (401 status code, ID: ${mockRequestID})`,
       )
       expect(mockStore.fulfilled).toBeTruthy()
@@ -157,7 +157,7 @@ describe('get', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.get(key)).rejects.toThrowError(
+      await expect(blobs.get(key)).rejects.toThrowError(
         `Netlify Blobs has generated an internal error (401 status code)`,
       )
 
@@ -447,7 +447,7 @@ describe('get', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.get(key)).rejects.toThrowError(
+      await expect(blobs.get(key)).rejects.toThrowError(
         `Netlify Blobs has generated an internal error (${errorDetails})`,
       )
 
@@ -782,7 +782,7 @@ describe('getMetadata', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.getMetadata(key)).rejects.toThrowError(
+      await expect(blobs.getMetadata(key)).rejects.toThrowError(
         'An internal error occurred while trying to retrieve the metadata for an entry. Please try updating to the latest version of the Netlify Blobs client.',
       )
 
@@ -923,7 +923,7 @@ describe('getWithMetadata', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.getWithMetadata(key)).rejects.toThrowError(
+      await expect(blobs.getWithMetadata(key)).rejects.toThrowError(
         'An internal error occurred while trying to retrieve the metadata for an entry. Please try updating to the latest version of the Netlify Blobs client.',
       )
 
@@ -1122,7 +1122,7 @@ describe('set', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.set(key, 'value')).rejects.toThrowError(
+      await expect(blobs.set(key, 'value')).rejects.toThrowError(
         `Netlify Blobs has generated an internal error (401 status code)`,
       )
       expect(mockStore.fulfilled).toBeTruthy()
@@ -1137,11 +1137,11 @@ describe('set', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.set('', 'value')).rejects.toThrowError('Blob key must not be empty.')
-      await expect(async () => await blobs.set('/key', 'value')).rejects.toThrowError(
+      await expect(blobs.set('', 'value')).rejects.toThrowError('Blob key must not be empty.')
+      await expect(blobs.set('/key', 'value')).rejects.toThrowError(
         'Blob key must not start with forward slash (/).',
       )
-      await expect(async () => await blobs.set('a'.repeat(801), 'value')).rejects.toThrowError(
+      await expect(blobs.set('a'.repeat(801), 'value')).rejects.toThrowError(
         'Blob key must be a sequence of Unicode characters whose UTF-8 encoding is at most 600 bytes long.',
       )
     })
@@ -1246,7 +1246,7 @@ describe('set', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.set(key, value)).rejects.toThrowError(
+      await expect(blobs.set(key, value)).rejects.toThrowError(
         `Netlify Blobs has generated an internal error (401 status code)`,
       )
 
@@ -1394,7 +1394,7 @@ describe('setJSON', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.setJSON(key, { value }, { metadata })).rejects.toThrowError(
+      await expect(blobs.setJSON(key, { value }, { metadata })).rejects.toThrowError(
         'Metadata object exceeds the maximum size',
       )
     })
@@ -1464,7 +1464,7 @@ describe('delete', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.delete(key)).rejects.toThrowError(
+      await expect(blobs.delete(key)).rejects.toThrowError(
         `Netlify Blobs has generated an internal error (401 status code)`,
       )
       expect(mockStore.fulfilled).toBeTruthy()
@@ -1530,7 +1530,7 @@ describe('delete', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.delete(key)).rejects.toThrowError(
+      await expect(blobs.delete(key)).rejects.toThrowError(
         `Netlify Blobs has generated an internal error (401 status code)`,
       )
 
@@ -1577,7 +1577,7 @@ describe('deleteAll', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.deleteAll()).rejects.toThrowError(
+      await expect(blobs.deleteAll()).rejects.toThrowError(
         `Netlify Blobs has generated an internal error (401 status code)`,
       )
       expect(mockStore.fulfilled).toBeTruthy()
@@ -1644,7 +1644,7 @@ describe('deleteAll', () => {
         siteID,
       })
 
-      await expect(async () => await blobs.deleteAll()).rejects.toThrowError(
+      await expect(blobs.deleteAll()).rejects.toThrowError(
         `Netlify Blobs has generated an internal error (401 status code)`,
       )
 

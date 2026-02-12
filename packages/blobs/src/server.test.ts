@@ -233,7 +233,7 @@ test('If a token is set, rejects any requests with an invalid `authorization` he
     siteID,
   })
 
-  await expect(async () => await blobs.get('some-key')).rejects.toThrowError(
+  await expect(blobs.get('some-key')).rejects.toThrowError(
     'Netlify Blobs has generated an internal error (403 status code)',
   )
 
