@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.3.0](https://github.com/netlify/primitives/compare/runtime-utils-v2.2.1...runtime-utils-v2.3.0) (2026-02-06)
+
+
+### Features
+
+* move `getEnvironment` to `runtime-utils` ([#579](https://github.com/netlify/primitives/issues/579)) ([639ba5f](https://github.com/netlify/primitives/commit/639ba5f5d5659bcf96894dc627a87af42c8fc19f))
+
+## [2.2.1](https://github.com/netlify/primitives/compare/runtime-utils-v2.2.0...runtime-utils-v2.2.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* add CJS support to @netlify/runtime-utils to fix ERR_REQUIRE_ESM ([#510](https://github.com/netlify/primitives/issues/510)) ([a6c3a26](https://github.com/netlify/primitives/commit/a6c3a268d13fc60849f16b5cba6064710366c096)), closes [#437](https://github.com/netlify/primitives/issues/437)
+
 ## [2.2.0](https://github.com/netlify/primitives/compare/runtime-utils-v2.1.0...runtime-utils-v2.2.0) (2025-10-10)
 
 

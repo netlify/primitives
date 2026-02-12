@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev",
-  "version": "4.6.7",
+  "version": "4.10.0",
   "description": "Emulation of the Netlify environment for local development",
   "type": "module",
   "engines": {
@@ -50,22 +50,24 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@netlify/api": "^14.0.8",
-    "@netlify/types": "2.1.0",
+    "@netlify/api": "^14.0.13",
+    "@netlify/types": "2.3.0",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/blobs": "10.3.1",
-    "@netlify/config": "^23.2.0",
-    "@netlify/dev-utils": "4.3.0",
-    "@netlify/edge-functions-dev": "1.0.2",
-    "@netlify/functions-dev": "1.0.4",
-    "@netlify/headers": "2.1.0",
-    "@netlify/images": "1.3.0",
-    "@netlify/redirects": "3.1.0",
-    "@netlify/runtime": "4.1.5",
-    "@netlify/static": "3.1.0",
+    "@netlify/ai": "^0.3.6",
+    "@netlify/blobs": "10.6.0",
+    "@netlify/config": "^24.3.0",
+    "@netlify/db-dev": "1.0.0",
+    "@netlify/dev-utils": "4.3.3",
+    "@netlify/edge-functions-dev": "1.0.10",
+    "@netlify/functions-dev": "1.1.10",
+    "@netlify/headers": "2.1.3",
+    "@netlify/images": "1.3.3",
+    "@netlify/redirects": "3.1.4",
+    "@netlify/runtime": "4.1.14",
+    "@netlify/static": "3.1.3",
     "ulid": "^3.0.0"
   }
 }

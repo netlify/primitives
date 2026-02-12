@@ -82,7 +82,7 @@ export function createBuildPlugin(options?: { displayName?: string; edgeSSR?: bo
       // Get the built server entry point and write a Netlify function with a handler that calls it
       const functionsDirectory = join(resolvedConfig.root, NETLIFY_FUNCTIONS_DIR)
       await mkdir(functionsDirectory, { recursive: true })
-      const serverEntrypoint = getServerEntrypoint(bundle, resolvedConfig.build.outDir)
+      const serverEntrypoint = getServerEntrypoint(bundle, this.environment.config.build.outDir)
       const serverEntrypointRelativePath = toPosixPath(relative(functionsDirectory, serverEntrypoint))
       await writeFile(
         join(functionsDirectory, NETLIFY_FUNCTION_FILENAME),

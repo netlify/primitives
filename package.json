@@ -9,6 +9,8 @@
     "packages/otel",
     "packages/blobs",
     "packages/cache",
+    "packages/db/dev",
+    "packages/db/prod",
     "packages/edge-functions/prod",
     "packages/edge-functions/dev",
     "packages/functions/prod",
@@ -18,8 +20,8 @@
     "packages/redirects",
     "packages/runtime",
     "packages/static",
-    "packages/dev",
     "packages/ai",
+    "packages/dev",
     "packages/nuxt-module",
     "packages/vite-plugin",
     "packages/vite-plugin-tanstack-start"
