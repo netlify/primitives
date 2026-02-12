@@ -65,9 +65,6 @@
     "typescript": "5.9.3",
     "vitest": "^3.0.0"
   },
-  "peerDependencies": {
-    "@netlify/api": ">=14.0.13"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/netlify/primitives.git",
