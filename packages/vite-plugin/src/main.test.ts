@@ -89,8 +89,7 @@ describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
         plugins: [netlify({ middleware: false }), netlify({ middleware: false })],
       })
 
-      expect(mockLogger.warn).toHaveBeenCalledOnce()
-      expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect(mockLogger.warn).toHaveBeenCalledExactlyOnceWith(
         expect.stringMatching(/Multiple instances of @netlify\/vite-plugin have been loaded/),
         expect.objectContaining({}),
       )
@@ -561,7 +560,7 @@ defined on your team and site and much more. Run npx netlify init to get started
         expect(await getImageSize(page.locator('#allowed-remote-image'))).toEqual({ width: 100, height: 50 })
 
         await expect(
-          async () => await getImageSize(page.locator('#not-allowed-remote-image')),
+          getImageSize(page.locator('#not-allowed-remote-image')),
           'Not allowed remote image should not load',
         ).rejects.toThrowError(`Image was not loaded`)
 
