@@ -1,5 +1,39 @@
 # Changelog
 
+## [3.1.4](https://github.com/netlify/primitives/compare/redirects-v3.1.3...redirects-v3.1.4) (2025-12-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.3.2 to 4.3.3
+
+## [3.1.3](https://github.com/netlify/primitives/compare/redirects-v3.1.2...redirects-v3.1.3) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.3.1 to 4.3.2
+
+## [3.1.2](https://github.com/netlify/primitives/compare/redirects-v3.1.1...redirects-v3.1.2) (2025-11-06)
+
+
+### Bug Fixes
+
+* ignore SPA redirect in dev mode to allow Vite to take over ([#514](https://github.com/netlify/primitives/issues/514)) ([510642b](https://github.com/netlify/primitives/commit/510642b575b10e1595f19bbeab475ffcaa35b1f2))
+
+## [3.1.1](https://github.com/netlify/primitives/compare/redirects-v3.1.0...redirects-v3.1.1) (2025-11-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.3.0 to 4.3.1
+
 ## [3.1.0](https://github.com/netlify/primitives/compare/redirects-v3.0.13...redirects-v3.1.0) (2025-10-10)
 
 

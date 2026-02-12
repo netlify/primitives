@@ -69,7 +69,7 @@ describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
     })
   })
 
-  describe('configureServer', { timeout: 15_000 }, () => {
+  describe('configureServer', () => {
     test('does not warn on single plugin instance', async () => {
       const mockLogger = createMockViteLogger()
       const { server } = await startTestServer({
@@ -255,7 +255,7 @@ defined on your team and site and much more. Run npx netlify init to get started
       expect(mockLogger.info).toHaveBeenNthCalledWith(1, 'Environment loaded', expect.objectContaining({}))
       expect(mockLogger.info).toHaveBeenNthCalledWith(
         2,
-        'Middleware loaded. Emulating features: blobs, environmentVariables, functions, geolocation, headers, images, redirects, static.',
+        'Middleware loaded. Emulating features: aiGateway, blobs, environmentVariables, functions, geolocation, headers, images, redirects, static.',
         expect.objectContaining({}),
       )
       expect(mockLogger.info).toHaveBeenNthCalledWith(
@@ -701,6 +701,62 @@ defined on your team and site and much more. Run npx netlify init to get started
         })
 
         expect(await page.goto(url).then((r) => r?.text())).toContain('<H1>HELLO FROM THE BROWSER</H1>')
+
+        await server.close()
+        await fixture.destroy()
+      })
+
+      test('Ignores SPA redirect in dev mode', async () => {
+        const fixture = new Fixture()
+          .withFile(
+            'netlify.toml',
+            `[[redirects]]
+              from = "/*"
+              to = "/index.html"
+              status = 200`,
+          )
+          .withFile(
+            'vite.config.js',
+            `import { defineConfig } from 'vite';
+             import netlify from '@netlify/vite-plugin';
+
+             export default defineConfig({
+               plugins: [
+                 netlify({
+                   middleware: true,
+                 })
+               ]
+             });`,
+          )
+          .withFile(
+            'index.html',
+            `<!DOCTYPE html>
+             <html>
+               <head><title>SPA App</title></head>
+               <body>
+                 <div id="app"></div>
+                 <script type="module" src="/src/main.js"></script>
+               </body>
+             </html>`,
+          )
+          .withFile('src/main.js', `document.getElementById('app').textContent = 'Hello from SPA'`)
+        const directory = await fixture.create()
+        await fixture
+          .withPackages({
+            vite: viteVersion,
+            '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+          })
+          .create()
+
+        const { server, url } = await startTestServer({
+          root: directory,
+        })
+
+        // Any route should render the root index.html (Vite handles it) and JS should execute (which
+        // verifies the SPA redirect isn't interfering with loading the .js module).
+        await page.goto(`${url}/some-route`)
+        await page.waitForSelector('#app')
+        expect(await page.textContent('#app')).toBe('Hello from SPA')
 
         await server.close()
         await fixture.destroy()

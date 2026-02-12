@@ -6,17 +6,15 @@ import type { Handler, HandlerEvent, HandlerContext, StreamingHandler, Streaming
 // Node v14 doesn't have node:stream/promises
 const pipeline = promisify(pipelineSync)
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace awslambda {
-    function streamifyResponse(
-      handler: (event: HandlerEvent, responseStream: NodeJS.WritableStream, context: HandlerContext) => Promise<void>,
-    ): Handler
+// eslint-disable-next-line @typescript-eslint/no-namespace
+declare namespace awslambda {
+  function streamifyResponse(
+    handler: (event: HandlerEvent, responseStream: NodeJS.WritableStream, context: HandlerContext) => Promise<void>,
+  ): Handler
 
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace HttpResponseStream {
-      function from(stream: NodeJS.WritableStream, metadata: Omit<StreamingResponse, 'body'>): NodeJS.WritableStream
-    }
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace HttpResponseStream {
+    function from(stream: NodeJS.WritableStream, metadata: Omit<StreamingResponse, 'body'>): NodeJS.WritableStream
   }
 }
 

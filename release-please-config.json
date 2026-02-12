@@ -9,6 +9,10 @@
     "packages/ai": {},
     "packages/blobs": {},
     "packages/cache": {},
+    "packages/db/prod": {
+      "prerelease": true,
+      "prerelease-type": "beta"
+    },
     "packages/dev": {},
     "packages/dev-utils": {},
     "packages/edge-functions/dev": {},

@@ -1,5 +1,212 @@
 # Changelog
 
+## [4.10.0](https://github.com/netlify/primitives/compare/dev-v4.9.0...dev-v4.10.0) (2026-02-06)
+
+
+### Features
+
+* move `getEnvironment` to `runtime-utils` ([#579](https://github.com/netlify/primitives/issues/579)) ([639ba5f](https://github.com/netlify/primitives/commit/639ba5f5d5659bcf96894dc627a87af42c8fc19f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.5.0 to 10.6.0
+    * @netlify/edge-functions-dev bumped from 1.0.9 to 1.0.10
+    * @netlify/functions-dev bumped from 1.1.9 to 1.1.10
+    * @netlify/runtime bumped from 4.1.13 to 4.1.14
+
+## [4.9.0](https://github.com/netlify/primitives/compare/dev-v4.8.8...dev-v4.9.0) (2026-01-28)
+
+
+### Features
+
+* ai gateway disabled check ([#577](https://github.com/netlify/primitives/issues/577)) ([5c2a8ce](https://github.com/netlify/primitives/commit/5c2a8ce6aa9b324cd44a24c519086855299e780c))
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#576](https://github.com/netlify/primitives/issues/576)) ([1c6ff24](https://github.com/netlify/primitives/commit/1c6ff247318b8cdb1961ce76e96fe423a4ec8cd7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.5 to ^0.3.6
+    * @netlify/edge-functions-dev bumped from 1.0.8 to 1.0.9
+    * @netlify/functions-dev bumped from 1.1.8 to 1.1.9
+
+## [4.8.8](https://github.com/netlify/primitives/compare/dev-v4.8.7...dev-v4.8.8) (2026-01-19)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#566](https://github.com/netlify/primitives/issues/566)) ([184656a](https://github.com/netlify/primitives/commit/184656af871a81bddc69e9133f22bfa945f28ebf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions-dev bumped from 1.0.7 to 1.0.8
+    * @netlify/functions-dev bumped from 1.1.7 to 1.1.8
+
+## [4.8.7](https://github.com/netlify/primitives/compare/dev-v4.8.6...dev-v4.8.7) (2025-12-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions-dev bumped from 1.1.6 to 1.1.7
+
+## [4.8.6](https://github.com/netlify/primitives/compare/dev-v4.8.5...dev-v4.8.6) (2025-12-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.4.4 to 10.5.0
+    * @netlify/functions-dev bumped from 1.1.5 to 1.1.6
+    * @netlify/runtime bumped from 4.1.12 to 4.1.13
+
+## [4.8.5](https://github.com/netlify/primitives/compare/dev-v4.8.4...dev-v4.8.5) (2025-12-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.4.3 to 10.4.4
+    * @netlify/functions-dev bumped from 1.1.4 to 1.1.5
+    * @netlify/runtime bumped from 4.1.11 to 4.1.12
+
+## [4.8.4](https://github.com/netlify/primitives/compare/dev-v4.8.3...dev-v4.8.4) (2025-12-08)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#557](https://github.com/netlify/primitives/issues/557)) ([60644bf](https://github.com/netlify/primitives/commit/60644bf6863a0ba41d9e73b0d8d1cfa90205c963))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.4 to ^0.3.5
+    * @netlify/blobs bumped from 10.4.2 to 10.4.3
+    * @netlify/dev-utils bumped from 4.3.2 to 4.3.3
+    * @netlify/edge-functions-dev bumped from 1.0.6 to 1.0.7
+    * @netlify/functions-dev bumped from 1.1.3 to 1.1.4
+    * @netlify/headers bumped from 2.1.2 to 2.1.3
+    * @netlify/images bumped from 1.3.2 to 1.3.3
+    * @netlify/redirects bumped from 3.1.3 to 3.1.4
+    * @netlify/runtime bumped from 4.1.10 to 4.1.11
+    * @netlify/static bumped from 3.1.2 to 3.1.3
+  * devDependencies
+    * @netlify/types bumped from 2.2.0 to 2.3.0
+
+## [4.8.3](https://github.com/netlify/primitives/compare/dev-v4.8.2...dev-v4.8.3) (2025-12-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/config to v24 ([#415](https://github.com/netlify/primitives/issues/415)) ([5225265](https://github.com/netlify/primitives/commit/52252659d4809f8d9157739431674edb44e960a5))
+* **deps:** update netlify packages ([#549](https://github.com/netlify/primitives/issues/549)) ([ec4fb29](https://github.com/netlify/primitives/commit/ec4fb2978af5cf75c12645ade9f771bc94a796e2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.3 to ^0.3.4
+    * @netlify/blobs bumped from 10.4.1 to 10.4.2
+    * @netlify/edge-functions-dev bumped from 1.0.5 to 1.0.6
+    * @netlify/functions-dev bumped from 1.1.2 to 1.1.3
+    * @netlify/runtime bumped from 4.1.9 to 4.1.10
+
+## [4.8.2](https://github.com/netlify/primitives/compare/dev-v4.8.1...dev-v4.8.2) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.4.0 to 10.4.1
+    * @netlify/functions-dev bumped from 1.1.1 to 1.1.2
+    * @netlify/runtime bumped from 4.1.8 to 4.1.9
+
+## [4.8.1](https://github.com/netlify/primitives/compare/dev-v4.8.0...dev-v4.8.1) (2025-11-14)
+
+
+### Bug Fixes
+
+* handle HTTP/2 requests with pseudo-headers ([#534](https://github.com/netlify/primitives/issues/534)) ([7b5ce83](https://github.com/netlify/primitives/commit/7b5ce83ca2fb8df59a41dc81921c29566a39a1cb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.3.3 to 10.4.0
+    * @netlify/dev-utils bumped from 4.3.1 to 4.3.2
+    * @netlify/edge-functions-dev bumped from 1.0.4 to 1.0.5
+    * @netlify/functions-dev bumped from 1.1.0 to 1.1.1
+    * @netlify/headers bumped from 2.1.1 to 2.1.2
+    * @netlify/images bumped from 1.3.1 to 1.3.2
+    * @netlify/redirects bumped from 3.1.2 to 3.1.3
+    * @netlify/runtime bumped from 4.1.7 to 4.1.8
+    * @netlify/static bumped from 3.1.1 to 3.1.2
+
+## [4.8.0](https://github.com/netlify/primitives/compare/dev-v4.7.1...dev-v4.8.0) (2025-11-07)
+
+
+### Features
+
+* add AI Gateway support to @netlify/dev for Vite plugin ([#524](https://github.com/netlify/primitives/issues/524)) ([e6823d4](https://github.com/netlify/primitives/commit/e6823d44ade93211f4eee57d131772720d260c78))
+
+## [4.7.1](https://github.com/netlify/primitives/compare/dev-v4.7.0...dev-v4.7.1) (2025-11-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/redirects bumped from 3.1.1 to 3.1.2
+
+## [4.7.0](https://github.com/netlify/primitives/compare/dev-v4.6.8...dev-v4.7.0) (2025-11-05)
+
+
+### Features
+
+* implement functions timeout defaults and overrides in dev ([#346](https://github.com/netlify/primitives/issues/346)) ([c17753e](https://github.com/netlify/primitives/commit/c17753ec35bdef076db563fa37c1a4222bd5c149))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/api to v14.0.10 ([#521](https://github.com/netlify/primitives/issues/521)) ([61869e9](https://github.com/netlify/primitives/commit/61869e902052157006031d64089afb90c298b92c))
+* **deps:** update netlify packages ([#515](https://github.com/netlify/primitives/issues/515)) ([67034cc](https://github.com/netlify/primitives/commit/67034cce9f80e35582f328b1990d0f26e7181cff))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.3.2 to 10.3.3
+    * @netlify/dev-utils bumped from 4.3.0 to 4.3.1
+    * @netlify/edge-functions-dev bumped from 1.0.3 to 1.0.4
+    * @netlify/functions-dev bumped from 1.0.5 to 1.1.0
+    * @netlify/headers bumped from 2.1.0 to 2.1.1
+    * @netlify/images bumped from 1.3.0 to 1.3.1
+    * @netlify/redirects bumped from 3.1.0 to 3.1.1
+    * @netlify/runtime bumped from 4.1.6 to 4.1.7
+    * @netlify/static bumped from 3.1.0 to 3.1.1
+  * devDependencies
+    * @netlify/types bumped from 2.1.0 to 2.2.0
+
 ## [4.6.8](https://github.com/netlify/primitives/compare/dev-v4.6.7...dev-v4.6.8) (2025-11-04)
 
 

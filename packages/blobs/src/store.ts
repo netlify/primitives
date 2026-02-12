@@ -1,11 +1,11 @@
-import { getTracer, withActiveSpan } from '@netlify/otel'
+import type { Span } from '@netlify/otel/opentelemetry'
 import type { DeleteStoreResponse } from './backend/delete_store.ts'
 import type { ListResponse, ListResponseBlob } from './backend/list.ts'
 import { Client, type Conditions } from './client.ts'
 import type { ConsistencyMode } from './consistency.ts'
 import { getMetadataFromResponse, Metadata } from './metadata.ts'
 import { BlobInput, HTTPMethod } from './types.ts'
-import { BlobsInternalError, collectIterator } from './util.ts'
+import { BlobsInternalError, collectIterator, withSpan } from './util.ts'
 
 export const DEPLOY_STORE_PREFIX = 'deploy:'
 export const LEGACY_STORE_INTERNAL_PREFIX = 'netlify-internal/legacy-namespace/'
@@ -34,6 +34,10 @@ export interface GetOptions {
   consistency?: ConsistencyMode
 }
 
+export interface GetMetadataOptions {
+  consistency?: ConsistencyMode
+}
+
 export interface GetWithMetadataOptions {
   consistency?: ConsistencyMode
   etag?: string
@@ -58,6 +62,10 @@ export interface ListOptions {
   directories?: boolean
   paginate?: boolean
   prefix?: string
+}
+
+export interface TracingOptions {
+  span?: Span
 }
 
 export interface DeleteStoreResult {
@@ -152,34 +160,42 @@ export class Store {
   }
 
   async deleteAll(): Promise<DeleteStoreResult> {
-    const res = await this.client.makeRequest({ method: HTTPMethod.DELETE, storeName: this.name })
+    let totalDeletedBlobs = 0
+    let hasMore = true
 
-    if (res.status !== 200) {
-      throw new BlobsInternalError(res)
-    }
+    while (hasMore) {
+      const res = await this.client.makeRequest({ method: HTTPMethod.DELETE, storeName: this.name })
 
-    const data = (await res.json()) as DeleteStoreResponse
+      if (res.status !== 200) {
+        throw new BlobsInternalError(res)
+      }
 
-    if (typeof data.blobs_deleted !== 'number') {
-      throw new BlobsInternalError(res)
+      const data = (await res.json()) as DeleteStoreResponse
+
+      if (typeof data.blobs_deleted !== 'number') {
+        throw new BlobsInternalError(res)
+      }
+
+      totalDeletedBlobs += data.blobs_deleted
+      hasMore = typeof data.has_more === 'boolean' && data.has_more
     }
 
     return {
-      deletedBlobs: data.blobs_deleted,
+      deletedBlobs: totalDeletedBlobs,
     }
   }
 
-  async get(key: string, options?: GetOptions & { type?: 'arrayBuffer' }): Promise<ArrayBuffer>
-  async get(key: string, options?: GetOptions & { type?: 'blob' }): Promise<Blob>
-  async get(key: string, options?: GetOptions & { type?: 'json' }): Promise<any>
-  async get(key: string, options?: GetOptions & { type?: 'stream' }): Promise<ReadableStream>
-  async get(key: string, options?: GetOptions & { type?: 'text' }): Promise<string>
-  async get(key: string, options?: GetOptions): Promise<string | null>
+  async get(key: string, options?: GetOptions & TracingOptions & { type?: 'arrayBuffer' }): Promise<ArrayBuffer>
+  async get(key: string, options?: GetOptions & TracingOptions & { type?: 'blob' }): Promise<Blob>
+  async get(key: string, options?: GetOptions & TracingOptions & { type?: 'json' }): Promise<any>
+  async get(key: string, options?: GetOptions & TracingOptions & { type?: 'stream' }): Promise<ReadableStream>
+  async get(key: string, options?: GetOptions & TracingOptions & { type?: 'text' }): Promise<string>
+  async get(key: string, options?: GetOptions & TracingOptions): Promise<string | null>
   async get(
     key: string,
-    options?: GetOptions & { type?: BlobResponseType },
+    options?: GetOptions & TracingOptions & { type?: BlobResponseType },
   ): Promise<ArrayBuffer | Blob | ReadableStream | string | null> {
-    return withActiveSpan(getTracer(), 'blobs.get', async (span) => {
+    return withSpan(options?.span, 'blobs.get', async (span) => {
       const { consistency, type } = options ?? {}
 
       span?.setAttributes({
@@ -235,15 +251,22 @@ export class Store {
     })
   }
 
-  async getMetadata(key: string, { consistency }: { consistency?: ConsistencyMode } = {}) {
-    return withActiveSpan(getTracer(), 'blobs.getMetadata', async (span) => {
+  async getMetadata(key: string, options: GetMetadataOptions & TracingOptions = {}) {
+    return withSpan(options?.span, 'blobs.getMetadata', async (span) => {
       span?.setAttributes({
         'blobs.store': this.name,
         'blobs.key': key,
         'blobs.method': 'HEAD',
-        'blobs.consistency': consistency,
+        'blobs.consistency': options.consistency,
       })
-      const res = await this.client.makeRequest({ consistency, key, method: HTTPMethod.HEAD, storeName: this.name })
+
+      const res = await this.client.makeRequest({
+        consistency: options.consistency,
+        key,
+        method: HTTPMethod.HEAD,
+        storeName: this.name,
+      })
+
       span?.setAttributes({
         'blobs.response.status': res.status,
       })
@@ -269,44 +292,44 @@ export class Store {
 
   async getWithMetadata(
     key: string,
-    options?: GetWithMetadataOptions,
+    options?: GetWithMetadataOptions & TracingOptions,
   ): Promise<({ data: string } & GetWithMetadataResult) | null>
 
   async getWithMetadata(
     key: string,
-    options: { type: 'arrayBuffer' } & GetWithMetadataOptions,
+    options: { type: 'arrayBuffer' } & GetWithMetadataOptions & TracingOptions,
   ): Promise<{ data: ArrayBuffer } & GetWithMetadataResult>
 
   async getWithMetadata(
     key: string,
-    options: { type: 'blob' } & GetWithMetadataOptions,
+    options: { type: 'blob' } & GetWithMetadataOptions & TracingOptions,
   ): Promise<({ data: Blob } & GetWithMetadataResult) | null>
 
   async getWithMetadata(
     key: string,
-    options: { type: 'json' } & GetWithMetadataOptions,
+    options: { type: 'json' } & GetWithMetadataOptions & TracingOptions,
   ): Promise<({ data: any } & GetWithMetadataResult) | null>
 
   async getWithMetadata(
     key: string,
-    options: { type: 'stream' } & GetWithMetadataOptions,
+    options: { type: 'stream' } & GetWithMetadataOptions & TracingOptions,
   ): Promise<({ data: ReadableStream } & GetWithMetadataResult) | null>
 
   async getWithMetadata(
     key: string,
-    options: { type: 'text' } & GetWithMetadataOptions,
+    options: { type: 'text' } & GetWithMetadataOptions & TracingOptions,
   ): Promise<({ data: string } & GetWithMetadataResult) | null>
 
   async getWithMetadata(
     key: string,
-    options?: { type: BlobResponseType } & GetWithMetadataOptions,
+    options?: { type: BlobResponseType } & GetWithMetadataOptions & TracingOptions,
   ): Promise<
     | ({
         data: ArrayBuffer | Blob | ReadableStream | string | null
       } & GetWithMetadataResult)
     | null
   > {
-    return withActiveSpan(getTracer(), 'blobs.getWithMetadata', async (span) => {
+    return withSpan(options?.span, 'blobs.getWithMetadata', async (span) => {
       const { consistency, etag: requestETag, type } = options ?? {}
       const headers = requestETag ? { 'if-none-match': requestETag } : undefined
 
@@ -376,10 +399,10 @@ export class Store {
     })
   }
 
-  list(options: ListOptions & { paginate: true }): AsyncIterable<ListResult>
-  list(options?: ListOptions & { paginate?: false }): Promise<ListResult>
-  list(options: ListOptions = {}): Promise<ListResult> | AsyncIterable<ListResult> {
-    return withActiveSpan(getTracer(), 'blobs.list', (span) => {
+  list(options: ListOptions & TracingOptions & { paginate: true }): AsyncIterable<ListResult>
+  list(options?: ListOptions & TracingOptions & { paginate?: false }): Promise<ListResult>
+  list(options: ListOptions & TracingOptions = {}): Promise<ListResult> | AsyncIterable<ListResult> {
+    return withSpan(options.span, 'blobs.list', (span) => {
       span?.setAttributes({
         'blobs.store': this.name,
         'blobs.method': 'GET',
@@ -406,8 +429,8 @@ export class Store {
     })
   }
 
-  async set(key: string, data: BlobInput, options: SetOptions = {}): Promise<WriteResult> {
-    return withActiveSpan(getTracer(), 'blobs.set', async (span) => {
+  async set(key: string, data: BlobInput, options: SetOptions & TracingOptions = {}): Promise<WriteResult> {
+    return withSpan(options.span, 'blobs.set', async (span) => {
       span?.setAttributes({
         'blobs.store': this.name,
         'blobs.key': key,
@@ -451,8 +474,8 @@ export class Store {
     })
   }
 
-  async setJSON(key: string, data: unknown, options: SetOptions = {}): Promise<WriteResult> {
-    return withActiveSpan(getTracer(), 'blobs.setJSON', async (span) => {
+  async setJSON(key: string, data: unknown, options: SetOptions & TracingOptions = {}): Promise<WriteResult> {
+    return withSpan(options.span, 'blobs.setJSON', async (span) => {
       span?.setAttributes({
         'blobs.store': this.name,
         'blobs.key': key,
@@ -577,7 +600,7 @@ export class Store {
     }
   }
 
-  private getListIterator(options?: ListOptions): AsyncIterable<ListResult> {
+  private getListIterator(options?: ListOptions & TracingOptions): AsyncIterable<ListResult> {
     const { client, name: storeName } = this
     const parameters: Record<string, string> = {}
 
@@ -596,7 +619,7 @@ export class Store {
 
         return {
           async next() {
-            return withActiveSpan(getTracer(), 'blobs.list.next', async (span) => {
+            return withSpan(options?.span, 'blobs.list.next', async (span) => {
               span?.setAttributes({
                 'blobs.store': storeName,
                 'blobs.method': 'GET',
