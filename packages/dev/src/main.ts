@@ -125,8 +125,9 @@ export interface Features {
     enabled?: boolean
 
     /**
-     * List of directories where static files can be found. If not provided,
-     * the `publish` directory configured on your Netlify project will be used automatically.
+     * List of directories where static files can be found.
+     * 
+     * @default `[build.publish]` from netlify.toml if configured, otherwise `[projectRoot]`
      */
     directories?: string[]
   }
