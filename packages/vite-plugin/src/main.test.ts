@@ -561,7 +561,7 @@ defined on your team and site and much more. Run npx netlify init to get started
         expect(await getImageSize(page.locator('#allowed-remote-image'))).toEqual({ width: 100, height: 50 })
 
         await expect(
-          async () => await getImageSize(page.locator('#not-allowed-remote-image')),
+          getImageSize(page.locator('#not-allowed-remote-image')),
           'Not allowed remote image should not load',
         ).rejects.toThrowError(`Image was not loaded`)
 
