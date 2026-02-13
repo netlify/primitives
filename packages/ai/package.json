@@ -56,7 +56,7 @@
     "publint": "npx -y publint --strict"
   },
   "dependencies": {
-    "@netlify/api": "^14.0.13"
+    "@netlify/api": "^14.0.14"
   },
   "devDependencies": {
     "@types/node": "20.14.15",
