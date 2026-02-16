@@ -5,7 +5,6 @@ import process from 'node:process'
 
 import { parseAIGatewayContext, setupAIGateway } from '@netlify/ai/bootstrap'
 import { resolveConfig } from '@netlify/config'
-import { NetlifyDB } from '@netlify/db-dev'
 import {
   ensureNetlifyIgnore,
   getAPIToken,
@@ -475,13 +474,18 @@ export class NetlifyDev {
     this.#cleanupJobs.push(() => runtime.stop())
 
     if (this.#features.db) {
-      const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
-      const db = new NetlifyDB({ directory: dbDirectory })
-      const connectionString = await db.start()
+      try {
+        const { NetlifyDB } = await import('@netlify/db-dev')
+        const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
+        const db = new NetlifyDB({ directory: dbDirectory })
+        const connectionString = await db.start()
 
-      runtime.env.set('NETLIFY_DB_URL', connectionString)
+        runtime.env.set('NETLIFY_DB_URL', connectionString)
 
-      this.#cleanupJobs.push(() => db.stop())
+        this.#cleanupJobs.push(() => db.stop())
+      } catch {
+        this.#logger.warn('To use Netlify DB locally, install the @netlify/db-dev package.')
+      }
     }
 
     // Check if AI Gateway is disabled at account level (setting passed to site level capabilities)
