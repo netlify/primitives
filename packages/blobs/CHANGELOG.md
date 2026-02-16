@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.7.0](https://github.com/netlify/primitives/compare/blobs-v10.6.0...blobs-v10.7.0) (2026-02-16)
+
+
+### Features
+
+* add `db` package ([#581](https://github.com/netlify/primitives/issues/581)) ([b60a313](https://github.com/netlify/primitives/commit/b60a313bd9ba19fd5deced4736012c3d7c7fe842))
+
 ## [10.6.0](https://github.com/netlify/primitives/compare/blobs-v10.5.0...blobs-v10.6.0) (2026-02-06)
 
 

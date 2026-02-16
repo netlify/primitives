@@ -1,6 +1,6 @@
 {
   "name": "@netlify/redirects",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "description": "TypeScript implementation of Netlify's rewrites and redirects engine",
   "type": "module",
   "engines": {

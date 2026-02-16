@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.7](https://github.com/netlify/primitives/compare/ai-v0.3.6...ai-v0.3.7) (2026-02-16)
+
+
+### Bug Fixes
+
+* **ai:** remove unnecessary peer dep on `@netlify/api` ([#586](https://github.com/netlify/primitives/issues/586)) ([4534873](https://github.com/netlify/primitives/commit/4534873798b95564b196c679d6b9bcf79fa3124d))
+
 ## [0.3.6](https://github.com/netlify/primitives/compare/ai-v0.3.5...ai-v0.3.6) (2026-01-28)
 
 
