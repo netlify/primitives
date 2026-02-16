@@ -1,5 +1,28 @@
 # Changelog
 
+## [4.11.0](https://github.com/netlify/primitives/compare/dev-v4.10.0...dev-v4.11.0) (2026-02-16)
+
+
+### Features
+
+* add `db` package ([#581](https://github.com/netlify/primitives/issues/581)) ([b60a313](https://github.com/netlify/primitives/commit/b60a313bd9ba19fd5deced4736012c3d7c7fe842))
+
+
+### Bug Fixes
+
+* make `@netlify/db-dev` module optional ([#588](https://github.com/netlify/primitives/issues/588)) ([e40622b](https://github.com/netlify/primitives/commit/e40622be5804145ee592384c3965b77fa78aa1ba))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.6 to ^0.3.7
+    * @netlify/blobs bumped from 10.6.0 to 10.7.0
+    * @netlify/functions-dev bumped from 1.1.10 to 1.1.11
+    * @netlify/redirects bumped from 3.1.4 to 3.1.5
+    * @netlify/runtime bumped from 4.1.14 to 4.1.15
+
 ## [4.10.0](https://github.com/netlify/primitives/compare/dev-v4.9.0...dev-v4.10.0) (2026-02-06)
 
 

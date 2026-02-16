@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.10.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.9.0...vite-plugin-v2.10.0) (2026-02-16)
+
+
+### Features
+
+* add `db` package ([#581](https://github.com/netlify/primitives/issues/581)) ([b60a313](https://github.com/netlify/primitives/commit/b60a313bd9ba19fd5deced4736012c3d7c7fe842))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.10.0 to 4.11.0
+
 ## [2.9.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.8.0...vite-plugin-v2.9.0) (2026-02-06)
 
 

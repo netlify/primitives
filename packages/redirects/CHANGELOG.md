@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.5](https://github.com/netlify/primitives/compare/redirects-v3.1.4...redirects-v3.1.5) (2026-02-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency jsonwebtoken to v9.0.3 ([#575](https://github.com/netlify/primitives/issues/575)) ([144a930](https://github.com/netlify/primitives/commit/144a9305da67c1683267d3a1f68597ca8a6f0860))
+
 ## [3.1.4](https://github.com/netlify/primitives/compare/redirects-v3.1.3...redirects-v3.1.4) (2025-12-08)
 
 
