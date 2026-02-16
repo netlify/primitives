@@ -51,6 +51,7 @@
   "author": "Netlify Inc.",
   "devDependencies": {
     "@netlify/api": "^14.0.13",
+    "@netlify/db-dev": "1.0.0",
     "@netlify/types": "2.3.0",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"

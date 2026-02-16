@@ -475,7 +475,6 @@ export class NetlifyDev {
 
     if (this.#features.db) {
       try {
-        // @ts-ignore -- @netlify/db-dev is an optional peer dependency
         const { NetlifyDB } = await import('@netlify/db-dev')
         const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
         const db = new NetlifyDB({ directory: dbDirectory })
