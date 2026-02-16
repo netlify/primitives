@@ -59,7 +59,6 @@
     "@netlify/ai": "^0.3.6",
     "@netlify/blobs": "10.6.0",
     "@netlify/config": "^24.3.0",
-    "@netlify/db-dev": "1.0.0",
     "@netlify/dev-utils": "4.3.3",
     "@netlify/edge-functions-dev": "1.0.10",
     "@netlify/functions-dev": "1.1.10",
@@ -69,5 +68,13 @@
     "@netlify/runtime": "4.1.14",
     "@netlify/static": "3.1.3",
     "ulid": "^3.0.0"
+  },
+  "peerDependencies": {
+    "@netlify/db-dev": "1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@netlify/db-dev": {
+      "optional": true
+    }
   }
 }
