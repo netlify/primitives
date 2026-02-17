@@ -127,7 +127,7 @@
   "devDependencies": {
     "@netlify/dev-utils": "^4.3.3",
     "msw": "^2.10.5",
-    "npm-run-all2": "^7.0.2",
+    "npm-run-all2": "^8.0.0",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
   },
