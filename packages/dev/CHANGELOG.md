@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.11.2](https://github.com/netlify/primitives/compare/dev-v4.11.1...dev-v4.11.2) (2026-02-17)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#583](https://github.com/netlify/primitives/issues/583)) ([bcd8241](https://github.com/netlify/primitives/commit/bcd824172757fecac5aa91dc36b06163efb63497))
+* fix version of peer dependency ([#592](https://github.com/netlify/primitives/issues/592)) ([3d13332](https://github.com/netlify/primitives/commit/3d133326ad5dd8118aaa9f1f3ca6a1f4da9bbd70))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.7 to ^0.3.8
+    * @netlify/edge-functions-dev bumped from 1.0.10 to 1.0.11
+    * @netlify/functions-dev bumped from 1.1.11 to 1.1.12
+
 ## [4.11.1](https://github.com/netlify/primitives/compare/dev-v4.11.0...dev-v4.11.1) (2026-02-17)
 
 

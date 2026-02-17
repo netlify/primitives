@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.12](https://github.com/netlify/primitives/compare/functions-dev-v1.1.11...functions-dev-v1.1.12) (2026-02-17)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#583](https://github.com/netlify/primitives/issues/583)) ([bcd8241](https://github.com/netlify/primitives/commit/bcd824172757fecac5aa91dc36b06163efb63497))
+
 ## [1.1.11](https://github.com/netlify/primitives/compare/functions-dev-v1.1.10...functions-dev-v1.1.11) (2026-02-16)
 
 
