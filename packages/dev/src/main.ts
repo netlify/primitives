@@ -124,8 +124,9 @@ export interface Features {
     enabled?: boolean
 
     /**
-     * Additional list of directories where static files can be found. The
-     * `publish` directory configured on your site will be used automatically.
+     * List of directories where static files can be found.
+     * 
+     * @default `[build.publish]` from netlify.toml if configured, otherwise `[projectRoot]`
      */
     directories?: string[]
   }
@@ -208,7 +209,7 @@ export class NetlifyDev {
   #serverAddress?: string | null
   #siteID?: string
   #staticHandler?: StaticHandler
-  #staticHandlerAdditionalDirectories: string[]
+  #staticHandlerDirectories?: string[]
 
   constructor(options: NetlifyDevOptions) {
     if (options.apiURL) {
@@ -241,7 +242,7 @@ export class NetlifyDev {
     this.#logger = options.logger ?? globalThis.console
     this.#serverAddress = options.serverAddress
     this.#projectRoot = projectRoot
-    this.#staticHandlerAdditionalDirectories = options.staticFiles?.directories ?? []
+    this.#staticHandlerDirectories = options.staticFiles?.directories ?? undefined
   }
 
   private getServerAddress(requestServerAddress?: string) {
@@ -650,11 +651,12 @@ export class NetlifyDev {
     }
 
     if (this.#features.static) {
+      // If custom static directories are provided (e.g., by `@netlify/vite-plugin` or `@netlify/nuxt`),
+      // use those directories. Otherwise, use the build.publish directory from config.
+      const directories = this.#staticHandlerDirectories ?? [this.#config?.config.build.publish ?? this.#projectRoot]
+
       this.#staticHandler = new StaticHandler({
-        directory: [
-          this.#config?.config.build.publish ?? this.#projectRoot,
-          ...this.#staticHandlerAdditionalDirectories,
-        ],
+        directory: directories,
       })
     }
 
