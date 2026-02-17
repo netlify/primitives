@@ -71,7 +71,7 @@
     "ulid": "^3.0.0"
   },
   "peerDependencies": {
-    "@netlify/db-dev": "1.0.0"
+    "@netlify/db-dev": "0.2.0"
   },
   "peerDependenciesMeta": {
     "@netlify/db-dev": {
