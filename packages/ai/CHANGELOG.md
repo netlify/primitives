@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.8](https://github.com/netlify/primitives/compare/ai-v0.3.7...ai-v0.3.8) (2026-02-17)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#583](https://github.com/netlify/primitives/issues/583)) ([bcd8241](https://github.com/netlify/primitives/commit/bcd824172757fecac5aa91dc36b06163efb63497))
+
 ## [0.3.7](https://github.com/netlify/primitives/compare/ai-v0.3.6...ai-v0.3.7) (2026-02-16)
 
 
