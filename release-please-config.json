@@ -9,6 +9,10 @@
     "packages/ai": {},
     "packages/blobs": {},
     "packages/cache": {},
+    "packages/db/dev": {
+      "prerelease": true,
+      "prerelease-type": "beta"
+    },
     "packages/db/prod": {
       "prerelease": true,
       "prerelease-type": "beta"

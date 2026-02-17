@@ -2,6 +2,7 @@
   "packages/ai": "0.3.7",
   "packages/blobs": "10.7.0",
   "packages/cache": "3.3.5",
+  "packages/db/dev": "0.1.0",
   "packages/db/prod": "0.1.0",
   "packages/dev": "4.11.0",
   "packages/dev-utils": "4.3.3",
