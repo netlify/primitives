@@ -1,4 +1,4 @@
-[![Build](https://github.com/netlify/cache/workflows/Build/badge.svg)](https://github.com/netlify/cache/actions)
+[![Build](https://github.com/netlify/primitives/workflows/Build/badge.svg)](https://github.com/netlify/primitives/actions)
 [![Node](https://img.shields.io/node/v/@netlify/cache.svg?logo=node.js)](https://www.npmjs.com/package/@netlify/cache)
 
 # @netlify/cache
