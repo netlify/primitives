@@ -124,7 +124,7 @@ type ParseCacheStatus = {
 /**
  * Returns whether a cached response includes a signal that the client should
  * perform a background revalidation. This may happen when using the Cache API
- * with the `stale-while-revalidate` directory, since unlike the regular cache,
+ * with the `stale-while-revalidate` directive, since unlike the regular cache,
  * the client is the one responsible for explicitly inserting new entries into
  * the cache. So when this returns `true`, the caller should fetch the resource
  * and write the fresh response back to the cache with `cache.put()`.
