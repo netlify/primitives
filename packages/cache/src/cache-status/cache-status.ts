@@ -122,6 +122,30 @@ type ParseCacheStatus = {
 }
 
 /**
+ * Returns whether a cached response includes a signal that the client should
+ * perform a background revalidation. This may happen when using the Cache API
+ * with the `stale-while-revalidate` directory, since unlike the regular cache,
+ * the client is the one responsible for explicitly inserting new entries into
+ * the cache. So when this returns `true`, the caller should fetch the resource
+ * and write the fresh response back to the cache with `cache.put()`.
+ */
+export const needsRevalidation = (response: Response): boolean => {
+  const header = response.headers.get(HEADERS.CacheStatus)
+  if (!header) {
+    return false
+  }
+
+  for (const value of header.split(',')) {
+    const { attributes, name } = parseCacheStatusValue(value)
+    if (name === CACHE_DURABLE && attributes.detail === 'client-revalidate') {
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
  * Retrieves information about how a response has interacted with Netlify's
  * global caching infrastructure, including whether the response has been
  * served by a cache and whether it's fresh or stale.
