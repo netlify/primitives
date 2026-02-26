@@ -5,6 +5,8 @@ import { PGlite } from '@electric-sql/pglite'
 import type { ConnectionState, MessageResponse } from 'pg-gateway'
 import { fromNodeSocket } from 'pg-gateway/node'
 
+import { broadcastNotifications } from './lib/notifications.js'
+
 const DEFAULT_HOST = 'localhost'
 
 type Logger = (...message: unknown[]) => void
@@ -33,6 +35,13 @@ export class NetlifyDB {
   private port?: number
   private server?: Server
 
+  // All active client sockets, tracked so notifications can be broadcast
+  // and so they can be destroyed on stop().
+  private connections = new Set<Socket>()
+
+  // Unsubscribe function for the global onNotification handler.
+  private unsubNotification?: () => void
+
   constructor({ directory, logger, port }: NetlifyDBOptions = {}) {
     this.directory = directory
     this.logger = logger ?? console.log
@@ -46,8 +55,10 @@ export class NetlifyDB {
 
     this.db = await PGlite.create(this.directory)
 
+    this.unsubNotification = broadcastNotifications(this.db, this.connections)
+
     this.server = createNetServer((socket: Socket) => {
-      void this.handleConnection(socket)
+      this.handleConnection(socket)
     })
 
     return new Promise<string>((resolve, reject) => {
@@ -70,7 +81,21 @@ export class NetlifyDB {
   }
 
   async stop(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+    if (this.unsubNotification) {
+      this.unsubNotification()
+      this.unsubNotification = undefined
+    }
+
+    // Destroy all active client connections so the server can close
+    // immediately rather than waiting for long-lived connections (e.g.
+    // LISTEN) to end on their own.
+    for (const socket of this.connections) {
+      socket.destroy()
+    }
+
+    this.connections.clear()
+
+    await new Promise<void>((resolve, reject) => {
       if (!this.server) {
         resolve()
 
@@ -85,38 +110,48 @@ export class NetlifyDB {
         }
       })
     })
+
+    // Close PGLite to release internal handles (WASM runtime, etc.).
+    if (this.db) {
+      await this.db.close()
+      this.db = undefined
+    }
   }
 
-  private async handleConnection(socket: Socket): Promise<void> {
+  private handleConnection(socket: Socket): void {
     if (!this.db) {
       return
     }
 
     const db = this.db
 
-    try {
-      await fromNodeSocket(socket, {
-        serverVersion: '16.3 (NetlifyDB/pglite)',
-        auth: {
-          method: 'trust',
-        },
+    this.connections.add(socket)
 
-        async onMessage(data: Uint8Array, { isAuthenticated }: ConnectionState): Promise<MessageResponse> {
-          // Skip startup/handshake messages handled by pg-gateway, as PGLite
-          // doesn't expect them.
-          if (!isAuthenticated) {
-            return
-          }
+    socket.on('close', () => {
+      this.connections.delete(socket)
+    })
 
-          return db.execProtocolRaw(data)
-        },
-      })
-    } catch (error) {
+    fromNodeSocket(socket, {
+      serverVersion: '16.3 (NetlifyDB/pglite)',
+      auth: {
+        method: 'trust',
+      },
+
+      async onMessage(data: Uint8Array, { isAuthenticated }: ConnectionState): Promise<MessageResponse> {
+        // Skip startup/handshake messages handled by pg-gateway, as PGLite
+        // doesn't expect them.
+        if (!isAuthenticated) {
+          return
+        }
+
+        return db.execProtocolRaw(data)
+      },
+    }).catch((error: unknown) => {
       if (error instanceof Error && error.message.includes('ECONNRESET')) {
         return
       }
 
       this.logger('Unexpected connection error:', error)
-    }
+    })
   }
 }
