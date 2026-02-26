@@ -23,7 +23,8 @@ function buildNotificationResponse(channel: string, payload: string, processId =
   const channelBytes = textEncoder.encode(channel)
   const payloadBytes = textEncoder.encode(payload)
 
-  const bodyLength = 4 + 4 + channelBytes.length + 1 + payloadBytes.length + 1
+  // 4 bytes for Int32(length) + 4 bytes for Int32(processId) + 1 null terminator per string
+  const bodyLength = 10 + channelBytes.length + payloadBytes.length
   const buf = new Uint8Array(1 + bodyLength)
   const view = new DataView(buf.buffer)
   let offset = 0
