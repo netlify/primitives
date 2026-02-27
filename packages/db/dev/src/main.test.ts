@@ -206,6 +206,168 @@ test('Uses in-memory storage when no directory is provided', async () => {
   await client2.end()
 })
 
+test('Delivers LISTEN/NOTIFY across separate connections', async () => {
+  server = new NetlifyDB()
+  const connectionString = await server.start()
+
+  const listener = new Client({ connectionString })
+  const notifier = new Client({ connectionString })
+
+  await listener.connect()
+  await notifier.connect()
+
+  const received: { channel: string; payload: string }[] = []
+
+  listener.on('notification', (msg) => {
+    received.push({ channel: msg.channel, payload: msg.payload ?? '' })
+  })
+
+  await listener.query('LISTEN test_channel')
+
+  // Send notifications from a different connection.
+  await notifier.query("NOTIFY test_channel, 'hello'")
+  await notifier.query("NOTIFY test_channel, 'world'")
+
+  // Give a brief moment for async delivery.
+  await new Promise((resolve) => setTimeout(resolve, 200))
+
+  expect(received).toEqual([
+    { channel: 'test_channel', payload: 'hello' },
+    { channel: 'test_channel', payload: 'world' },
+  ])
+
+  await listener.end()
+  await notifier.end()
+})
+
+test('Supports UNLISTEN to stop receiving notifications', async () => {
+  server = new NetlifyDB()
+  const connectionString = await server.start()
+
+  const listener = new Client({ connectionString })
+  const notifier = new Client({ connectionString })
+
+  await listener.connect()
+  await notifier.connect()
+
+  const received: string[] = []
+
+  listener.on('notification', (msg) => {
+    received.push(msg.payload ?? '')
+  })
+
+  await listener.query('LISTEN test_unsub')
+  await notifier.query("NOTIFY test_unsub, 'before'")
+  await new Promise((resolve) => setTimeout(resolve, 200))
+
+  await listener.query('UNLISTEN test_unsub')
+  await notifier.query("NOTIFY test_unsub, 'after'")
+  await new Promise((resolve) => setTimeout(resolve, 200))
+
+  expect(received).toEqual(['before'])
+
+  await listener.end()
+  await notifier.end()
+})
+
+test('Delivers notifications to multiple listeners', async () => {
+  server = new NetlifyDB()
+  const connectionString = await server.start()
+
+  const listener1 = new Client({ connectionString })
+  const listener2 = new Client({ connectionString })
+  const notifier = new Client({ connectionString })
+
+  await listener1.connect()
+  await listener2.connect()
+  await notifier.connect()
+
+  const received1: string[] = []
+  const received2: string[] = []
+
+  listener1.on('notification', (msg) => {
+    received1.push(msg.payload ?? '')
+  })
+
+  listener2.on('notification', (msg) => {
+    received2.push(msg.payload ?? '')
+  })
+
+  await listener1.query('LISTEN shared_channel')
+  await listener2.query('LISTEN shared_channel')
+
+  await notifier.query("NOTIFY shared_channel, 'broadcast'")
+  await new Promise((resolve) => setTimeout(resolve, 200))
+
+  expect(received1).toEqual(['broadcast'])
+  expect(received2).toEqual(['broadcast'])
+
+  await listener1.end()
+  await listener2.end()
+  await notifier.end()
+})
+
+test('Cleans up subscriptions when a connection closes', async () => {
+  server = new NetlifyDB()
+  const connectionString = await server.start()
+
+  const listener = new Client({ connectionString })
+  const notifier = new Client({ connectionString })
+  const observer = new Client({ connectionString })
+
+  await listener.connect()
+  await notifier.connect()
+  await observer.connect()
+
+  const observerReceived: string[] = []
+
+  observer.on('notification', (msg) => {
+    observerReceived.push(msg.payload ?? '')
+  })
+
+  await listener.query('LISTEN cleanup_test')
+  await observer.query('LISTEN cleanup_test')
+
+  // Close the first listener.
+  await listener.end()
+  await new Promise((resolve) => setTimeout(resolve, 100))
+
+  // Notify — only the observer should receive it.
+  await notifier.query("NOTIFY cleanup_test, 'after_close'")
+  await new Promise((resolve) => setTimeout(resolve, 200))
+
+  expect(observerReceived).toEqual(['after_close'])
+
+  await notifier.end()
+  await observer.end()
+})
+
+test('Handles quoted channel names', async () => {
+  server = new NetlifyDB()
+  const connectionString = await server.start()
+
+  const listener = new Client({ connectionString })
+  const notifier = new Client({ connectionString })
+
+  await listener.connect()
+  await notifier.connect()
+
+  const received: { channel: string; payload: string }[] = []
+
+  listener.on('notification', (msg) => {
+    received.push({ channel: msg.channel, payload: msg.payload ?? '' })
+  })
+
+  await listener.query('LISTEN "MyChannel"')
+  await notifier.query(`NOTIFY "MyChannel", 'test'`)
+  await new Promise((resolve) => setTimeout(resolve, 200))
+
+  expect(received).toEqual([{ channel: 'MyChannel', payload: 'test' }])
+
+  await listener.end()
+  await notifier.end()
+})
+
 test('Stops the server cleanly', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
