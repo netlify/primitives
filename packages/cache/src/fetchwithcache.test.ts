@@ -328,6 +328,174 @@ describe('`fetchWithCache`', () => {
     expect(mockFetch.fulfilled).toBe(true)
   })
 
+  describe('SWR revalidation', () => {
+    test('Triggers background revalidation on cache hit with SWR signal', async () => {
+      const staleBody = '<h1>Stale</h1>'
+      const freshBody = '<h1>Fresh</h1>'
+      const cacheOptions = {
+        tags: ['tag1'],
+        ttl: 60,
+      }
+
+      const staleHeaders = new Headers()
+      staleHeaders.set('cache-status', '"Netlify Durable"; hit; ttl=-10; detail=client-revalidate')
+
+      const mockFetch = new MockFetch()
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response(staleBody, { headers: staleHeaders }),
+        })
+        .get({
+          url: 'https://netlify.com/',
+          response: new Response(freshBody),
+        })
+        .post({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          headers: (reqHeaders) => {
+            const headers = decodeHeaders(reqHeaders['netlify-programmable-headers'])
+
+            expect(headers.get('netlify-cache-tag')).toBe('tag1')
+            expect(headers.get('netlify-cdn-cache-control')).toBe('s-maxage=60')
+          },
+          response: new Response(null, { status: 201 }),
+        })
+        .inject()
+
+      const response = await fetchWithCache('https://netlify.com', cacheOptions)
+      expect(await response.text()).toBe(staleBody)
+
+      // Wait for the fire-and-forget revalidation to complete.
+      await sleep(10)
+
+      mockFetch.restore()
+      expect(mockFetch.fulfilled).toBe(true)
+    })
+
+    test('Uses waitUntil for background revalidation when available', async () => {
+      const staleHeaders = new Headers()
+      staleHeaders.set('cache-status', '"Netlify Durable"; hit; ttl=-10; detail=client-revalidate')
+
+      const mockFetch = new MockFetch()
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response('<h1>Stale</h1>', { headers: staleHeaders }),
+        })
+        .get({
+          url: 'https://netlify.com/',
+          response: new Response('<h1>Fresh</h1>'),
+        })
+        .post({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response(null, { status: 201 }),
+        })
+        .inject()
+
+      const waitUntil = vi.fn()
+
+      // @ts-expect-error
+      globalThis.Netlify = { context: { waitUntil } }
+
+      const response = await fetchWithCache('https://netlify.com')
+      expect(await response.text()).toBe('<h1>Stale</h1>')
+      expect(waitUntil).toHaveBeenCalledOnce()
+
+      // @ts-expect-error
+      delete globalThis.Netlify
+
+      // Wait for the revalidation to complete.
+      await waitUntil.mock.calls[0][0]
+
+      mockFetch.restore()
+      expect(mockFetch.fulfilled).toBe(true)
+    })
+
+    test('Uses onCachePut for background revalidation when provided', async () => {
+      const staleHeaders = new Headers()
+      staleHeaders.set('cache-status', '"Netlify Durable"; hit; ttl=-10; detail=client-revalidate')
+
+      const mockFetch = new MockFetch()
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response('<h1>Stale</h1>', { headers: staleHeaders }),
+        })
+        .get({
+          url: 'https://netlify.com/',
+          response: new Response('<h1>Fresh</h1>'),
+        })
+        .post({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response(null, { status: 201 }),
+        })
+        .inject()
+
+      const onCachePut = vi.fn()
+
+      const response = await fetchWithCache('https://netlify.com', { onCachePut })
+      expect(await response.text()).toBe('<h1>Stale</h1>')
+      expect(onCachePut).toHaveBeenCalledOnce()
+
+      // Wait for the revalidation to complete.
+      await onCachePut.mock.calls[0][0]
+
+      mockFetch.restore()
+      expect(mockFetch.fulfilled).toBe(true)
+    })
+
+    test('Does not trigger revalidation for cache hits without SWR signal', async () => {
+      const headers = new Headers()
+      headers.set('content-type', 'text/html')
+
+      const cachedResponse = new Response('<h1>Hello</h1>', { headers })
+      const mockFetch = new MockFetch()
+        .post({
+          response: new Response(null, { status: 201 }),
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+        })
+        .get({
+          response: () => cachedResponse,
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+        })
+        .inject()
+
+      const cache = await caches.open('')
+      await cache.put('https://netlify.com', cachedResponse)
+
+      const response = await fetchWithCache('https://netlify.com')
+      expect(await response.text()).toBe('<h1>Hello</h1>')
+
+      mockFetch.restore()
+
+      // Only the cache.put POST and cache.match GET — no origin fetch.
+      expect(mockFetch.requests.length).toBe(2)
+      expect(mockFetch.fulfilled).toBe(true)
+    })
+
+    test('Background revalidation errors do not affect the caller', async () => {
+      const staleHeaders = new Headers()
+      staleHeaders.set('cache-status', '"Netlify Durable"; hit; ttl=-10; detail=client-revalidate')
+
+      const mockFetch = new MockFetch()
+        .get({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response('<h1>Stale</h1>', { headers: staleHeaders }),
+        })
+        .get({
+          url: 'https://netlify.com/',
+          response: new Error('Network error'),
+        })
+        .inject()
+
+      const response = await fetchWithCache('https://netlify.com')
+      expect(await response.text()).toBe('<h1>Stale</h1>')
+
+      // Wait for the fire-and-forget revalidation to settle.
+      await sleep(10)
+
+      mockFetch.restore()
+      expect(mockFetch.fulfilled).toBe(true)
+    })
+  })
+
   test('Does not throw an error when response returns a 5xx error', async () => {
     const mockFetch = new MockFetch()
       .get({
