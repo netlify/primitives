@@ -1106,4 +1106,94 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
   })
+
+  describe('Static file serving', () => {
+    test('Serves static files from given `staticFiles.directories` only', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+        publish = "dist"
+        `,
+        )
+        .withFile('dist/index.html', `from dist`)
+        .withFile('custom-static/app.css', `from custom-static`)
+        .withFile('another-static/script.js', `from another-static`)
+      const directory = await fixture.create()
+
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
+        staticFiles: {
+          directories: [`${directory}/custom-static`, `${directory}/another-static`],
+        },
+      })
+      await dev.start()
+
+      const customStaticRes = await dev.handle(new Request('https://site.netlify/app.css'))
+      expect(await customStaticRes?.text()).toBe('from custom-static')
+      const anotherStaticRes = await dev.handle(new Request('https://site.netlify/script.js'))
+      expect(await anotherStaticRes?.text()).toBe('from another-static')
+      const publishDirRes = await dev.handle(new Request('https://site.netlify/index.html'))
+      expect(publishDirRes).toBeUndefined()
+
+      await dev.stop()
+      await fixture.destroy()
+    })
+
+    test('Falls back to publish directory when no custom directories provided', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+        publish = "public"
+        `,
+        )
+        .withFile('public/index.html', `from public`)
+        .withFile('public/style.css', `from public css`)
+      const directory = await fixture.create()
+
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
+      })
+      await dev.start()
+
+      const publishDirRes1 = await dev.handle(new Request('https://site.netlify/index.html'))
+      expect(await publishDirRes1?.text()).toBe('from public')
+      const publishDirRes2 = await dev.handle(new Request('https://site.netlify/style.css'))
+      expect(await publishDirRes2?.text()).toBe('from public css')
+
+      await dev.stop()
+      await fixture.destroy()
+    })
+
+    test('Uses project root when no publish directory configured and no custom directories provided', async () => {
+      const fixture = new Fixture().withFile('index.html', `from root`).withFile('app.js', `from root js`)
+      const directory = await fixture.create()
+
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+        edgeFunctions: {},
+        geolocation: {
+          enabled: false,
+        },
+      })
+      await dev.start()
+
+      const projectRootRes1 = await dev.handle(new Request('https://site.netlify/index.html'))
+      expect(await projectRootRes1?.text()).toBe('from root')
+      const projectRootRes2 = await dev.handle(new Request('https://site.netlify/app.js'))
+      expect(await projectRootRes2?.text()).toBe('from root js')
+
+      await dev.stop()
+      await fixture.destroy()
+    })
+  })
 })
