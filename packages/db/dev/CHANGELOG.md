@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/netlify/primitives/compare/db-dev-v0.2.0...db-dev-v0.3.0) (2026-02-27)
+
+
+### Features
+
+* **db:** add support for LISTEN/NOTIFY ([#598](https://github.com/netlify/primitives/issues/598)) ([99078ce](https://github.com/netlify/primitives/commit/99078cec3103a85230c8ac7c898eaae2db37b718))
+
 ## [0.2.0](https://github.com/netlify/primitives/compare/db-dev-v0.1.0...db-dev-v0.2.0) (2026-02-17)
 
 
