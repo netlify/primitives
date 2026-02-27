@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0](https://github.com/netlify/primitives/compare/cache-v3.3.5...cache-v3.4.0) (2026-02-27)
+
+
+### Features
+
+* add SWR support to Cache API ([#597](https://github.com/netlify/primitives/issues/597)) ([fdab4e3](https://github.com/netlify/primitives/commit/fdab4e3ed6298d99c3ab8110b53c4c9bd4055a7a))
+
 ## [3.3.5](https://github.com/netlify/primitives/compare/cache-v3.3.4...cache-v3.3.5) (2026-02-06)
 
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.25](https://github.com/netlify/primitives/compare/nuxt-v0.2.24...nuxt-v0.2.25) (2026-02-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.11.2 to ^4.11.3
+
 ## [0.2.24](https://github.com/netlify/primitives/compare/nuxt-v0.2.23...nuxt-v0.2.24) (2026-02-17)
 
 
