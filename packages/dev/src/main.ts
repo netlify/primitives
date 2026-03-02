@@ -494,11 +494,7 @@ export class NetlifyDev {
     }
 
     // Bootstrap AI Gateway: Fetch AI Gateway tokens and inject them into env
-    if (
-      this.#features.aiGateway &&
-      this.#features.environmentVariables &&
-      config?.api
-    ) {
+    if (this.#features.aiGateway && this.#features.environmentVariables && config?.api) {
       await setupAIGateway({
         api: config.api,
         env: config.env || {},
