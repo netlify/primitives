@@ -8,8 +8,9 @@ export interface AIGatewayContext {
 export interface AIGatewayConfig {
   api: NetlifyAPI
   env: Record<string, { sources: string[]; value: string }>
-  siteID: string | undefined
-  siteURL: string | undefined
+  siteID?: string | undefined
+  siteURL?: string | undefined
+  accountID?: string | undefined
 }
 
 export interface AIProviderEnvVar {
@@ -83,24 +84,60 @@ export const fetchAIGatewayToken = async ({
   }
 }
 
-export const setupAIGateway = async (config: AIGatewayConfig): Promise<void> => {
-  const { api, env, siteID, siteURL } = config
-
-  if (siteID && siteID !== 'unlinked' && siteURL) {
-    const [aiGatewayToken, envVars] = await Promise.all([
-      fetchAIGatewayToken({ api, siteId: siteID }),
-      fetchAIProviders({ api }),
-    ])
-
-    if (aiGatewayToken) {
-      const aiGatewayContext = JSON.stringify({
-        token: aiGatewayToken.token,
-        url: `${siteURL}/.netlify/ai`,
-        envVars,
-      })
-      const base64Context = Buffer.from(aiGatewayContext).toString('base64')
-      env.AI_GATEWAY = { sources: ['internal'], value: base64Context }
+export const fetchAccountAIGatewayToken = async ({
+  api,
+  accountId,
+}: {
+  api: NetlifyAPI
+  accountId: string
+}): Promise<AIGatewayTokenResponse | null> => {
+  try {
+    if (!api.accessToken) {
+      return null
     }
+
+    const data = await api.getAccountAIGatewayToken({ account_id: accountId })
+
+    if (!data.token || !data.url) {
+      return null
+    }
+
+    return {
+      token: data.token,
+      url: data.url,
+    }
+  } catch (error) {
+    console.warn(
+      `Failed to fetch AI Gateway token for account ${accountId}: ${error instanceof Error ? error.message : String(error)}`,
+    )
+    return null
+  }
+}
+
+export const setupAIGateway = async (config: AIGatewayConfig): Promise<void> => {
+  const { api, env, siteID, siteURL, accountID } = config
+
+  let aiGatewayToken: AIGatewayTokenResponse | null = null
+
+  // Try site-scoped token first
+  if (siteID && siteID !== 'unlinked' && siteURL) {
+    aiGatewayToken = await fetchAIGatewayToken({ api, siteId: siteID })
+  }
+
+  // Fall back to account-scoped token
+  if (!aiGatewayToken && accountID) {
+    aiGatewayToken = await fetchAccountAIGatewayToken({ api, accountId: accountID })
+  }
+
+  if (aiGatewayToken) {
+    const envVars = await fetchAIProviders({ api })
+    const aiGatewayContext = JSON.stringify({
+      token: aiGatewayToken.token,
+      url: aiGatewayToken.url,
+      envVars,
+    })
+    const base64Context = Buffer.from(aiGatewayContext).toString('base64')
+    env.AI_GATEWAY = { sources: ['internal'], value: base64Context }
   }
 }
 
