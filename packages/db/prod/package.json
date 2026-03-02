@@ -56,7 +56,8 @@
     "@neondatabase/serverless": "^1.0.0",
     "@netlify/runtime-utils": "2.3.0",
     "pg": "^8.13.0",
-    "waddler": "^0.1.1"
+    "waddler": "^0.1.1",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "npm-run-all2": "^5.0.0",
