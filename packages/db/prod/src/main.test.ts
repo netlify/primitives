@@ -2,14 +2,16 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 import { getDatabase, MissingDatabaseConnectionError } from './main.js'
 
-const { mockWaddlerNodePostgres, mockWaddlerNeonHttp, mockPgPool, mockNeonPool, mockNeon, mockNeonConfig } = vi.hoisted(() => ({
-  mockWaddlerNodePostgres: vi.fn().mockReturnValue('node-postgres-sql'),
-  mockWaddlerNeonHttp: vi.fn().mockReturnValue('neon-http-sql'),
-  mockPgPool: vi.fn(),
-  mockNeonPool: vi.fn(),
-  mockNeon: vi.fn().mockReturnValue('neon-http-client'),
-  mockNeonConfig: {} as Record<string, unknown>,
-}))
+const { mockWaddlerNodePostgres, mockWaddlerNeonHttp, mockPgPool, mockNeonPool, mockNeon, mockNeonConfig } = vi.hoisted(
+  () => ({
+    mockWaddlerNodePostgres: vi.fn().mockReturnValue('node-postgres-sql'),
+    mockWaddlerNeonHttp: vi.fn().mockReturnValue('neon-http-sql'),
+    mockPgPool: vi.fn(),
+    mockNeonPool: vi.fn(),
+    mockNeon: vi.fn().mockReturnValue('neon-http-client'),
+    mockNeonConfig: {} as Record<string, unknown>,
+  }),
+)
 
 vi.mock('waddler/node-postgres', () => ({
   waddler: mockWaddlerNodePostgres,
@@ -30,7 +32,7 @@ vi.mock('@neondatabase/serverless', () => ({
 }))
 
 vi.mock('ws', () => ({
-  default: class MockWebSocket {},
+  default: function MockWebSocket() {},
 }))
 
 describe('getDatabase', () => {
@@ -122,7 +124,7 @@ describe('getDatabase', () => {
   it('does not override neonConfig.webSocketConstructor if already set', () => {
     process.env.NETLIFY_DB_URL = 'postgres://user:pass@localhost:5432/mydb'
     process.env.NETLIFY_DB_DRIVER = 'serverless'
-    const existingWs = class ExistingWebSocket {}
+    const existingWs = function ExistingWebSocket() {}
     mockNeonConfig.webSocketConstructor = existingWs
 
     getDatabase()
