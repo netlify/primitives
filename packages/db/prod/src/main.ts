@@ -25,7 +25,7 @@ export interface ServerlessDatabaseConnection {
   driver: 'serverless'
   sql: SQL
   pool: NeonPool
-  httpClient: NeonQueryFunction<any, any>
+  httpClient: NeonQueryFunction<false, false>
   connectionString: string
 }
 
