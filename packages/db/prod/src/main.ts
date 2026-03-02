@@ -1,5 +1,6 @@
-import { neon, Pool as NeonPool } from '@neondatabase/serverless'
+import { neon, neonConfig, Pool as NeonPool } from '@neondatabase/serverless'
 import type { NeonQueryFunction } from '@neondatabase/serverless'
+import ws from 'ws'
 import pg from 'pg'
 import type { SQL } from 'waddler'
 import { waddler as waddlerNeonHttp } from 'waddler/neon-http'
@@ -42,6 +43,14 @@ export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnectio
   const driver = env.get('NETLIFY_DB_DRIVER')
 
   if (driver === 'serverless') {
+    // We can remove this, and the dependency on `ws`, once we stop supporting
+    // Node.js 22.
+    /* eslint-disable n/no-unsupported-features/node-builtins */
+    if (!neonConfig.webSocketConstructor && typeof WebSocket === 'undefined') {
+      neonConfig.webSocketConstructor = ws as unknown as typeof WebSocket
+    }
+    /* eslint-enable n/no-unsupported-features/node-builtins */
+
     const httpClient = neon(connectionString)
 
     return {
