@@ -120,22 +120,25 @@ export const setupAIGateway = async (config: AIGatewayConfig): Promise<void> => 
   const { api, env, siteID, siteURL, accountID, siteHasDeploy = true } = config
 
   let aiGatewayToken: AIGatewayTokenResponse | null = null
+  let tokenSource: 'site' | 'account' | null = null
 
   // Try site-scoped token first (only if site has a published deploy)
   if (siteID && siteID !== 'unlinked' && siteURL && siteHasDeploy) {
     aiGatewayToken = await fetchAIGatewayToken({ api, siteId: siteID })
+    if (aiGatewayToken) tokenSource = 'site'
   }
 
   // Fall back to account-scoped token
   if (!aiGatewayToken && accountID) {
     aiGatewayToken = await fetchAccountAIGatewayToken({ api, accountId: accountID })
+    if (aiGatewayToken) tokenSource = 'account'
   }
 
   if (aiGatewayToken) {
     const envVars = await fetchAIProviders({ api })
     const aiGatewayContext = JSON.stringify({
       token: aiGatewayToken.token,
-      url: aiGatewayToken.url,
+      url: tokenSource === 'site' && siteURL ? `${siteURL}/.netlify/ai` : aiGatewayToken.url,
       envVars,
     })
     const base64Context = Buffer.from(aiGatewayContext).toString('base64')
