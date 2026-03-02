@@ -1,4 +1,5 @@
-import { Pool as NeonPool } from '@neondatabase/serverless'
+import { neon, Pool as NeonPool } from '@neondatabase/serverless'
+import type { NeonQueryFunction } from '@neondatabase/serverless'
 import pg from 'pg'
 import type { SQL } from 'waddler'
 import { waddler as waddlerNeonHttp } from 'waddler/neon-http'
@@ -13,11 +14,22 @@ export interface GetDatabaseOptions {
   debug?: boolean
 }
 
-export interface DatabaseConnection {
+export interface ServerDatabaseConnection {
+  driver: 'server'
   sql: SQL
   pool: pg.Pool
   connectionString: string
 }
+
+export interface ServerlessDatabaseConnection {
+  driver: 'serverless'
+  sql: SQL
+  pool: NeonPool
+  httpClient: NeonQueryFunction<any, any>
+  connectionString: string
+}
+
+export type DatabaseConnection = ServerDatabaseConnection | ServerlessDatabaseConnection
 
 export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnection {
   const env = getEnvironment()
@@ -30,9 +42,13 @@ export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnectio
   const driver = env.get('NETLIFY_DB_DRIVER')
 
   if (driver === 'serverless') {
+    const httpClient = neon(connectionString)
+
     return {
+      driver: 'serverless',
       sql: waddlerNeonHttp(connectionString),
       pool: new NeonPool({ connectionString }),
+      httpClient,
       connectionString,
     }
   }
@@ -41,6 +57,7 @@ export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnectio
   const pool = new pg.Pool({ connectionString })
 
   return {
+    driver: 'server',
     sql: waddlerNodePostgres({ client: pool }),
     pool,
     connectionString,
