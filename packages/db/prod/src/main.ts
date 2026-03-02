@@ -46,7 +46,7 @@ export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnectio
 
     return {
       driver: 'serverless',
-      sql: waddlerNeonHttp(connectionString),
+      sql: waddlerNeonHttp({ client: httpClient }),
       pool: new NeonPool({ connectionString }),
       httpClient,
       connectionString,

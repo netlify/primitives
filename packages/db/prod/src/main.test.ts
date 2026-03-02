@@ -82,7 +82,7 @@ describe('getDatabase', () => {
 
     const result = getDatabase()
 
-    expect(mockWaddlerNeonHttp).toHaveBeenCalledWith('postgres://user:pass@localhost:5432/mydb')
+    expect(mockWaddlerNeonHttp).toHaveBeenCalledWith({ client: 'neon-http-client' })
     expect(mockNeonPool).toHaveBeenCalledWith({ connectionString: 'postgres://user:pass@localhost:5432/mydb' })
     expect(mockWaddlerNodePostgres).not.toHaveBeenCalled()
     expect(mockPgPool).not.toHaveBeenCalled()
