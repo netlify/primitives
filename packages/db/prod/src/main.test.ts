@@ -2,12 +2,16 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 import { getDatabase, MissingDatabaseConnectionError } from './main.js'
 
-const { mockWaddlerNodePostgres, mockWaddlerNeonHttp, mockPgPool, mockNeonPool } = vi.hoisted(() => ({
-  mockWaddlerNodePostgres: vi.fn().mockReturnValue('node-postgres-sql'),
-  mockWaddlerNeonHttp: vi.fn().mockReturnValue('neon-http-sql'),
-  mockPgPool: vi.fn(),
-  mockNeonPool: vi.fn(),
-}))
+const { mockWaddlerNodePostgres, mockWaddlerNeonHttp, mockPgPool, mockNeonPool, mockNeon, mockNeonConfig } = vi.hoisted(
+  () => ({
+    mockWaddlerNodePostgres: vi.fn().mockReturnValue('node-postgres-sql'),
+    mockWaddlerNeonHttp: vi.fn().mockReturnValue('neon-http-sql'),
+    mockPgPool: vi.fn(),
+    mockNeonPool: vi.fn(),
+    mockNeon: vi.fn().mockReturnValue('neon-http-client'),
+    mockNeonConfig: {} as Record<string, unknown>,
+  }),
+)
 
 vi.mock('waddler/node-postgres', () => ({
   waddler: mockWaddlerNodePostgres,
@@ -23,6 +27,12 @@ vi.mock('pg', () => ({
 
 vi.mock('@neondatabase/serverless', () => ({
   Pool: mockNeonPool,
+  neon: mockNeon,
+  neonConfig: mockNeonConfig,
+}))
+
+vi.mock('ws', () => ({
+  default: function MockWebSocket() {},
 }))
 
 describe('getDatabase', () => {
@@ -56,6 +66,7 @@ describe('getDatabase', () => {
     expect(mockWaddlerNeonHttp).not.toHaveBeenCalled()
     expect(mockNeonPool).not.toHaveBeenCalled()
     expect(result).toEqual({
+      driver: 'server',
       sql: 'node-postgres-sql',
       pool: expect.any(Object),
       connectionString: 'postgres://user:pass@localhost:5432/mydb',
@@ -79,15 +90,46 @@ describe('getDatabase', () => {
 
     const result = getDatabase()
 
-    expect(mockWaddlerNeonHttp).toHaveBeenCalledWith('postgres://user:pass@localhost:5432/mydb')
+    expect(mockWaddlerNeonHttp).toHaveBeenCalledWith({ client: 'neon-http-client' })
     expect(mockNeonPool).toHaveBeenCalledWith({ connectionString: 'postgres://user:pass@localhost:5432/mydb' })
     expect(mockWaddlerNodePostgres).not.toHaveBeenCalled()
     expect(mockPgPool).not.toHaveBeenCalled()
+    expect(mockNeon).toHaveBeenCalledWith('postgres://user:pass@localhost:5432/mydb')
     expect(result).toEqual({
+      driver: 'serverless',
       sql: 'neon-http-sql',
       pool: expect.any(Object),
+      httpClient: 'neon-http-client',
       connectionString: 'postgres://user:pass@localhost:5432/mydb',
     })
+  })
+
+  it('sets neonConfig.webSocketConstructor from ws when WebSocket is not globally available', () => {
+    process.env.NETLIFY_DB_URL = 'postgres://user:pass@localhost:5432/mydb'
+    process.env.NETLIFY_DB_DRIVER = 'serverless'
+    delete mockNeonConfig.webSocketConstructor
+
+    const originalWebSocket = globalThis.WebSocket
+    // @ts-expect-error — removing global to simulate older Node
+    delete globalThis.WebSocket
+
+    try {
+      getDatabase()
+      expect(mockNeonConfig.webSocketConstructor).toBeDefined()
+    } finally {
+      globalThis.WebSocket = originalWebSocket
+    }
+  })
+
+  it('does not override neonConfig.webSocketConstructor if already set', () => {
+    process.env.NETLIFY_DB_URL = 'postgres://user:pass@localhost:5432/mydb'
+    process.env.NETLIFY_DB_DRIVER = 'serverless'
+    const existingWs = function ExistingWebSocket() {}
+    mockNeonConfig.webSocketConstructor = existingWs
+
+    getDatabase()
+
+    expect(mockNeonConfig.webSocketConstructor).toBe(existingWs)
   })
 
   it('allows override via connectionString option', () => {

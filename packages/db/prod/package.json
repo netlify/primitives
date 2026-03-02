@@ -15,7 +15,7 @@
       }
     }
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publishConfig": {
     "access": "public"
   },
@@ -56,9 +56,11 @@
     "@neondatabase/serverless": "^1.0.0",
     "@netlify/runtime-utils": "2.3.0",
     "pg": "^8.13.0",
-    "waddler": "^0.1.1"
+    "waddler": "^0.1.1",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@types/ws": "^8.18.1",
     "npm-run-all2": "^5.0.0",
     "tsup": "^8.0.2",
     "vitest": "^3.0.0"

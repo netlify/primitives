@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/netlify/primitives/compare/db-v0.1.0...db-v0.2.0) (2026-03-02)
+
+
+### Features
+
+* expose driver in `getDatabase` ([#601](https://github.com/netlify/primitives/issues/601)) ([eec2587](https://github.com/netlify/primitives/commit/eec2587bbd0dc6de7aa082f71509e0341353127a))
+
 ## [0.1.0](https://github.com/netlify/primitives/compare/db-v0.0.1...db-v0.1.0) (2026-02-16)
 
 
