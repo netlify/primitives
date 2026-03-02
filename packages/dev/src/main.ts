@@ -497,15 +497,15 @@ export class NetlifyDev {
     if (
       this.#features.aiGateway &&
       this.#features.environmentVariables &&
-      config?.api &&
-      siteID &&
-      config?.siteInfo?.url
+      config?.api
     ) {
       await setupAIGateway({
         api: config.api,
         env: config.env || {},
         siteID,
-        siteURL: config.siteInfo.url,
+        siteURL: config.siteInfo?.url,
+        accountID: config.siteInfo?.account_id,
+        siteHasDeploy: !!config.siteInfo?.published_deploy,
       })
 
       // Inject AI_GATEWAY into process.env via runtime

@@ -11,6 +11,8 @@ export interface AIGatewayConfig {
   siteID?: string | undefined
   siteURL?: string | undefined
   accountID?: string | undefined
+  /** Whether the site has a published deploy. When false, site-scoped tokens are skipped. */
+  siteHasDeploy?: boolean | undefined
 }
 
 export interface AIProviderEnvVar {
@@ -115,12 +117,12 @@ export const fetchAccountAIGatewayToken = async ({
 }
 
 export const setupAIGateway = async (config: AIGatewayConfig): Promise<void> => {
-  const { api, env, siteID, siteURL, accountID } = config
+  const { api, env, siteID, siteURL, accountID, siteHasDeploy = true } = config
 
   let aiGatewayToken: AIGatewayTokenResponse | null = null
 
-  // Try site-scoped token first
-  if (siteID && siteID !== 'unlinked' && siteURL) {
+  // Try site-scoped token first (only if site has a published deploy)
+  if (siteID && siteID !== 'unlinked' && siteURL && siteHasDeploy) {
     aiGatewayToken = await fetchAIGatewayToken({ api, siteId: siteID })
   }
 
