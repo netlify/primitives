@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.12.0](https://github.com/netlify/primitives/compare/dev-v4.11.3...dev-v4.12.0) (2026-03-03)
+
+
+### Features
+
+* account-based token fetch ([#604](https://github.com/netlify/primitives/issues/604)) ([b772f0d](https://github.com/netlify/primitives/commit/b772f0d96d1b2cb1d313d8397cce5b8b2d4161ae))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.8 to ^0.4.0
+
 ## [4.11.3](https://github.com/netlify/primitives/compare/dev-v4.11.2...dev-v4.11.3) (2026-02-27)
 
 
