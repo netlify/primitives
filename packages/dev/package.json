@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev",
-  "version": "4.11.3",
+  "version": "4.12.0",
   "description": "Emulation of the Netlify environment for local development",
   "type": "module",
   "engines": {
@@ -57,7 +57,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@netlify/ai": "^0.3.8",
+    "@netlify/ai": "^0.4.0",
     "@netlify/blobs": "10.7.0",
     "@netlify/config": "^24.4.0",
     "@netlify/dev-utils": "4.3.3",

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/netlify/primitives/compare/db-v0.2.0...db-v0.3.0) (2026-03-03)
+
+
+### Features
+
+* **db:** configure WebSocket constructor automatically ([#603](https://github.com/netlify/primitives/issues/603)) ([9495c25](https://github.com/netlify/primitives/commit/9495c259f1690fd364990858104d165033a470bc))
+
 ## [0.2.0](https://github.com/netlify/primitives/compare/db-v0.1.0...db-v0.2.0) (2026-03-02)
 
 

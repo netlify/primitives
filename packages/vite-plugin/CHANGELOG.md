@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.10.4](https://github.com/netlify/primitives/compare/vite-plugin-v2.10.3...vite-plugin-v2.10.4) (2026-03-03)
+
+
+### Bug Fixes
+
+* **nuxt-module,vite-plugin:** await fromWebResponse to prevent race condition ([#605](https://github.com/netlify/primitives/issues/605)) ([d9e2f17](https://github.com/netlify/primitives/commit/d9e2f175f1f760f27ece4fa140d50156584475c3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.11.3 to 4.12.0
+
 ## [2.10.3](https://github.com/netlify/primitives/compare/vite-plugin-v2.10.2...vite-plugin-v2.10.3) (2026-02-27)
 
 
