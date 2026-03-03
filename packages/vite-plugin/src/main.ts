@@ -115,7 +115,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
           // Don't serve static matches. Let the Vite server handle them.
           if (result && !isStaticFile) {
-            fromWebResponse(result.response, nodeRes)
+            await fromWebResponse(result.response, nodeRes)
 
             return
           }

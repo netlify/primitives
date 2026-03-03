@@ -93,7 +93,7 @@ export default defineNuxtModule<NetlifyModuleOptions>({
 
           // Don't serve static matches. Let the Nitro server handle them.
           if (result && !isStaticFile) {
-            fromWebResponse(result.response, nodeRes)
+            await fromWebResponse(result.response, nodeRes)
 
             return
           }
