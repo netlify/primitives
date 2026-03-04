@@ -10,7 +10,6 @@ export async function generateImage(width: number, height: number): Promise<Buff
       if (error) {
         reject(error)
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         const imageBuffer = image.data as Buffer
 
         resolve(imageBuffer)

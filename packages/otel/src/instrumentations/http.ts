@@ -208,7 +208,6 @@ export class HttpInstrumentation implements Instrumentation {
     } catch {}
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private subscribe(channelName: string, onMessage: (message: any, name: string | symbol) => void) {
     diagnosticsChannel.subscribe(channelName, onMessage)
     const unsubscribe = () => diagnosticsChannel.unsubscribe(channelName, onMessage)

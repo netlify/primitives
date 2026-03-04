@@ -94,10 +94,14 @@ describe('`fetchWithCache`', () => {
     const mockFetch = new MockFetch().inject()
     const resourceURL = 'https://netlify.com'
 
-    expect(() => fetchWithCache(resourceURL, { method: 'POST' })).rejects.toThrowError()
-    expect(() => fetchWithCache(resourceURL, { method: 'PUT' })).rejects.toThrowError()
-    expect(() => fetchWithCache(new Request(resourceURL, { method: 'POST' }))).rejects.toThrowError()
-    expect(() => fetchWithCache(new Request(resourceURL, { method: 'PUT' }))).rejects.toThrowError()
+    await expect(() => fetchWithCache(resourceURL, { method: 'POST' })).rejects.toThrow(/only supports GET/i)
+    await expect(() => fetchWithCache(resourceURL, { method: 'PUT' })).rejects.toThrow(/only supports GET/i)
+    await expect(() => fetchWithCache(new Request(resourceURL, { method: 'POST' }))).rejects.toThrow(
+      /only supports GET/i,
+    )
+    await expect(() => fetchWithCache(new Request(resourceURL, { method: 'PUT' }))).rejects.toThrow(
+      /only supports GET/i,
+    )
 
     mockFetch.restore()
 

@@ -1,0 +1,13 @@
+{
+  $schema: './node_modules/oxlint/configuration_schema.json',
+  plugins: ['typescript', 'unicorn', 'oxc', 'node', 'vitest', 'promise', 'jsdoc'],
+  categories: {
+    correctness: 'error',
+  },
+  ignorePatterns: ['**/node_modules/**'],
+  rules: {
+    'vitest/warn-todo': 'off',
+    // https://github.com/oxc-project/oxc/issues/18851
+    'jest/valid-expect': 'off',
+  },
+}

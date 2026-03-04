@@ -505,6 +505,7 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
 
+    // oxlint-disable-next-line jest/no-disabled-tests -- intentionally skipped, see TODO comment
     test.skip('Invoking a function that interacts with the Cache API', async () => {
       const fixture = new Fixture()
         .withFile(

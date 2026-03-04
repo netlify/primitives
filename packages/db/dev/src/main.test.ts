@@ -201,7 +201,7 @@ test('Uses in-memory storage when no directory is provided', async () => {
   await client2.connect()
 
   // Table should not exist
-  await expect(client2.query('SELECT * FROM temp_data')).rejects.toThrow()
+  await expect(client2.query('SELECT * FROM temp_data')).rejects.toThrow(/temp_data/i)
 
   await client2.end()
 })
@@ -385,5 +385,5 @@ test('Stops the server cleanly', async () => {
   // New connections should fail
   const client2 = new Client({ connectionString })
 
-  await expect(client2.connect()).rejects.toThrow()
+  await expect(client2.connect()).rejects.toMatchObject({ code: 'ECONNREFUSED' })
 })

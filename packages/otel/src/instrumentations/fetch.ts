@@ -143,7 +143,6 @@ export class FetchInstrumentation implements Instrumentation {
     this.subscribe('undici:request:error', this.onRequestError.bind(this))
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private subscribe(channelName: string, onMessage: (message: any, name: string | symbol) => void) {
     diagnosticsChannel.subscribe(channelName, onMessage)
 

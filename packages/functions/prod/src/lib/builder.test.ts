@@ -137,6 +137,7 @@ test('Returns a 405 error for requests using the PATCH method', async () => {
   expect(response).toStrictEqual({ body: 'Method Not Allowed', statusCode: 405 })
 })
 
+// oxlint-disable-next-line jest/expect-expect -- test uses try/catch to verify error propagation
 test('Preserves errors thrown inside the wrapped handler', async () => {
   const error = new Error('Uh-oh!')
 
