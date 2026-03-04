@@ -473,20 +473,24 @@ export class NetlifyDev {
 
     // Watch the config file and re-resolve when it changes.
     if (config.configPath) {
+      const reloadConfig = () => {
+        void (async () => {
+          try {
+            const newConfig = await this.getConfig()
+            this.#config = newConfig
+            reactiveConfig.set(newConfig)
+          } catch (error) {
+            this.#logger.warn(`Failed to reload config: ${String(error)}`)
+          }
+        })()
+      }
+
       fileWatcher.subscribe({
         id: 'netlify-config',
         paths: config.configPath,
-        onChange: () => {
-          void (async () => {
-            try {
-              const newConfig = await this.getConfig()
-              this.#config = newConfig
-              reactiveConfig.set(newConfig)
-            } catch (error) {
-              this.#logger.warn(`Failed to reload config: ${String(error)}`)
-            }
-          })()
-        },
+        onChange: reloadConfig,
+        onAdd: reloadConfig,
+        onUnlink: reloadConfig,
       })
     }
 
