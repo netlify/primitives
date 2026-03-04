@@ -6,6 +6,7 @@ import type { ConnectionState, MessageResponse } from 'pg-gateway'
 import { fromNodeSocket } from 'pg-gateway/node'
 
 import { broadcastNotifications } from './lib/notifications.js'
+import { applyMigrations } from './lib/migrations.js'
 
 const DEFAULT_HOST = 'localhost'
 
@@ -78,6 +79,14 @@ export class NetlifyDB {
         resolve(`postgres://${host}:${String(port)}/postgres`)
       })
     })
+  }
+
+  async applyMigrations(migrationsDirectory: string, target?: string): Promise<string[]> {
+    if (!this.db) {
+      throw new Error('Database has not been started. Call start() before applying migrations.')
+    }
+
+    return applyMigrations(this.db, migrationsDirectory, target)
   }
 
   async stop(): Promise<void> {
