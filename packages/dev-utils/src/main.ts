@@ -1,3 +1,4 @@
+export { Reactive } from './lib/reactive.js'
 export { getAPIToken } from './lib/api-token.js'
 export { shouldBase64Encode } from './lib/base64.js'
 export { renderFunctionErrorPage } from './lib/errors.js'
@@ -13,6 +14,7 @@ export { memoize, MemoizeCache } from './lib/memoize.js'
 export { killProcess, type ProcessRef } from './lib/process.js'
 export { HTTPServer } from './server/http_server.js'
 export { fromWebResponse, toWebRequest } from './lib/reqres.js'
+export { FileWatcher, type FileWatchSubscriptionHandle, type FileWatchSubscriptionOptions } from './lib/file-watcher/index.js'
 export { watchDebounced } from './lib/watch-debounced.js'
 
 export { EventInspector } from './test/event_inspector.js'
