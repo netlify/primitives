@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/netlify/primitives/compare/db-dev-v0.3.0...db-dev-v0.4.0) (2026-03-04)
+
+
+### Features
+
+* **db:** add `applyMigrations` method ([#608](https://github.com/netlify/primitives/issues/608)) ([71cbbac](https://github.com/netlify/primitives/commit/71cbbac911d57b217ed9f636c1cbfcb9e71466da))
+
 ## [0.3.0](https://github.com/netlify/primitives/compare/db-dev-v0.2.0...db-dev-v0.3.0) (2026-02-27)
 
 
