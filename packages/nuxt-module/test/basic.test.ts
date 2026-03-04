@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, it, expect } from 'vitest'
 import { setup, $fetch } from '@nuxt/test-utils/e2e'
 
+// oxlint-disable-next-line jest/valid-describe-callback -- vitest supports async describe for setup (e.g. @nuxt/test-utils)
 describe('ssr', async () => {
   await setup({
     rootDir: fileURLToPath(new URL('./fixtures/basic', import.meta.url)),

@@ -10,7 +10,6 @@ describe('header exclusion', () => {
       skipHeaders: ['authorization'],
     })
 
-    // eslint-disable-next-line @typescript-eslint/dot-notation
     const attributes = instrumentation['prepareHeaders'](
       'request',
       ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
@@ -25,7 +24,6 @@ describe('header exclusion', () => {
     const everything = new FetchInstrumentation({
       skipHeaders: true,
     })
-    // eslint-disable-next-line @typescript-eslint/dot-notation
     const empty = everything['prepareHeaders'](
       'request',
       ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
@@ -38,7 +36,6 @@ describe('header exclusion', () => {
       redactHeaders: ['authorization'],
     })
 
-    // eslint-disable-next-line @typescript-eslint/dot-notation
     const attributes = instrumentation['prepareHeaders'](
       'request',
       ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),
@@ -54,7 +51,6 @@ describe('header exclusion', () => {
       redactHeaders: true,
     })
 
-    // eslint-disable-next-line @typescript-eslint/dot-notation
     const attributes = instrumentation['prepareHeaders'](
       'request',
       ['a', 'a', 'b', 'b', 'authorization', 'secret'].map((value) => Buffer.from(value)),

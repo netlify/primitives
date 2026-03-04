@@ -56,7 +56,7 @@ describe('`parseCacheStatus`', () => {
 
   test('Throws if the input is of an unsupported type', () => {
     // @ts-expect-error Wrong type
-    expect(() => getCacheStatus({})).toThrow()
+    expect(() => getCacheStatus({})).toThrow(/expects a string/i)
   })
 })
 

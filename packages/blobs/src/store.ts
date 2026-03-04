@@ -239,7 +239,6 @@ export class Store {
       }
 
       if (type === 'json') {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return res.json()
       }
 

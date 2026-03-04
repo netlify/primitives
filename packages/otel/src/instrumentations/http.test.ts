@@ -11,7 +11,6 @@ describe('header exclusion', () => {
       skipHeaders: ['authorization'],
     })
 
-    // eslint-disable-next-line @typescript-eslint/dot-notation
     const attributes = instrumentation['prepareHeaders']('request', {
       a: 'a',
       b: 'b',
@@ -27,7 +26,6 @@ describe('header exclusion', () => {
     const everything = new HttpInstrumentation({
       skipHeaders: true,
     })
-    // eslint-disable-next-line @typescript-eslint/dot-notation
     const empty = everything['prepareHeaders']('request', {
       a: 'a',
       b: 'b',
@@ -41,7 +39,6 @@ describe('header exclusion', () => {
       redactHeaders: ['authorization'],
     })
 
-    // eslint-disable-next-line @typescript-eslint/dot-notation
     const attributes = instrumentation['prepareHeaders']('request', {
       a: 'a',
       b: 'b',
@@ -58,7 +55,6 @@ describe('header exclusion', () => {
       redactHeaders: true,
     })
 
-    // eslint-disable-next-line @typescript-eslint/dot-notation
     const attributes = instrumentation['prepareHeaders']('request', {
       a: 'a',
       b: 'b',

@@ -73,7 +73,7 @@ export class NetlifyDB {
       this.server.listen(this.port ?? 0, DEFAULT_HOST, () => {
         this.server?.off('error', reject)
 
-        const { address, port } = this.server?.address() as AddressInfo
+        const { address, port } = this.server!.address() as AddressInfo
         const host = address === '::1' || address === '127.0.0.1' ? 'localhost' : address
 
         resolve(`postgres://${host}:${String(port)}/postgres`)

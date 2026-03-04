@@ -21,7 +21,7 @@ describe('`cacheHaders`', () => {
 
     test('Throws when input is not array of strings', () => {
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ tags: ['tag1', true] })).toThrow()
+      expect(() => cacheHeaders({ tags: ['tag1', true] })).toThrow(/must be an array of non-empty strings/i)
     })
   })
 
@@ -43,18 +43,18 @@ describe('`cacheHaders`', () => {
 
     test('Throws when input is not a number', () => {
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ ttl: new Date() })).toThrow()
+      expect(() => cacheHeaders({ ttl: new Date() })).toThrow(/must be a positive integer/i)
     })
 
     test('Throws when number is not integer', () => {
-      expect(() => cacheHeaders({ ttl: 31.5 })).toThrow()
+      expect(() => cacheHeaders({ ttl: 31.5 })).toThrow(/must be a positive integer/i)
 
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ ttl: '31.5' })).toThrow()
+      expect(() => cacheHeaders({ ttl: '31.5' })).toThrow(/must be a positive integer/i)
     })
 
     test('Throws when number is negative', () => {
-      expect(() => cacheHeaders({ ttl: -50 })).toThrow()
+      expect(() => cacheHeaders({ ttl: -50 })).toThrow(/must be a positive integer/i)
     })
   })
 
@@ -88,15 +88,15 @@ describe('`cacheHaders`', () => {
 
     test('Throws when input is not a number', () => {
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ swr: new Date() })).toThrow()
+      expect(() => cacheHeaders({ swr: new Date() })).toThrow(/must be a positive integer/i)
     })
 
     test('Throws when number is not integer', () => {
-      expect(() => cacheHeaders({ swr: 31.5 })).toThrow()
+      expect(() => cacheHeaders({ swr: 31.5 })).toThrow(/must be a positive integer/i)
     })
 
     test('Throws when number is negative', () => {
-      expect(() => cacheHeaders({ swr: -50 })).toThrow()
+      expect(() => cacheHeaders({ swr: -50 })).toThrow(/must be a positive integer/i)
     })
   })
 
@@ -108,7 +108,7 @@ describe('`cacheHaders`', () => {
         'netlify-vary': 'cookie=cookie1|cookie2',
       })
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ vary: { cookie: true } })).toThrow()
+      expect(() => cacheHeaders({ vary: { cookie: true } })).toThrow(/must be an array/i)
     })
 
     test('With `country`', () => {
@@ -118,9 +118,9 @@ describe('`cacheHaders`', () => {
         'netlify-vary': 'country=es|br+pt',
       })
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ vary: { country: true } })).toThrow()
+      expect(() => cacheHeaders({ vary: { country: true } })).toThrow(/must be an array/i)
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ vary: { country: ['pt', 3] } })).toThrow()
+      expect(() => cacheHeaders({ vary: { country: ['pt', 3] } })).toThrow(/must be an array of non-empty strings/i)
     })
 
     test('With `header`', () => {
@@ -132,9 +132,11 @@ describe('`cacheHaders`', () => {
         'netlify-vary': 'header=Device-Type|App-Version',
       })
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ vary: { header: true } })).toThrow()
+      expect(() => cacheHeaders({ vary: { header: true } })).toThrow(/must be an array/i)
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ vary: { header: ['Device-Type', 3] } })).toThrow()
+      expect(() => cacheHeaders({ vary: { header: ['Device-Type', 3] } })).toThrow(
+        /must be an array of non-empty strings/i,
+      )
     })
 
     test('With `language`', () => {
@@ -144,9 +146,9 @@ describe('`cacheHaders`', () => {
         'netlify-vary': 'language=es|nl+pt',
       })
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ vary: { language: true } })).toThrow()
+      expect(() => cacheHeaders({ vary: { language: true } })).toThrow(/must be an array/i)
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ vary: { language: ['pt', 3] } })).toThrow()
+      expect(() => cacheHeaders({ vary: { language: ['pt', 3] } })).toThrow(/must be an array of non-empty strings/i)
     })
 
     test('With `query`', () => {
@@ -159,9 +161,9 @@ describe('`cacheHaders`', () => {
         'netlify-vary': 'query=page|per_page',
       })
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ vary: { query: 3 } })).toThrow()
+      expect(() => cacheHeaders({ vary: { query: 3 } })).toThrow(/must be an array of non-empty strings/i)
       // @ts-expect-error Wrong type
-      expect(() => cacheHeaders({ vary: { query: ['page', 3] } })).toThrow()
+      expect(() => cacheHeaders({ vary: { query: ['page', 3] } })).toThrow(/must be an array of non-empty strings/i)
     })
 
     test('With multiple', () => {

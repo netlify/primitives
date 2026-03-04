@@ -1129,7 +1129,7 @@ describe('set', () => {
     })
 
     test('Throws when the key fails validation', async () => {
-      const mockStore = new MockFetch().inject()
+      new MockFetch().inject()
 
       const blobs = getStore({
         name: 'production',
@@ -1383,7 +1383,7 @@ describe('setJSON', () => {
       const metadata = {
         name: 'Netlify'.repeat(1000),
       }
-      const mockStore = new MockFetch().inject()
+      new MockFetch().inject()
 
       const blobs = getStore({
         edgeURL,
@@ -1917,7 +1917,7 @@ describe('Deploy scope', () => {
   test('Throws if the deploy ID fails validation', async () => {
     const mockRegion = 'us-east-2'
     const mockToken = 'some-token'
-    const mockStore = new MockFetch().inject()
+    new MockFetch().inject()
     const longDeployID = 'd'.repeat(80)
 
     expect(() => getDeployStore({ deployID: 'deploy/ID', siteID, region: mockRegion, token: apiToken })).toThrowError(
@@ -2195,7 +2195,7 @@ describe('Region configuration in deploy-scoped stores', () => {
         })
         .inject()
 
-      expect(() => getDeployStore({ deployID, edgeURL, siteID, token: mockToken })).toThrowError()
+      expect(() => getDeployStore({ deployID, edgeURL, siteID, token: mockToken })).toThrow(/configured with a region/i)
       expect(mockStore.fulfilled).toBeFalsy()
     })
   })
@@ -2319,7 +2319,9 @@ describe('Region configuration in deploy-scoped stores', () => {
       env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
 
       // @ts-expect-error Knowingly supplying an invalid value to `region`.
-      expect(() => getDeployStore({ deployID, edgeURL, siteID, region: 'eu-west-1' })).toThrowError()
+      expect(() => getDeployStore({ deployID, edgeURL, siteID, region: 'eu-west-1' })).toThrow(
+        /not a supported.*region/i,
+      )
       expect(mockStore.fulfilled).toBeFalsy()
     })
 

@@ -3,7 +3,7 @@ node_modules
 .DS_Store
 .netlify
 coverage
-.eslintcache
+.oxlint_cache
 .cache
 .vscode
 .fleet

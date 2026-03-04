@@ -55,7 +55,7 @@ interface InjectEnvironmentVariablesOptions {
  * This also injects and returns the documented runtime env vars:
  * @see {@link https://docs.netlify.com/functions/environment-variables/#functions}
  *
- * @return Metadata about all injected environment variables
+ * @returns Metadata about all injected environment variables
  */
 export const injectEnvVariables = async ({
   accountSlug,

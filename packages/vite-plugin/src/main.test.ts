@@ -60,6 +60,7 @@ beforeEach(() => {
   process.env = { ...originalEnv }
 })
 
+// oxlint-disable-next-line jest/valid-describe-callback -- vitest's describe.for() not recognized by oxlint's jest rule
 describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
   describe('Plugin constructor', () => {
     test('Is a no-op when running in the Netlify CLI', () => {
@@ -558,7 +559,6 @@ defined on your team and site and much more. Run npx netlify init to get started
 
         expect(await getImageSize(page.locator('#local-image'))).toEqual({ width: 100, height: 50 })
         expect(await getImageSize(page.locator('#allowed-remote-image'))).toEqual({ width: 100, height: 50 })
-
         await expect(
           getImageSize(page.locator('#not-allowed-remote-image')),
           'Not allowed remote image should not load',

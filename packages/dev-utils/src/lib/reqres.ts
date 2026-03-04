@@ -45,7 +45,6 @@ export const fromWebResponse = async (webRes: Response, res: ServerResponse) => 
     const reader = webRes.body.getReader()
     const writer = res
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
       const { done, value } = await reader.read()
 
