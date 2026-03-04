@@ -24,8 +24,7 @@ describe('Reactive', () => {
     value.subscribe(callback)
     value.set({ port: 8080 })
 
-    expect(callback).toHaveBeenCalledOnce()
-    expect(callback).toHaveBeenCalledWith({ port: 8080 })
+    expect(callback).toHaveBeenCalledExactlyOnceWith({ port: 8080 })
   })
 
   test('multiple subscribers are all notified', () => {
