@@ -145,17 +145,13 @@ test('Resolves target by prefix only', async () => {
 test('Throws DatabaseNotStartedError if start() not called', async () => {
   const server = new NetlifyDB()
 
-  await expect(
-    server.applyMigrations('/nonexistent', '0001'),
-  ).rejects.toThrow('Database has not been started')
+  await expect(server.applyMigrations('/nonexistent', '0001')).rejects.toThrow('Database has not been started')
 })
 
 test('Throws MigrationDirectoryNotFoundError for missing directory', async () => {
   db = await PGlite.create()
 
-  await expect(
-    applyMigrations(db, '/nonexistent/path', '0001'),
-  ).rejects.toThrow('Migration directory not found')
+  await expect(applyMigrations(db, '/nonexistent/path', '0001')).rejects.toThrow('Migration directory not found')
 })
 
 test('Throws MigrationNotFoundError for unknown target', async () => {
@@ -163,9 +159,9 @@ test('Throws MigrationNotFoundError for unknown target', async () => {
     { name: '0001_create_users', sql: 'CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT)' },
   ])
 
-  await expect(
-    applyMigrations(pgDb, migrationsDir, '9999_nonexistent'),
-  ).rejects.toThrow('No migration found matching target')
+  await expect(applyMigrations(pgDb, migrationsDir, '9999_nonexistent')).rejects.toThrow(
+    'No migration found matching target',
+  )
 })
 
 test('Throws MigrationFileNotFoundError for directory missing migration.sql', async () => {
@@ -176,9 +172,9 @@ test('Throws MigrationFileNotFoundError for directory missing migration.sql', as
 
   db = await PGlite.create()
 
-  await expect(
-    applyMigrations(db, tmpDir.path, '0001_missing_file'),
-  ).rejects.toThrow('migration.sql not found in migration directory')
+  await expect(applyMigrations(db, tmpDir.path, '0001_missing_file')).rejects.toThrow(
+    'migration.sql not found in migration directory',
+  )
 })
 
 test('Rolls back failed migration, preserves prior successful ones', async () => {
@@ -188,14 +184,10 @@ test('Rolls back failed migration, preserves prior successful ones', async () =>
     { name: '0003_add_posts', sql: 'CREATE TABLE posts (id SERIAL PRIMARY KEY, title TEXT)' },
   ])
 
-  await expect(
-    applyMigrations(pgDb, migrationsDir, '0003_add_posts'),
-  ).rejects.toThrow()
+  await expect(applyMigrations(pgDb, migrationsDir, '0003_add_posts')).rejects.toThrow()
 
   // Migration 1 should be committed
-  const tracking = await pgDb.query<{ name: string }>(
-    "SELECT name FROM netlify_migrations ORDER BY name",
-  )
+  const tracking = await pgDb.query<{ name: string }>('SELECT name FROM netlify_migrations ORDER BY name')
   expect(tracking.rows).toHaveLength(1)
   expect(tracking.rows[0].name).toBe('0001_create_users')
 
