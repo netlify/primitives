@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.12.1](https://github.com/netlify/primitives/compare/dev-v4.12.0...dev-v4.12.1) (2026-03-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/db-dev bumped from 0.3.0 to 0.4.0
+  * peerDependencies
+    * @netlify/db-dev bumped from 0.2.0 to 0.4.0
+
 ## [4.12.0](https://github.com/netlify/primitives/compare/dev-v4.11.3...dev-v4.12.0) (2026-03-03)
 
 
