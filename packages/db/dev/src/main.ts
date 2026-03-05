@@ -95,14 +95,18 @@ export class NetlifyDB {
     }
 
     const result = await this.db.query<{ schema_name: string }>(
-      `SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('information_schema', 'pg_catalog', 'pg_toast')`,
+      `SELECT schema_name
+       FROM information_schema.schemata
+       WHERE schema_name <> 'information_schema'
+         AND schema_name NOT LIKE 'pg_%'`,
     )
 
     for (const { schema_name } of result.rows) {
-      await this.db.exec(`DROP SCHEMA "${schema_name}" CASCADE`)
+      const escapedSchemaName = schema_name.replaceAll('"', '""')
+      await this.db.exec(`DROP SCHEMA "${escapedSchemaName}" CASCADE`)
     }
 
-    await this.db.exec('CREATE SCHEMA public')
+    await this.db.exec('CREATE SCHEMA IF NOT EXISTS public')
   }
 
   async stop(): Promise<void> {
