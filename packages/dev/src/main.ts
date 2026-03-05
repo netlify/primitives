@@ -200,6 +200,7 @@ export class NetlifyDev {
     redirects: boolean
     static: boolean
   }
+  #db?: NetlifyDB
   #headersHandler?: HeadersHandler
   #imageRemoteURLPatterns: string[]
   #imageHandler?: ImageHandler
@@ -482,8 +483,10 @@ export class NetlifyDev {
 
         runtime.env.set('NETLIFY_DB_URL', connectionString)
 
+        this.#db = db
         this.#cleanupJobs.push(() => db.stop())
       } catch (error) {
+        this.#db = undefined
         this.#logger.warn(`Failed to start Netlify DB locally: ${String(error)}`)
       }
     }
@@ -668,6 +671,10 @@ export class NetlifyDev {
     return {
       serverAddress,
     }
+  }
+
+  get db(): NetlifyDB | undefined {
+    return this.#db
   }
 
   async stop() {
