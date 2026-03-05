@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.14.0](https://github.com/netlify/primitives/compare/dev-v4.13.0...dev-v4.14.0) (2026-03-05)
+
+
+### Features
+
+* **dev:** export db instance on NetlifyDev ([#613](https://github.com/netlify/primitives/issues/613)) ([ff643ff](https://github.com/netlify/primitives/commit/ff643ffb01546498be8c18f0d955d9dd02514ed4))
+
 ## [4.13.0](https://github.com/netlify/primitives/compare/dev-v4.12.1...dev-v4.13.0) (2026-03-05)
 
 
