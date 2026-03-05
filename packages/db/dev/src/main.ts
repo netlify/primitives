@@ -89,6 +89,22 @@ export class NetlifyDB {
     return applyMigrations(this.db, migrationsDirectory, target)
   }
 
+  async reset(): Promise<void> {
+    if (!this.db) {
+      throw new Error('Database has not been started. Call start() before resetting.')
+    }
+
+    const result = await this.db.query<{ schema_name: string }>(
+      `SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('information_schema', 'pg_catalog', 'pg_toast')`,
+    )
+
+    for (const { schema_name } of result.rows) {
+      await this.db.exec(`DROP SCHEMA "${schema_name}" CASCADE`)
+    }
+
+    await this.db.exec('CREATE SCHEMA public')
+  }
+
   async stop(): Promise<void> {
     if (this.unsubNotification) {
       this.unsubNotification()
