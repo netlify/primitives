@@ -51,7 +51,6 @@
   "author": "Netlify Inc.",
   "devDependencies": {
     "@netlify/api": "^14.0.17",
-    "@netlify/db-dev": "0.4.0",
     "@netlify/types": "2.3.0",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
@@ -60,6 +59,7 @@
     "@netlify/ai": "^0.4.0",
     "@netlify/blobs": "10.7.0",
     "@netlify/config": "^24.4.0",
+    "@netlify/db-dev": "0.4.0",
     "@netlify/dev-utils": "4.3.3",
     "@netlify/edge-functions-dev": "1.0.11",
     "@netlify/functions-dev": "1.1.12",
@@ -69,13 +69,5 @@
     "@netlify/runtime": "4.1.16",
     "@netlify/static": "3.1.3",
     "ulid": "^3.0.0"
-  },
-  "peerDependencies": {
-    "@netlify/db-dev": "0.2.0"
-  },
-  "peerDependenciesMeta": {
-    "@netlify/db-dev": {
-      "optional": true
-    }
   }
 }
