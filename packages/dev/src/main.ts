@@ -484,8 +484,7 @@ export class NetlifyDev {
 
         this.#cleanupJobs.push(() => db.stop())
       } catch (error) {
-        this.#logger.warn('Failed to start Netlify DB locally.')
-        this.#logger.debug({ error }, 'Netlify DB startup error')
+        this.#logger.warn(`Failed to start Netlify DB locally: ${String(error)}`)
       }
     }
 
