@@ -368,6 +368,74 @@ test('Handles quoted channel names', async () => {
   await notifier.end()
 })
 
+test('Resets the database by dropping all tables', async () => {
+  server = new NetlifyDB()
+  const connectionString = await server.start()
+
+  const client = new Client({ connectionString })
+
+  await client.connect()
+
+  await client.query(`
+    CREATE TABLE reset_test (
+      id SERIAL PRIMARY KEY,
+      value TEXT
+    )
+  `)
+  await client.query(`INSERT INTO reset_test (value) VALUES ('before reset')`)
+
+  const before = await client.query('SELECT * FROM reset_test')
+  expect(before.rows).toHaveLength(1)
+
+  await server.reset()
+
+  await expect(client.query('SELECT * FROM reset_test')).rejects.toThrow()
+
+  await client.end()
+})
+
+test('Allows creating tables again after reset', async () => {
+  server = new NetlifyDB()
+  const connectionString = await server.start()
+
+  const client = new Client({ connectionString })
+
+  await client.connect()
+
+  await client.query('CREATE TABLE first_table (id SERIAL PRIMARY KEY)')
+  await server.reset()
+
+  await client.query('CREATE TABLE first_table (id SERIAL PRIMARY KEY)')
+  const result = await client.query<{ value: number }>('SELECT 1 AS value')
+  expect(result.rows[0].value).toBe(1)
+
+  await client.end()
+})
+
+test('Drops custom schemas on reset', async () => {
+  server = new NetlifyDB()
+  const connectionString = await server.start()
+
+  const client = new Client({ connectionString })
+
+  await client.connect()
+
+  await client.query('CREATE SCHEMA custom_schema')
+  await client.query('CREATE TABLE custom_schema.my_table (id SERIAL PRIMARY KEY)')
+
+  await server.reset()
+
+  await expect(client.query('SELECT * FROM custom_schema.my_table')).rejects.toThrow()
+
+  await client.end()
+})
+
+test('Throws when reset is called before start', async () => {
+  server = new NetlifyDB()
+
+  await expect(server.reset()).rejects.toThrow('Database has not been started')
+})
+
 test('Stops the server cleanly', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
