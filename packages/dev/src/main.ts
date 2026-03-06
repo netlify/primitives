@@ -22,6 +22,7 @@ import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
 import { ImageHandler } from '@netlify/images'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
+import { NetlifyDB } from '@netlify/db-dev'
 
 import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
@@ -201,6 +202,7 @@ export class NetlifyDev {
     redirects: boolean
     static: boolean
   }
+  #db?: NetlifyDB
   #headersHandler?: HeadersHandler
   #imageRemoteURLPatterns: string[]
   #imageHandler?: ImageHandler
@@ -505,16 +507,17 @@ export class NetlifyDev {
 
     if (this.#features.db) {
       try {
-        const { NetlifyDB } = await import('@netlify/db-dev')
         const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
         const db = new NetlifyDB({ directory: dbDirectory })
         const connectionString = await db.start()
 
         runtime.env.set('NETLIFY_DB_URL', connectionString)
 
+        this.#db = db
         this.#cleanupJobs.push(() => db.stop())
-      } catch {
-        this.#logger.warn('To use Netlify DB locally, install the @netlify/db-dev package.')
+      } catch (error) {
+        this.#db = undefined
+        this.#logger.warn(`Failed to start Netlify DB locally: ${String(error)}`)
       }
     }
 
@@ -699,6 +702,10 @@ export class NetlifyDev {
     return {
       serverAddress,
     }
+  }
+
+  get db(): NetlifyDB | undefined {
+    return this.#db
   }
 
   async stop() {

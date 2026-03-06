@@ -6,6 +6,7 @@ import type { ConnectionState, MessageResponse } from 'pg-gateway'
 import { fromNodeSocket } from 'pg-gateway/node'
 
 import { broadcastNotifications } from './lib/notifications.js'
+import { applyMigrations } from './lib/migrations.js'
 
 const DEFAULT_HOST = 'localhost'
 
@@ -78,6 +79,34 @@ export class NetlifyDB {
         resolve(`postgres://${host}:${String(port)}/postgres`)
       })
     })
+  }
+
+  async applyMigrations(migrationsDirectory: string, target?: string): Promise<string[]> {
+    if (!this.db) {
+      throw new Error('Database has not been started. Call start() before applying migrations.')
+    }
+
+    return applyMigrations(this.db, migrationsDirectory, target)
+  }
+
+  async reset(): Promise<void> {
+    if (!this.db) {
+      throw new Error('Database has not been started. Call start() before resetting.')
+    }
+
+    const result = await this.db.query<{ schema_name: string }>(
+      `SELECT schema_name
+       FROM information_schema.schemata
+       WHERE schema_name <> 'information_schema'
+         AND schema_name NOT LIKE 'pg_%'`,
+    )
+
+    for (const { schema_name } of result.rows) {
+      const escapedSchemaName = schema_name.replaceAll('"', '""')
+      await this.db.exec(`DROP SCHEMA "${escapedSchemaName}" CASCADE`)
+    }
+
+    await this.db.exec('CREATE SCHEMA IF NOT EXISTS public')
   }
 
   async stop(): Promise<void> {

@@ -1,5 +1,39 @@
 # Changelog
 
+## [4.14.1](https://github.com/netlify/primitives/compare/dev-v4.14.0...dev-v4.14.1) (2026-03-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/db-dev bumped from 0.4.0 to 0.5.0
+
+## [4.14.0](https://github.com/netlify/primitives/compare/dev-v4.13.0...dev-v4.14.0) (2026-03-05)
+
+
+### Features
+
+* **dev:** export db instance on NetlifyDev ([#613](https://github.com/netlify/primitives/issues/613)) ([ff643ff](https://github.com/netlify/primitives/commit/ff643ffb01546498be8c18f0d955d9dd02514ed4))
+
+## [4.13.0](https://github.com/netlify/primitives/compare/dev-v4.12.1...dev-v4.13.0) (2026-03-05)
+
+
+### Features
+
+* **dev:** move @netlify/db-dev to dependency of @netlify/dev ([#611](https://github.com/netlify/primitives/issues/611)) ([8d0d1a1](https://github.com/netlify/primitives/commit/8d0d1a16f18cf5599696097b068a7b12dab10229))
+
+## [4.12.1](https://github.com/netlify/primitives/compare/dev-v4.12.0...dev-v4.12.1) (2026-03-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/db-dev bumped from 0.3.0 to 0.4.0
+  * peerDependencies
+    * @netlify/db-dev bumped from 0.2.0 to 0.4.0
+
 ## [4.12.0](https://github.com/netlify/primitives/compare/dev-v4.11.3...dev-v4.12.0) (2026-03-03)
 
 
