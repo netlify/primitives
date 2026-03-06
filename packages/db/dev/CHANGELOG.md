@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/netlify/primitives/compare/db-dev-v0.4.0...db-dev-v0.5.0) (2026-03-06)
+
+
+### Features
+
+* **db:** allow to reset database schemas ([#615](https://github.com/netlify/primitives/issues/615)) ([6438372](https://github.com/netlify/primitives/commit/6438372264df6ede84c0f098d1f2a5e98a22325b))
+
 ## [0.4.0](https://github.com/netlify/primitives/compare/db-dev-v0.3.0...db-dev-v0.4.0) (2026-03-04)
 
 
