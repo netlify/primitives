@@ -511,13 +511,18 @@ export class NetlifyDev {
         const db = new NetlifyDB({ directory: dbDirectory })
         const connectionString = await db.start()
 
-        runtime.env.set('NETLIFY_DB_URL', connectionString)
-        state.set('dbUrl', connectionString)
+        try {
+          runtime.env.set('NETLIFY_DB_URL', connectionString)
+          state.set('dbUrl', connectionString)
+        } catch (error) {
+          await db.stop()
+          throw error
+        }
 
         this.#db = db
         this.#cleanupJobs.push(async () => {
-          state.delete('dbUrl')
           await db.stop()
+          state.delete('dbUrl')
         })
       } catch (error) {
         this.#db = undefined
