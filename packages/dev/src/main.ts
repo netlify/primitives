@@ -7,12 +7,14 @@ import { parseAIGatewayContext, setupAIGateway } from '@netlify/ai/bootstrap'
 import { resolveConfig } from '@netlify/config'
 import {
   ensureNetlifyIgnore,
+  FileWatcher,
   getAPIToken,
   getGeoLocation,
   type Geolocation,
   LocalState,
   type Logger,
   HTTPServer,
+  Reactive,
 } from '@netlify/dev-utils'
 import { EdgeFunctionsHandler } from '@netlify/edge-functions-dev'
 import { FunctionsHandler } from '@netlify/functions-dev'
@@ -466,6 +468,34 @@ export class NetlifyDev {
     const config = await this.getConfig()
     this.#config = config
 
+    const reactiveConfig = new Reactive(config)
+
+    const fileWatcher = new FileWatcher()
+    this.#cleanupJobs.push(() => fileWatcher.close())
+
+    // Watch the config file and re-resolve when it changes.
+    if (config.configPath) {
+      const reloadConfig = () => {
+        void (async () => {
+          try {
+            const newConfig = await this.getConfig()
+            this.#config = newConfig
+            reactiveConfig.set(newConfig)
+          } catch (error) {
+            this.#logger.warn(`Failed to reload config: ${String(error)}`)
+          }
+        })()
+      }
+
+      fileWatcher.subscribe({
+        id: 'netlify-config',
+        paths: config.configPath,
+        onChange: reloadConfig,
+        onAdd: reloadConfig,
+        onUnlink: reloadConfig,
+      })
+    }
+
     const runtime = await getRuntime({
       blobs: this.#features.blobs,
       deployID: '0',
@@ -617,8 +647,9 @@ export class NetlifyDev {
       })
 
       this.#functionsHandler = new FunctionsHandler({
-        config: this.#config,
+        config: reactiveConfig,
         destPath: this.#functionsServePath,
+        fileWatcher,
         geolocation,
         projectRoot: this.#projectRoot,
         settings: {},
