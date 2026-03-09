@@ -146,6 +146,18 @@ export interface Features {
 interface NetlifyDevOptions extends Features {
   apiURL?: string
   apiToken?: string
+
+  /**
+   * Configuration options for Netlify DB.
+   */
+  db?: {
+    /**
+     * Connection string to an already-running database instance. When provided,
+     * NetlifyDev connects to the existing database instead of starting a new one.
+     */
+    connectionString?: string
+  }
+
   logger?: Logger
   projectRoot?: string
 
@@ -203,6 +215,7 @@ export class NetlifyDev {
     static: boolean
   }
   #db?: NetlifyDB
+  #dbConnectionString?: string
   #headersHandler?: HeadersHandler
   #imageRemoteURLPatterns: string[]
   #imageHandler?: ImageHandler
@@ -226,6 +239,7 @@ export class NetlifyDev {
 
     this.#apiToken = options.apiToken
     this.#cleanupJobs = []
+    this.#dbConnectionString = options.db?.connectionString
     this.#geolocationConfig = options.geolocation
     this.#features = {
       aiGateway: options.aiGateway?.enabled !== false,
@@ -507,14 +521,25 @@ export class NetlifyDev {
 
     if (this.#features.db) {
       try {
-        const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
-        const db = new NetlifyDB({ directory: dbDirectory })
+        const db = this.#dbConnectionString
+          ? new NetlifyDB({ connectionString: this.#dbConnectionString })
+          : new NetlifyDB({ directory: path.join(this.#projectRoot, '.netlify', 'db') })
+
         const connectionString = await db.start()
 
         runtime.env.set('NETLIFY_DB_URL', connectionString)
 
         this.#db = db
-        this.#cleanupJobs.push(() => db.stop())
+        this.#cleanupJobs.push(async () => {
+          await db.stop()
+        })
+
+        if (!this.#dbConnectionString) {
+          state.set('db.url', connectionString)
+          this.#cleanupJobs.push(async () => {
+            state.delete('db.url')
+          })
+        }
       } catch (error) {
         this.#db = undefined
         this.#logger.warn(`Failed to start Netlify DB locally: ${String(error)}`)

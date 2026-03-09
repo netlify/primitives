@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import type { Dirent } from 'node:fs'
 
-import type { PGlite, Transaction } from '@electric-sql/pglite'
+import type { PGlite } from '@electric-sql/pglite'
 
 const MIGRATION_DIR_PATTERN = /^\d+_.+$/
 const MIGRATION_FILE = 'migration.sql'
@@ -75,7 +75,7 @@ export async function applyMigrations(db: PGlite, migrationsDirectory: string, t
       throw new Error(`${MIGRATION_FILE} not found in migration directory: ${name}`)
     }
 
-    await db.transaction(async (tx: Transaction) => {
+    await db.transaction(async (tx) => {
       await tx.exec(sql)
       await tx.query(`INSERT INTO ${TRACKING_TABLE} (name) VALUES ($1)`, [name])
     })
