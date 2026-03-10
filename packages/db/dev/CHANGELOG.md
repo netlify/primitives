@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/netlify/primitives/compare/db-dev-v0.5.0...db-dev-v0.6.0) (2026-03-10)
+
+
+### Features
+
+* **db-dev:** abstract pg client into interface ([#619](https://github.com/netlify/primitives/issues/619)) ([2c92b2d](https://github.com/netlify/primitives/commit/2c92b2dfdd973255883caad44594dfd470799a6d))
+
 ## [0.5.0](https://github.com/netlify/primitives/compare/db-dev-v0.4.0...db-dev-v0.5.0) (2026-03-06)
 
 
