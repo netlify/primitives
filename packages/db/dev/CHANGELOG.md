@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/netlify/primitives/compare/db-dev-v0.6.0...db-dev-v0.7.0) (2026-03-10)
+
+
+### Features
+
+* **db:** make NetlifyDB fulfill SQLExecutor ([#620](https://github.com/netlify/primitives/issues/620)) ([a91a390](https://github.com/netlify/primitives/commit/a91a390a32a66a0bdd86efaa8574e597abef3b82))
+
 ## [0.6.0](https://github.com/netlify/primitives/compare/db-dev-v0.5.0...db-dev-v0.6.0) (2026-03-10)
 
 

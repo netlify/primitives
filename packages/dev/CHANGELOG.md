@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.16.0](https://github.com/netlify/primitives/compare/dev-v4.15.0...dev-v4.16.0) (2026-03-10)
+
+
+### Features
+
+* **db:** make NetlifyDB fulfill SQLExecutor ([#620](https://github.com/netlify/primitives/issues/620)) ([a91a390](https://github.com/netlify/primitives/commit/a91a390a32a66a0bdd86efaa8574e597abef3b82))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/db-dev bumped from 0.6.0 to 0.7.0
+
 ## [4.15.0](https://github.com/netlify/primitives/compare/dev-v4.14.1...dev-v4.15.0) (2026-03-10)
 
 
