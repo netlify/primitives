@@ -125,6 +125,7 @@ export class NetlifyDB implements SQLExecutor {
     return this.db.exec(sql)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   async query<T>(sql: string, params?: unknown[]): Promise<{ rows: T[] }> {
     if (!this.db) {
       throw new Error('Database has not been started. Call start() before executing queries.')
