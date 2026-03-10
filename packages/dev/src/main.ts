@@ -513,8 +513,13 @@ export class NetlifyDev {
 
         runtime.env.set('NETLIFY_DB_URL', connectionString)
 
+        state.set('dbConnectionString', connectionString)
+
         this.#db = db
-        this.#cleanupJobs.push(() => db.stop())
+        this.#cleanupJobs.push(async () => {
+          await db.stop()
+          state.delete('dbConnectionString')
+        })
       } catch (error) {
         this.#db = undefined
         this.#logger.warn(`Failed to start Netlify DB locally: ${String(error)}`)

@@ -7,6 +7,10 @@ import { fromNodeSocket } from 'pg-gateway/node'
 
 import { broadcastNotifications } from './lib/notifications.js'
 import { applyMigrations } from './lib/migrations.js'
+import type { SQLExecutor } from './lib/sql-executor.js'
+
+export { applyMigrations } from './lib/migrations.js'
+export type { SQLExecutor } from './lib/sql-executor.js'
 
 const DEFAULT_HOST = 'localhost'
 
@@ -27,6 +31,22 @@ export interface NetlifyDBOptions {
    * Port to run the database server on. If not provided, picks a random available port.
    */
   port?: number
+}
+
+export async function resetDatabase(db: SQLExecutor): Promise<void> {
+  const result = await db.query<{ schema_name: string }>(
+    `SELECT schema_name
+     FROM information_schema.schemata
+     WHERE schema_name <> 'information_schema'
+       AND schema_name NOT LIKE 'pg_%'`,
+  )
+
+  for (const { schema_name } of result.rows) {
+    const escapedSchemaName = schema_name.replaceAll('"', '""')
+    await db.exec(`DROP SCHEMA "${escapedSchemaName}" CASCADE`)
+  }
+
+  await db.exec('CREATE SCHEMA IF NOT EXISTS public')
 }
 
 export class NetlifyDB {
@@ -94,19 +114,7 @@ export class NetlifyDB {
       throw new Error('Database has not been started. Call start() before resetting.')
     }
 
-    const result = await this.db.query<{ schema_name: string }>(
-      `SELECT schema_name
-       FROM information_schema.schemata
-       WHERE schema_name <> 'information_schema'
-         AND schema_name NOT LIKE 'pg_%'`,
-    )
-
-    for (const { schema_name } of result.rows) {
-      const escapedSchemaName = schema_name.replaceAll('"', '""')
-      await this.db.exec(`DROP SCHEMA "${escapedSchemaName}" CASCADE`)
-    }
-
-    await this.db.exec('CREATE SCHEMA IF NOT EXISTS public')
+    await resetDatabase(this.db)
   }
 
   async stop(): Promise<void> {
