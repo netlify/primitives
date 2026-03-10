@@ -13,7 +13,11 @@ function isMigrationDirectory(entry: Dirent): boolean {
   return entry.isDirectory() && MIGRATION_DIR_PATTERN.test(entry.name)
 }
 
-export async function applyMigrations(db: SQLExecutor, migrationsDirectory: string, target?: string): Promise<string[]> {
+export async function applyMigrations(
+  db: SQLExecutor,
+  migrationsDirectory: string,
+  target?: string,
+): Promise<string[]> {
   await db.exec(`
     CREATE TABLE IF NOT EXISTS ${TRACKING_TABLE} (
       name TEXT PRIMARY KEY,

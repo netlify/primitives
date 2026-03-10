@@ -517,8 +517,8 @@ export class NetlifyDev {
 
         this.#db = db
         this.#cleanupJobs.push(async () => {
-          state.delete('dbConnectionString')
           await db.stop()
+          state.delete('dbConnectionString')
         })
       } catch (error) {
         this.#db = undefined
