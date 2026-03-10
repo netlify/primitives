@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.4](https://github.com/netlify/primitives/compare/headers-v2.1.3...headers-v2.1.4) (2026-03-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.3.3 to ^4.4.0
+
 ## [2.1.3](https://github.com/netlify/primitives/compare/headers-v2.1.2...headers-v2.1.3) (2025-12-08)
 
 

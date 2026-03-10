@@ -1,5 +1,29 @@
 # Changelog
 
+## [4.15.0](https://github.com/netlify/primitives/compare/dev-v4.14.1...dev-v4.15.0) (2026-03-10)
+
+
+### Features
+
+* add `FileWatcher` class ([#607](https://github.com/netlify/primitives/issues/607)) ([1f8bdfc](https://github.com/netlify/primitives/commit/1f8bdfc06e411703cc9338b9cd7dfe3a0c0f4eff))
+* **db-dev:** abstract pg client into interface ([#619](https://github.com/netlify/primitives/issues/619)) ([2c92b2d](https://github.com/netlify/primitives/commit/2c92b2dfdd973255883caad44594dfd470799a6d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.0 to 10.7.1
+    * @netlify/db-dev bumped from 0.5.0 to 0.6.0
+    * @netlify/dev-utils bumped from 4.3.3 to 4.4.0
+    * @netlify/edge-functions-dev bumped from 1.0.11 to 1.0.12
+    * @netlify/functions-dev bumped from 1.1.12 to 1.2.0
+    * @netlify/headers bumped from 2.1.3 to 2.1.4
+    * @netlify/images bumped from 1.3.3 to 1.3.4
+    * @netlify/redirects bumped from 3.1.5 to 3.1.6
+    * @netlify/runtime bumped from 4.1.16 to 4.1.17
+    * @netlify/static bumped from 3.1.3 to 3.1.4
+
 ## [4.14.1](https://github.com/netlify/primitives/compare/dev-v4.14.0...dev-v4.14.1) (2026-03-06)
 
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0](https://github.com/netlify/primitives/compare/functions-dev-v1.1.12...functions-dev-v1.2.0) (2026-03-10)
+
+
+### Features
+
+* add `FileWatcher` class ([#607](https://github.com/netlify/primitives/issues/607)) ([1f8bdfc](https://github.com/netlify/primitives/commit/1f8bdfc06e411703cc9338b9cd7dfe3a0c0f4eff))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.0 to 10.7.1
+    * @netlify/dev-utils bumped from 4.3.3 to 4.4.0
+
 ## [1.1.12](https://github.com/netlify/primitives/compare/functions-dev-v1.1.11...functions-dev-v1.1.12) (2026-02-17)
 
 
