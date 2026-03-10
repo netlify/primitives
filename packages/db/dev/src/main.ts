@@ -49,7 +49,7 @@ export async function resetDatabase(db: SQLExecutor): Promise<void> {
   await db.exec('CREATE SCHEMA IF NOT EXISTS public')
 }
 
-export class NetlifyDB {
+export class NetlifyDB implements SQLExecutor {
   private db?: PGlite
   private directory?: string
   private logger: Logger
@@ -115,6 +115,30 @@ export class NetlifyDB {
     }
 
     await resetDatabase(this.db)
+  }
+
+  async exec(sql: string): Promise<unknown> {
+    if (!this.db) {
+      throw new Error('Database has not been started. Call start() before executing queries.')
+    }
+
+    return this.db.exec(sql)
+  }
+
+  async query<T>(sql: string, params?: unknown[]): Promise<{ rows: T[] }> {
+    if (!this.db) {
+      throw new Error('Database has not been started. Call start() before executing queries.')
+    }
+
+    return this.db.query<T>(sql, params)
+  }
+
+  async transaction<T>(fn: (tx: Pick<SQLExecutor, 'exec' | 'query'>) => Promise<T>): Promise<T> {
+    if (!this.db) {
+      throw new Error('Database has not been started. Call start() before executing queries.')
+    }
+
+    return this.db.transaction(fn)
   }
 
   async stop(): Promise<void> {
