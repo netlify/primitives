@@ -24,6 +24,9 @@ import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 import { NetlifyDB } from '@netlify/db-dev'
 
+export { applyMigrations, resetDatabase } from '@netlify/db-dev'
+export type { SQLExecutor } from '@netlify/db-dev'
+
 import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
 import { getNormalizedRequest, getNormalizedRequestFromNodeRequest } from './lib/reqres.js'
