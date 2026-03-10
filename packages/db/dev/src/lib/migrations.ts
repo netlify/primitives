@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import type { Dirent } from 'node:fs'
 
-import type { PGlite, Transaction } from '@electric-sql/pglite'
+import type { SQLExecutor } from './sql-executor.js'
 
 const MIGRATION_DIR_PATTERN = /^\d+_.+$/
 const MIGRATION_FILE = 'migration.sql'
@@ -13,7 +13,7 @@ function isMigrationDirectory(entry: Dirent): boolean {
   return entry.isDirectory() && MIGRATION_DIR_PATTERN.test(entry.name)
 }
 
-export async function applyMigrations(db: PGlite, migrationsDirectory: string, target?: string): Promise<string[]> {
+export async function applyMigrations(db: SQLExecutor, migrationsDirectory: string, target?: string): Promise<string[]> {
   await db.exec(`
     CREATE TABLE IF NOT EXISTS ${TRACKING_TABLE} (
       name TEXT PRIMARY KEY,
@@ -75,7 +75,7 @@ export async function applyMigrations(db: PGlite, migrationsDirectory: string, t
       throw new Error(`${MIGRATION_FILE} not found in migration directory: ${name}`)
     }
 
-    await db.transaction(async (tx: Transaction) => {
+    await db.transaction(async (tx) => {
       await tx.exec(sql)
       await tx.query(`INSERT INTO ${TRACKING_TABLE} (name) VALUES ($1)`, [name])
     })
