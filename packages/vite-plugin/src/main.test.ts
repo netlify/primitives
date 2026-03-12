@@ -157,6 +157,61 @@ describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
       await fixture.destroy()
     })
 
+    test('Populates platform env vars when injectUserEnv is false', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'vite.config.js',
+          `import { defineConfig } from 'vite';
+           import netlify from '@netlify/vite-plugin';
+
+           export default defineConfig({
+             plugins: [
+               netlify({ 
+                 middleware: false,
+                 environmentVariables: {
+                   enabled: true,
+                   injectUserEnv: false
+                 }
+               })
+             ]
+           });`,
+        )
+        .withFile(
+          'netlify.toml',
+          `[context.dev.environment]
+           MY_USER_VAR = "user value"`,
+        )
+        .withFile(
+          'index.html',
+          `<!DOCTYPE html>
+           <html>
+             <head><title>Hello World</title></head>
+             <body><h1>Hello from the browser</h1></body>
+           </html>`,
+        )
+      const directory = await fixture.create()
+      await fixture
+        .withPackages({
+          vite: viteVersion,
+          '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
+        })
+        .create()
+
+      const { server } = await startTestServer({
+        root: directory,
+      })
+
+      // Platform env vars should be present
+      expect(process.env).toHaveProperty('NETLIFY_LOCAL', 'true')
+      expect(process.env).toHaveProperty('CONTEXT', 'dev')
+
+      // User-defined env vars should NOT be present when injectUserEnv is false
+      expect(process.env).not.toHaveProperty('MY_USER_VAR')
+
+      await server.close()
+      await fixture.destroy()
+    })
+
     test('Prints a basic message on server start', async () => {
       const fixture = new Fixture()
         .withFile(
