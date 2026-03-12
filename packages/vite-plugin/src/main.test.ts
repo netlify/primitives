@@ -839,6 +839,7 @@ defined on your team and site and much more. Run npx netlify init to get started
           .withPackages({
             '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
             '@vitejs/plugin-react': Number(viteVersion.split('.')[0]) >= 8 ? '6.0.0' : '5.2.0',
+            ...(Number(viteVersion.split('.')[0]) >= 8 ? { '@rolldown/plugin-babel': '0.1.7' } : {}),
             react: '19.1.0',
             'react-dom': '19.1.0',
             vite: viteVersion,
