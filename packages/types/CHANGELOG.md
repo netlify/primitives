@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/netlify/primitives/compare/types-v2.3.0...types-v2.4.0) (2026-03-12)
+
+
+### Features
+
+* **types:** add types for platform events ([#622](https://github.com/netlify/primitives/issues/622)) ([b1c08f0](https://github.com/netlify/primitives/commit/b1c08f0c9b8abe8228316e0b79fc6184e0f95f10))
+
 ## [2.3.0](https://github.com/netlify/primitives/compare/types-v2.2.0...types-v2.3.0) (2025-12-08)
 
 

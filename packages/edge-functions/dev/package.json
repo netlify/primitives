@@ -1,6 +1,6 @@
 {
   "name": "@netlify/edge-functions-dev",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Local emulation for Netlify Edge Functions",
   "type": "module",
   "engines": {
@@ -39,9 +39,9 @@
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/dev-utils": "4.4.0",
+    "@netlify/dev-utils": "4.4.1",
     "@netlify/edge-bundler": "^14.9.8",
-    "@netlify/edge-functions": "3.0.3",
+    "@netlify/edge-functions": "3.0.4",
     "@netlify/edge-functions-bootstrap": "2.16.0",
     "@netlify/runtime-utils": "2.3.0",
     "get-port": "^7.1.0"
