@@ -60,7 +60,10 @@ beforeEach(() => {
   process.env = { ...originalEnv }
 })
 
-describe.for([['5.0.0'], ['6.0.0'], ['7.0.0']])('Vite %s', ([viteVersion]) => {
+// Vite 8 requires Node 22+
+const supportsVite8 = Number(process.versions.node.split('.')[0]) >= 22
+
+describe.for([['5.0.0'], ['6.0.0'], ['7.0.0'], ...(supportsVite8 ? [['8.0.0']] : [])])('Vite %s', ([viteVersion]) => {
   describe('Plugin constructor', () => {
     test('Is a no-op when running in the Netlify CLI', () => {
       process.env.NETLIFY_DEV = 'true'
@@ -835,7 +838,7 @@ defined on your team and site and much more. Run npx netlify init to get started
         await fixture
           .withPackages({
             '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
-            '@vitejs/plugin-react': '4.6.0',
+            '@vitejs/plugin-react': Number(viteVersion.split('.')[0]) >= 8 ? '6.0.0' : '5.2.0',
             react: '19.1.0',
             'react-dom': '19.1.0',
             vite: viteVersion,
