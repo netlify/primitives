@@ -1,5 +1,8 @@
 export type { Context } from './lib/context/context.js'
 export type { Cookie } from './lib/context/cookies.js'
+export type { DeployEvent } from './lib/events/deploy.js'
+export type { IdentityEvent } from './lib/events/identity.js'
+export type { FormSubmissionEvent } from './lib/events/submission.js'
 export type { EnvironmentVariables } from './lib/environment-variables.js'
 export type { NetlifyGlobal } from './lib/globals.js'
 export type { Site } from './lib/context/site.js'
