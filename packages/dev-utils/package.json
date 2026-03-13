@@ -69,6 +69,6 @@
     "semver": "^7.7.2",
     "tmp-promise": "^3.0.3",
     "uuid": "^13.0.0",
-    "write-file-atomic": "^5.0.1"
+    "write-file-atomic": "^7.0.0"
   }
 }
