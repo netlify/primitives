@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.6](https://github.com/netlify/primitives/compare/headers-v2.1.5...headers-v2.1.6) (2026-03-13)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#626](https://github.com/netlify/primitives/issues/626)) ([a87ba84](https://github.com/netlify/primitives/commit/a87ba84fa23c3a4ff506cd9c3d5f3b5cd78d9f3c))
+
 ## [2.1.5](https://github.com/netlify/primitives/compare/headers-v2.1.4...headers-v2.1.5) (2026-03-12)
 
 

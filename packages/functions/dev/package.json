@@ -11,7 +11,7 @@
       }
     }
   },
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Local dev emulation of Netlify Functions",
   "files": [
     "dist/**/*.js",

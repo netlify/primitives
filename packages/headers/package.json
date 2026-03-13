@@ -1,6 +1,6 @@
 {
   "name": "@netlify/headers",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "TypeScript implementation of Netlify's headers engine",
   "type": "module",
   "engines": {

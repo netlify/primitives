@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.11.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.10.11...vite-plugin-v2.11.0) (2026-03-13)
+
+
+### Features
+
+* support Vite 8 ([#624](https://github.com/netlify/primitives/issues/624)) ([5810573](https://github.com/netlify/primitives/commit/5810573df62e247a5795127a04170e4b6366f445))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.16.1 to 4.16.2
+
 ## [2.10.11](https://github.com/netlify/primitives/compare/vite-plugin-v2.10.10...vite-plugin-v2.10.11) (2026-03-12)
 
 
