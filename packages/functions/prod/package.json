@@ -45,6 +45,7 @@
     "test:dev:tsd": "tsd",
     "test:dev:vitest": "vitest",
     "test:ci": "run-s test:ci:*",
+    "test:ci:types": "tsc --noEmit",
     "test:ci:vitest": "npm run build && vitest run",
     "publint": "npx -y publint --strict"
   },
