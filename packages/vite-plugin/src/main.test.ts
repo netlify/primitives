@@ -69,10 +69,18 @@ beforeEach(() => {
   process.env = { ...originalEnv }
 })
 
-// Vite 8 requires Node 22+
-const supportsVite8 = Number(process.versions.node.split('.')[0]) >= 22
+const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(Number)
+// Vite 7+ uses crypto.hash (Node >= 20.12 or >= 22)
+const supportsVite7 = (nodeMajor === 20 && nodeMinor >= 12) || nodeMajor >= 22
+// Vite 8 uses node:util styleText (Node >= 22)
+const supportsVite8 = nodeMajor >= 22
 
-describe.for([['5.0.0'], ['6.0.0'], ['7.0.0'], ...(supportsVite8 ? [['8.0.0']] : [])])('Vite %s', ([viteVersion]) => {
+describe.for([
+  ['5.0.0'],
+  ['6.0.0'],
+  ...(supportsVite7 ? [['7.0.0']] : []),
+  ...(supportsVite8 ? [['8.0.0']] : []),
+])('Vite %s', ([viteVersion]) => {
   describe('Plugin constructor', () => {
     test('Is a no-op when running in the Netlify CLI', () => {
       process.env.NETLIFY_DEV = 'true'
