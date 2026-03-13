@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module'
 import type { AddressInfo } from 'node:net'
 import path from 'node:path'
 import process from 'node:process'
@@ -6,14 +7,22 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createImageServerHandler, Fixture, generateImage, HTTPServer } from '@netlify/dev-utils'
 import { type Browser, type ConsoleMessage, type Locator, type Page, chromium } from 'playwright'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { createServer } from 'vite'
+import { type InlineConfig, createServer } from 'vite'
 
 import netlify from './main.js'
 
 const PLUGIN_PATH = path.resolve(fileURLToPath(import.meta.url), '../..')
 
-const startTestServer = async (options: Parameters<typeof createServer>[0] = {}) => {
-  const server = await createServer({
+// When a root is specified, dynamically import `createServer` from the fixture's vite
+// so we actually test against that vite version's server, not the dev dep's.
+const startTestServer = async (options: InlineConfig = {}) => {
+  let createServerFn = createServer
+  if (options.root) {
+    const require = createRequire(path.join(options.root, 'package.json'))
+    const viteEntry = pathToFileURL(require.resolve('vite')).href
+    ;({ createServer: createServerFn } = await import(viteEntry))
+  }
+  const server = await createServerFn({
     logLevel: 'warn',
     ...options,
   })
@@ -838,8 +847,7 @@ defined on your team and site and much more. Run npx netlify init to get started
         await fixture
           .withPackages({
             '@netlify/vite-plugin': pathToFileURL(path.resolve(directory, PLUGIN_PATH)).toString(),
-            '@vitejs/plugin-react': Number(viteVersion.split('.')[0]) >= 8 ? '6.0.0' : '5.2.0',
-            ...(Number(viteVersion.split('.')[0]) >= 8 ? { '@rolldown/plugin-babel': '0.1.7' } : {}),
+            '@vitejs/plugin-react': '5.2.0',
             react: '19.1.0',
             'react-dom': '19.1.0',
             vite: viteVersion,
