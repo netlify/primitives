@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.16.2](https://github.com/netlify/primitives/compare/dev-v4.16.1...dev-v4.16.2) (2026-03-13)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#626](https://github.com/netlify/primitives/issues/626)) ([a87ba84](https://github.com/netlify/primitives/commit/a87ba84fa23c3a4ff506cd9c3d5f3b5cd78d9f3c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.4.0 to ^0.4.1
+    * @netlify/edge-functions-dev bumped from 1.0.13 to 1.0.14
+    * @netlify/functions-dev bumped from 1.2.1 to 1.2.2
+    * @netlify/headers bumped from 2.1.5 to 2.1.6
+    * @netlify/redirects bumped from 3.1.7 to 3.1.8
+
 ## [4.16.1](https://github.com/netlify/primitives/compare/dev-v4.16.0...dev-v4.16.1) (2026-03-12)
 
 

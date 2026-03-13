@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/netlify/primitives/compare/vite-plugin-tanstack-start-v1.2.21...vite-plugin-tanstack-start-v1.3.0) (2026-03-13)
+
+
+### Features
+
+* support Vite 8 ([#624](https://github.com/netlify/primitives/issues/624)) ([5810573](https://github.com/netlify/primitives/commit/5810573df62e247a5795127a04170e4b6366f445))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/vite-plugin bumped from ^2.10.11 to ^2.11.0
+
 ## [1.2.21](https://github.com/netlify/primitives/compare/vite-plugin-tanstack-start-v1.2.20...vite-plugin-tanstack-start-v1.2.21) (2026-03-12)
 
 
