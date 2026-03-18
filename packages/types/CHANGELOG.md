@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/netlify/primitives/compare/types-v2.4.0...types-v2.5.0) (2026-03-18)
+
+
+### Features
+
+* update event types ([#627](https://github.com/netlify/primitives/issues/627)) ([ef80bce](https://github.com/netlify/primitives/commit/ef80bce73902bd5774316e12e386021701662fd6))
+
 ## [2.4.0](https://github.com/netlify/primitives/compare/types-v2.3.0...types-v2.4.0) (2026-03-12)
 
 
