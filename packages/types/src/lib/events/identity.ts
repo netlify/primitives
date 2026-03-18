@@ -1,17 +1,24 @@
-export interface IdentityEvent {
+export interface User {
   id: string
-  aud: string
-  role: string
-  email: string
-  confirmedAt: string | null
-  invitedAt: string | null
-  confirmationSentAt: string | null
-  recoverySentAt: string | null
-  newEmail: string | null
-  emailChangeSentAt: string | null
-  lastSignInAt: string | null
-  appMetadata: Record<string, unknown>
-  userMetadata: Record<string, unknown>
-  createdAt: string
-  updatedAt: string
+  email?: string
+  confirmedAt?: string
+  createdAt?: string
+  updatedAt?: string
+  role?: string
+  provider?: string
+  name?: string
+  pictureUrl?: string
+  roles?: string[]
+  invitedAt?: string
+  confirmationSentAt?: string
+  recoverySentAt?: string
+  pendingEmail?: string
+  emailChangeSentAt?: string
+  lastSignInAt?: string
+  userMetadata?: Record<string, unknown>
+  appMetadata?: Record<string, unknown>
+}
+
+export interface IdentityEvent {
+  user: User
 }
