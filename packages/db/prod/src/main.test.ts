@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
-import { getDatabase, MissingDatabaseConnectionError } from './main.js'
+import { getDatabase, MissingDatabaseConnectionError, owner, readonly } from './main.js'
 
 const { mockWaddlerNodePostgres, mockWaddlerNeonHttp, mockPgPool, mockNeonPool, mockNeon, mockNeonConfig } = vi.hoisted(
   () => ({
@@ -62,7 +62,7 @@ describe('getDatabase', () => {
     const result = getDatabase()
 
     expect(mockPgPool).toHaveBeenCalledWith({
-      connectionString: 'postgres://user:pass@localhost:5432/mydb?role_type=owner',
+      connectionString: 'postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_owner',
     })
     expect(mockWaddlerNodePostgres).toHaveBeenCalledWith({ client: expect.any(Object) })
     expect(mockWaddlerNeonHttp).not.toHaveBeenCalled()
@@ -71,7 +71,7 @@ describe('getDatabase', () => {
       driver: 'server',
       sql: 'node-postgres-sql',
       pool: expect.any(Object),
-      connectionString: 'postgres://user:pass@localhost:5432/mydb?role_type=owner',
+      connectionString: 'postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_owner',
     })
   })
 
@@ -83,7 +83,7 @@ describe('getDatabase', () => {
 
     expect(mockWaddlerNodePostgres).toHaveBeenCalled()
     expect(mockWaddlerNeonHttp).not.toHaveBeenCalled()
-    expect(result.connectionString).toBe('postgres://user:pass@localhost:5432/mydb?role_type=owner')
+    expect(result.connectionString).toBe('postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_owner')
   })
 
   it('uses neon-http for sql and neon Pool for pool when NETLIFY_DB_DRIVER is "serverless"', () => {
@@ -94,17 +94,17 @@ describe('getDatabase', () => {
 
     expect(mockWaddlerNeonHttp).toHaveBeenCalledWith({ client: 'neon-http-client' })
     expect(mockNeonPool).toHaveBeenCalledWith({
-      connectionString: 'postgres://user:pass@localhost:5432/mydb?role_type=owner',
+      connectionString: 'postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_owner',
     })
     expect(mockWaddlerNodePostgres).not.toHaveBeenCalled()
     expect(mockPgPool).not.toHaveBeenCalled()
-    expect(mockNeon).toHaveBeenCalledWith('postgres://user:pass@localhost:5432/mydb?role_type=owner')
+    expect(mockNeon).toHaveBeenCalledWith('postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_owner')
     expect(result).toEqual({
       driver: 'serverless',
       sql: 'neon-http-sql',
       pool: expect.any(Object),
       httpClient: 'neon-http-client',
-      connectionString: 'postgres://user:pass@localhost:5432/mydb?role_type=owner',
+      connectionString: 'postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_owner',
     })
   })
 
@@ -142,9 +142,9 @@ describe('getDatabase', () => {
     const result = getDatabase({ connectionString: 'postgres://other:pass@localhost:5432/otherdb' })
 
     expect(mockPgPool).toHaveBeenCalledWith({
-      connectionString: 'postgres://other:pass@localhost:5432/otherdb?role_type=owner',
+      connectionString: 'postgres://other:pass@localhost:5432/otherdb?role_type=netlifydb_owner',
     })
-    expect(result.connectionString).toBe('postgres://other:pass@localhost:5432/otherdb?role_type=owner')
+    expect(result.connectionString).toBe('postgres://other:pass@localhost:5432/otherdb?role_type=netlifydb_owner')
   })
 
   it('uses NETLIFY_DB_URL environment variable', () => {
@@ -153,9 +153,9 @@ describe('getDatabase', () => {
     const result = getDatabase()
 
     expect(mockPgPool).toHaveBeenCalledWith({
-      connectionString: 'postgres://user:pass@localhost:5432/mydb?role_type=owner',
+      connectionString: 'postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_owner',
     })
-    expect(result.connectionString).toBe('postgres://user:pass@localhost:5432/mydb?role_type=owner')
+    expect(result.connectionString).toBe('postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_owner')
   })
 
   it('defaults role_type to "owner" when role is not set', () => {
@@ -163,23 +163,23 @@ describe('getDatabase', () => {
 
     const result = getDatabase()
 
-    expect(result.connectionString).toBe('postgres://user:pass@localhost:5432/mydb?role_type=owner')
+    expect(result.connectionString).toBe('postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_owner')
   })
 
   it('sets role_type to "read-only" when role is "read-only"', () => {
     process.env.NETLIFY_DB_URL = 'postgres://user:pass@localhost:5432/mydb'
 
-    const result = getDatabase({ role: 'read-only' })
+    const result = getDatabase({ role: readonly })
 
-    expect(result.connectionString).toBe('postgres://user:pass@localhost:5432/mydb?role_type=read-only')
+    expect(result.connectionString).toBe('postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_readonly')
   })
 
   it('preserves existing query parameters when appending role_type', () => {
     process.env.NETLIFY_DB_URL = 'postgres://user:pass@localhost:5432/mydb?sslmode=require'
 
-    const result = getDatabase({ role: 'read-only' })
+    const result = getDatabase({ role: readonly })
 
     expect(result.connectionString).toContain('sslmode=require')
-    expect(result.connectionString).toContain('role_type=read-only')
+    expect(result.connectionString).toContain('role_type=netlifydb_readonly')
   })
 })
