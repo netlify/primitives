@@ -48,7 +48,7 @@ export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnectio
 
   const role = options.role ?? ownerRole
   const url = new URL(baseConnectionString)
-  url.searchParams.set('role_type', role)
+  url.searchParams.set('role', role)
   const connectionString = url.toString()
 
   const driver = env.get('NETLIFY_DB_DRIVER')
