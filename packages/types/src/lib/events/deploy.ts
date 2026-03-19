@@ -33,3 +33,17 @@ export interface DeployEvent {
   deploy: Deploy
   site: DeploySite
 }
+
+export type DeployBuildingEvent = DeployEvent
+export type DeploySucceededEvent = DeployEvent
+export type DeployFailedEvent = DeployEvent
+export type DeployDeletedEvent = DeployEvent
+export type DeployLockedEvent = DeployEvent
+export type DeployUnlockedEvent = DeployEvent
+
+export type DeployBuildingHandler = (event: DeployBuildingEvent) => void | Promise<void>
+export type DeploySucceededHandler = (event: DeploySucceededEvent) => void | Promise<void>
+export type DeployFailedHandler = (event: DeployFailedEvent) => void | Promise<void>
+export type DeployDeletedHandler = (event: DeployDeletedEvent) => void | Promise<void>
+export type DeployLockedHandler = (event: DeployLockedEvent) => void | Promise<void>
+export type DeployUnlockedHandler = (event: DeployUnlockedEvent) => void | Promise<void>
