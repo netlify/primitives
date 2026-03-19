@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
-import { getDatabase, MissingDatabaseConnectionError, owner, readonly } from './main.js'
+import { getDatabase, MissingDatabaseConnectionError, ownerRole, readOnlyRole } from './main.js'
 
 const { mockWaddlerNodePostgres, mockWaddlerNeonHttp, mockPgPool, mockNeonPool, mockNeon, mockNeonConfig } = vi.hoisted(
   () => ({
@@ -169,7 +169,7 @@ describe('getDatabase', () => {
   it('sets role_type to "read-only" when role is "read-only"', () => {
     process.env.NETLIFY_DB_URL = 'postgres://user:pass@localhost:5432/mydb'
 
-    const result = getDatabase({ role: readonly })
+    const result = getDatabase({ role: readOnlyRole })
 
     expect(result.connectionString).toBe('postgres://user:pass@localhost:5432/mydb?role_type=netlifydb_readonly')
   })
@@ -177,7 +177,7 @@ describe('getDatabase', () => {
   it('preserves existing query parameters when appending role_type', () => {
     process.env.NETLIFY_DB_URL = 'postgres://user:pass@localhost:5432/mydb?sslmode=require'
 
-    const result = getDatabase({ role: readonly })
+    const result = getDatabase({ role: readOnlyRole })
 
     expect(result.connectionString).toContain('sslmode=require')
     expect(result.connectionString).toContain('role_type=netlifydb_readonly')

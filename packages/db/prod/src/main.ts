@@ -10,15 +10,15 @@ import { getEnvironment } from '@netlify/runtime-utils'
 
 import { MissingDatabaseConnectionError } from './environment.js'
 
-export type RoleType = 'netlifydb_owner' | 'netlifydb_readonly'
+export type Role = 'netlifydb_owner' | 'netlifydb_readonly'
 
-export const owner: RoleType = 'netlifydb_owner'
-export const readonly: RoleType = 'netlifydb_readonly'
+export const ownerRole: Role = 'netlifydb_owner'
+export const readOnlyRole: Role = 'netlifydb_readonly'
 
 export interface GetDatabaseOptions {
   connectionString?: string
   debug?: boolean
-  role?: RoleType
+  role?: Role
 }
 
 export interface ServerDatabaseConnection {
@@ -46,9 +46,9 @@ export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnectio
     throw new MissingDatabaseConnectionError()
   }
 
-  const roleType = options.role ?? owner
+  const role = options.role ?? ownerRole
   const url = new URL(baseConnectionString)
-  url.searchParams.set('role_type', roleType)
+  url.searchParams.set('role_type', role)
   const connectionString = url.toString()
 
   const driver = env.get('NETLIFY_DB_DRIVER')
