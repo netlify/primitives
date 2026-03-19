@@ -28,7 +28,4 @@ export type {
   UserModifiedHandler,
   UserDeletedHandler,
 } from './identity.js'
-export type {
-  FormSubmittedEvent,
-  FormSubmittedHandler,
-} from './submission.js'
+export type { FormSubmittedEvent, FormSubmittedHandler } from './submission.js'

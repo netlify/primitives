@@ -30,10 +30,7 @@ export type {
   UserModifiedHandler,
   UserDeletedHandler,
 } from './lib/events/identity.js'
-export type {
-  FormSubmittedEvent,
-  FormSubmittedHandler,
-} from './lib/events/submission.js'
+export type { FormSubmittedEvent, FormSubmittedHandler } from './lib/events/submission.js'
 export type { EnvironmentVariables } from './lib/environment-variables.js'
 export type { NetlifyGlobal } from './lib/globals.js'
 export type { Site } from './lib/context/site.js'
