@@ -15,7 +15,7 @@ export type RoleType = 'owner' | 'read-only'
 export interface GetDatabaseOptions {
   connectionString?: string
   debug?: boolean
-  roleType?: RoleType
+  role?: RoleType
 }
 
 export interface ServerDatabaseConnection {
@@ -43,7 +43,7 @@ export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnectio
     throw new MissingDatabaseConnectionError()
   }
 
-  const roleType = options.roleType ?? 'owner'
+  const roleType = options.role ?? 'owner'
   const url = new URL(baseConnectionString)
   url.searchParams.set('role_type', roleType)
   const connectionString = url.toString()
