@@ -1,6 +1,6 @@
 {
   "name": "@netlify/otel",
-  "version": "5.1.4",
+  "version": "5.1.5",
   "type": "module",
   "engines": {
     "node": "^18.14.0 || >=20.6.1"
@@ -125,7 +125,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@netlify/dev-utils": "^4.4.2",
+    "@netlify/dev-utils": "^4.4.3",
     "msw": "^2.10.5",
     "npm-run-all2": "^7.0.2",
     "tsup": "^8.0.0",

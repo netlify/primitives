@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/netlify/primitives/compare/types-v2.5.0...types-v2.6.0) (2026-03-19)
+
+
+### Features
+
+* add event handler types ([#630](https://github.com/netlify/primitives/issues/630)) ([8b9bfb9](https://github.com/netlify/primitives/commit/8b9bfb9e3de5491da9db85cba8e7efbf9eb960a2))
+
 ## [2.5.0](https://github.com/netlify/primitives/compare/types-v2.4.0...types-v2.5.0) (2026-03-18)
 
 
