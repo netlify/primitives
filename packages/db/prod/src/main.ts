@@ -26,7 +26,11 @@ export interface ServerlessDatabaseConnection {
   driver: 'serverless'
   sql: SQL
   pool: NeonPool
-  httpClient: NeonQueryFunction<false, false>
+  // Using <any, any> because neon() returns NeonQueryFunction<false, false>,
+  // which is incompatible with drizzle-orm's NeonHttpClient (NeonQueryFunction<any, any>)
+  // due to contravariance in the transaction method's generic parameters.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  httpClient: NeonQueryFunction<any, any>
   connectionString: string
 }
 
