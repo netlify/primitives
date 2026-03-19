@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
-import { getDatabase, MissingDatabaseConnectionError, ownerRole, readOnlyRole } from './main.js'
+import { getDatabase, MissingDatabaseConnectionError, readOnlyRole } from './main.js'
 
 const { mockWaddlerNodePostgres, mockWaddlerNeonHttp, mockPgPool, mockNeonPool, mockNeon, mockNeonConfig } = vi.hoisted(
   () => ({
