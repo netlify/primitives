@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/netlify/primitives/compare/db-v0.3.0...db-v0.4.0) (2026-03-19)
+
+
+### Features
+
+* move db drivers to `peerDependencies` ([#632](https://github.com/netlify/primitives/issues/632)) ([4ac68a9](https://github.com/netlify/primitives/commit/4ac68a9b6071a64ff6df52dbeaffda9f28f54b88))
+
 ## [0.3.0](https://github.com/netlify/primitives/compare/db-v0.2.0...db-v0.3.0) (2026-03-03)
 
 
