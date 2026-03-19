@@ -61,7 +61,7 @@
     "@neondatabase/serverless": ">=0.10.0",
     "pg": ">=8"
   },
-"devDependencies": {
+  "devDependencies": {
     "@neondatabase/serverless": "^1.0.0",
     "@types/ws": "^8.18.1",
     "npm-run-all2": "^5.0.0",
