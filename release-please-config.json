@@ -6,6 +6,10 @@
   "release-type": "node",
   "separate-pull-requests": false,
   "packages": {
+    "packages/aws-lambda-compat": {
+      "prerelease": true,
+      "prerelease-type": "beta"
+    },
     "packages/ai": {},
     "packages/blobs": {},
     "packages/cache": {},
