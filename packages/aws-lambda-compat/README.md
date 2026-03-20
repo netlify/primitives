@@ -42,7 +42,7 @@ export default withLambda(async (event: HandlerEvent, context: HandlerContext): 
 
 ## TypeScript types
 
-The following types are re-exported from `@netlify/functions` for convenience:
+The package exports the following AWS Lambda-compatible types:
 
 - `Handler`
 - `HandlerCallback`
