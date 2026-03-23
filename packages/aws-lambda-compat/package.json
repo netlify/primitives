@@ -1,0 +1,64 @@
+{
+  "name": "@netlify/aws-lambda-compat",
+  "version": "0.0.0",
+  "description": "AWS Lambda compatibility wrapper for Netlify Functions",
+  "type": "module",
+  "main": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/main.d.cts",
+        "default": "./dist/main.cjs"
+      },
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    }
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.cjs",
+    "dist/**/*.mjs",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.cts",
+    "dist/**/*.d.mts"
+  ],
+  "scripts": {
+    "build": "tsup-node",
+    "dev": "tsup-node --watch",
+    "prepack": "npm run build",
+    "test": "run-s test:ci",
+    "test:ci": "run-s test:ci:*",
+    "test:ci:vitest": "npm run build && vitest run"
+  },
+  "keywords": [
+    "netlify",
+    "aws",
+    "lambda",
+    "functions",
+    "compatibility"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/aws-lambda-compat"
+  },
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  },
+  "author": "Netlify Inc.",
+  "dependencies": {
+    "@netlify/types": "2.6.0"
+  },
+  "devDependencies": {
+    "npm-run-all2": "^5.0.0",
+    "tsup": "^8.0.2",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20.6.1"
+  }
+}
