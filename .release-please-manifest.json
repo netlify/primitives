@@ -1,4 +1,5 @@
 {
+  "packages/aws-lambda-compat": "0.0.0",
   "packages/ai": "0.4.1",
   "packages/blobs": "10.7.4",
   "packages/cache": "3.4.4",
