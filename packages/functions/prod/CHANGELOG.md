@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.0](https://github.com/netlify/primitives/compare/functions-v5.1.5...functions-v5.2.0) (2026-03-27)
+
+
+### Features
+
+* export event handler types ([#638](https://github.com/netlify/primitives/issues/638)) ([f651309](https://github.com/netlify/primitives/commit/f6513092153a50f55b71d073c2a32b9e5eb704cb))
+
 ## [5.1.5](https://github.com/netlify/primitives/compare/functions-v5.1.4...functions-v5.1.5) (2026-03-19)
 
 
