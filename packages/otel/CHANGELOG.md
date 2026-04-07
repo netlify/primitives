@@ -1,5 +1,23 @@
 # Changelog
 
+## [5.1.5](https://github.com/netlify/primitives/compare/otel-v5.1.4...otel-v5.1.5) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.2 to ^4.4.3
+
+## [5.1.4](https://github.com/netlify/primitives/compare/otel-v5.1.3...otel-v5.1.4) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.1 to ^4.4.2
+
 ## [5.1.3](https://github.com/netlify/primitives/compare/otel-v5.1.2...otel-v5.1.3) (2026-03-12)
 
 

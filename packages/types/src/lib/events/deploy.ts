@@ -1,11 +1,11 @@
-export interface DeployEventSite {
+export interface DeploySite {
   id: string
   name: string
   url: string
   adminUrl: string
 }
 
-export interface DeployEvent {
+export interface Deploy {
   id: string
   siteId: string
   buildId: string | null
@@ -13,7 +13,7 @@ export interface DeployEvent {
   errorMessage: string | null
   url: string
   sslUrl: string
-  deployUrl: string
+  permalinkUrl: string
   adminUrl: string
   context: string
   branch: string | null
@@ -24,8 +24,26 @@ export interface DeployEvent {
   title: string | null
   createdAt: string
   publishedAt: string | null
-  deployTime: number | null
-  manualDeploy: boolean
+  time: number | null
+  manual: boolean
   framework: string | null
-  site: DeployEventSite
 }
+
+export interface DeployEvent {
+  deploy: Deploy
+  site: DeploySite
+}
+
+export type DeployBuildingEvent = DeployEvent
+export type DeploySucceededEvent = DeployEvent
+export type DeployFailedEvent = DeployEvent
+export type DeployDeletedEvent = DeployEvent
+export type DeployLockedEvent = DeployEvent
+export type DeployUnlockedEvent = DeployEvent
+
+export type DeployBuildingHandler = (event: DeployBuildingEvent) => void | Promise<void>
+export type DeploySucceededHandler = (event: DeploySucceededEvent) => void | Promise<void>
+export type DeployFailedHandler = (event: DeployFailedEvent) => void | Promise<void>
+export type DeployDeletedHandler = (event: DeployDeletedEvent) => void | Promise<void>
+export type DeployLockedHandler = (event: DeployLockedEvent) => void | Promise<void>
+export type DeployUnlockedHandler = (event: DeployUnlockedEvent) => void | Promise<void>

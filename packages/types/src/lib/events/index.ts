@@ -1,3 +1,31 @@
-export type { DeployEvent, DeployEventSite } from './deploy.js'
-export type { IdentityEvent } from './identity.js'
-export type { FormSubmissionEvent } from './submission.js'
+export type {
+  DeployEvent,
+  Deploy,
+  DeploySite,
+  DeployBuildingEvent,
+  DeploySucceededEvent,
+  DeployFailedEvent,
+  DeployDeletedEvent,
+  DeployLockedEvent,
+  DeployUnlockedEvent,
+  DeployBuildingHandler,
+  DeploySucceededHandler,
+  DeployFailedHandler,
+  DeployDeletedHandler,
+  DeployLockedHandler,
+  DeployUnlockedHandler,
+} from './deploy.js'
+export type {
+  User,
+  UserLoginEvent,
+  UserSignupEvent,
+  UserValidateEvent,
+  UserModifiedEvent,
+  UserDeletedEvent,
+  UserLoginHandler,
+  UserSignupHandler,
+  UserValidateHandler,
+  UserModifiedHandler,
+  UserDeletedHandler,
+} from './identity.js'
+export type { FormSubmittedEvent, FormSubmittedHandler } from './submission.js'

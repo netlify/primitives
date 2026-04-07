@@ -24,6 +24,7 @@
     "packages/ai",
     "packages/dev",
     "packages/nuxt-module",
+    "packages/aws-lambda-compat",
     "packages/vite-plugin",
     "packages/vite-plugin-tanstack-start"
   ],
