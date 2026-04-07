@@ -5,6 +5,7 @@
   "packages/cache": "3.4.4",
   "packages/db/dev": "0.7.0",
   "packages/db/prod": "0.4.0",
+  "packages/db/proxy": "0.1.0",
   "packages/dev": "4.16.4",
   "packages/dev-utils": "4.4.3",
   "packages/edge-functions/dev": "1.0.16",
