@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.16.5](https://github.com/netlify/primitives/compare/dev-v4.16.4...dev-v4.16.5) (2026-04-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions-dev bumped from 1.2.4 to 1.2.5
+
 ## [4.16.4](https://github.com/netlify/primitives/compare/dev-v4.16.3...dev-v4.16.4) (2026-03-19)
 
 
