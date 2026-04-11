@@ -16,18 +16,6 @@ export const headersObjectFromWebHeaders = (webHeaders: Headers) => {
   }
 }
 
-export const webHeadersFromHeadersObject = (headersObject: HandlerResponse['headers']) => {
-  const headers = new Headers()
-
-  Object.entries(headersObject ?? {}).forEach(([name, value]) => {
-    if (value !== undefined) {
-      headers.set(name.toLowerCase(), value.toString())
-    }
-  })
-
-  return headers
-}
-
 export const webHeadersFromLambdaResponse = (lambdaResponse: HandlerResponse) => {
   const headers = new Headers()
 
