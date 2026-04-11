@@ -28,6 +28,24 @@ export const webHeadersFromHeadersObject = (headersObject: HandlerResponse['head
   return headers
 }
 
+export const webHeadersFromLambdaResponse = (lambdaResponse: HandlerResponse) => {
+  const headers = new Headers()
+
+  Object.entries(lambdaResponse.headers ?? {}).forEach(([name, value]) => {
+    if (value !== undefined) {
+      headers.set(name.toLowerCase(), value.toString())
+    }
+  })
+
+  Object.entries(lambdaResponse.multiValueHeaders ?? {}).forEach(([name, values]) => {
+    for (const value of values) {
+      headers.append(name.toLowerCase(), value.toString())
+    }
+  })
+
+  return headers
+}
+
 export const lambdaEventFromWebRequest = async (request: Request, route?: string): Promise<HandlerEvent> => {
   const url = new URL(request.url)
   const queryStringParameters: Record<string, string> = {}
@@ -58,7 +76,7 @@ export const lambdaEventFromWebRequest = async (request: Request, route?: string
 
 export const webResponseFromLambdaResponse = async (lambdaResponse: HandlerResponse): Promise<Response> => {
   return new Response(lambdaResponse.body, {
-    headers: webHeadersFromHeadersObject(lambdaResponse.headers),
+    headers: webHeadersFromLambdaResponse(lambdaResponse),
     status: lambdaResponse.statusCode,
   })
 }

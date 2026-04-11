@@ -150,6 +150,98 @@ describe('Functions with the v2 API syntax', () => {
     expect(res.status).toBe(304)
   })
 
+  test('Preserves response headers for v2 functions', async () => {
+    const source = `
+      export default async () =>
+        new Response(JSON.stringify({ ok: true }), {
+          status: 401,
+          headers: {
+            'content-type': 'application/json',
+            'cache-control': 'no-store',
+            'www-authenticate': 'Bearer realm="repro"',
+            'x-repro-header': 'present',
+          },
+        })
+
+      export const config = { path: '/headers' }
+    `
+    const fixture = new Fixture().withFile('netlify/functions/headers.mjs', source)
+
+    const directory = await fixture.create()
+    const destPath = join(directory, 'functions-serve')
+    const functions = new FunctionsHandler({
+      accountId: 'account-123',
+      config: new Reactive({}),
+      destPath,
+      geolocation: {},
+      projectRoot: directory,
+      settings: {},
+      timeouts: {},
+      userFunctionsPath: 'netlify/functions',
+    })
+
+    const req = new Request('https://site.netlify/headers')
+    const match = await functions.match(req, destPath)
+    expect(match).not.toBeUndefined()
+
+    const res = await match!.handle(req)
+    expect(res.status).toBe(401)
+    expect(res.headers.get('content-type')).toBe('application/json')
+    expect(res.headers.get('cache-control')).toBe('no-store')
+    expect(res.headers.get('www-authenticate')).toBe('Bearer realm="repro"')
+    expect(res.headers.get('x-repro-header')).toBe('present')
+    expect(await res.text()).toBe(JSON.stringify({ ok: true }))
+  })
+
+  test('Preserves headers for streamed v2 responses', async () => {
+    const source = `
+      export default async () =>
+        new Response(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue('chunk')
+              controller.close()
+            },
+          }),
+          {
+            status: 200,
+            headers: {
+              'content-type': 'text/event-stream',
+              'cache-control': 'no-cache',
+              'x-repro-header': 'stream',
+            },
+          },
+        )
+
+      export const config = { path: '/stream-headers' }
+    `
+    const fixture = new Fixture().withFile('netlify/functions/stream-headers.mjs', source)
+
+    const directory = await fixture.create()
+    const destPath = join(directory, 'functions-serve')
+    const functions = new FunctionsHandler({
+      accountId: 'account-123',
+      config: new Reactive({}),
+      destPath,
+      geolocation: {},
+      projectRoot: directory,
+      settings: {},
+      timeouts: {},
+      userFunctionsPath: 'netlify/functions',
+    })
+
+    const req = new Request('https://site.netlify/stream-headers')
+    const match = await functions.match(req, destPath)
+    expect(match).not.toBeUndefined()
+
+    const res = await match!.handle(req)
+    expect(res.status).toBe(200)
+    expect(res.headers.get('content-type')).toBe('text/event-stream')
+    expect(res.headers.get('cache-control')).toBe('no-cache')
+    expect(res.headers.get('x-repro-header')).toBe('stream')
+    expect(await res.text()).toBe('chunk')
+  })
+
   test('Returns a `preferStatic` property', async () => {
     const fixture = new Fixture().withFile(
       'netlify/functions/hello.mjs',
