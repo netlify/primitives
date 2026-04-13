@@ -1,56 +1,71 @@
 {
-  "name": "@netlify/db-dev",
+  "name": "@netlify/database",
   "main": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "type": "module",
   "exports": {
     ".": {
+      "require": {
+        "types": "./dist/main.d.cts",
+        "default": "./dist/main.cjs"
+      },
       "import": {
         "types": "./dist/main.d.ts",
         "default": "./dist/main.js"
       }
     }
   },
-  "version": "0.7.0",
-  "description": "Local dev emulation of Netlify DB",
+  "version": "0.4.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "TypeScript utilities for interacting with Netlify Database",
   "files": [
     "dist/**/*.js",
+    "dist/**/*.cjs",
     "dist/**/*.mjs",
     "dist/**/*.d.ts",
+    "dist/**/*.d.cts",
     "dist/**/*.d.mts"
   ],
   "scripts": {
     "dev": "tsup-node --watch",
     "build": "tsup-node",
     "prepack": "npm run build",
-    "test": "vitest run",
+    "test": "run-s test:ci",
+    "test:ci": "run-s test:ci:*",
+    "test:ci:vitest": "npm run build && vitest run",
     "test:dev": "vitest"
   },
   "keywords": [
     "netlify",
     "db",
-    "database",
-    "postgres",
-    "pglite"
+    "database"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/netlify/primitives.git",
-    "directory": "packages/db/dev"
+    "directory": "packages/database/prod"
   },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@electric-sql/pglite": "^0.3.15",
-    "pg-gateway": "0.3.0-beta.4"
+    "@netlify/runtime-utils": "2.3.0",
+    "waddler": "^0.1.1",
+    "ws": "^8.18.0"
+  },
+  "peerDependencies": {
+    "@neondatabase/serverless": ">=0.10.0",
+    "pg": ">=8"
   },
   "devDependencies": {
-    "@types/pg": "^8.11.0",
-    "pg": "^8.11.0",
-    "tmp-promise": "^3.0.3",
+    "@neondatabase/serverless": "^1.0.0",
+    "@types/ws": "^8.18.1",
+    "npm-run-all2": "^5.0.0",
+    "pg": "^8.13.0",
     "tsup": "^8.0.2",
     "vitest": "^3.0.0"
   },
