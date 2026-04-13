@@ -52,7 +52,7 @@ describe('getDatabase', () => {
   it('throws MissingDatabaseConnectionError when no connection string is available', () => {
     expect(() => getDatabase()).toThrow(MissingDatabaseConnectionError)
     expect(() => getDatabase()).toThrow(
-      'The environment has not been configured to use Netlify DB. To use it manually, supply the `connectionString` option when calling `getDatabase()`.',
+      'The environment has not been configured to use Netlify Database. To use it manually, supply the `connectionString` option when calling `getDatabase()`.',
     )
   })
 

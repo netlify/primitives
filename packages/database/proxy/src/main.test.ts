@@ -1,6 +1,6 @@
 import { Client } from 'pg'
 import { test, expect, afterEach, describe } from 'vitest'
-import { NetlifyDB } from '@netlify/db-dev'
+import { NetlifyDB } from '@netlify/database-dev'
 
 import { NetlifyDBProxy } from './main.js'
 
