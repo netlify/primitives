@@ -10,9 +10,9 @@
     "start": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "@tanstack/react-router": "^1.154.5",
-    "@tanstack/react-router-devtools": "^1.154.5",
-    "@tanstack/react-start": "^1.154.5",
+    "@tanstack/react-router": "^1.168.19",
+    "@tanstack/react-router-devtools": "^1.166.13",
+    "@tanstack/react-start": "^1.167.34",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^2.6.0",
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@netlify/vite-plugin-tanstack-start": "file:../../..",
     "@tailwindcss/vite": "^4.1.18",
+    "@vitejs/plugin-rsc": "^0.5.24",
     "@types/node": "^22.5.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",

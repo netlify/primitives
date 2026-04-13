@@ -71,4 +71,34 @@ describe.runIf(isSupportedNode && !isWindows)('build output when deployed to Net
     await page.click('text=sunt aut facere repe')
     await page.waitForSelector('text=quia et suscipit suscipit')
   })
+
+  test('Renders basic RSC page with server components', async () => {
+    const response = await page.goto(`${baseUrl}/rsc-basic`)
+    expect(response?.status()).toBe(200)
+    // The greeting is rendered by a server component via renderServerComponent
+    await page.waitForSelector('[data-testid="rsc-greeting"]')
+    const greetingText = await page.textContent('[data-testid="rsc-greeting"]')
+    expect(greetingText).toContain('Hello from a Server Component!')
+    // The user list is also rendered as a server component with data fetching
+    await page.waitForSelector('[data-testid="rsc-user-list"]')
+    const userListText = await page.textContent('[data-testid="rsc-user-list"]')
+    expect(userListText).toContain('Ervin Howell')
+  })
+
+  test('Renders composite RSC page with client component children', async () => {
+    const response = await page.goto(`${baseUrl}/rsc-composite`)
+    expect(response?.status()).toBe(200)
+    // The card shell is rendered on the server via createCompositeComponent
+    await page.waitForSelector('[data-testid="rsc-card"]')
+    const cardText = await page.textContent('[data-testid="rsc-card"]')
+    expect(cardText).toContain('Server-Rendered Card')
+    // The counter is a client component passed as a children slot
+    await page.waitForSelector('[data-testid="client-counter"]')
+    const initialValue = await page.textContent('[data-testid="counter-value"]')
+    expect(initialValue).toBe('0')
+    // Verify client interactivity works within the server-rendered shell
+    await page.click('[data-testid="counter-button"]')
+    const updatedValue = await page.textContent('[data-testid="counter-value"]')
+    expect(updatedValue).toBe('1')
+  })
 })
