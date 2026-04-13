@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/netlify/primitives/compare/database-v0.4.0...database-v0.5.0) (2026-04-13)
+
+
+### Features
+
+* rename database package ([#649](https://github.com/netlify/primitives/issues/649)) ([bbe80bb](https://github.com/netlify/primitives/commit/bbe80bb31eedb74d08c08f35cd21f1360b9eb41f))
+
 ## [0.4.0](https://github.com/netlify/primitives/compare/db-v0.3.0...db-v0.4.0) (2026-03-19)
 
 
