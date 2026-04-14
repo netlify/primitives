@@ -13,8 +13,11 @@ const FIXTURES_DIR = fileURLToPath(new URL('../fixtures', import.meta.url))
 const isSupportedNode = semver.gte(process.versions.node, '22.12.0')
 // TODO(serhalp) e2e fixture deploy fails on Windows - investigate and re-enable
 const isWindows = process.platform === 'win32'
+// Live tests require secrets (e.g. NETLIFY_AUTH_TOKEN) which are unavailable in fork PRs.
+// CI sets SKIP_LIVE_TESTS=true in that case. See .github/workflows/test.yaml.
+const skipLiveTests = process.env.SKIP_LIVE_TESTS === 'true'
 
-describe.runIf(isSupportedNode && !isWindows)('build output when deployed to Netlify', () => {
+describe.runIf(isSupportedNode && !isWindows && !skipLiveTests)('build output when deployed to Netlify', () => {
   let fixture: Fixture
   let baseUrl: string
   beforeAll(async () => {
