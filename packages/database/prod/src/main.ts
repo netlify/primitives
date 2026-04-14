@@ -36,6 +36,17 @@ export interface ServerlessDatabaseConnection {
 
 export type DatabaseConnection = ServerDatabaseConnection | ServerlessDatabaseConnection
 
+export function getConnectionString(): string {
+  const env = getEnvironment()
+  const connectionString = env.get('NETLIFY_DB_URL')
+
+  if (!connectionString) {
+    throw new MissingDatabaseConnectionError()
+  }
+
+  return connectionString
+}
+
 export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnection {
   const env = getEnvironment()
   const connectionString = options.connectionString ?? env.get('NETLIFY_DB_URL')
