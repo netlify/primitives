@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/netlify/primitives/compare/database-v0.5.0...database-v0.6.0) (2026-04-14)
+
+
+### Features
+
+* **database:** add `getConnectionString` method ([#652](https://github.com/netlify/primitives/issues/652)) ([9a65377](https://github.com/netlify/primitives/commit/9a6537761a7189c43d6e9bfe65e8a443e570caec))
+
 ## [0.5.0](https://github.com/netlify/primitives/compare/database-v0.4.0...database-v0.5.0) (2026-04-13)
 
 
