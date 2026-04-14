@@ -1,5 +1,5 @@
 {
-  "name": "@netlify/db-proxy",
+  "name": "@netlify/database-proxy",
   "main": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "type": "module",
@@ -11,8 +11,8 @@
       }
     }
   },
-  "version": "0.1.1",
-  "description": "Transparent PostgreSQL proxy for Netlify DB with dynamic provisioning",
+  "version": "0.1.2",
+  "description": "Transparent PostgreSQL proxy for Netlify Database with dynamic provisioning",
   "files": [
     "dist/**/*.js",
     "dist/**/*.mjs",
@@ -37,7 +37,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/netlify/primitives.git",
-    "directory": "packages/db/proxy"
+    "directory": "packages/database/proxy"
   },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
@@ -47,7 +47,7 @@
     "pg": "^8.11.0"
   },
   "devDependencies": {
-    "@netlify/db-dev": "*",
+    "@netlify/database-dev": "0.8.0",
     "@types/pg": "^8.11.0",
     "tsup": "^8.0.2",
     "vitest": "^3.0.0"

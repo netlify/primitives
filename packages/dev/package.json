@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev",
-  "version": "4.16.5",
+  "version": "4.17.0",
   "description": "Emulation of the Netlify environment for local development",
   "type": "module",
   "engines": {
@@ -59,7 +59,7 @@
     "@netlify/ai": "^0.4.1",
     "@netlify/blobs": "10.7.4",
     "@netlify/config": "^24.4.3",
-    "@netlify/db-dev": "0.7.0",
+    "@netlify/database-dev": "0.8.0",
     "@netlify/dev-utils": "4.4.3",
     "@netlify/edge-functions-dev": "1.0.16",
     "@netlify/functions-dev": "1.2.5",
