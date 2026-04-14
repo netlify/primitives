@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.17.0](https://github.com/netlify/primitives/compare/dev-v4.16.5...dev-v4.17.0) (2026-04-13)
+
+
+### Features
+
+* rename database package ([#649](https://github.com/netlify/primitives/issues/649)) ([bbe80bb](https://github.com/netlify/primitives/commit/bbe80bb31eedb74d08c08f35cd21f1360b9eb41f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/database-dev bumped from 0.7.0 to 0.8.0
+
 ## [4.16.5](https://github.com/netlify/primitives/compare/dev-v4.16.4...dev-v4.16.5) (2026-04-07)
 
 
