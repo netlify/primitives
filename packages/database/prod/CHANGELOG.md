@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/netlify/primitives/compare/database-v0.6.0...database-v0.6.1) (2026-04-15)
+
+
+### Bug Fixes
+
+* **db:** move deps back into `dependencies` ([#656](https://github.com/netlify/primitives/issues/656)) ([0dc36d4](https://github.com/netlify/primitives/commit/0dc36d4cd2ceba6a5b7a870804ba7b4a0833e254))
+
 ## [0.6.0](https://github.com/netlify/primitives/compare/database-v0.5.0...database-v0.6.0) (2026-04-14)
 
 
