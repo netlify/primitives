@@ -46,18 +46,20 @@ export const startTokenRefresh = (): void => {
       : token.expires_at
   const delayMs = Math.max(0, expiresAtS - nowS - REFRESH_MARGIN_S) * 1000
 
-  refreshTimer = setTimeout(async () => {
-    try {
-      const freshJwt = await user.jwt(true)
-      const freshDetails = user.tokenDetails()
-      setBrowserAuthCookies(freshJwt, freshDetails?.refresh_token)
-      emitAuthEvent(AUTH_EVENTS.TOKEN_REFRESH, toUser(user))
-      // Schedule next refresh
-      startTokenRefresh()
-    } catch {
-      // Refresh failed (e.g., refresh token revoked). Stop trying.
-      stopTokenRefresh()
-    }
+  refreshTimer = setTimeout(() => {
+    void (async () => {
+      try {
+        const freshJwt = await user.jwt(true)
+        const freshDetails = user.tokenDetails()
+        setBrowserAuthCookies(freshJwt, freshDetails?.refresh_token)
+        emitAuthEvent(AUTH_EVENTS.TOKEN_REFRESH, toUser(user))
+        // Schedule next refresh
+        startTokenRefresh()
+      } catch {
+        // Refresh failed (e.g., refresh token revoked). Stop trying.
+        stopTokenRefresh()
+      }
+    })()
   }, delayMs)
 }
 
@@ -178,7 +180,7 @@ export const refreshSession = async (): Promise<string | null> => {
       }
       return null
     }
-    throw new AuthError(errorBody.msg || `Token refresh failed (${res.status})`, res.status)
+    throw new AuthError(errorBody.msg ?? `Token refresh failed (${String(res.status)})`, res.status)
   }
 
   const data = (await res.json()) as TokenResponse

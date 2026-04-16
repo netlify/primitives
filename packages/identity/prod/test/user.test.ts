@@ -124,11 +124,11 @@ describe('getUser (server)', () => {
     }
 
     const user = await getUser()
-    expect(user).not.toBeNull()
-    expect(user!.id).toBe('550e8400-e29b-41d4-a716-446655440000')
-    expect(user!.email).toBe('jane@example.com')
-    expect(user!.provider).toBe('github')
-    expect(user!.name).toBe('Jane Doe')
+    if (!user) throw new Error('expected user to not be null')
+    expect(user.id).toBe('550e8400-e29b-41d4-a716-446655440000')
+    expect(user.email).toBe('jane@example.com')
+    expect(user.provider).toBe('github')
+    expect(user.name).toBe('Jane Doe')
   })
 
   it('fetches full user from GoTrue when identity URL is available', async () => {
@@ -155,12 +155,12 @@ describe('getUser (server)', () => {
     )
 
     const user = await getUser()
-    expect(user).not.toBeNull()
-    expect(user!.id).toBe('550e8400-e29b-41d4-a716-446655440000')
-    expect(user!.confirmedAt).toBe('2026-01-01T00:00:00Z')
-    expect(user!.createdAt).toBe('2026-01-01T00:00:00Z')
-    expect(user!.pictureUrl).toBe('https://example.com/avatar.png')
-    expect(user!.roles).toEqual(['admin'])
+    if (!user) throw new Error('expected user to not be null')
+    expect(user.id).toBe('550e8400-e29b-41d4-a716-446655440000')
+    expect(user.confirmedAt).toBe('2026-01-01T00:00:00Z')
+    expect(user.createdAt).toBe('2026-01-01T00:00:00Z')
+    expect(user.pictureUrl).toBe('https://example.com/avatar.png')
+    expect(user.roles).toEqual(['admin'])
   })
 
   it('falls back to claims when GoTrue fetch fails', async () => {
@@ -179,13 +179,13 @@ describe('getUser (server)', () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('network error'))
 
     const user = await getUser()
-    expect(user).not.toBeNull()
-    expect(user!.id).toBe('550e8400-e29b-41d4-a716-446655440000')
-    expect(user!.roles).toEqual(['editor'])
+    if (!user) throw new Error('expected user to not be null')
+    expect(user.id).toBe('550e8400-e29b-41d4-a716-446655440000')
+    expect(user.roles).toEqual(['editor'])
     // Falls back to claims, so no GoTrue-level fields
-    expect(user!.role).toBeUndefined()
-    expect(user!.createdAt).toBeUndefined()
-    expect(user!.lastSignInAt).toBeUndefined()
+    expect(user.role).toBeUndefined()
+    expect(user.createdAt).toBeUndefined()
+    expect(user.lastSignInAt).toBeUndefined()
   })
 
   it('handles user with missing metadata fields', async () => {
@@ -197,12 +197,12 @@ describe('getUser (server)', () => {
     }
 
     const user = await getUser()
-    expect(user).not.toBeNull()
-    expect(user!.id).toBe('550e8400-e29b-41d4-a716-446655440000')
-    expect(user!.email).toBe('jane@example.com')
-    expect(user!.provider).toBeUndefined()
-    expect(user!.name).toBeUndefined()
-    expect(user!.userMetadata).toEqual({})
+    if (!user) throw new Error('expected user to not be null')
+    expect(user.id).toBe('550e8400-e29b-41d4-a716-446655440000')
+    expect(user.email).toBe('jane@example.com')
+    expect(user.provider).toBeUndefined()
+    expect(user.name).toBeUndefined()
+    expect(user.userMetadata).toEqual({})
   })
 })
 

@@ -6,6 +6,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { resetTestGoTrueClient } from '../src/environment.js'
 
 vi.mock('gotrue-js', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-extraneous-class
   default: class MockGoTrue {},
 }))
 

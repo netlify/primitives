@@ -120,7 +120,7 @@ describe('getSettings', () => {
     mockSettings.mockRejectedValue(networkError)
 
     const { getSettings, AuthError } = await import('../src/main.js')
-    const error = await getSettings().catch((e) => e)
+    const error = await getSettings().catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('Network error')
     expect(error.status).toBe(502)

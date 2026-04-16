@@ -179,7 +179,7 @@ describe('login (server)', () => {
     const { login } = await import('../src/auth.js')
     const { AuthError } = await import('../src/errors.js')
 
-    const error = await login('jane@example.com', 'password123').catch((e) => e)
+    const error = await login('jane@example.com', 'password123').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('Invalid token')
     expect(error.status).toBe(401)
@@ -198,7 +198,7 @@ describe('login (server)', () => {
     const { login } = await import('../src/auth.js')
     const { AuthError } = await import('../src/errors.js')
 
-    const error = await login('jane@example.com', 'wrong').catch((e) => e)
+    const error = await login('jane@example.com', 'wrong').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('Invalid credentials')
     expect(error.status).toBe(401)
@@ -210,7 +210,7 @@ describe('login (server)', () => {
     const { login } = await import('../src/auth.js')
     const { AuthError } = await import('../src/errors.js')
 
-    const error = await login('jane@example.com', 'password123').catch((e) => e)
+    const error = await login('jane@example.com', 'password123').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('Network error')
   })
@@ -221,7 +221,7 @@ describe('login (server)', () => {
     const { login } = await import('../src/auth.js')
     const { AuthError } = await import('../src/errors.js')
 
-    const error = await login('jane@example.com', 'password123').catch((e) => e)
+    const error = await login('jane@example.com', 'password123').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('Server-side auth requires Netlify Functions runtime')
   })
@@ -336,7 +336,7 @@ describe('signup (server)', () => {
     const { signup } = await import('../src/auth.js')
     const { AuthError } = await import('../src/errors.js')
 
-    const error = await signup('jane@example.com', 'password123').catch((e) => e)
+    const error = await signup('jane@example.com', 'password123').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('User already exists')
     expect(error.status).toBe(422)
@@ -393,7 +393,7 @@ describe('logout (server)', () => {
     const { logout } = await import('../src/auth.js')
     const { AuthError } = await import('../src/errors.js')
 
-    const error = await logout().catch((e) => e)
+    const error = await logout().catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('Server-side auth requires Netlify Functions runtime')
   })

@@ -55,7 +55,7 @@ const adminFetch = async (path: string, options: RequestInit = {}): Promise<Resp
     res = await fetchWithTimeout(`${url}${path}`, {
       ...options,
       headers: {
-        ...options.headers,
+        ...(options.headers as Record<string, string> | undefined),
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
@@ -65,7 +65,10 @@ const adminFetch = async (path: string, options: RequestInit = {}): Promise<Resp
   }
   if (!res.ok) {
     const errorBody = await res.json().catch(() => ({}))
-    throw new AuthError((errorBody as GoTrueErrorBody).msg || `Admin request failed (${res.status})`, res.status)
+    throw new AuthError(
+      (errorBody as GoTrueErrorBody).msg ?? `Admin request failed (${String(res.status)})`,
+      res.status,
+    )
   }
   return res
 }

@@ -6,7 +6,7 @@ export const NF_REFRESH_COOKIE = 'nf_refresh'
 /** Reads a cookie value from `document.cookie` by name. Returns `null` if not found or not in a browser. */
 export const getCookie = (name: string): string | null => {
   if (typeof document === 'undefined') return null
-  const match = document.cookie.match(new RegExp(`(?:^|; )${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}=([^;]*)`))
+  const match = new RegExp(`(?:^|; )${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}=([^;]*)`).exec(document.cookie)
   if (!match) return null
   try {
     return decodeURIComponent(match[1])

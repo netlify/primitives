@@ -89,7 +89,7 @@ describe('login', () => {
     const { AuthError } = await import('../src/errors.js')
     mockLogin.mockRejectedValue(new Error('Invalid credentials'))
 
-    const error = await login('jane@example.com', 'wrong').catch((e) => e)
+    const error = await login('jane@example.com', 'wrong').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('Invalid credentials')
   })
@@ -552,7 +552,7 @@ describe('handleAuthCallback', () => {
 
     window.location.hash = '#email_change_token=bad-token'
 
-    const error = await handleAuthCallback().catch((e) => e)
+    const error = await handleAuthCallback().catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('Invalid email change token')
     expect(error.status).toBe(422)
@@ -565,7 +565,7 @@ describe('handleAuthCallback', () => {
 
     window.location.hash = '#email_change_token=change-abc'
 
-    const error = await handleAuthCallback().catch((e) => e)
+    const error = await handleAuthCallback().catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('Email change verification requires an active browser session')
   })
@@ -587,7 +587,7 @@ describe('handleAuthCallback', () => {
 
     window.location.hash = '#confirmation_token=bad-token'
 
-    const error = await handleAuthCallback().catch((e) => e)
+    const error = await handleAuthCallback().catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('Invalid token')
   })

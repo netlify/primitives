@@ -53,8 +53,8 @@ describe('stale session detection (browser)', () => {
     const { getUser } = await import('../src/user.js')
     const user = await getUser()
 
-    expect(user).not.toBeNull()
-    expect(user!.id).toBe('550e8400-e29b-41d4-a716-446655440000')
+    if (!user) throw new Error('expected user to not be null')
+    expect(user.id).toBe('550e8400-e29b-41d4-a716-446655440000')
     expect(mockClearSession).not.toHaveBeenCalled()
   })
 

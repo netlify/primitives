@@ -194,7 +194,9 @@ describe('stopTokenRefresh', () => {
 
   it('is safe to call when no timer is running', async () => {
     const { stopTokenRefresh } = await import('../src/refresh.js')
-    expect(() => stopTokenRefresh()).not.toThrow()
+    expect(() => {
+      stopTokenRefresh()
+    }).not.toThrow()
   })
 })
 
