@@ -28,7 +28,7 @@ const toOptionalString = (value: unknown): string | undefined =>
 const toRoles = (appMeta: Record<string, unknown>): string[] | undefined => {
   const roles = appMeta.roles
   if (Array.isArray(roles) && roles.every((r) => typeof r === 'string')) {
-    return roles as string[]
+    return roles
   }
   return undefined
 }
@@ -96,7 +96,7 @@ export interface User {
 export const toUser = (userData: UserData): User => {
   const userMeta = userData.user_metadata ?? {}
   const appMeta = userData.app_metadata ?? {}
-  const name = userMeta.full_name || userMeta.name
+  const name = userMeta.full_name ?? userMeta.name
   const pictureUrl = userMeta.avatar_url
 
   return {
@@ -132,7 +132,7 @@ export const toUser = (userData: UserData): User => {
 const claimsToUser = (claims: IdentityUser): User => {
   const appMeta = claims.app_metadata ?? {}
   const userMeta = claims.user_metadata ?? {}
-  const name = userMeta.full_name || userMeta.name
+  const name = userMeta.full_name ?? userMeta.name
   const pictureUrl = userMeta.avatar_url
 
   return {
@@ -251,7 +251,7 @@ export const getUser = async (): Promise<User | null> => {
 
   // Get the JWT from the identity context header or cookie
   const identityContext = globalThis.netlifyIdentityContext
-  const serverJwt = identityContext?.token || getServerCookie(NF_JWT_COOKIE)
+  const serverJwt = identityContext?.token ?? getServerCookie(NF_JWT_COOKIE)
 
   // Try to fetch the full user from GoTrue for a complete User object
   if (serverJwt) {

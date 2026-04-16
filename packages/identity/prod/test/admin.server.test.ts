@@ -303,13 +303,12 @@ describe('admin.deleteUser (server)', () => {
     )
 
     const { admin } = await import('../src/admin.js')
-    const result = await admin.deleteUser('550e8400-e29b-41d4-a716-446655440000')
+    await admin.deleteUser('550e8400-e29b-41d4-a716-446655440000')
 
     expect(fetch).toHaveBeenCalledWith(
       `${IDENTITY_URL}/admin/users/550e8400-e29b-41d4-a716-446655440000`,
       expect.objectContaining({ method: 'DELETE' }),
     )
-    expect(result).toBeUndefined()
   })
 
   it('throws AuthError on failure', async () => {

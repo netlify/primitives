@@ -81,7 +81,10 @@ export const login = async (email: string, password: string): Promise<import('./
 
     if (!res.ok) {
       const errorBody = (await res.json().catch(() => ({}))) as GoTrueErrorBody
-      throw new AuthError(errorBody.msg || errorBody.error_description || `Login failed (${res.status})`, res.status)
+      throw new AuthError(
+        errorBody.msg ?? errorBody.error_description ?? `Login failed (${String(res.status)})`,
+        res.status,
+      )
     }
 
     const data = (await res.json()) as TokenResponse
@@ -98,7 +101,7 @@ export const login = async (email: string, password: string): Promise<import('./
 
     if (!userRes.ok) {
       const errorBody = (await userRes.json().catch(() => ({}))) as GoTrueErrorBody
-      throw new AuthError(errorBody.msg || `Failed to fetch user data (${userRes.status})`, userRes.status)
+      throw new AuthError(errorBody.msg ?? `Failed to fetch user data (${String(userRes.status)})`, userRes.status)
     }
 
     const userData = (await userRes.json()) as UserData
@@ -152,7 +155,7 @@ export const signup = async (email: string, password: string, data?: SignupData)
 
     if (!res.ok) {
       const errorBody = (await res.json().catch(() => ({}))) as GoTrueErrorBody
-      throw new AuthError(errorBody.msg || `Signup failed (${res.status})`, res.status)
+      throw new AuthError(errorBody.msg ?? `Signup failed (${String(res.status)})`, res.status)
     }
 
     const responseData = (await res.json()) as UserData & Partial<TokenResponse>
@@ -339,7 +342,7 @@ const handleOAuthCallback = async (
   const gotrueUser = await client.createUser(
     {
       access_token: accessToken,
-      token_type: (params.get('token_type') as 'bearer') ?? 'bearer',
+      token_type: (params.get('token_type') ?? 'bearer') as 'bearer',
       expires_in: isFinite(expiresIn) ? expiresIn : 3600,
       expires_at: isFinite(expiresAt) ? expiresAt : Math.floor(Date.now() / 1000) + 3600,
       refresh_token: refreshToken,
@@ -387,7 +390,7 @@ const handleEmailChangeCallback = async (client: GoTrue, emailChangeToken: strin
     throw new AuthError('Email change verification requires an active browser session')
   }
 
-  const jwt = await currentUser.jwt()
+  const jwt = (await currentUser.jwt()) as string
   const identityUrl = `${window.location.origin}${IDENTITY_PATH}`
 
   const emailChangeRes = await fetch(`${identityUrl}/user`, {
@@ -402,7 +405,7 @@ const handleEmailChangeCallback = async (client: GoTrue, emailChangeToken: strin
   if (!emailChangeRes.ok) {
     const errorBody = (await emailChangeRes.json().catch(() => ({}))) as GoTrueErrorBody
     throw new AuthError(
-      errorBody.msg || `Email change verification failed (${emailChangeRes.status})`,
+      errorBody.msg ?? `Email change verification failed (${String(emailChangeRes.status)})`,
       emailChangeRes.status,
     )
   }

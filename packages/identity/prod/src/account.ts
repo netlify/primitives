@@ -116,7 +116,7 @@ export const verifyEmailChange = async (token: string): Promise<User> => {
   const currentUser = await resolveCurrentUser()
 
   try {
-    const jwt = await currentUser.jwt()
+    const jwt = (await currentUser.jwt()) as string
     const identityUrl = `${window.location.origin}${IDENTITY_PATH}`
 
     const res = await fetch(`${identityUrl}/user`, {
@@ -130,7 +130,7 @@ export const verifyEmailChange = async (token: string): Promise<User> => {
 
     if (!res.ok) {
       const errorBody = (await res.json().catch(() => ({}))) as GoTrueErrorBody
-      throw new AuthError(errorBody.msg || `Email change verification failed (${res.status})`, res.status)
+      throw new AuthError(errorBody.msg ?? `Email change verification failed (${String(res.status)})`, res.status)
     }
 
     const userData = (await res.json()) as UserData

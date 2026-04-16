@@ -17,14 +17,16 @@ export const fetchWithTimeout = async (
   timeoutMs = DEFAULT_TIMEOUT_MS,
 ): Promise<Response> => {
   const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  const timer = setTimeout(() => {
+    controller.abort()
+  }, timeoutMs)
 
   try {
     return await fetch(url, { ...options, signal: controller.signal })
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       const pathname = new URL(url).pathname
-      throw new AuthError(`Identity request to ${pathname} timed out after ${timeoutMs}ms`)
+      throw new AuthError(`Identity request to ${pathname} timed out after ${String(timeoutMs)}ms`)
     }
     throw error
   } finally {

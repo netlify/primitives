@@ -13,8 +13,8 @@ describe('getIdentityConfig (browser)', () => {
 
   it('returns config with URL from window origin', () => {
     const config = getIdentityConfig()
-    expect(config).not.toBeNull()
-    expect(config!.url).toContain('/.netlify/identity')
-    expect(config!.token).toBeUndefined()
+    if (!config) throw new Error('expected config to not be null')
+    expect(config.url).toContain('/.netlify/identity')
+    expect(config.token).toBeUndefined()
   })
 })

@@ -187,7 +187,7 @@ describe('verifyEmailChange', () => {
     const { AuthError } = await import('../src/errors.js')
     mockCurrentUser.mockReturnValue(null)
 
-    const error = await verifyEmailChange('change-token').catch((e) => e)
+    const error = await verifyEmailChange('change-token').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('No user is currently logged in')
   })
@@ -228,7 +228,7 @@ describe('updateUser', () => {
 
     Object.defineProperty(document, 'cookie', { writable: true, value: '' })
 
-    const error = await updateUser({ data: { full_name: 'New Name' } }).catch((e) => e)
+    const error = await updateUser({ data: { full_name: 'New Name' } }).catch((e: unknown) => e)
     expect(error).toBeInstanceOf(AuthError)
     expect(error.message).toBe('No user is currently logged in')
 

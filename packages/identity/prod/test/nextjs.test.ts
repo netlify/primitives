@@ -8,13 +8,17 @@ describe('triggerNextjsDynamic', () => {
 
   it('is a no-op when next/headers is not available', () => {
     // next/headers is not installed, so require() will fail and cache null
-    expect(() => triggerNextjsDynamic()).not.toThrow()
+    expect(() => {
+      triggerNextjsDynamic()
+    }).not.toThrow()
   })
 
   it('caches the "not available" result and skips on subsequent calls', () => {
     triggerNextjsDynamic()
     // Second call should return immediately
-    expect(() => triggerNextjsDynamic()).not.toThrow()
+    expect(() => {
+      triggerNextjsDynamic()
+    }).not.toThrow()
   })
 
   it('calls the headers function when available', () => {
@@ -44,7 +48,9 @@ describe('triggerNextjsDynamic', () => {
       throw dynamicError
     })
 
-    expect(() => triggerNextjsDynamic()).toThrow(dynamicError)
+    expect(() => {
+      triggerNextjsDynamic()
+    }).toThrow(dynamicError)
   })
 
   it('re-throws prerendering bailout errors', () => {
@@ -53,7 +59,9 @@ describe('triggerNextjsDynamic', () => {
       throw bailoutError
     })
 
-    expect(() => triggerNextjsDynamic()).toThrow(bailoutError)
+    expect(() => {
+      triggerNextjsDynamic()
+    }).toThrow(bailoutError)
   })
 
   it('swallows non-Dynamic errors from headers()', () => {
@@ -61,15 +69,20 @@ describe('triggerNextjsDynamic', () => {
       throw new Error('some other error')
     })
 
-    expect(() => triggerNextjsDynamic()).not.toThrow()
+    expect(() => {
+      triggerNextjsDynamic()
+    }).not.toThrow()
   })
 
   it('swallows non-Error throws from headers()', () => {
     resetNextjsState(() => {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error -- intentionally throwing a non-Error to test the handler
       throw 'string error'
     })
 
-    expect(() => triggerNextjsDynamic()).not.toThrow()
+    expect(() => {
+      triggerNextjsDynamic()
+    }).not.toThrow()
   })
 
   it('skips entirely when state is set to null (not Next.js)', () => {

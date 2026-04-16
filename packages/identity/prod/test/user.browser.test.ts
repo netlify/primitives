@@ -65,11 +65,11 @@ describe('getUser (browser)', () => {
 
     const { getUser } = await import('../src/user.js')
     const user = await getUser()
-    expect(user).not.toBeNull()
-    expect(user!.id).toBe('cookie-user-123')
-    expect(user!.email).toBe('cookie@example.com')
-    expect(user!.provider).toBe('email')
-    expect(user!.name).toBe('Cookie User')
+    if (!user) throw new Error('expected user to not be null')
+    expect(user.id).toBe('cookie-user-123')
+    expect(user.email).toBe('cookie@example.com')
+    expect(user.provider).toBe('email')
+    expect(user.name).toBe('Cookie User')
   })
 
   it('returns null when nf_jwt cookie contains invalid JWT', async () => {
