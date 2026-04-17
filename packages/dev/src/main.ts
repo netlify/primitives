@@ -22,10 +22,10 @@ import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
 import { ImageHandler } from '@netlify/images'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
-import { NetlifyDB } from '@netlify/db-dev'
+import { NetlifyDB } from '@netlify/database-dev'
 
-export { applyMigrations, resetDatabase } from '@netlify/db-dev'
-export type { SQLExecutor } from '@netlify/db-dev'
+export { applyMigrations, resetDatabase } from '@netlify/database-dev'
+export type { SQLExecutor } from '@netlify/database-dev'
 
 import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
@@ -525,7 +525,7 @@ export class NetlifyDev {
         })
       } catch (error) {
         this.#db = undefined
-        this.#logger.warn(`Failed to start Netlify DB locally: ${String(error)}`)
+        this.#logger.warn(`Failed to start Netlify Database locally: ${String(error)}`)
       }
     }
 

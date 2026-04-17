@@ -1,5 +1,5 @@
 {
-  "name": "@netlify/functions-dev",
+  "name": "@netlify/database-dev",
   "main": "./dist/main.js",
   "types": "./dist/main.d.ts",
   "type": "module",
@@ -11,8 +11,8 @@
       }
     }
   },
-  "version": "1.2.6",
-  "description": "Local dev emulation of Netlify Functions",
+  "version": "0.8.0",
+  "description": "Local dev emulation of Netlify Database",
   "files": [
     "dist/**/*.js",
     "dist/**/*.mjs",
@@ -28,38 +28,29 @@
   },
   "keywords": [
     "netlify",
-    "functions",
-    "serverless"
+    "db",
+    "database",
+    "postgres",
+    "pglite"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/netlify/primitives.git",
-    "directory": "packages/functions/dev"
+    "directory": "packages/database/dev"
   },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/blobs": "10.7.4",
-    "@netlify/dev-utils": "4.4.3",
-    "@netlify/functions": "5.2.0",
-    "@netlify/zip-it-and-ship-it": "^14.5.0",
-    "cron-parser": "^4.9.0",
-    "decache": "^4.6.2",
-    "extract-zip": "^2.0.1",
-    "is-stream": "^4.0.1",
-    "jwt-decode": "^4.0.0",
-    "lambda-local": "^2.2.0",
-    "read-package-up": "^11.0.0",
-    "semver": "^7.6.3",
-    "source-map-support": "^0.5.21"
+    "@electric-sql/pglite": "^0.3.15",
+    "pg-gateway": "0.3.0-beta.4"
   },
   "devDependencies": {
-    "@types/semver": "^7.5.8",
-    "@types/source-map-support": "^0.5.10",
-    "npm-run-all2": "^5.0.0",
+    "@types/pg": "^8.11.0",
+    "pg": "^8.11.0",
+    "tmp-promise": "^3.0.3",
     "tsup": "^8.0.2",
     "vitest": "^3.0.0"
   },

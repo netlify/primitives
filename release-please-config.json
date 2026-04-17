@@ -13,13 +13,19 @@
     "packages/ai": {},
     "packages/blobs": {},
     "packages/cache": {},
-    "packages/db/dev": {
+    "packages/database/dev": {
       "prerelease": true,
       "prerelease-type": "beta"
     },
-    "packages/db/prod": {
+    "packages/database/prod": {
       "prerelease": true,
       "prerelease-type": "beta"
+    },
+    "packages/database/proxy": {
+      "prerelease": true,
+      "prerelease-type": "beta",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true
     },
     "packages/dev": {},
     "packages/dev-utils": {},
