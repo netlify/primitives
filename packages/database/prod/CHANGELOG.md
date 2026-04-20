@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/netlify/primitives/compare/database-v0.6.1...database-v0.7.0) (2026-04-20)
+
+
+### Features
+
+* **deps:** update `@neondatabase/serverless` ([#660](https://github.com/netlify/primitives/issues/660)) ([30f17d8](https://github.com/netlify/primitives/commit/30f17d8743a89cf345d65b41166e497b01f3fb14))
+
 ## [0.6.1](https://github.com/netlify/primitives/compare/database-v0.6.0...database-v0.6.1) (2026-04-15)
 
 
