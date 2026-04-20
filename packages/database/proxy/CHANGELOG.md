@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.3](https://github.com/netlify/primitives/compare/database-proxy-v0.1.2...database-proxy-v0.1.3) (2026-04-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/database-dev bumped from 0.8.0 to 0.9.0
+
 ## [0.1.2](https://github.com/netlify/primitives/compare/database-proxy-v0.1.1...database-proxy-v0.1.2) (2026-04-13)
 
 
