@@ -53,7 +53,7 @@
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.0",
+    "@neondatabase/serverless": "^1.1.0",
     "@netlify/runtime-utils": "2.3.0",
     "pg": "^8.13.0",
     "waddler": "^0.1.1",
