@@ -6,10 +6,10 @@ import type { ConnectionState, MessageResponse } from 'pg-gateway'
 import { fromNodeSocket } from 'pg-gateway/node'
 
 import { broadcastNotifications } from './lib/notifications.js'
-import { applyMigrations } from './lib/migrations.js'
+import { applyMigrations, initializeTrackingTable } from './lib/migrations.js'
 import type { SQLExecutor } from './lib/sql-executor.js'
 
-export { applyMigrations } from './lib/migrations.js'
+export { applyMigrations, initializeTrackingTable } from './lib/migrations.js'
 export type { SQLExecutor } from './lib/sql-executor.js'
 
 const DEFAULT_HOST = 'localhost'
@@ -47,6 +47,7 @@ export async function resetDatabase(db: SQLExecutor): Promise<void> {
   }
 
   await db.exec('CREATE SCHEMA IF NOT EXISTS public')
+  await initializeTrackingTable(db)
 }
 
 export class NetlifyDB implements SQLExecutor {
@@ -75,6 +76,8 @@ export class NetlifyDB implements SQLExecutor {
     }
 
     this.db = await PGlite.create(this.directory)
+
+    await initializeTrackingTable(this.db)
 
     this.unsubNotification = broadcastNotifications(this.db, this.connections)
 

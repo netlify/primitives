@@ -14,11 +14,9 @@ function isMigrationDirectory(entry: Dirent): boolean {
   return entry.isDirectory() && MIGRATION_DIR_PATTERN.test(entry.name)
 }
 
-export async function applyMigrations(
-  db: SQLExecutor,
-  migrationsDirectory: string,
-  target?: string,
-): Promise<string[]> {
+// Creates the migrations tracking table if it doesn't already exist. It's
+// idempotent.
+export async function initializeTrackingTable(db: SQLExecutor): Promise<void> {
   await db.exec(`
     CREATE SCHEMA IF NOT EXISTS ${TRACKING_SCHEMA};
     CREATE TABLE IF NOT EXISTS ${TRACKING_TABLE} (
@@ -26,6 +24,14 @@ export async function applyMigrations(
       applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `)
+}
+
+export async function applyMigrations(
+  db: SQLExecutor,
+  migrationsDirectory: string,
+  target?: string,
+): Promise<string[]> {
+  await initializeTrackingTable(db)
 
   // Discover migration directories.
   let entries: string[]
