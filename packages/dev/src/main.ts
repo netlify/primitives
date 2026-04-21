@@ -24,7 +24,7 @@ import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
 import { NetlifyDB } from '@netlify/database-dev'
 
-export { applyMigrations, resetDatabase } from '@netlify/database-dev'
+export { applyMigrations, initializeTrackingTable, resetDatabase } from '@netlify/database-dev'
 export type { SQLExecutor } from '@netlify/database-dev'
 
 import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
