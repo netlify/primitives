@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.10.0](https://github.com/netlify/primitives/compare/database-dev-v0.9.0...database-dev-v0.10.0) (2026-04-20)
+
+
+### Features
+
+* **database:** ensure migrations tracking table exists ([#661](https://github.com/netlify/primitives/issues/661)) ([4b914d6](https://github.com/netlify/primitives/commit/4b914d686ce479fbb8613896697a40c52017e5af))
+
+## [0.9.0](https://github.com/netlify/primitives/compare/database-dev-v0.8.0...database-dev-v0.9.0) (2026-04-20)
+
+
+### Features
+
+* **database:** update migrations table name ([#658](https://github.com/netlify/primitives/issues/658)) ([e65a740](https://github.com/netlify/primitives/commit/e65a740223c69fedebe02e72a21cd451fadc7682))
+
 ## [0.8.0](https://github.com/netlify/primitives/compare/database-dev-v0.7.0...database-dev-v0.8.0) (2026-04-13)
 
 

@@ -187,7 +187,7 @@ test('Rolls back failed migration, preserves prior successful ones', async () =>
   await expect(applyMigrations(pgDb, migrationsDir, '0003_add_posts')).rejects.toThrow()
 
   // Migration 1 should be committed
-  const tracking = await pgDb.query<{ name: string }>('SELECT name FROM netlify_migrations ORDER BY name')
+  const tracking = await pgDb.query<{ name: string }>('SELECT name FROM netlify.migrations ORDER BY name')
   expect(tracking.rows).toHaveLength(1)
   expect(tracking.rows[0].name).toBe('0001_create_users')
 

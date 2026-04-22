@@ -7,10 +7,23 @@ import type { SQLExecutor } from './sql-executor.js'
 
 const MIGRATION_DIR_PATTERN = /^\d+_.+$/
 const MIGRATION_FILE = 'migration.sql'
-const TRACKING_TABLE = 'netlify_migrations'
+const TRACKING_SCHEMA = 'netlify'
+const TRACKING_TABLE = `${TRACKING_SCHEMA}.migrations`
 
 function isMigrationDirectory(entry: Dirent): boolean {
   return entry.isDirectory() && MIGRATION_DIR_PATTERN.test(entry.name)
+}
+
+// Creates the migrations tracking table if it doesn't already exist. It's
+// idempotent.
+export async function initializeTrackingTable(db: SQLExecutor): Promise<void> {
+  await db.exec(`
+    CREATE SCHEMA IF NOT EXISTS ${TRACKING_SCHEMA};
+    CREATE TABLE IF NOT EXISTS ${TRACKING_TABLE} (
+      name TEXT PRIMARY KEY,
+      applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `)
 }
 
 export async function applyMigrations(
@@ -18,12 +31,7 @@ export async function applyMigrations(
   migrationsDirectory: string,
   target?: string,
 ): Promise<string[]> {
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS ${TRACKING_TABLE} (
-      name TEXT PRIMARY KEY,
-      applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
-    )
-  `)
+  await initializeTrackingTable(db)
 
   // Discover migration directories.
   let entries: string[]
