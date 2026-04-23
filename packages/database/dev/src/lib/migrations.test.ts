@@ -30,6 +30,10 @@ async function createMigrationDir(basePath: string, name: string, sql: string) {
   await fs.writeFile(join(dir, 'migration.sql'), sql)
 }
 
+async function createFlatMigration(basePath: string, name: string, sql: string) {
+  await fs.writeFile(join(basePath, `${name}.sql`), sql)
+}
+
 async function setupMigrations(migrations: { name: string; sql: string }[]) {
   tmpDir = await tmp.dir()
 
@@ -233,4 +237,63 @@ test('Lexicographic ordering with timestamp-style prefixes', async () => {
   expect(applied[0]).toBe('0001_create_users')
   expect(applied[1]).toBe('0002_add_posts')
   expect(applied[2]).toBe('1709312400_add_comments')
+})
+
+test('Applies flat .sql file migrations', async () => {
+  tmpDir = await tmp.dir()
+
+  await createFlatMigration(tmpDir.path, '0001_create_users', 'CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT)')
+  await createFlatMigration(tmpDir.path, '0002_add_posts', 'CREATE TABLE posts (id SERIAL PRIMARY KEY, title TEXT)')
+
+  db = await PGlite.create()
+
+  const applied = await applyMigrations(db, tmpDir.path)
+
+  expect(applied).toEqual(['0001_create_users', '0002_add_posts'])
+
+  const usersResult = await db.query("SELECT table_name FROM information_schema.tables WHERE table_name = 'users'")
+  expect(usersResult.rows).toHaveLength(1)
+
+  const postsResult = await db.query("SELECT table_name FROM information_schema.tables WHERE table_name = 'posts'")
+  expect(postsResult.rows).toHaveLength(1)
+})
+
+test('Applies a mix of directory and flat-file migrations in lexicographic order', async () => {
+  tmpDir = await tmp.dir()
+
+  await createMigrationDir(tmpDir.path, '0001_create_users', 'CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT)')
+  await createFlatMigration(tmpDir.path, '0002_add_posts', 'CREATE TABLE posts (id SERIAL PRIMARY KEY, title TEXT)')
+  await createMigrationDir(tmpDir.path, '0003_add_comments', 'CREATE TABLE comments (id SERIAL PRIMARY KEY, body TEXT)')
+
+  db = await PGlite.create()
+
+  const applied = await applyMigrations(db, tmpDir.path)
+
+  expect(applied).toEqual(['0001_create_users', '0002_add_posts', '0003_add_comments'])
+})
+
+test('Throws when a directory and flat file share the same name', async () => {
+  tmpDir = await tmp.dir()
+
+  await createMigrationDir(tmpDir.path, '0001_create_users', 'CREATE TABLE users (id SERIAL PRIMARY KEY)')
+  await createFlatMigration(tmpDir.path, '0001_create_users', 'CREATE TABLE users (id SERIAL PRIMARY KEY)')
+
+  db = await PGlite.create()
+
+  await expect(applyMigrations(db, tmpDir.path)).rejects.toThrow(/Duplicate migration name "0001_create_users"/)
+})
+
+test('Ignores flat .sql files whose name does not match the migration pattern', async () => {
+  tmpDir = await tmp.dir()
+
+  await createFlatMigration(tmpDir.path, '0001_create_users', 'CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT)')
+  // None of these should be picked up.
+  await fs.writeFile(join(tmpDir.path, 'seed.sql'), 'SELECT 1')
+  await fs.writeFile(join(tmpDir.path, 'readme.sql'), 'SELECT 1')
+
+  db = await PGlite.create()
+
+  const applied = await applyMigrations(db, tmpDir.path)
+
+  expect(applied).toEqual(['0001_create_users'])
 })
