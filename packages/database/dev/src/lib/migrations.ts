@@ -66,7 +66,6 @@ export async function applyMigrations(
 ): Promise<string[]> {
   await initializeTrackingTable(db)
 
-  // Discover migrations (both directory- and flat-file forms).
   let migrations: Migration[]
 
   try {
