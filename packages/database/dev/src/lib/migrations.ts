@@ -24,6 +24,7 @@ function toMigration(entry: Dirent, migrationsDirectory: string): Migration | nu
     if (!MIGRATION_NAME_PATTERN.test(entry.name)) {
       return null
     }
+
     return {
       name: entry.name,
       sqlPath: join(migrationsDirectory, entry.name, MIGRATION_FILE),
@@ -32,9 +33,11 @@ function toMigration(entry: Dirent, migrationsDirectory: string): Migration | nu
 
   if (entry.isFile() && entry.name.endsWith(SQL_EXTENSION)) {
     const name = entry.name.slice(0, -SQL_EXTENSION.length)
+
     if (!MIGRATION_NAME_PATTERN.test(name)) {
       return null
     }
+
     return {
       name,
       sqlPath: join(migrationsDirectory, entry.name),
