@@ -177,7 +177,7 @@ test('Throws MigrationFileNotFoundError for directory missing migration.sql', as
   db = await PGlite.create()
 
   await expect(applyMigrations(db, tmpDir.path, '0001_missing_file')).rejects.toThrow(
-    /Migration SQL file not found: .*0001_missing_file\/migration.sql/,
+    /Migration SQL file not found: .*0001_missing_file[\/\\]migration.sql/,
   )
 })
 
