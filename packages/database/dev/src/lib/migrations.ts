@@ -125,8 +125,13 @@ export async function applyMigrations(
 
     try {
       sql = await readFile(migration.sqlPath, 'utf-8')
-    } catch {
-      throw new Error(`${MIGRATION_FILE} not found in migration directory: ${migration.name}`)
+    } catch (error) {
+      const err = error as NodeJS.ErrnoException
+      if (err.code === 'ENOENT') {
+        throw new Error(`Migration SQL file not found: ${migration.sqlPath}`)
+      }
+
+      throw new Error(`Failed to read migration "${migration.name}" at "${migration.sqlPath}": ${err.message}`)
     }
 
     await db.transaction(async (tx) => {
