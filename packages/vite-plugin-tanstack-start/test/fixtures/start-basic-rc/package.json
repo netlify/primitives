@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@netlify/vite-plugin-tanstack-start": "file:../../..",
-    "@rspack/core": "^2.0.0",
+    "@rsbuild/core": "^2.0.1",
     "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^22.5.4",
     "@types/react": "^19.0.8",
