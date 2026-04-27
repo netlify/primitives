@@ -40,13 +40,14 @@ export default defineNuxtModule<NetlifyModuleOptions>({
     }
 
     const logger = createPrefixedLogger(netlifyBanner, console)
-    const { blobs, edgeFunctions, functions, redirects } = options
+    const { blobs, edgeFunctions, database, functions, redirects } = options
 
     let netlifyDev!: NetlifyDev
 
     nuxt.hook('nitro:init', async (nitro) => {
       netlifyDev = new NetlifyDev({
         blobs,
+        database,
         edgeFunctions,
         functions,
         logger,
