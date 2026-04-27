@@ -44,6 +44,15 @@ export interface Features {
   }
 
   /**
+   * Configuration options for Netlify Database.
+   *
+   * {@link} https://docs.netlify.com/build/data-and-storage/netlify-database/
+   */
+  database?: {
+    enabled?: boolean
+  }
+
+  /**
    * Configuration options for environment variables.
    *
    * {@link} https://docs.netlify.com/edge-functions/overview/
@@ -195,7 +204,7 @@ export class NetlifyDev {
   #features: {
     aiGateway: boolean
     blobs: boolean
-    db: boolean
+    database: boolean
     edgeFunctions: boolean
     environmentVariables: boolean
     functions: boolean
@@ -233,7 +242,7 @@ export class NetlifyDev {
     this.#features = {
       aiGateway: options.aiGateway?.enabled !== false,
       blobs: options.blobs?.enabled !== false,
-      db: process.env.EXPERIMENTAL_NETLIFY_DB_ENABLED === '1',
+      database: options.database?.enabled !== false,
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
@@ -508,7 +517,7 @@ export class NetlifyDev {
 
     this.#cleanupJobs.push(() => runtime.stop())
 
-    if (this.#features.db) {
+    if (this.#features.database) {
       try {
         const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
         const db = new NetlifyDB({ directory: dbDirectory })
