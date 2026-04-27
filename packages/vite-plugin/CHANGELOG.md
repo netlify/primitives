@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.12.0](https://github.com/netlify/primitives/compare/vite-plugin-v2.11.7...vite-plugin-v2.12.0) (2026-04-27)
+
+
+### Features
+
+* unflag database ([#667](https://github.com/netlify/primitives/issues/667)) ([76d95a1](https://github.com/netlify/primitives/commit/76d95a1de14712f858f24d90a430e9b7bca9f3e7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from 4.17.3 to 4.18.0
+
 ## [2.11.7](https://github.com/netlify/primitives/compare/vite-plugin-v2.11.6...vite-plugin-v2.11.7) (2026-04-20)
 
 
