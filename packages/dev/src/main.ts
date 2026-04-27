@@ -160,6 +160,7 @@ interface NetlifyDevOptions extends Features {
   apiToken?: string
   logger?: Logger
   projectRoot?: string
+  skipGitignore?: boolean
 
   /**
    * If your local development setup has its own HTTP server (e.g. Vite), set
@@ -225,6 +226,7 @@ export class NetlifyDev {
   #siteID?: string
   #staticHandler?: StaticHandler
   #staticHandlerAdditionalDirectories: string[]
+  #skipGitignore: boolean
 
   constructor(options: NetlifyDevOptions) {
     if (options.apiURL) {
@@ -258,6 +260,7 @@ export class NetlifyDev {
     this.#serverAddress = options.serverAddress
     this.#projectRoot = projectRoot
     this.#staticHandlerAdditionalDirectories = options.staticFiles?.directories ?? []
+    this.#skipGitignore = options.skipGitignore ?? false
   }
 
   private getServerAddress(requestServerAddress?: string) {
@@ -469,7 +472,9 @@ export class NetlifyDev {
   }
 
   async start() {
-    await ensureNetlifyIgnore(this.#projectRoot, this.#logger)
+    if (!this.#skipGitignore) {
+      await ensureNetlifyIgnore(this.#projectRoot, this.#logger)
+    }
 
     this.#apiToken = this.#apiToken ?? (await getAPIToken())
 
