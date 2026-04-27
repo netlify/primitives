@@ -13,6 +13,7 @@
   "packages/functions/prod": "5.2.0",
   "packages/functions/dev": "1.2.6",
   "packages/headers": "2.1.8",
+  "packages/identity/prod": "1.0.0",
   "packages/images": "1.3.7",
   "packages/nuxt-module": "0.2.41",
   "packages/otel": "5.1.5",

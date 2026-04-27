@@ -1,0 +1,72 @@
+{
+  "name": "@netlify/identity",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "description": "Headless auth functions for Netlify Identity. Import { login, getUser } and call them. No init, no class, no UI.",
+  "main": "./dist/main.cjs",
+  "module": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/main.d.cts",
+        "default": "./dist/main.cjs"
+      },
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      },
+      "default": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsup-node",
+    "dev": "tsup-node --watch",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "publint": "npx -y publint --strict"
+  },
+  "keywords": [
+    "netlify",
+    "identity",
+    "authentication",
+    "jwt",
+    "auth",
+    "oauth",
+    "login",
+    "signup",
+    "gotrue",
+    "serverless",
+    "edge-functions"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netlify/primitives.git",
+    "directory": "packages/identity/prod"
+  },
+  "bugs": {
+    "url": "https://github.com/netlify/primitives/issues"
+  },
+  "author": "Netlify Inc.",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "jsdom": "^28.1.0",
+    "tsup": "^8.0.0",
+    "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "gotrue-js": "^1.0.1"
+  }
+}
