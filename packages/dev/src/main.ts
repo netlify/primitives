@@ -529,6 +529,7 @@ export class NetlifyDev {
         const connectionString = await db.start()
 
         runtime.env.set('NETLIFY_DB_URL', connectionString)
+        runtime.env.set('NETLIFY_DB_DRIVER', 'server')
 
         state.set('dbConnectionString', connectionString)
 
