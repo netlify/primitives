@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.18.1](https://github.com/netlify/primitives/compare/dev-v4.18.0...dev-v4.18.1) (2026-04-28)
+
+
+### Bug Fixes
+
+* set NETLIFY_DB_DRIVER to server in dev ([#670](https://github.com/netlify/primitives/issues/670)) ([cedca7a](https://github.com/netlify/primitives/commit/cedca7a6da04154b9c6d6d5347160fd4e8644a20))
+
 ## [4.18.0](https://github.com/netlify/primitives/compare/dev-v4.17.3...dev-v4.18.0) (2026-04-27)
 
 
