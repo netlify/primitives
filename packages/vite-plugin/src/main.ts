@@ -73,6 +73,16 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
         staticFiles,
       } = options
 
+      // Only include publicDir in static directories, not the entire project root.
+      // Including the root causes Netlify's static handler to interfere with Vite's
+      // internal files (e.g., prebundled deps in node_modules/.vite), leading to file
+      // locking issues on Windows when Vite tries to rename temporary dependency files.
+      const publicDir = viteDevServer.config.publicDir
+      const staticDirectories = [
+        ...(staticFiles?.directories ?? []),
+        ...(typeof publicDir === 'string' ? [publicDir] : []),
+      ]
+
       const netlifyDev = new NetlifyDev({
         blobs,
         edgeFunctions,
@@ -85,7 +95,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
         serverAddress: null,
         staticFiles: {
           ...staticFiles,
-          directories: [viteDevServer.config.root, viteDevServer.config.publicDir],
+          directories: staticDirectories.length > 0 ? staticDirectories : undefined,
         },
         projectRoot: viteDevServer.config.root,
       })
