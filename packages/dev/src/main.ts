@@ -44,6 +44,15 @@ export interface Features {
   }
 
   /**
+   * Configuration options for Netlify Database.
+   *
+   * {@link} https://docs.netlify.com/build/data-and-storage/netlify-database/
+   */
+  database?: {
+    enabled?: boolean
+  }
+
+  /**
    * Configuration options for environment variables.
    *
    * {@link} https://docs.netlify.com/edge-functions/overview/
@@ -151,6 +160,7 @@ interface NetlifyDevOptions extends Features {
   apiToken?: string
   logger?: Logger
   projectRoot?: string
+  skipGitignore?: boolean
 
   /**
    * If your local development setup has its own HTTP server (e.g. Vite), set
@@ -195,7 +205,7 @@ export class NetlifyDev {
   #features: {
     aiGateway: boolean
     blobs: boolean
-    db: boolean
+    database: boolean
     edgeFunctions: boolean
     environmentVariables: boolean
     functions: boolean
@@ -216,6 +226,7 @@ export class NetlifyDev {
   #siteID?: string
   #staticHandler?: StaticHandler
   #staticHandlerAdditionalDirectories: string[]
+  #skipGitignore: boolean
 
   constructor(options: NetlifyDevOptions) {
     if (options.apiURL) {
@@ -233,7 +244,7 @@ export class NetlifyDev {
     this.#features = {
       aiGateway: options.aiGateway?.enabled !== false,
       blobs: options.blobs?.enabled !== false,
-      db: process.env.EXPERIMENTAL_NETLIFY_DB_ENABLED === '1',
+      database: options.database?.enabled !== false,
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
@@ -249,6 +260,7 @@ export class NetlifyDev {
     this.#serverAddress = options.serverAddress
     this.#projectRoot = projectRoot
     this.#staticHandlerAdditionalDirectories = options.staticFiles?.directories ?? []
+    this.#skipGitignore = options.skipGitignore ?? false
   }
 
   private getServerAddress(requestServerAddress?: string) {
@@ -460,7 +472,9 @@ export class NetlifyDev {
   }
 
   async start() {
-    await ensureNetlifyIgnore(this.#projectRoot, this.#logger)
+    if (!this.#skipGitignore) {
+      await ensureNetlifyIgnore(this.#projectRoot, this.#logger)
+    }
 
     this.#apiToken = this.#apiToken ?? (await getAPIToken())
 
@@ -508,13 +522,14 @@ export class NetlifyDev {
 
     this.#cleanupJobs.push(() => runtime.stop())
 
-    if (this.#features.db) {
+    if (this.#features.database) {
       try {
         const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
         const db = new NetlifyDB({ directory: dbDirectory })
         const connectionString = await db.start()
 
         runtime.env.set('NETLIFY_DB_URL', connectionString)
+        runtime.env.set('NETLIFY_DB_DRIVER', 'server')
 
         state.set('dbConnectionString', connectionString)
 

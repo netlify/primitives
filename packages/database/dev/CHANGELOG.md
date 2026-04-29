@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/netlify/primitives/compare/database-dev-v0.10.0...database-dev-v0.10.1) (2026-04-27)
+
+
+### Bug Fixes
+
+* **database:** support both formats when applying migrations ([#665](https://github.com/netlify/primitives/issues/665)) ([89b40e2](https://github.com/netlify/primitives/commit/89b40e23d35b7277c9fbd7554a2e86959e29e338))
+
 ## [0.10.0](https://github.com/netlify/primitives/compare/database-dev-v0.9.0...database-dev-v0.10.0) (2026-04-20)
 
 

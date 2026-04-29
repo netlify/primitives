@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.18.1](https://github.com/netlify/primitives/compare/dev-v4.18.0...dev-v4.18.1) (2026-04-28)
+
+
+### Bug Fixes
+
+* set NETLIFY_DB_DRIVER to server in dev ([#670](https://github.com/netlify/primitives/issues/670)) ([cedca7a](https://github.com/netlify/primitives/commit/cedca7a6da04154b9c6d6d5347160fd4e8644a20))
+
+## [4.18.0](https://github.com/netlify/primitives/compare/dev-v4.17.3...dev-v4.18.0) (2026-04-27)
+
+
+### Features
+
+* export initializeTrackingTable from @netlify/dev ([#663](https://github.com/netlify/primitives/issues/663)) ([52ac65a](https://github.com/netlify/primitives/commit/52ac65a9065931ab951f65d817b1ad2f788a9f2c))
+* unflag database ([#667](https://github.com/netlify/primitives/issues/667)) ([76d95a1](https://github.com/netlify/primitives/commit/76d95a1de14712f858f24d90a430e9b7bca9f3e7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/database-dev bumped from 0.10.0 to 0.10.1
+
 ## [4.17.3](https://github.com/netlify/primitives/compare/dev-v4.17.2...dev-v4.17.3) (2026-04-20)
 
 
