@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0](https://github.com/netlify/primitives/compare/database-v0.7.0...database-v1.0.0) (2026-04-29)
+
+
+### Features
+
+* update error message ([#672](https://github.com/netlify/primitives/issues/672)) ([6837ca5](https://github.com/netlify/primitives/commit/6837ca5bff8b31a8969c7c624cf4176abad52252))
+
 ## [0.7.0](https://github.com/netlify/primitives/compare/database-v0.6.1...database-v0.7.0) (2026-04-20)
 
 
