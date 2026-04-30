@@ -4,7 +4,7 @@
   "packages/blobs": "10.7.4",
   "packages/cache": "3.4.4",
   "packages/database/dev": "0.10.1",
-  "packages/database/prod": "0.7.0",
+  "packages/database/prod": "1.0.0",
   "packages/database/proxy": "0.1.5",
   "packages/dev": "4.18.1",
   "packages/dev-utils": "4.4.3",
