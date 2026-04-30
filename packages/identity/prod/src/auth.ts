@@ -50,6 +50,10 @@ export const persistSession = true
  * try/catch. Next.js implements `redirect()` by throwing a special error; wrapping it in
  * try/catch will swallow the redirect.
  *
+ * **Server-side CSRF:** When called from a server endpoint, the endpoint must have CSRF
+ * protection. If your framework does not check the request's `Origin` by default, call
+ * {@link verifyRequestOrigin} at the start of the handler before invoking `login()`.
+ *
  * @example
  * ```ts
  * // Next.js server action
@@ -136,6 +140,11 @@ export const login = async (email: string, password: string): Promise<import('./
  * In that case, no cookies are set and no auth event is emitted.
  *
  * @throws {AuthError} On duplicate email, validation failure, network error, or missing Netlify runtime.
+ *
+ * @remarks
+ * **Server-side CSRF:** When called from a server endpoint, the endpoint must have CSRF
+ * protection. If your framework does not check the request's `Origin` by default, call
+ * {@link verifyRequestOrigin} at the start of the handler before invoking `signup()`.
  */
 export const signup = async (email: string, password: string, data?: SignupData): Promise<import('./user.js').User> => {
   if (!isBrowser()) {
@@ -199,6 +208,11 @@ export const signup = async (email: string, password: string, data?: SignupData)
  * invalidation request fails. In the browser, emits a `'logout'` event via {@link onAuthChange}.
  *
  * @throws {AuthError} On missing Netlify runtime (server) or logout failure (browser).
+ *
+ * @remarks
+ * **Server-side CSRF:** When called from a server endpoint, the endpoint must have CSRF
+ * protection. If your framework does not check the request's `Origin` by default, call
+ * {@link verifyRequestOrigin} at the start of the handler before invoking `logout()`.
  */
 export const logout = async (): Promise<void> => {
   if (!isBrowser()) {
