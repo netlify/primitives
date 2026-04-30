@@ -7,6 +7,8 @@ export type { CallbackResult } from './auth.js'
 export { login, signup, logout, oauthLogin, handleAuthCallback, hydrateSession } from './auth.js'
 export { refreshSession } from './refresh.js'
 export { AuthError, MissingIdentityError } from './errors.js'
+export { verifyRequestOrigin } from './csrf.js'
+export type { VerifyRequestOriginOptions } from './csrf.js'
 export type {
   AdminUserUpdates,
   AppMetadata,
