@@ -175,17 +175,15 @@ export async function applyMigrationsWithDetails(
   const result = await db.query<{ name: string }>(`SELECT name FROM ${TRACKING_TABLE} WHERE name = ANY($1)`, [names])
   const alreadyApplied = new Set(result.rows.map((row) => row.name))
 
-  const applied: Migration[] = []
-
+  const migrationsToApplyWithContent: { migration: Migration; sql: string }[] = []
   for (const migration of migrationsToConsider) {
     if (alreadyApplied.has(migration.name)) {
       continue
     }
 
-    let sql: string
-
     try {
-      sql = await readFile(migration.sqlPath, 'utf-8')
+      const sql = await readFile(migration.sqlPath, 'utf-8')
+      migrationsToApplyWithContent.push({ migration, sql })
     } catch (error) {
       const err = error as NodeJS.ErrnoException
       if (err.code === 'ENOENT') {
@@ -194,7 +192,10 @@ export async function applyMigrationsWithDetails(
 
       throw new Error(`Failed to read migration "${migration.name}" at "${migration.sqlPath}": ${err.message}`)
     }
+  }
 
+  const applied: Migration[] = []
+  for (const { migration, sql } of migrationsToApplyWithContent) {
     try {
       await db.transaction(async (tx) => {
         await tx.exec(sql)
