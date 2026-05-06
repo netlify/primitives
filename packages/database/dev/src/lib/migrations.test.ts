@@ -280,7 +280,20 @@ test('Throws when a directory and flat file share the same name', async () => {
 
   db = await PGlite.create()
 
-  await expect(applyMigrations(db, tmpDir.path)).rejects.toThrow(/Duplicate migration name "0001_create_users"/)
+  await expect(applyMigrations(db, tmpDir.path)).rejects.toThrow(
+    /Name "0001_create_users" is used by multiple migrations/,
+  )
+})
+
+test('Throws when distinct migrations share a version', async () => {
+  tmpDir = await tmp.dir()
+
+  await createMigrationDir(tmpDir.path, '0001_create_users', 'CREATE TABLE users (id SERIAL PRIMARY KEY)')
+  await createFlatMigration(tmpDir.path, '0001_create_posts', 'CREATE TABLE posts (id SERIAL PRIMARY KEY)')
+
+  db = await PGlite.create()
+
+  await expect(applyMigrations(db, tmpDir.path)).rejects.toThrow(/Version 1 is used by multiple migrations/)
 })
 
 test('Ignores flat .sql files whose name does not match the migration pattern', async () => {

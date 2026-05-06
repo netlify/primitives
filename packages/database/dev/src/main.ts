@@ -249,7 +249,7 @@ export async function testMigrationsApply(migrationsDirectory: string) {
     if (error instanceof DuplicateMigrationVersionsError) {
       return {
         status: 'duplicate_versions' as const,
-        duplicateVersions: error.versionsWithMultipleMigrations,
+        conflicts: error.conflicts,
       }
     }
 

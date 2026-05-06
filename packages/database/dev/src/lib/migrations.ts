@@ -67,25 +67,29 @@ export class MissingMigrationDirectoryError extends Error {
   }
 }
 
-export class DuplicateMigrationVersionsError extends Error {
-  public readonly versionsWithMultipleMigrations: Record<number, Migration[]>
-  constructor(options: { versionsWithMultipleMigrations: Map<number, Set<Migration>> }) {
-    const versionsWithMultipleMigrationsObject = Object.fromEntries(
-      Array.from(options.versionsWithMultipleMigrations.entries()).map(([version, migrations]) => [
-        version,
-        Array.from(migrations),
-      ]),
-    )
+export type MigrationConflict =
+  | { kind: 'duplicate-name'; version: number; name: string; migrations: Migration[] }
+  | { kind: 'duplicate-version'; version: number; migrations: Migration[] }
 
-    const duplicateVersionsDetails = Object.entries(versionsWithMultipleMigrationsObject)
-      .map(([version, migrations]) => {
-        return ` - Version ${version}:\n${migrations.map((m) => `   - ${m.sqlPath}`).join('\n')}`
+export class DuplicateMigrationVersionsError extends Error {
+  public readonly conflicts: MigrationConflict[]
+  public readonly migrationsDirectory: string
+  constructor(options: { conflicts: MigrationConflict[]; migrationsDirectory: string }) {
+    const conflictDetails = options.conflicts
+      .map((conflict) => {
+        if (conflict.kind === 'duplicate-name') {
+          const paths = conflict.migrations.map((m) => `   - ${m.sqlPath}`).join('\n')
+          return ` - Name "${conflict.name}" is used by multiple migrations. Remove one before applying migrations:\n${paths}`
+        }
+        const paths = conflict.migrations.map((m) => `   - ${m.sqlPath} (${m.name})`).join('\n')
+        return ` - Version ${conflict.version} is used by multiple migrations. If these are duplicates, remove one; otherwise increment one migration's version, ensuring the resulting order applies them correctly:\n${paths}`
       })
       .join('\n')
 
-    super(`Duplicate migration versions found:\n${duplicateVersionsDetails}`)
-    this.name = 'DuplicateMigrationVersionError'
-    this.versionsWithMultipleMigrations = versionsWithMultipleMigrationsObject
+    super(`Duplicate migrations found in ${options.migrationsDirectory}:\n${conflictDetails}`)
+    this.name = 'DuplicateMigrationVersionsError'
+    this.conflicts = options.conflicts
+    this.migrationsDirectory = options.migrationsDirectory
   }
 }
 
@@ -132,22 +136,44 @@ export async function applyMigrationsWithDetails(
     throw new MissingMigrationDirectoryError({ migrationsDirectory, cause: error })
   }
 
-  const seenVersions = new Map<number, Set<Migration>>()
-  const versionsWithMultipleMigrations = new Map<number, Set<Migration>>()
+  const migrationsByVersion = new Map<number, Migration[]>()
   for (const migration of migrations) {
-    let existingVersions = seenVersions.get(migration.version)
-    if (!existingVersions) {
-      existingVersions = new Set()
-      seenVersions.set(migration.version, existingVersions)
+    const existing = migrationsByVersion.get(migration.version)
+    if (existing) {
+      existing.push(migration)
+    } else {
+      migrationsByVersion.set(migration.version, [migration])
     }
-    if (existingVersions.size === 1) {
-      versionsWithMultipleMigrations.set(migration.version, existingVersions)
-    }
-    existingVersions.add(migration)
   }
 
-  if (versionsWithMultipleMigrations.size > 0) {
-    throw new DuplicateMigrationVersionsError({ versionsWithMultipleMigrations })
+  const conflicts: MigrationConflict[] = []
+  for (const [version, migrationsForVersion] of migrationsByVersion) {
+    if (migrationsForVersion.length < 2) continue
+
+    const byName = new Map<string, Migration[]>()
+    for (const m of migrationsForVersion) {
+      const list = byName.get(m.name)
+      if (list) {
+        list.push(m)
+      } else {
+        byName.set(m.name, [m])
+      }
+    }
+
+    for (const [name, migrationsWithName] of byName) {
+      if (migrationsWithName.length >= 2) {
+        conflicts.push({ kind: 'duplicate-name', version, name, migrations: migrationsWithName })
+      }
+    }
+
+    if (byName.size >= 2) {
+      const representatives = Array.from(byName.values()).map((migs) => migs[0])
+      conflicts.push({ kind: 'duplicate-version', version, migrations: representatives })
+    }
+  }
+
+  if (conflicts.length > 0) {
+    throw new DuplicateMigrationVersionsError({ conflicts, migrationsDirectory })
   }
 
   migrations.sort((a, b) => a.version - b.version)
