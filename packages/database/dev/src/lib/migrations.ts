@@ -82,7 +82,7 @@ export class DuplicateMigrationVersionsError extends Error {
           return ` - Name "${conflict.name}" is used by multiple migrations. Remove one before applying migrations:\n${paths}`
         }
         const paths = conflict.migrations.map((m) => `   - ${m.sqlPath} (${m.name})`).join('\n')
-        return ` - Version ${conflict.version} is used by multiple migrations. If these are duplicates, remove one; otherwise increment one migration's version, ensuring the resulting order applies them correctly:\n${paths}`
+        return ` - Version ${conflict.version.toString()} is used by multiple migrations. If these are duplicates, remove one; otherwise increment one migration's version, ensuring the resulting order applies them correctly:\n${paths}`
       })
       .join('\n')
 
