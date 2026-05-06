@@ -5,7 +5,7 @@ import type { Dirent } from 'node:fs'
 
 import type { SQLExecutor } from './sql-executor.js'
 
-const MIGRATION_NAME_PATTERN = /^(\d+)_.+$/
+const MIGRATION_NAME_PATTERN = /^(\d+)_[a-z0-9_-]+$/
 const MIGRATION_FILE = 'migration.sql'
 const SQL_EXTENSION = '.sql'
 const TRACKING_SCHEMA = 'netlify'
@@ -15,6 +15,171 @@ export interface Migration {
   name: string
   version: number
   sqlPath: string
+}
+
+export interface PgErrorDetails {
+  message: string
+  code?: string
+  position?: number
+  hint?: string
+  detail?: string
+  severity?: string
+}
+
+export type MigrationIssue =
+  | {
+      kind: 'duplicate-name'
+      version: number
+      name: string
+      files: Migration[]
+      summary: string
+      remediation: string
+    }
+  | {
+      kind: 'duplicate-version'
+      version: number
+      files: Migration[]
+      summary: string
+      remediation: string
+    }
+  | {
+      kind: 'apply-failure'
+      migration: Migration
+      appliedBefore: Migration[]
+      remaining: Migration[]
+      pgError: PgErrorDetails
+      summary: string
+      remediation: string
+    }
+  | {
+      kind: 'migration-file-error'
+      reason: 'missing' | 'unreadable'
+      migrationName: string
+      sqlPath: string
+      summary: string
+      remediation: string
+      cause?: unknown
+    }
+  | {
+      kind: 'unknown'
+      summary: string
+      remediation: string
+      cause?: unknown
+    }
+
+const optionalString = (value: unknown): string | undefined =>
+  typeof value === 'string' && value !== '' ? value : undefined
+
+const parseOptionalInt = (value: unknown): number | undefined => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'string') {
+    const n = parseInt(value, 10)
+    return Number.isFinite(n) ? n : undefined
+  }
+  return undefined
+}
+
+export function normalizePgError(error: unknown): PgErrorDetails {
+  if (!(error instanceof Error)) {
+    return { message: String(error) }
+  }
+  const e = error as Error & Record<string, unknown>
+  return {
+    message: e.message,
+    code: optionalString(e.code),
+    position: parseOptionalInt(e.position),
+    hint: optionalString(e.hint),
+    detail: optionalString(e.detail),
+    severity: optionalString(e.severity),
+  }
+}
+
+const buildDuplicateNameIssue = (version: number, name: string, files: Migration[]): MigrationIssue => ({
+  kind: 'duplicate-name',
+  version,
+  name,
+  files,
+  summary: `Two or more migrations share the name "${name}".`,
+  remediation: `Delete one of the duplicate files before applying.`,
+})
+
+const buildDuplicateVersionIssue = (version: number, files: Migration[]): MigrationIssue => {
+  const fileList = files.map((m) => `"${m.name}"`).join(', ')
+  return {
+    kind: 'duplicate-version',
+    version,
+    files,
+    summary: `Version ${String(version)} is used by multiple migrations: ${fileList}.`,
+    remediation: `Increment one of the prefixes so ordering is unambiguous, or delete a file if it was an unintended duplicate.`,
+  }
+}
+
+const buildApplyFailureIssue = (options: {
+  migration: Migration
+  appliedBefore: Migration[]
+  remaining: Migration[]
+  cause: unknown
+}): MigrationIssue & { kind: 'apply-failure' } => {
+  const pgError = normalizePgError(options.cause)
+  const codeNote = pgError.code ? ` Postgres returned SQLSTATE ${pgError.code}; look that up for common causes.` : ''
+  return {
+    kind: 'apply-failure',
+    migration: options.migration,
+    appliedBefore: options.appliedBefore,
+    remaining: options.remaining,
+    pgError,
+    summary: `Migration "${options.migration.name}" failed to apply: ${pgError.message}`,
+    remediation:
+      `This may be a problem in the SQL of "${options.migration.name}" itself (for example, a syntax error), ` +
+      `or in the cumulative database state left by previously applied migrations ` +
+      `(for example, the migration tries to create an object that an earlier migration already created, ` +
+      `or references one that was never created).${codeNote} ` +
+      `Resolve the issue in the failing migration or in the prior ones before deploying.`,
+  }
+}
+
+const buildMigrationFileIssue = (options: {
+  migrationName: string
+  sqlPath: string
+  reason: 'missing' | 'unreadable'
+  cause?: unknown
+}): MigrationIssue & { kind: 'migration-file-error' } => {
+  if (options.reason === 'missing') {
+    return {
+      kind: 'migration-file-error',
+      reason: 'missing',
+      migrationName: options.migrationName,
+      sqlPath: options.sqlPath,
+      summary: `Migration "${options.migrationName}" is missing its SQL file at ${options.sqlPath}.`,
+      remediation: `Create the file at ${options.sqlPath}, or remove the migration's directory if it isn't intended.`,
+      cause: options.cause,
+    }
+  }
+  const causeMessage = options.cause instanceof Error ? options.cause.message : String(options.cause)
+  return {
+    kind: 'migration-file-error',
+    reason: 'unreadable',
+    migrationName: options.migrationName,
+    sqlPath: options.sqlPath,
+    summary: `Could not read migration "${options.migrationName}" at ${options.sqlPath}: ${causeMessage}`,
+    remediation: `Check filesystem permissions on ${options.sqlPath} and that it isn't held open by another process.`,
+    cause: options.cause,
+  }
+}
+
+const formatIssueAsErrorLine = (issue: MigrationIssue): string => {
+  if (issue.kind === 'duplicate-name') {
+    const paths = issue.files.map((m) => `   - ${m.sqlPath}`).join('\n')
+    return ` - ${issue.summary} ${issue.remediation}\n${paths}`
+  }
+  if (issue.kind === 'duplicate-version') {
+    const paths = issue.files.map((m) => `   - ${m.sqlPath} (${m.name})`).join('\n')
+    return ` - ${issue.summary} ${issue.remediation}\n${paths}`
+  }
+  if (issue.kind === 'apply-failure' || issue.kind === 'migration-file-error') {
+    return ` - ${issue.summary}\n   ${issue.remediation}`
+  }
+  return ` - ${issue.summary} ${issue.remediation}`
 }
 
 function nameAndFileToMigration(name: string, sqlPath: string): Migration | null {
@@ -67,50 +232,58 @@ export class MissingMigrationDirectoryError extends Error {
   }
 }
 
-export type MigrationConflict =
-  | { kind: 'duplicate-name'; version: number; name: string; migrations: Migration[] }
-  | { kind: 'duplicate-version'; version: number; migrations: Migration[] }
-
 export class DuplicateMigrationVersionsError extends Error {
-  public readonly conflicts: MigrationConflict[]
+  public readonly issues: MigrationIssue[]
   public readonly migrationsDirectory: string
-  constructor(options: { conflicts: MigrationConflict[]; migrationsDirectory: string }) {
-    const conflictDetails = options.conflicts
-      .map((conflict) => {
-        if (conflict.kind === 'duplicate-name') {
-          const paths = conflict.migrations.map((m) => `   - ${m.sqlPath}`).join('\n')
-          return ` - Name "${conflict.name}" is used by multiple migrations. Remove one before applying migrations:\n${paths}`
-        }
-        const paths = conflict.migrations.map((m) => `   - ${m.sqlPath} (${m.name})`).join('\n')
-        return ` - Version ${conflict.version.toString()} is used by multiple migrations. If these are duplicates, remove one; otherwise increment one migration's version, ensuring the resulting order applies them correctly:\n${paths}`
-      })
-      .join('\n')
-
-    super(`Duplicate migrations found in ${options.migrationsDirectory}:\n${conflictDetails}`)
+  constructor(options: { issues: MigrationIssue[]; migrationsDirectory: string }) {
+    const detail = options.issues.map(formatIssueAsErrorLine).join('\n')
+    super(`Duplicate migrations found in ${options.migrationsDirectory}:\n${detail}`)
     this.name = 'DuplicateMigrationVersionsError'
-    this.conflicts = options.conflicts
+    this.issues = options.issues
     this.migrationsDirectory = options.migrationsDirectory
   }
 }
 
 export class MigrationsApplyError extends Error {
-  public readonly appliedMigrations: Migration[]
-  public readonly migrationCausingError: Migration
-  public readonly remainingMigrations: Migration[]
+  public readonly issue: MigrationIssue & { kind: 'apply-failure' }
   public readonly cause: Error
-  constructor(options: {
-    appliedMigrations: Migration[]
-    migrationCausingError: Migration
-    remainingMigrations: Migration[]
-    cause: unknown
-  }) {
-    super(`Failed to apply migrations`, { cause: options.cause })
+  constructor(options: { issue: MigrationIssue & { kind: 'apply-failure' } }) {
+    super(`${options.issue.summary}\n${options.issue.remediation}`, { cause: options.issue.pgError })
     this.name = 'MigrationsApplyError'
-    this.appliedMigrations = options.appliedMigrations
-    this.migrationCausingError = options.migrationCausingError
-    this.remainingMigrations = options.remainingMigrations
-    this.cause = options.cause instanceof Error ? options.cause : new Error(String(options.cause))
+    this.issue = options.issue
+    this.cause = new Error(options.issue.pgError.message)
   }
+}
+
+export class MigrationFileError extends Error {
+  public readonly issue: MigrationIssue & { kind: 'migration-file-error' }
+  constructor(options: { issue: MigrationIssue & { kind: 'migration-file-error' } }) {
+    super(`${options.issue.summary}\n${options.issue.remediation}`, { cause: options.issue.cause })
+    this.name = 'MigrationFileError'
+    this.issue = options.issue
+  }
+}
+
+export function errorToIssues(error: unknown): MigrationIssue[] {
+  if (error instanceof MissingMigrationDirectoryError) {
+    return []
+  }
+  if (error instanceof DuplicateMigrationVersionsError) {
+    return error.issues
+  }
+  if (error instanceof MigrationsApplyError || error instanceof MigrationFileError) {
+    return [error.issue]
+  }
+
+  const message = error instanceof Error ? error.message : String(error)
+  return [
+    {
+      kind: 'unknown',
+      summary: `An unexpected error occurred while validating migrations: ${message}`,
+      remediation: `Re-run the command. If the problem persists, file a bug report with the error details above.`,
+      cause: error,
+    },
+  ]
 }
 
 export async function applyMigrations(...args: Parameters<typeof applyMigrationsWithDetails>): Promise<string[]> {
@@ -146,7 +319,7 @@ export async function applyMigrationsWithDetails(
     }
   }
 
-  const conflicts: MigrationConflict[] = []
+  const issues: MigrationIssue[] = []
   for (const [version, migrationsForVersion] of migrationsByVersion) {
     if (migrationsForVersion.length < 2) continue
 
@@ -162,18 +335,18 @@ export async function applyMigrationsWithDetails(
 
     for (const [name, migrationsWithName] of byName) {
       if (migrationsWithName.length >= 2) {
-        conflicts.push({ kind: 'duplicate-name', version, name, migrations: migrationsWithName })
+        issues.push(buildDuplicateNameIssue(version, name, migrationsWithName))
       }
     }
 
     if (byName.size >= 2) {
       const representatives = Array.from(byName.values()).map((migs) => migs[0])
-      conflicts.push({ kind: 'duplicate-version', version, migrations: representatives })
+      issues.push(buildDuplicateVersionIssue(version, representatives))
     }
   }
 
-  if (conflicts.length > 0) {
-    throw new DuplicateMigrationVersionsError({ conflicts, migrationsDirectory })
+  if (issues.length > 0) {
+    throw new DuplicateMigrationVersionsError({ issues, migrationsDirectory })
   }
 
   migrations.sort((a, b) => a.version - b.version)
@@ -212,11 +385,14 @@ export async function applyMigrationsWithDetails(
       migrationsToApplyWithContent.push({ migration, sql })
     } catch (error) {
       const err = error as NodeJS.ErrnoException
-      if (err.code === 'ENOENT') {
-        throw new Error(`Migration SQL file not found: ${migration.sqlPath}`)
-      }
-
-      throw new Error(`Failed to read migration "${migration.name}" at "${migration.sqlPath}": ${err.message}`)
+      throw new MigrationFileError({
+        issue: buildMigrationFileIssue({
+          migrationName: migration.name,
+          sqlPath: migration.sqlPath,
+          reason: err.code === 'ENOENT' ? 'missing' : 'unreadable',
+          cause: err,
+        }),
+      })
     }
   }
 
@@ -229,10 +405,12 @@ export async function applyMigrationsWithDetails(
       })
     } catch (error) {
       throw new MigrationsApplyError({
-        cause: error,
-        appliedMigrations: applied,
-        migrationCausingError: migration,
-        remainingMigrations: migrationsToConsider.slice(applied.length + 1),
+        issue: buildApplyFailureIssue({
+          migration,
+          appliedBefore: applied,
+          remaining: migrationsToConsider.slice(applied.length + 1),
+          cause: error,
+        }),
       })
     }
 

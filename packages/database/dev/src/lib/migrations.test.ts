@@ -177,7 +177,7 @@ test('Throws MigrationFileNotFoundError for directory missing migration.sql', as
   db = await PGlite.create()
 
   await expect(applyMigrations(db, tmpDir.path, '0001_missing_file')).rejects.toThrow(
-    /Migration SQL file not found: .*0001_missing_file[/\\]migration.sql/,
+    /Migration "0001_missing_file" is missing its SQL file at .*0001_missing_file[/\\]migration\.sql/,
   )
 })
 
@@ -281,7 +281,7 @@ test('Throws when a directory and flat file share the same name', async () => {
   db = await PGlite.create()
 
   await expect(applyMigrations(db, tmpDir.path)).rejects.toThrow(
-    /Name "0001_create_users" is used by multiple migrations/,
+    /Two or more migrations share the name "0001_create_users"/,
   )
 })
 
@@ -303,6 +303,21 @@ test('Ignores flat .sql files whose name does not match the migration pattern', 
   // None of these should be picked up.
   await fs.writeFile(join(tmpDir.path, 'seed.sql'), 'SELECT 1')
   await fs.writeFile(join(tmpDir.path, 'readme.sql'), 'SELECT 1')
+
+  db = await PGlite.create()
+
+  const applied = await applyMigrations(db, tmpDir.path)
+
+  expect(applied).toEqual(['0001_create_users'])
+})
+
+test('Skips entries with disallowed characters (uppercase, spaces, special) in the slug', async () => {
+  tmpDir = await tmp.dir()
+
+  await createFlatMigration(tmpDir.path, '0001_create_users', 'CREATE TABLE users (id SERIAL PRIMARY KEY)')
+  await createMigrationDir(tmpDir.path, '0002_CAPS_NOT_OK', 'CREATE TABLE caps (id SERIAL PRIMARY KEY)')
+  await createMigrationDir(tmpDir.path, '0003_special!chars', 'CREATE TABLE bad (id SERIAL PRIMARY KEY)')
+  await fs.writeFile(join(tmpDir.path, '0004_with space.sql'), 'CREATE TABLE bad (id SERIAL PRIMARY KEY)')
 
   db = await PGlite.create()
 
