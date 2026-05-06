@@ -168,7 +168,7 @@ test('Returns failure with apply-failure issue when a migration has a syntax err
     'This may be a problem in the SQL of "0002_bad" itself (for example, a syntax error), ' +
       'or in the cumulative database state left by previously applied migrations ' +
       '(for example, the migration tries to create an object that an earlier migration already created, ' +
-      "or references one that was never created). Postgres returned SQLSTATE 42601; look that up for common causes. " +
+      'or references one that was never created). Postgres returned SQLSTATE 42601; look that up for common causes. ' +
       'Resolve the issue in the failing migration or in the prior ones before deploying.',
   )
 })
@@ -190,14 +190,12 @@ test('Returns failure with apply-failure issue when a migration creates a relati
   expect(issue.migration.name).toBe('0002_create_users_again')
   expect(issue.pgError.code).toBe('42P07')
   expect(issue.pgError.message).toBe('relation "users" already exists')
-  expect(issue.summary).toBe(
-    'Migration "0002_create_users_again" failed to apply: relation "users" already exists',
-  )
+  expect(issue.summary).toBe('Migration "0002_create_users_again" failed to apply: relation "users" already exists')
   expect(issue.remediation).toBe(
     'This may be a problem in the SQL of "0002_create_users_again" itself (for example, a syntax error), ' +
       'or in the cumulative database state left by previously applied migrations ' +
       '(for example, the migration tries to create an object that an earlier migration already created, ' +
-      "or references one that was never created). Postgres returned SQLSTATE 42P07; look that up for common causes. " +
+      'or references one that was never created). Postgres returned SQLSTATE 42P07; look that up for common causes. ' +
       'Resolve the issue in the failing migration or in the prior ones before deploying.',
   )
 })
