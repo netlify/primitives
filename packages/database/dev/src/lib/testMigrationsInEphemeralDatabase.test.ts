@@ -139,7 +139,7 @@ test('Returns failure with migration-file-error (missing) when a migration direc
     /^Migration "0001_create_users" is missing its SQL file at .+0001_create_users[/\\]migration\.sql\.$/,
   )
   expect(issue.remediation).toMatch(
-    /^Create the file at .+0001_create_users[/\\]migration\.sql, or remove the migration's directory if it isn't intended\.$/,
+    /^Create the file at .+0001_create_users[/\\]migration\.sql, or remove the migration's directory if it isn't intended\. Only remove the directory if the migration has not yet been applied to any database — if it was applied, restore the file from version control instead\.$/,
   )
 })
 
@@ -169,7 +169,11 @@ test('Returns failure with apply-failure issue when a migration has a syntax err
       'or in the cumulative database state left by previously applied migrations ' +
       '(for example, the migration tries to create an object that an earlier migration already created, ' +
       'or references one that was never created). Postgres returned SQLSTATE 42601; look that up for common causes. ' +
-      'Resolve the issue in the failing migration or in the prior ones before deploying.',
+      'If the failing migration (or a prior one whose state is implicated) has not yet been applied to any database, ' +
+      'fix its SQL. If it has already been applied, you likely edited the file after the fact — applied migrations ' +
+      'are immutable, so restore it to its applied version (for example via version control or ' +
+      '`netlify database migrations pull --force`). If neither situation matches, this may indicate a divergence ' +
+      'between Postgres and the embedded engine used for this check — please file a bug.',
   )
 })
 
@@ -196,6 +200,10 @@ test('Returns failure with apply-failure issue when a migration creates a relati
       'or in the cumulative database state left by previously applied migrations ' +
       '(for example, the migration tries to create an object that an earlier migration already created, ' +
       'or references one that was never created). Postgres returned SQLSTATE 42P07; look that up for common causes. ' +
-      'Resolve the issue in the failing migration or in the prior ones before deploying.',
+      'If the failing migration (or a prior one whose state is implicated) has not yet been applied to any database, ' +
+      'fix its SQL. If it has already been applied, you likely edited the file after the fact — applied migrations ' +
+      'are immutable, so restore it to its applied version (for example via version control or ' +
+      '`netlify database migrations pull --force`). If neither situation matches, this may indicate a divergence ' +
+      'between Postgres and the embedded engine used for this check — please file a bug.',
   )
 })
