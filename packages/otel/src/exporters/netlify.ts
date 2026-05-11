@@ -58,14 +58,14 @@ export function serializeSpans(spans: ReadableSpan[]): Record<string, unknown> {
         scopeSpans: [
           {
             scope: {
-              name: span.instrumentationLibrary.name,
-              version: span.instrumentationLibrary.version,
+              name: span.instrumentationScope.name,
+              version: span.instrumentationScope.version,
             },
             spans: [
               {
                 traceId: spanContext.traceId,
                 spanId: spanContext.spanId,
-                parentSpanId: span.parentSpanId,
+                parentSpanId: span.parentSpanContext?.spanId,
 
                 name: span.name,
                 kind: span.kind || SpanKind.SERVER,
