@@ -1,5 +1,16 @@
 # Changelog
 
+## [6.0.0](https://github.com/netlify/primitives/compare/otel-v5.1.5...otel-v6.0.0) (2026-05-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **otel:** Consumers implementing their own SpanExporter that read ReadableSpan.parentSpanId or ReadableSpan.instrumentationLibrary must update to the 2.x field names.
+
+### Features
+
+* **otel:** upgrade to OpenTelemetry JS 2.x ([#682](https://github.com/netlify/primitives/issues/682)) ([2d14e46](https://github.com/netlify/primitives/commit/2d14e46e5ae042210b6db91a8b96588b89e8b767))
+
 ## [5.1.5](https://github.com/netlify/primitives/compare/otel-v5.1.4...otel-v5.1.5) (2026-03-19)
 
 
