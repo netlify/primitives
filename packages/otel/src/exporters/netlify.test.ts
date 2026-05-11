@@ -1,7 +1,7 @@
 import { serializeSpans } from './netlify.ts'
 import { SpanKind, SpanStatusCode, TraceFlags } from '@opentelemetry/api'
 import { TraceState } from '@opentelemetry/core'
-import { Resource } from '@opentelemetry/resources'
+import { resourceFromAttributes } from '@opentelemetry/resources'
 import { ReadableSpan } from '@opentelemetry/sdk-trace-node'
 import { describe, test, expect } from 'vitest'
 
@@ -47,7 +47,7 @@ function createSpan(): ReadableSpan {
     ],
     duration: [1, 300000000],
     ended: true,
-    resource: new Resource({
+    resource: resourceFromAttributes({
       'service.name': 'serviceName',
       'service.version': 'serviceVersion',
       'process.runtime.name': 'nodejs',
@@ -57,7 +57,7 @@ function createSpan(): ReadableSpan {
       'netlify.site.id': 'siteId',
       'netlify.site.name': 'siteName',
     }),
-    instrumentationLibrary: {
+    instrumentationScope: {
       name: '@netlify/otel',
       version: '1.0.0',
     },
