@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.18.2](https://github.com/netlify/primitives/compare/dev-v4.18.1...dev-v4.18.2) (2026-05-11)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#674](https://github.com/netlify/primitives/issues/674)) ([8179496](https://github.com/netlify/primitives/commit/8179496fad479522f329cc99d03175408bffcb0c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions-dev bumped from 1.0.16 to 1.0.17
+    * @netlify/functions-dev bumped from 1.2.6 to 1.2.7
+
 ## [4.18.1](https://github.com/netlify/primitives/compare/dev-v4.18.0...dev-v4.18.1) (2026-04-28)
 
 
