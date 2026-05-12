@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.7.6](https://github.com/netlify/primitives/compare/blobs-v10.7.5...blobs-v10.7.6) (2026-05-12)
+
+
+### Bug Fixes
+
+* update readme badges to point to current repo ([#594](https://github.com/netlify/primitives/issues/594)) ([0e05d46](https://github.com/netlify/primitives/commit/0e05d46b645b66d20d01e824fe5b82a121b491a2))
+
 ## [10.7.5](https://github.com/netlify/primitives/compare/blobs-v10.7.4...blobs-v10.7.5) (2026-05-11)
 
 

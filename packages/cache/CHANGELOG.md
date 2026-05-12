@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.5](https://github.com/netlify/primitives/compare/cache-v3.4.4...cache-v3.4.5) (2026-05-12)
+
+
+### Bug Fixes
+
+* update readme badges to point to current repo ([#594](https://github.com/netlify/primitives/issues/594)) ([0e05d46](https://github.com/netlify/primitives/commit/0e05d46b645b66d20d01e824fe5b82a121b491a2))
+
 ## [3.4.4](https://github.com/netlify/primitives/compare/cache-v3.4.3...cache-v3.4.4) (2026-03-19)
 
 
