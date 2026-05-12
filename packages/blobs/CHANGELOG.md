@@ -1,5 +1,54 @@
 # Changelog
 
+## [10.7.5](https://github.com/netlify/primitives/compare/blobs-v10.7.4...blobs-v10.7.5) (2026-05-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/otel bumped from ^5.1.5 to ^6.0.0
+
+## [10.7.4](https://github.com/netlify/primitives/compare/blobs-v10.7.3...blobs-v10.7.4) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.4.2 to 4.4.3
+    * @netlify/otel bumped from ^5.1.4 to ^5.1.5
+
+## [10.7.3](https://github.com/netlify/primitives/compare/blobs-v10.7.2...blobs-v10.7.3) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.4.1 to 4.4.2
+    * @netlify/otel bumped from ^5.1.3 to ^5.1.4
+
+## [10.7.2](https://github.com/netlify/primitives/compare/blobs-v10.7.1...blobs-v10.7.2) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.4.0 to 4.4.1
+    * @netlify/otel bumped from ^5.1.2 to ^5.1.3
+
+## [10.7.1](https://github.com/netlify/primitives/compare/blobs-v10.7.0...blobs-v10.7.1) (2026-03-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.3.3 to 4.4.0
+    * @netlify/otel bumped from ^5.1.1 to ^5.1.2
+
 ## [10.7.0](https://github.com/netlify/primitives/compare/blobs-v10.6.0...blobs-v10.7.0) (2026-02-16)
 
 

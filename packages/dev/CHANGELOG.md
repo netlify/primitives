@@ -1,5 +1,277 @@
 # Changelog
 
+## [4.18.3](https://github.com/netlify/primitives/compare/dev-v4.18.2...dev-v4.18.3) (2026-05-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.4 to 10.7.5
+    * @netlify/functions-dev bumped from 1.2.7 to 1.2.8
+    * @netlify/runtime bumped from 4.1.20 to 4.1.21
+
+## [4.18.2](https://github.com/netlify/primitives/compare/dev-v4.18.1...dev-v4.18.2) (2026-05-11)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#674](https://github.com/netlify/primitives/issues/674)) ([8179496](https://github.com/netlify/primitives/commit/8179496fad479522f329cc99d03175408bffcb0c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions-dev bumped from 1.0.16 to 1.0.17
+    * @netlify/functions-dev bumped from 1.2.6 to 1.2.7
+
+## [4.18.1](https://github.com/netlify/primitives/compare/dev-v4.18.0...dev-v4.18.1) (2026-04-28)
+
+
+### Bug Fixes
+
+* set NETLIFY_DB_DRIVER to server in dev ([#670](https://github.com/netlify/primitives/issues/670)) ([cedca7a](https://github.com/netlify/primitives/commit/cedca7a6da04154b9c6d6d5347160fd4e8644a20))
+
+## [4.18.0](https://github.com/netlify/primitives/compare/dev-v4.17.3...dev-v4.18.0) (2026-04-27)
+
+
+### Features
+
+* export initializeTrackingTable from @netlify/dev ([#663](https://github.com/netlify/primitives/issues/663)) ([52ac65a](https://github.com/netlify/primitives/commit/52ac65a9065931ab951f65d817b1ad2f788a9f2c))
+* unflag database ([#667](https://github.com/netlify/primitives/issues/667)) ([76d95a1](https://github.com/netlify/primitives/commit/76d95a1de14712f858f24d90a430e9b7bca9f3e7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/database-dev bumped from 0.10.0 to 0.10.1
+
+## [4.17.3](https://github.com/netlify/primitives/compare/dev-v4.17.2...dev-v4.17.3) (2026-04-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/database-dev bumped from 0.9.0 to 0.10.0
+
+## [4.17.2](https://github.com/netlify/primitives/compare/dev-v4.17.1...dev-v4.17.2) (2026-04-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/database-dev bumped from 0.8.0 to 0.9.0
+
+## [4.17.1](https://github.com/netlify/primitives/compare/dev-v4.17.0...dev-v4.17.1) (2026-04-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions-dev bumped from 1.2.5 to 1.2.6
+
+## [4.17.0](https://github.com/netlify/primitives/compare/dev-v4.16.5...dev-v4.17.0) (2026-04-13)
+
+
+### Features
+
+* rename database package ([#649](https://github.com/netlify/primitives/issues/649)) ([bbe80bb](https://github.com/netlify/primitives/commit/bbe80bb31eedb74d08c08f35cd21f1360b9eb41f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/database-dev bumped from 0.7.0 to 0.8.0
+
+## [4.16.5](https://github.com/netlify/primitives/compare/dev-v4.16.4...dev-v4.16.5) (2026-04-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions-dev bumped from 1.2.4 to 1.2.5
+
+## [4.16.4](https://github.com/netlify/primitives/compare/dev-v4.16.3...dev-v4.16.4) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.3 to 10.7.4
+    * @netlify/dev-utils bumped from 4.4.2 to 4.4.3
+    * @netlify/edge-functions-dev bumped from 1.0.15 to 1.0.16
+    * @netlify/functions-dev bumped from 1.2.3 to 1.2.4
+    * @netlify/headers bumped from 2.1.7 to 2.1.8
+    * @netlify/images bumped from 1.3.6 to 1.3.7
+    * @netlify/redirects bumped from 3.1.9 to 3.1.10
+    * @netlify/runtime bumped from 4.1.19 to 4.1.20
+    * @netlify/static bumped from 3.1.6 to 3.1.7
+  * devDependencies
+    * @netlify/types bumped from 2.5.0 to 2.6.0
+
+## [4.16.3](https://github.com/netlify/primitives/compare/dev-v4.16.2...dev-v4.16.3) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.2 to 10.7.3
+    * @netlify/dev-utils bumped from 4.4.1 to 4.4.2
+    * @netlify/edge-functions-dev bumped from 1.0.14 to 1.0.15
+    * @netlify/functions-dev bumped from 1.2.2 to 1.2.3
+    * @netlify/headers bumped from 2.1.6 to 2.1.7
+    * @netlify/images bumped from 1.3.5 to 1.3.6
+    * @netlify/redirects bumped from 3.1.8 to 3.1.9
+    * @netlify/runtime bumped from 4.1.18 to 4.1.19
+    * @netlify/static bumped from 3.1.5 to 3.1.6
+  * devDependencies
+    * @netlify/types bumped from 2.4.0 to 2.5.0
+
+## [4.16.2](https://github.com/netlify/primitives/compare/dev-v4.16.1...dev-v4.16.2) (2026-03-13)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#626](https://github.com/netlify/primitives/issues/626)) ([a87ba84](https://github.com/netlify/primitives/commit/a87ba84fa23c3a4ff506cd9c3d5f3b5cd78d9f3c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.4.0 to ^0.4.1
+    * @netlify/edge-functions-dev bumped from 1.0.13 to 1.0.14
+    * @netlify/functions-dev bumped from 1.2.1 to 1.2.2
+    * @netlify/headers bumped from 2.1.5 to 2.1.6
+    * @netlify/redirects bumped from 3.1.7 to 3.1.8
+
+## [4.16.1](https://github.com/netlify/primitives/compare/dev-v4.16.0...dev-v4.16.1) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.1 to 10.7.2
+    * @netlify/dev-utils bumped from 4.4.0 to 4.4.1
+    * @netlify/edge-functions-dev bumped from 1.0.12 to 1.0.13
+    * @netlify/functions-dev bumped from 1.2.0 to 1.2.1
+    * @netlify/headers bumped from 2.1.4 to 2.1.5
+    * @netlify/images bumped from 1.3.4 to 1.3.5
+    * @netlify/redirects bumped from 3.1.6 to 3.1.7
+    * @netlify/runtime bumped from 4.1.17 to 4.1.18
+    * @netlify/static bumped from 3.1.4 to 3.1.5
+  * devDependencies
+    * @netlify/types bumped from 2.3.0 to 2.4.0
+
+## [4.16.0](https://github.com/netlify/primitives/compare/dev-v4.15.0...dev-v4.16.0) (2026-03-10)
+
+
+### Features
+
+* **db:** make NetlifyDB fulfill SQLExecutor ([#620](https://github.com/netlify/primitives/issues/620)) ([a91a390](https://github.com/netlify/primitives/commit/a91a390a32a66a0bdd86efaa8574e597abef3b82))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/db-dev bumped from 0.6.0 to 0.7.0
+
+## [4.15.0](https://github.com/netlify/primitives/compare/dev-v4.14.1...dev-v4.15.0) (2026-03-10)
+
+
+### Features
+
+* add `FileWatcher` class ([#607](https://github.com/netlify/primitives/issues/607)) ([1f8bdfc](https://github.com/netlify/primitives/commit/1f8bdfc06e411703cc9338b9cd7dfe3a0c0f4eff))
+* **db-dev:** abstract pg client into interface ([#619](https://github.com/netlify/primitives/issues/619)) ([2c92b2d](https://github.com/netlify/primitives/commit/2c92b2dfdd973255883caad44594dfd470799a6d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.0 to 10.7.1
+    * @netlify/db-dev bumped from 0.5.0 to 0.6.0
+    * @netlify/dev-utils bumped from 4.3.3 to 4.4.0
+    * @netlify/edge-functions-dev bumped from 1.0.11 to 1.0.12
+    * @netlify/functions-dev bumped from 1.1.12 to 1.2.0
+    * @netlify/headers bumped from 2.1.3 to 2.1.4
+    * @netlify/images bumped from 1.3.3 to 1.3.4
+    * @netlify/redirects bumped from 3.1.5 to 3.1.6
+    * @netlify/runtime bumped from 4.1.16 to 4.1.17
+    * @netlify/static bumped from 3.1.3 to 3.1.4
+
+## [4.14.1](https://github.com/netlify/primitives/compare/dev-v4.14.0...dev-v4.14.1) (2026-03-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/db-dev bumped from 0.4.0 to 0.5.0
+
+## [4.14.0](https://github.com/netlify/primitives/compare/dev-v4.13.0...dev-v4.14.0) (2026-03-05)
+
+
+### Features
+
+* **dev:** export db instance on NetlifyDev ([#613](https://github.com/netlify/primitives/issues/613)) ([ff643ff](https://github.com/netlify/primitives/commit/ff643ffb01546498be8c18f0d955d9dd02514ed4))
+
+## [4.13.0](https://github.com/netlify/primitives/compare/dev-v4.12.1...dev-v4.13.0) (2026-03-05)
+
+
+### Features
+
+* **dev:** move @netlify/db-dev to dependency of @netlify/dev ([#611](https://github.com/netlify/primitives/issues/611)) ([8d0d1a1](https://github.com/netlify/primitives/commit/8d0d1a16f18cf5599696097b068a7b12dab10229))
+
+## [4.12.1](https://github.com/netlify/primitives/compare/dev-v4.12.0...dev-v4.12.1) (2026-03-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/db-dev bumped from 0.3.0 to 0.4.0
+  * peerDependencies
+    * @netlify/db-dev bumped from 0.2.0 to 0.4.0
+
+## [4.12.0](https://github.com/netlify/primitives/compare/dev-v4.11.3...dev-v4.12.0) (2026-03-03)
+
+
+### Features
+
+* account-based token fetch ([#604](https://github.com/netlify/primitives/issues/604)) ([b772f0d](https://github.com/netlify/primitives/commit/b772f0d96d1b2cb1d313d8397cce5b8b2d4161ae))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.3.8 to ^0.4.0
+
+## [4.11.3](https://github.com/netlify/primitives/compare/dev-v4.11.2...dev-v4.11.3) (2026-02-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime bumped from 4.1.15 to 4.1.16
+  * devDependencies
+    * @netlify/db-dev bumped from 0.2.0 to 0.3.0
+  * peerDependencies
+    * @netlify/db-dev bumped from 0.2.0 to 0.3.0
+
 ## [4.11.2](https://github.com/netlify/primitives/compare/dev-v4.11.1...dev-v4.11.2) (2026-02-17)
 
 

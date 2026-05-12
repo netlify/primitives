@@ -1,5 +1,11 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest'
-import { fetchAIGatewayToken, setupAIGateway, parseAIGatewayContext, fetchAIProviders } from './bootstrap/main.js'
+import {
+  fetchAIGatewayToken,
+  fetchAccountAIGatewayToken,
+  setupAIGateway,
+  parseAIGatewayContext,
+  fetchAIProviders,
+} from './bootstrap/main.js'
 import type { NetlifyAPI } from '@netlify/api'
 
 describe('fetchAIGatewayToken', () => {
@@ -91,6 +97,101 @@ describe('fetchAIGatewayToken', () => {
     const result = await fetchAIGatewayToken({
       api: mockApi,
       siteId: 'test-site-id',
+    })
+
+    expect(result).toBeNull()
+  })
+})
+
+describe('fetchAccountAIGatewayToken', () => {
+  const mockGetAccountAIGatewayToken = vi.fn()
+  const mockApi: NetlifyAPI = {
+    scheme: 'https',
+    host: 'api.netlify.com',
+    accessToken: 'test-token',
+    getAccountAIGatewayToken: mockGetAccountAIGatewayToken,
+  } as unknown as NetlifyAPI
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  test('successfully fetches account AI Gateway token', async () => {
+    const mockResponse = {
+      token: 'ai-gateway-token',
+      url: 'https://ai-gateway.com/.netlify/ai/',
+    }
+
+    mockGetAccountAIGatewayToken.mockResolvedValue(mockResponse)
+
+    const result = await fetchAccountAIGatewayToken({
+      api: mockApi,
+      accountId: 'test-account-id',
+    })
+
+    expect(result).toEqual(mockResponse)
+    expect(mockGetAccountAIGatewayToken).toHaveBeenCalledWith({ account_id: 'test-account-id' })
+  })
+
+  test('returns null when no access token is provided', async () => {
+    const apiWithoutToken: NetlifyAPI = {
+      scheme: mockApi.scheme,
+      host: mockApi.host,
+      accessToken: undefined,
+      getAccountAIGatewayToken: mockGetAccountAIGatewayToken,
+    } as unknown as NetlifyAPI
+
+    const result = await fetchAccountAIGatewayToken({
+      api: apiWithoutToken,
+      accountId: 'test-account-id',
+    })
+
+    expect(result).toBeNull()
+    expect(mockGetAccountAIGatewayToken).not.toHaveBeenCalled()
+  })
+
+  test('returns null when API returns 404', async () => {
+    const error = new Error('Not Found') as Error & { status: number }
+    error.status = 404
+    mockGetAccountAIGatewayToken.mockRejectedValue(error)
+
+    const result = await fetchAccountAIGatewayToken({
+      api: mockApi,
+      accountId: 'test-account-id',
+    })
+
+    expect(result).toBeNull()
+  })
+
+  test('throws error for non-404 HTTP errors', async () => {
+    const error = new Error('Internal Server Error')
+    mockGetAccountAIGatewayToken.mockRejectedValue(error)
+
+    const result = await fetchAccountAIGatewayToken({
+      api: mockApi,
+      accountId: 'test-account-id',
+    })
+
+    expect(result).toBeNull()
+  })
+
+  test('handles invalid response format', async () => {
+    mockGetAccountAIGatewayToken.mockResolvedValue({ invalid: 'response' })
+
+    const result = await fetchAccountAIGatewayToken({
+      api: mockApi,
+      accountId: 'test-account-id',
+    })
+
+    expect(result).toBeNull()
+  })
+
+  test('handles network errors', async () => {
+    mockGetAccountAIGatewayToken.mockRejectedValue(new Error('Network error'))
+
+    const result = await fetchAccountAIGatewayToken({
+      api: mockApi,
+      accountId: 'test-account-id',
     })
 
     expect(result).toBeNull()
@@ -195,12 +296,14 @@ describe('fetchAIProviders', () => {
 
 describe('setupAIGateway', () => {
   const mockGetAIGatewayToken = vi.fn()
+  const mockGetAccountAIGatewayToken = vi.fn()
   const mockGetAIGatewayProviders = vi.fn()
   const mockApi: NetlifyAPI = {
     scheme: 'https',
     host: 'api.netlify.com',
     accessToken: 'test-token',
     getAIGatewayToken: mockGetAIGatewayToken,
+    getAccountAIGatewayToken: mockGetAccountAIGatewayToken,
     getAIGatewayProviders: mockGetAIGatewayProviders,
   } as unknown as NetlifyAPI
 
@@ -275,6 +378,47 @@ describe('setupAIGateway', () => {
     await setupAIGateway(config)
 
     expect(env).not.toHaveProperty('AI_GATEWAY')
+  })
+
+  test('falls back to account-scoped token when site token unavailable', async () => {
+    const mockAccountTokenResponse = {
+      token: 'account-gateway-token',
+      url: 'https://ai-gateway.com/.netlify/ai',
+    }
+    const mockProvidersResponse = {
+      providers: {
+        openai: {
+          token_env_var: 'OPENAI_API_KEY',
+          url_env_var: 'OPENAI_BASE_URL',
+          models: ['gpt-4'],
+        },
+      },
+    }
+
+    mockGetAIGatewayToken.mockResolvedValue(null)
+    mockGetAccountAIGatewayToken.mockResolvedValue(mockAccountTokenResponse)
+    mockGetAIGatewayProviders.mockResolvedValue(mockProvidersResponse)
+
+    const env = {}
+    await setupAIGateway({
+      api: mockApi,
+      env,
+      siteID: 'test-site',
+      siteURL: 'https://example.com',
+      accountID: 'test-account-id',
+      siteHasDeploy: false,
+    })
+
+    expect(env).toHaveProperty('AI_GATEWAY')
+    const base64Value = (env as { AI_GATEWAY: { value: string } }).AI_GATEWAY.value
+    const decodedContext = JSON.parse(Buffer.from(base64Value, 'base64').toString('utf8'))
+    expect(decodedContext).toEqual({
+      token: 'account-gateway-token',
+      url: 'https://ai-gateway.com/.netlify/ai',
+      envVars: [{ key: 'OPENAI_API_KEY', url: 'OPENAI_BASE_URL' }],
+    })
+    expect(mockGetAIGatewayToken).not.toHaveBeenCalled()
+    expect(mockGetAccountAIGatewayToken).toHaveBeenCalledWith({ account_id: 'test-account-id' })
   })
 })
 

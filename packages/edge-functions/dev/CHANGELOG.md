@@ -1,5 +1,58 @@
 # Changelog
 
+## [1.0.17](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.16...edge-functions-dev-v1.0.17) (2026-05-11)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#674](https://github.com/netlify/primitives/issues/674)) ([8179496](https://github.com/netlify/primitives/commit/8179496fad479522f329cc99d03175408bffcb0c))
+
+## [1.0.16](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.15...edge-functions-dev-v1.0.16) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.4.2 to 4.4.3
+    * @netlify/edge-functions bumped from 3.0.5 to 3.0.6
+
+## [1.0.15](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.14...edge-functions-dev-v1.0.15) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.4.1 to 4.4.2
+    * @netlify/edge-functions bumped from 3.0.4 to 3.0.5
+
+## [1.0.14](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.13...edge-functions-dev-v1.0.14) (2026-03-13)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#626](https://github.com/netlify/primitives/issues/626)) ([a87ba84](https://github.com/netlify/primitives/commit/a87ba84fa23c3a4ff506cd9c3d5f3b5cd78d9f3c))
+
+## [1.0.13](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.12...edge-functions-dev-v1.0.13) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.4.0 to 4.4.1
+    * @netlify/edge-functions bumped from 3.0.3 to 3.0.4
+
+## [1.0.12](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.11...edge-functions-dev-v1.0.12) (2026-03-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.3.3 to 4.4.0
+
 ## [1.0.11](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.10...edge-functions-dev-v1.0.11) (2026-02-17)
 
 

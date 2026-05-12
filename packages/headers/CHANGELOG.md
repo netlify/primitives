@@ -1,5 +1,48 @@
 # Changelog
 
+## [2.1.8](https://github.com/netlify/primitives/compare/headers-v2.1.7...headers-v2.1.8) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.2 to ^4.4.3
+
+## [2.1.7](https://github.com/netlify/primitives/compare/headers-v2.1.6...headers-v2.1.7) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.1 to ^4.4.2
+
+## [2.1.6](https://github.com/netlify/primitives/compare/headers-v2.1.5...headers-v2.1.6) (2026-03-13)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#626](https://github.com/netlify/primitives/issues/626)) ([a87ba84](https://github.com/netlify/primitives/commit/a87ba84fa23c3a4ff506cd9c3d5f3b5cd78d9f3c))
+
+## [2.1.5](https://github.com/netlify/primitives/compare/headers-v2.1.4...headers-v2.1.5) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.0 to ^4.4.1
+
+## [2.1.4](https://github.com/netlify/primitives/compare/headers-v2.1.3...headers-v2.1.4) (2026-03-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.3.3 to ^4.4.0
+
 ## [2.1.3](https://github.com/netlify/primitives/compare/headers-v2.1.2...headers-v2.1.3) (2025-12-08)
 
 

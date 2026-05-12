@@ -7,12 +7,14 @@ import { parseAIGatewayContext, setupAIGateway } from '@netlify/ai/bootstrap'
 import { resolveConfig } from '@netlify/config'
 import {
   ensureNetlifyIgnore,
+  FileWatcher,
   getAPIToken,
   getGeoLocation,
   type Geolocation,
   LocalState,
   type Logger,
   HTTPServer,
+  Reactive,
 } from '@netlify/dev-utils'
 import { EdgeFunctionsHandler } from '@netlify/edge-functions-dev'
 import { FunctionsHandler } from '@netlify/functions-dev'
@@ -20,6 +22,10 @@ import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
 import { ImageHandler } from '@netlify/images'
 import { RedirectsHandler } from '@netlify/redirects'
 import { StaticHandler } from '@netlify/static'
+import { NetlifyDB } from '@netlify/database-dev'
+
+export { applyMigrations, initializeTrackingTable, resetDatabase } from '@netlify/database-dev'
+export type { SQLExecutor } from '@netlify/database-dev'
 
 import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
@@ -34,6 +40,15 @@ export interface Features {
    * {@link} https://docs.netlify.com/blobs/overview/
    */
   blobs?: {
+    enabled?: boolean
+  }
+
+  /**
+   * Configuration options for Netlify Database.
+   *
+   * {@link} https://docs.netlify.com/build/data-and-storage/netlify-database/
+   */
+  database?: {
     enabled?: boolean
   }
 
@@ -145,6 +160,7 @@ interface NetlifyDevOptions extends Features {
   apiToken?: string
   logger?: Logger
   projectRoot?: string
+  skipGitignore?: boolean
 
   /**
    * If your local development setup has its own HTTP server (e.g. Vite), set
@@ -189,7 +205,7 @@ export class NetlifyDev {
   #features: {
     aiGateway: boolean
     blobs: boolean
-    db: boolean
+    database: boolean
     edgeFunctions: boolean
     environmentVariables: boolean
     functions: boolean
@@ -199,6 +215,7 @@ export class NetlifyDev {
     redirects: boolean
     static: boolean
   }
+  #db?: NetlifyDB
   #headersHandler?: HeadersHandler
   #imageRemoteURLPatterns: string[]
   #imageHandler?: ImageHandler
@@ -209,6 +226,7 @@ export class NetlifyDev {
   #siteID?: string
   #staticHandler?: StaticHandler
   #staticHandlerAdditionalDirectories: string[]
+  #skipGitignore: boolean
 
   constructor(options: NetlifyDevOptions) {
     if (options.apiURL) {
@@ -226,7 +244,7 @@ export class NetlifyDev {
     this.#features = {
       aiGateway: options.aiGateway?.enabled !== false,
       blobs: options.blobs?.enabled !== false,
-      db: process.env.EXPERIMENTAL_NETLIFY_DB_ENABLED === '1',
+      database: options.database?.enabled !== false,
       edgeFunctions: options.edgeFunctions?.enabled !== false,
       environmentVariables: options.environmentVariables?.enabled !== false,
       functions: options.functions?.enabled !== false,
@@ -242,6 +260,7 @@ export class NetlifyDev {
     this.#serverAddress = options.serverAddress
     this.#projectRoot = projectRoot
     this.#staticHandlerAdditionalDirectories = options.staticFiles?.directories ?? []
+    this.#skipGitignore = options.skipGitignore ?? false
   }
 
   private getServerAddress(requestServerAddress?: string) {
@@ -453,7 +472,9 @@ export class NetlifyDev {
   }
 
   async start() {
-    await ensureNetlifyIgnore(this.#projectRoot, this.#logger)
+    if (!this.#skipGitignore) {
+      await ensureNetlifyIgnore(this.#projectRoot, this.#logger)
+    }
 
     this.#apiToken = this.#apiToken ?? (await getAPIToken())
 
@@ -464,6 +485,34 @@ export class NetlifyDev {
     const config = await this.getConfig()
     this.#config = config
 
+    const reactiveConfig = new Reactive(config)
+
+    const fileWatcher = new FileWatcher()
+    this.#cleanupJobs.push(() => fileWatcher.close())
+
+    // Watch the config file and re-resolve when it changes.
+    if (config.configPath) {
+      const reloadConfig = () => {
+        void (async () => {
+          try {
+            const newConfig = await this.getConfig()
+            this.#config = newConfig
+            reactiveConfig.set(newConfig)
+          } catch (error) {
+            this.#logger.warn(`Failed to reload config: ${String(error)}`)
+          }
+        })()
+      }
+
+      fileWatcher.subscribe({
+        id: 'netlify-config',
+        paths: config.configPath,
+        onChange: reloadConfig,
+        onAdd: reloadConfig,
+        onUnlink: reloadConfig,
+      })
+    }
+
     const runtime = await getRuntime({
       blobs: this.#features.blobs,
       deployID: '0',
@@ -473,18 +522,25 @@ export class NetlifyDev {
 
     this.#cleanupJobs.push(() => runtime.stop())
 
-    if (this.#features.db) {
+    if (this.#features.database) {
       try {
-        const { NetlifyDB } = await import('@netlify/db-dev')
         const dbDirectory = path.join(this.#projectRoot, '.netlify', 'db')
         const db = new NetlifyDB({ directory: dbDirectory })
         const connectionString = await db.start()
 
         runtime.env.set('NETLIFY_DB_URL', connectionString)
+        runtime.env.set('NETLIFY_DB_DRIVER', 'server')
 
-        this.#cleanupJobs.push(() => db.stop())
-      } catch {
-        this.#logger.warn('To use Netlify DB locally, install the @netlify/db-dev package.')
+        state.set('dbConnectionString', connectionString)
+
+        this.#db = db
+        this.#cleanupJobs.push(async () => {
+          await db.stop()
+          state.delete('dbConnectionString')
+        })
+      } catch (error) {
+        this.#db = undefined
+        this.#logger.warn(`Failed to start Netlify Database locally: ${String(error)}`)
       }
     }
 
@@ -494,18 +550,14 @@ export class NetlifyDev {
     }
 
     // Bootstrap AI Gateway: Fetch AI Gateway tokens and inject them into env
-    if (
-      this.#features.aiGateway &&
-      this.#features.environmentVariables &&
-      config?.api &&
-      siteID &&
-      config?.siteInfo?.url
-    ) {
+    if (this.#features.aiGateway && this.#features.environmentVariables && config?.api) {
       await setupAIGateway({
         api: config.api,
         env: config.env || {},
         siteID,
-        siteURL: config.siteInfo.url,
+        siteURL: config.siteInfo?.url,
+        accountID: config.siteInfo?.account_id,
+        siteHasDeploy: !!config.siteInfo?.published_deploy,
       })
 
       // Inject AI_GATEWAY into process.env via runtime
@@ -618,8 +670,9 @@ export class NetlifyDev {
       })
 
       this.#functionsHandler = new FunctionsHandler({
-        config: this.#config,
+        config: reactiveConfig,
         destPath: this.#functionsServePath,
+        fileWatcher,
         geolocation,
         projectRoot: this.#projectRoot,
         settings: {},
@@ -672,6 +725,10 @@ export class NetlifyDev {
     return {
       serverAddress,
     }
+  }
+
+  get db(): NetlifyDB | undefined {
+    return this.#db
   }
 
   async stop() {

@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest'
 
-import { getCacheStatus, parseCacheStatusValues, parseCacheStatusValue } from './cache-status.js'
+import { getCacheStatus, needsRevalidation, parseCacheStatusValues, parseCacheStatusValue } from './cache-status.js'
 
 describe('`parseCacheStatus`', () => {
   test('Accepts a string with the values of the `cache-status` header', () => {
@@ -83,6 +83,44 @@ describe('`parseCacheStatusValue`', () => {
       attributes: {},
       name: 'something',
     })
+  })
+})
+
+describe('`needsRevalidation`', () => {
+  test('Returns true when the durable cache signals client revalidation', () => {
+    const response = new Response('stale content', {
+      headers: {
+        'cache-status': `"Netlify Durable"; hit; ttl=-5; detail=client-revalidate`,
+      },
+    })
+
+    expect(needsRevalidation(response)).toBe(true)
+  })
+
+  test('Returns false when there is no detail parameter', () => {
+    const response = new Response('fresh content', {
+      headers: {
+        'cache-status': `"Netlify Durable"; hit; ttl=3600`,
+      },
+    })
+
+    expect(needsRevalidation(response)).toBe(false)
+  })
+
+  test('Returns false when there is no cache-status header', () => {
+    const response = new Response('content')
+
+    expect(needsRevalidation(response)).toBe(false)
+  })
+
+  test('Returns false when the detail value is not client-revalidate', () => {
+    const response = new Response('content', {
+      headers: {
+        'cache-status': `"Netlify Durable"; hit; detail=something-else`,
+      },
+    })
+
+    expect(needsRevalidation(response)).toBe(false)
   })
 })
 

@@ -112,6 +112,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             Deferred
           </Link>{' '}
           <Link
+            to="/rsc-basic"
+            activeProps={{
+              className: 'font-bold',
+            }}
+          >
+            RSC Basic
+          </Link>{' '}
+          <Link
+            to="/rsc-composite"
+            activeProps={{
+              className: 'font-bold',
+            }}
+          >
+            RSC Composite
+          </Link>{' '}
+          <Link
             // @ts-expect-error
             to="/this-route-does-not-exist"
             activeProps={{

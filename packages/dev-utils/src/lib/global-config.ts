@@ -1,9 +1,9 @@
+import crypto from 'node:crypto'
 import fs from 'node:fs/promises'
 import fss from 'node:fs'
 import path from 'node:path'
 import * as dot from 'dot-prop'
 
-import { v4 as uuidv4 } from 'uuid'
 import { sync as writeFileAtomicSync } from 'write-file-atomic'
 
 import { getLegacyPathInHome, getPathInHome } from './paths.js'
@@ -70,7 +70,7 @@ const globalConfigDefaults = {
   /* disable stats from being sent to Netlify */
   telemetryDisabled: false,
   /* cliId */
-  cliId: uuidv4(),
+  cliId: crypto.randomUUID(),
 }
 
 // Memoise config result so that we only load it once

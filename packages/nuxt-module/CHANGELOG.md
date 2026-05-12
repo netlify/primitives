@@ -1,5 +1,208 @@
 # Changelog
 
+## [0.3.3](https://github.com/netlify/primitives/compare/nuxt-v0.3.2...nuxt-v0.3.3) (2026-05-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.18.2 to ^4.18.3
+
+## [0.3.2](https://github.com/netlify/primitives/compare/nuxt-v0.3.1...nuxt-v0.3.2) (2026-05-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.18.1 to ^4.18.2
+
+## [0.3.1](https://github.com/netlify/primitives/compare/nuxt-v0.3.0...nuxt-v0.3.1) (2026-04-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.18.0 to ^4.18.1
+
+## [0.3.0](https://github.com/netlify/primitives/compare/nuxt-v0.2.41...nuxt-v0.3.0) (2026-04-27)
+
+
+### Features
+
+* unflag database ([#667](https://github.com/netlify/primitives/issues/667)) ([76d95a1](https://github.com/netlify/primitives/commit/76d95a1de14712f858f24d90a430e9b7bca9f3e7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.17.3 to ^4.18.0
+
+## [0.2.41](https://github.com/netlify/primitives/compare/nuxt-v0.2.40...nuxt-v0.2.41) (2026-04-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.17.2 to ^4.17.3
+
+## [0.2.40](https://github.com/netlify/primitives/compare/nuxt-v0.2.39...nuxt-v0.2.40) (2026-04-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.17.1 to ^4.17.2
+
+## [0.2.39](https://github.com/netlify/primitives/compare/nuxt-v0.2.38...nuxt-v0.2.39) (2026-04-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.17.0 to ^4.17.1
+
+## [0.2.38](https://github.com/netlify/primitives/compare/nuxt-v0.2.37...nuxt-v0.2.38) (2026-04-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.16.5 to ^4.17.0
+
+## [0.2.37](https://github.com/netlify/primitives/compare/nuxt-v0.2.36...nuxt-v0.2.37) (2026-04-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.16.4 to ^4.16.5
+
+## [0.2.36](https://github.com/netlify/primitives/compare/nuxt-v0.2.35...nuxt-v0.2.36) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.16.3 to ^4.16.4
+    * @netlify/dev-utils bumped from ^4.4.2 to ^4.4.3
+
+## [0.2.35](https://github.com/netlify/primitives/compare/nuxt-v0.2.34...nuxt-v0.2.35) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.16.2 to ^4.16.3
+    * @netlify/dev-utils bumped from ^4.4.1 to ^4.4.2
+
+## [0.2.34](https://github.com/netlify/primitives/compare/nuxt-v0.2.33...nuxt-v0.2.34) (2026-03-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.16.1 to ^4.16.2
+
+## [0.2.33](https://github.com/netlify/primitives/compare/nuxt-v0.2.32...nuxt-v0.2.33) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.16.0 to ^4.16.1
+    * @netlify/dev-utils bumped from ^4.4.0 to ^4.4.1
+
+## [0.2.32](https://github.com/netlify/primitives/compare/nuxt-v0.2.31...nuxt-v0.2.32) (2026-03-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.15.0 to ^4.16.0
+
+## [0.2.31](https://github.com/netlify/primitives/compare/nuxt-v0.2.30...nuxt-v0.2.31) (2026-03-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.14.1 to ^4.15.0
+    * @netlify/dev-utils bumped from ^4.3.3 to ^4.4.0
+
+## [0.2.30](https://github.com/netlify/primitives/compare/nuxt-v0.2.29...nuxt-v0.2.30) (2026-03-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.14.0 to ^4.14.1
+
+## [0.2.29](https://github.com/netlify/primitives/compare/nuxt-v0.2.28...nuxt-v0.2.29) (2026-03-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.13.0 to ^4.14.0
+
+## [0.2.28](https://github.com/netlify/primitives/compare/nuxt-v0.2.27...nuxt-v0.2.28) (2026-03-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.12.1 to ^4.13.0
+
+## [0.2.27](https://github.com/netlify/primitives/compare/nuxt-v0.2.26...nuxt-v0.2.27) (2026-03-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.12.0 to ^4.12.1
+
+## [0.2.26](https://github.com/netlify/primitives/compare/nuxt-v0.2.25...nuxt-v0.2.26) (2026-03-03)
+
+
+### Bug Fixes
+
+* **nuxt-module,vite-plugin:** await fromWebResponse to prevent race condition ([#605](https://github.com/netlify/primitives/issues/605)) ([d9e2f17](https://github.com/netlify/primitives/commit/d9e2f175f1f760f27ece4fa140d50156584475c3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.11.3 to ^4.12.0
+
+## [0.2.25](https://github.com/netlify/primitives/compare/nuxt-v0.2.24...nuxt-v0.2.25) (2026-02-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev bumped from ^4.11.2 to ^4.11.3
+
 ## [0.2.24](https://github.com/netlify/primitives/compare/nuxt-v0.2.23...nuxt-v0.2.24) (2026-02-17)
 
 

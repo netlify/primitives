@@ -55,10 +55,26 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Build
         run: npm run build --workspaces=true
+      # Fork PRs don't have access to secrets, so live E2E tests (e.g. Netlify
+      # deploy tests) must be skipped.
+      - name: Flag fork PR
+        if:
+          ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name !=
+          'netlify/primitives' }}
+        run: echo "SKIP_LIVE_TESTS=true" >> "$GITHUB_ENV"
       - name: Tests
         run: npm run test --workspaces=true
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      - name: Warn if live tests were skipped
+        if: ${{ env.SKIP_LIVE_TESTS == 'true' }}
+        run: |
+          echo "::warning::Live E2E tests were skipped because secrets are not available (likely a fork PR)."
+          echo "## ⚠️ Live E2E tests were skipped" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "This workflow run does not have access to secrets (likely a fork PR)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Live tests that deploy to Netlify were skipped." >> "$GITHUB_STEP_SUMMARY"
+          echo "Maintainers: before merging, verify that these tests pass or aren't relevant." >> "$GITHUB_STEP_SUMMARY"
   test-node18:
     name: Test Node.js 18 for specific packages
     runs-on: ${{ matrix.os }}

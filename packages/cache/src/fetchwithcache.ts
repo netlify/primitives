@@ -3,6 +3,7 @@ import type { NetlifyGlobal } from '@netlify/types'
 import type { NetlifyCache } from './bootstrap/cache.js'
 import { applyHeaders, cacheHeaders } from './cache-headers/cache-headers.js'
 import type { CacheSettings } from './cache-headers/options.js'
+import { needsRevalidation } from './cache-status/cache-status.js'
 import { caches } from './polyfill.js'
 
 type GlobalScope = typeof globalThis & { Netlify?: NetlifyGlobal }
@@ -117,6 +118,21 @@ export const fetchWithCache: FetchWithCache = async (
   const cached = await cache.match(request)
 
   if (cached) {
+    if (needsRevalidation(cached)) {
+      const { fetch: fetchFn = globalThis.fetch } = cacheOptions
+      const revalidation = performBackgroundRevalidation(request, cache, cacheSettings, fetchFn)
+
+      if (onCachePut) {
+        await onCachePut(revalidation)
+      } else {
+        const netlifyGlobal: NetlifyGlobal | undefined = (globalThis as GlobalScope).Netlify
+        const requestContext = netlifyGlobal?.context
+        if (requestContext) {
+          requestContext.waitUntil(revalidation)
+        }
+      }
+    }
+
     return cached
   }
 
@@ -158,4 +174,23 @@ export const fetchWithCache: FetchWithCache = async (
   }
 
   return clientResponse
+}
+
+const performBackgroundRevalidation = async (
+  request: Request,
+  cache: Cache,
+  cacheSettings: CacheSettings,
+  fetchFn: typeof globalThis.fetch,
+): Promise<void> => {
+  try {
+    const fresh = await fetchFn(request)
+    if (!fresh.body) {
+      return
+    }
+    const cacheResponse = new Response(fresh.body, fresh)
+    applyHeaders(cacheResponse.headers, cacheHeaders(cacheSettings))
+    await cache.put(request, cacheResponse)
+  } catch (error) {
+    console.warn('`fetchWithCache` has failed to revalidate a stale response:', error)
+  }
 }

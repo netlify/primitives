@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.3.7](https://github.com/netlify/primitives/compare/images-v1.3.6...images-v1.3.7) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.2 to ^4.4.3
+
+## [1.3.6](https://github.com/netlify/primitives/compare/images-v1.3.5...images-v1.3.6) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.1 to ^4.4.2
+
+## [1.3.5](https://github.com/netlify/primitives/compare/images-v1.3.4...images-v1.3.5) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.0 to ^4.4.1
+
+## [1.3.4](https://github.com/netlify/primitives/compare/images-v1.3.3...images-v1.3.4) (2026-03-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.3.3 to ^4.4.0
+
 ## [1.3.3](https://github.com/netlify/primitives/compare/images-v1.3.2...images-v1.3.3) (2025-12-08)
 
 

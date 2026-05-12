@@ -505,7 +505,7 @@ describe('Handling requests', () => {
       await fixture.destroy()
     })
 
-    test.skip('Invoking a function that interacts with the Cache API', async () => {
+    test.todo('Invoking a function that interacts with the Cache API', async () => {
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',

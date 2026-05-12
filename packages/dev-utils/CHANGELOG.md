@@ -1,5 +1,39 @@
 # Changelog
 
+## [4.4.3](https://github.com/netlify/primitives/compare/dev-utils-v4.4.2...dev-utils-v4.4.3) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.5.0 to 2.6.0
+
+## [4.4.2](https://github.com/netlify/primitives/compare/dev-utils-v4.4.1...dev-utils-v4.4.2) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.4.0 to 2.5.0
+
+## [4.4.1](https://github.com/netlify/primitives/compare/dev-utils-v4.4.0...dev-utils-v4.4.1) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.3.0 to 2.4.0
+
+## [4.4.0](https://github.com/netlify/primitives/compare/dev-utils-v4.3.3...dev-utils-v4.4.0) (2026-03-10)
+
+
+### Features
+
+* add `FileWatcher` class ([#607](https://github.com/netlify/primitives/issues/607)) ([1f8bdfc](https://github.com/netlify/primitives/commit/1f8bdfc06e411703cc9338b9cd7dfe3a0c0f4eff))
+
 ## [4.3.3](https://github.com/netlify/primitives/compare/dev-utils-v4.3.2...dev-utils-v4.3.3) (2025-12-08)
 
 

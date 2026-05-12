@@ -4,7 +4,7 @@ import { basename, extname, isAbsolute, join, resolve } from 'node:path'
 import { env } from 'node:process'
 
 import type { EnvironmentContext as BlobsContext } from '@netlify/blobs'
-import { DevEventHandler, watchDebounced } from '@netlify/dev-utils'
+import { DevEventHandler, FileWatcher, type FileWatchSubscriptionHandle, Reactive } from '@netlify/dev-utils'
 import { SYNCHRONOUS_FUNCTION_TIMEOUT, BACKGROUND_FUNCTION_TIMEOUT } from '@netlify/functions'
 import { ListedFunction, listFunctions, Manifest } from '@netlify/zip-it-and-ship-it'
 import extractZip from 'extract-zip'
@@ -30,7 +30,7 @@ const TYPES_PACKAGE = '@netlify/functions'
 export interface FunctionRegistryOptions {
   blobsContext?: BlobsContext
   destPath: string
-  config: any
+  config: Reactive<any>
   debug?: boolean
   eventHandler?: DevEventHandler
   frameworksAPIFunctionsPath?: string
@@ -39,7 +39,7 @@ export interface FunctionRegistryOptions {
   projectRoot: string
   settings: any
   timeouts?: { syncFunctions?: number; backgroundFunctions?: number }
-  watch?: boolean
+  fileWatcher?: FileWatcher
 }
 
 export class FunctionsRegistry {
@@ -54,10 +54,10 @@ export class FunctionsRegistry {
   private functions = new Map<string, NetlifyFunction>()
 
   /**
-   * File watchers for function files. Maps function names to objects built
-   * by the `watchDebounced` utility.
+   * File watchers for function files. Maps function names to subscription
+   * handles from the shared `FileWatcher`.
    */
-  private functionWatchers = new Map<string, Awaited<ReturnType<typeof watchDebounced>>>()
+  private functionWatchers = new Map<string, FileWatchSubscriptionHandle>()
 
   /**
    * Keeps track of whether we've checked whether `TYPES_PACKAGE` is
@@ -66,10 +66,10 @@ export class FunctionsRegistry {
   private hasCheckedTypesPackage = false
 
   private buildCache: BuildCache
-  private config: any
+  private config: Reactive<any>
   private debug: boolean
   private destPath: string
-  private directoryWatchers: Map<string, Awaited<ReturnType<typeof watchDebounced>>>
+  private directoryWatchers: Map<string, FileWatchSubscriptionHandle>
   private handleEvent: DevEventHandler
   private frameworksAPIFunctionsPath?: string
   private internalFunctionsPath?: string
@@ -77,7 +77,7 @@ export class FunctionsRegistry {
   private projectRoot: string
   private timeouts: any
   private settings: any
-  private watch: boolean
+  private fileWatcher?: FileWatcher
 
   constructor({
     blobsContext,
@@ -91,7 +91,7 @@ export class FunctionsRegistry {
     projectRoot,
     settings,
     timeouts,
-    watch,
+    fileWatcher,
   }: FunctionRegistryOptions) {
     this.blobsContext = blobsContext
     this.config = config
@@ -103,7 +103,8 @@ export class FunctionsRegistry {
     this.projectRoot = projectRoot
 
     // Calculate timeouts from config if not provided as override
-    const siteTimeout = config?.siteInfo?.functions_timeout ?? config?.siteInfo?.functions_config?.timeout
+    const configValue = config.get()
+    const siteTimeout = configValue?.siteInfo?.functions_timeout ?? configValue?.siteInfo?.functions_config?.timeout
     this.timeouts = {
       syncFunctions: timeouts?.syncFunctions ?? siteTimeout ?? SYNCHRONOUS_FUNCTION_TIMEOUT,
       // NOTE: This isn't documented, but the generically named "functions timeout" config fields only
@@ -112,7 +113,7 @@ export class FunctionsRegistry {
     }
 
     this.settings = settings
-    this.watch = watch === true
+    this.fileWatcher = fileWatcher
 
     /**
      * An object to be shared among all functions in the registry. It can be
@@ -184,21 +185,21 @@ export class FunctionsRegistry {
       return
     }
 
-    if (!this.watch) {
+    if (!this.fileWatcher) {
       return
     }
 
-    const watcher = this.functionWatchers.get(func.name)
+    const handle = this.functionWatchers.get(func.name)
 
     // If there is already a watcher for this function, we need to unwatch any
     // files that have been removed and watch any files that have been added.
-    if (watcher) {
+    if (handle) {
       srcFilesDiff.deleted.forEach((path) => {
-        watcher.unwatch(path)
+        handle.unwatch(path)
       })
 
       srcFilesDiff.added.forEach((path) => {
-        watcher.add(path)
+        handle.add(path)
       })
 
       return
@@ -208,13 +209,15 @@ export class FunctionsRegistry {
     // we create a new watcher and watch them.
     if (srcFilesDiff.added.size !== 0) {
       const filesToWatch = [...srcFilesDiff.added, ...includedFiles]
-      const newWatcher = await watchDebounced(filesToWatch, {
+      const newHandle = this.fileWatcher.subscribe({
+        paths: filesToWatch,
+        decache: true,
         onChange: () => {
           this.buildFunctionAndWatchFiles(func, false)
         },
       })
 
-      this.functionWatchers.set(func.name, newWatcher)
+      this.functionWatchers.set(func.name, newHandle)
     }
   }
 
@@ -327,7 +330,7 @@ export class FunctionsRegistry {
       } catch {
         func.mainFile = join(unzippedDirectory, basename(manifestEntry.mainFile))
       }
-    } else if (this.watch) {
+    } else if (this.fileWatcher) {
       this.buildFunctionAndWatchFiles(func, !isReload)
     }
 
@@ -363,7 +366,7 @@ export class FunctionsRegistry {
         buildRustSource: env.NETLIFY_EXPERIMENTAL_BUILD_RUST_SOURCE === 'true',
       },
       configFileDirectories: [this.internalFunctionsPath].filter(Boolean) as string[],
-      config: this.config.functions,
+      config: this.config.get().functions,
       parseISC: true,
     })
 
@@ -426,7 +429,7 @@ export class FunctionsRegistry {
 
         const func = new NetlifyFunction({
           blobsContext: this.blobsContext,
-          config: this.config,
+          config: this.config.get(),
           directory,
           displayName,
           excludedRoutes,
@@ -462,7 +465,7 @@ export class FunctionsRegistry {
       this.handleEvent({ function: func, name: 'FunctionRemovedEvent' } as FunctionRemovedEvent)
     })
 
-    if (this.watch) {
+    if (this.fileWatcher) {
       await Promise.all(directories.map((path) => this.setupDirectoryWatcher(path)))
     }
   }
@@ -477,7 +480,8 @@ export class FunctionsRegistry {
       return
     }
 
-    const watcher = await watchDebounced(directory, {
+    const handle = this.fileWatcher!.subscribe({
+      paths: directory,
       depth: 1,
       onAdd: () => {
         this.scan([directory])
@@ -487,7 +491,7 @@ export class FunctionsRegistry {
       },
     })
 
-    this.directoryWatchers.set(directory, watcher)
+    this.directoryWatchers.set(directory, handle)
   }
 
   /**
@@ -498,10 +502,10 @@ export class FunctionsRegistry {
 
     this.functions.delete(name)
 
-    const watcher = this.functionWatchers.get(name)
+    const handle = this.functionWatchers.get(name)
 
-    if (watcher) {
-      await watcher.close()
+    if (handle) {
+      handle.unsubscribe()
     }
 
     this.functionWatchers.delete(name)

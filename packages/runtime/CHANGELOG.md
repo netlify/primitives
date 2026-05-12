@@ -1,5 +1,74 @@
 # Changelog
 
+## [4.1.21](https://github.com/netlify/primitives/compare/runtime-v4.1.20...runtime-v4.1.21) (2026-05-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^10.7.4 to ^10.7.5
+
+## [4.1.20](https://github.com/netlify/primitives/compare/runtime-v4.1.19...runtime-v4.1.20) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^10.7.3 to ^10.7.4
+    * @netlify/cache bumped from 3.4.3 to 3.4.4
+    * @netlify/types bumped from 2.5.0 to 2.6.0
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.2 to ^4.4.3
+
+## [4.1.19](https://github.com/netlify/primitives/compare/runtime-v4.1.18...runtime-v4.1.19) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^10.7.2 to ^10.7.3
+    * @netlify/cache bumped from 3.4.2 to 3.4.3
+    * @netlify/types bumped from 2.4.0 to 2.5.0
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.1 to ^4.4.2
+
+## [4.1.18](https://github.com/netlify/primitives/compare/runtime-v4.1.17...runtime-v4.1.18) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^10.7.1 to ^10.7.2
+    * @netlify/cache bumped from 3.4.1 to 3.4.2
+    * @netlify/types bumped from 2.3.0 to 2.4.0
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.0 to ^4.4.1
+
+## [4.1.17](https://github.com/netlify/primitives/compare/runtime-v4.1.16...runtime-v4.1.17) (2026-03-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^10.7.0 to ^10.7.1
+    * @netlify/cache bumped from 3.4.0 to 3.4.1
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.3.3 to ^4.4.0
+
+## [4.1.16](https://github.com/netlify/primitives/compare/runtime-v4.1.15...runtime-v4.1.16) (2026-02-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/cache bumped from 3.3.5 to 3.4.0
+
 ## [4.1.15](https://github.com/netlify/primitives/compare/runtime-v4.1.14...runtime-v4.1.15) (2026-02-16)
 
 

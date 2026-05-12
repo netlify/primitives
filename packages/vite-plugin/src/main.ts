@@ -65,6 +65,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
         blobs,
         edgeFunctions,
         environmentVariables,
+        database,
         functions,
         images,
         middleware = true,
@@ -76,6 +77,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
         blobs,
         edgeFunctions,
         environmentVariables,
+        database,
         functions,
         images,
         logger,
@@ -115,7 +117,7 @@ export default function netlify(options: NetlifyPluginOptions = {}): any {
 
           // Don't serve static matches. Let the Vite server handle them.
           if (result && !isStaticFile) {
-            fromWebResponse(result.response, nodeRes)
+            await fromWebResponse(result.response, nodeRes)
 
             return
           }

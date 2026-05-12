@@ -1,5 +1,92 @@
 # Changelog
 
+## [1.2.8](https://github.com/netlify/primitives/compare/functions-dev-v1.2.7...functions-dev-v1.2.8) (2026-05-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.4 to 10.7.5
+
+## [1.2.7](https://github.com/netlify/primitives/compare/functions-dev-v1.2.6...functions-dev-v1.2.7) (2026-05-11)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#674](https://github.com/netlify/primitives/issues/674)) ([8179496](https://github.com/netlify/primitives/commit/8179496fad479522f329cc99d03175408bffcb0c))
+
+## [1.2.6](https://github.com/netlify/primitives/compare/functions-dev-v1.2.5...functions-dev-v1.2.6) (2026-04-14)
+
+
+### Bug Fixes
+
+* preserve multi-value response headers in dev ([#646](https://github.com/netlify/primitives/issues/646)) ([f18e24b](https://github.com/netlify/primitives/commit/f18e24b162d7889384131c01b60eff07d425d80e))
+
+## [1.2.5](https://github.com/netlify/primitives/compare/functions-dev-v1.2.4...functions-dev-v1.2.5) (2026-04-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions bumped from 5.1.5 to 5.2.0
+
+## [1.2.4](https://github.com/netlify/primitives/compare/functions-dev-v1.2.3...functions-dev-v1.2.4) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.3 to 10.7.4
+    * @netlify/dev-utils bumped from 4.4.2 to 4.4.3
+    * @netlify/functions bumped from 5.1.4 to 5.1.5
+
+## [1.2.3](https://github.com/netlify/primitives/compare/functions-dev-v1.2.2...functions-dev-v1.2.3) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.2 to 10.7.3
+    * @netlify/dev-utils bumped from 4.4.1 to 4.4.2
+    * @netlify/functions bumped from 5.1.3 to 5.1.4
+
+## [1.2.2](https://github.com/netlify/primitives/compare/functions-dev-v1.2.1...functions-dev-v1.2.2) (2026-03-13)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#626](https://github.com/netlify/primitives/issues/626)) ([a87ba84](https://github.com/netlify/primitives/commit/a87ba84fa23c3a4ff506cd9c3d5f3b5cd78d9f3c))
+
+## [1.2.1](https://github.com/netlify/primitives/compare/functions-dev-v1.2.0...functions-dev-v1.2.1) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.1 to 10.7.2
+    * @netlify/dev-utils bumped from 4.4.0 to 4.4.1
+    * @netlify/functions bumped from 5.1.2 to 5.1.3
+
+## [1.2.0](https://github.com/netlify/primitives/compare/functions-dev-v1.1.12...functions-dev-v1.2.0) (2026-03-10)
+
+
+### Features
+
+* add `FileWatcher` class ([#607](https://github.com/netlify/primitives/issues/607)) ([1f8bdfc](https://github.com/netlify/primitives/commit/1f8bdfc06e411703cc9338b9cd7dfe3a0c0f4eff))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.0 to 10.7.1
+    * @netlify/dev-utils bumped from 4.3.3 to 4.4.0
+
 ## [1.1.12](https://github.com/netlify/primitives/compare/functions-dev-v1.1.11...functions-dev-v1.1.12) (2026-02-17)
 
 

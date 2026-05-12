@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
 import { Route as RedirectRouteImport } from './routes/redirect'
 import { Route as PostsRouteImport } from './routes/posts'
+import { Route as RscBasicRouteImport } from './routes/rsc-basic'
+import { Route as RscCompositeRouteImport } from './routes/rsc-composite'
 import { Route as DeferredRouteImport } from './routes/deferred'
 import { Route as CustomScriptDotjsRouteImport } from './routes/customScript[.]js'
 import { Route as PathlessLayoutRouteImport } from './routes/_pathlessLayout'
@@ -40,6 +42,16 @@ const RedirectRoute = RedirectRouteImport.update({
 const PostsRoute = PostsRouteImport.update({
   id: '/posts',
   path: '/posts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RscBasicRoute = RscBasicRouteImport.update({
+  id: '/rsc-basic',
+  path: '/rsc-basic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RscCompositeRoute = RscCompositeRouteImport.update({
+  id: '/rsc-composite',
+  path: '/rsc-composite',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DeferredRoute = DeferredRouteImport.update({
@@ -120,6 +132,8 @@ export interface FileRoutesByFullPath {
   '/deferred': typeof DeferredRoute
   '/posts': typeof PostsRouteWithChildren
   '/redirect': typeof RedirectRoute
+  '/rsc-basic': typeof RscBasicRoute
+  '/rsc-composite': typeof RscCompositeRoute
   '/users': typeof UsersRouteWithChildren
   '/api/users': typeof ApiUsersRouteWithChildren
   '/posts/$postId': typeof PostsPostIdRoute
@@ -136,6 +150,8 @@ export interface FileRoutesByTo {
   '/customScript.js': typeof CustomScriptDotjsRoute
   '/deferred': typeof DeferredRoute
   '/redirect': typeof RedirectRoute
+  '/rsc-basic': typeof RscBasicRoute
+  '/rsc-composite': typeof RscCompositeRoute
   '/api/users': typeof ApiUsersRouteWithChildren
   '/posts/$postId': typeof PostsPostIdRoute
   '/users/$userId': typeof UsersUserIdRoute
@@ -154,6 +170,8 @@ export interface FileRoutesById {
   '/deferred': typeof DeferredRoute
   '/posts': typeof PostsRouteWithChildren
   '/redirect': typeof RedirectRoute
+  '/rsc-basic': typeof RscBasicRoute
+  '/rsc-composite': typeof RscCompositeRoute
   '/users': typeof UsersRouteWithChildren
   '/_pathlessLayout/_nested-layout': typeof PathlessLayoutNestedLayoutRouteWithChildren
   '/api/users': typeof ApiUsersRouteWithChildren
@@ -174,6 +192,8 @@ export interface FileRouteTypes {
     | '/deferred'
     | '/posts'
     | '/redirect'
+    | '/rsc-basic'
+    | '/rsc-composite'
     | '/users'
     | '/api/users'
     | '/posts/$postId'
@@ -190,6 +210,8 @@ export interface FileRouteTypes {
     | '/customScript.js'
     | '/deferred'
     | '/redirect'
+    | '/rsc-basic'
+    | '/rsc-composite'
     | '/api/users'
     | '/posts/$postId'
     | '/users/$userId'
@@ -207,6 +229,8 @@ export interface FileRouteTypes {
     | '/deferred'
     | '/posts'
     | '/redirect'
+    | '/rsc-basic'
+    | '/rsc-composite'
     | '/users'
     | '/_pathlessLayout/_nested-layout'
     | '/api/users'
@@ -227,6 +251,8 @@ export interface RootRouteChildren {
   DeferredRoute: typeof DeferredRoute
   PostsRoute: typeof PostsRouteWithChildren
   RedirectRoute: typeof RedirectRoute
+  RscBasicRoute: typeof RscBasicRoute
+  RscCompositeRoute: typeof RscCompositeRoute
   UsersRoute: typeof UsersRouteWithChildren
   ApiUsersRoute: typeof ApiUsersRouteWithChildren
   PostsPostIdDeepRoute: typeof PostsPostIdDeepRoute
@@ -260,6 +286,20 @@ declare module '@tanstack/react-router' {
       path: '/deferred'
       fullPath: '/deferred'
       preLoaderRoute: typeof DeferredRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rsc-basic': {
+      id: '/rsc-basic'
+      path: '/rsc-basic'
+      fullPath: '/rsc-basic'
+      preLoaderRoute: typeof RscBasicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rsc-composite': {
+      id: '/rsc-composite'
+      path: '/rsc-composite'
+      fullPath: '/rsc-composite'
+      preLoaderRoute: typeof RscCompositeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/customScript.js': {
@@ -429,6 +469,8 @@ const rootRouteChildren: RootRouteChildren = {
   DeferredRoute: DeferredRoute,
   PostsRoute: PostsRouteWithChildren,
   RedirectRoute: RedirectRoute,
+  RscBasicRoute: RscBasicRoute,
+  RscCompositeRoute: RscCompositeRoute,
   UsersRoute: UsersRouteWithChildren,
   ApiUsersRoute: ApiUsersRouteWithChildren,
   PostsPostIdDeepRoute: PostsPostIdDeepRoute,

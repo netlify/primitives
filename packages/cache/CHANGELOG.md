@@ -1,5 +1,51 @@
 # Changelog
 
+## [3.4.4](https://github.com/netlify/primitives/compare/cache-v3.4.3...cache-v3.4.4) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.4.2 to 4.4.3
+    * @netlify/types bumped from 2.5.0 to 2.6.0
+
+## [3.4.3](https://github.com/netlify/primitives/compare/cache-v3.4.2...cache-v3.4.3) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.4.1 to 4.4.2
+    * @netlify/types bumped from 2.4.0 to 2.5.0
+
+## [3.4.2](https://github.com/netlify/primitives/compare/cache-v3.4.1...cache-v3.4.2) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.4.0 to 4.4.1
+    * @netlify/types bumped from 2.3.0 to 2.4.0
+
+## [3.4.1](https://github.com/netlify/primitives/compare/cache-v3.4.0...cache-v3.4.1) (2026-03-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from 4.3.3 to 4.4.0
+
+## [3.4.0](https://github.com/netlify/primitives/compare/cache-v3.3.5...cache-v3.4.0) (2026-02-27)
+
+
+### Features
+
+* add SWR support to Cache API ([#597](https://github.com/netlify/primitives/issues/597)) ([fdab4e3](https://github.com/netlify/primitives/commit/fdab4e3ed6298d99c3ab8110b53c4c9bd4055a7a))
+
 ## [3.3.5](https://github.com/netlify/primitives/compare/cache-v3.3.4...cache-v3.3.5) (2026-02-06)
 
 

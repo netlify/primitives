@@ -2,7 +2,7 @@ import process from 'node:process'
 
 import { trace } from '@opentelemetry/api'
 import { SugaredTracer } from '@opentelemetry/api/experimental'
-import { Resource } from '@opentelemetry/resources'
+import { resourceFromAttributes } from '@opentelemetry/resources'
 import { type Instrumentation, registerInstrumentations } from '@opentelemetry/instrumentation'
 import { W3CTraceContextPropagator } from '@opentelemetry/core'
 import { NodeTracerProvider, SimpleSpanProcessor, type SpanProcessor } from '@opentelemetry/sdk-trace-node'
@@ -29,7 +29,7 @@ export const createTracerProvider = (options: TracerProviderOptions) => {
   // remove the v prefix from the version to match the spec
   const runtimeVersion = process.version.slice(1)
 
-  const resource = new Resource({
+  const resource = resourceFromAttributes({
     'service.name': options.serviceName,
     'service.version': options.serviceVersion,
     'process.runtime.name': 'nodejs',

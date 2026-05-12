@@ -1,5 +1,39 @@
 # Changelog
 
+## [5.2.0](https://github.com/netlify/primitives/compare/functions-v5.1.5...functions-v5.2.0) (2026-04-07)
+
+
+### Features
+
+* export event handler types ([#638](https://github.com/netlify/primitives/issues/638)) ([f651309](https://github.com/netlify/primitives/commit/f6513092153a50f55b71d073c2a32b9e5eb704cb))
+
+## [5.1.5](https://github.com/netlify/primitives/compare/functions-v5.1.4...functions-v5.1.5) (2026-03-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 2.5.0 to 2.6.0
+
+## [5.1.4](https://github.com/netlify/primitives/compare/functions-v5.1.3...functions-v5.1.4) (2026-03-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 2.4.0 to 2.5.0
+
+## [5.1.3](https://github.com/netlify/primitives/compare/functions-v5.1.2...functions-v5.1.3) (2026-03-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 2.3.0 to 2.4.0
+
 ## [5.1.2](https://github.com/netlify/primitives/compare/functions-v5.1.1...functions-v5.1.2) (2025-12-21)
 
 

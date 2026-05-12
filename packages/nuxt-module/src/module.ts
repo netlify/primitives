@@ -40,13 +40,14 @@ export default defineNuxtModule<NetlifyModuleOptions>({
     }
 
     const logger = createPrefixedLogger(netlifyBanner, console)
-    const { blobs, edgeFunctions, functions, redirects } = options
+    const { blobs, edgeFunctions, database, functions, redirects } = options
 
     let netlifyDev!: NetlifyDev
 
     nuxt.hook('nitro:init', async (nitro) => {
       netlifyDev = new NetlifyDev({
         blobs,
+        database,
         edgeFunctions,
         functions,
         logger,
@@ -93,7 +94,7 @@ export default defineNuxtModule<NetlifyModuleOptions>({
 
           // Don't serve static matches. Let the Nitro server handle them.
           if (result && !isStaticFile) {
-            fromWebResponse(result.response, nodeRes)
+            await fromWebResponse(result.response, nodeRes)
 
             return
           }
