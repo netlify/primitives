@@ -56,6 +56,7 @@
   "dependencies": {
     "@whatwg-node/server": "^0.10.0",
     "ansis": "^4.1.0",
+    "atomically": "^2.0.3",
     "chokidar": "^4.0.1",
     "decache": "^4.6.2",
     "dettle": "^1.0.5",
@@ -66,7 +67,6 @@
     "js-image-generator": "^1.0.4",
     "parse-gitignore": "^2.0.0",
     "semver": "^7.7.2",
-    "tmp-promise": "^3.0.3",
-    "atomically": "^2.0.3"
+    "tmp-promise": "^3.0.3"
   }
 }
