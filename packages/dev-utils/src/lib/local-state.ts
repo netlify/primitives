@@ -4,9 +4,9 @@ import process from 'process'
 
 import { deleteProperty, getProperty, hasProperty, setProperty } from 'dot-prop'
 import { file as findUpSync } from 'empathic/find'
-import writeFileAtomic from 'write-file-atomic'
 
 import { getPathInProject } from './paths.js'
+import { writeFileAtomicWithRetry } from './write-file-retry.js'
 
 const STATE_PATH = getPathInProject(['state.json'])
 const permissionError = "You don't have access to this file."
@@ -52,7 +52,7 @@ export class LocalState {
       // Empty the file if it encounters invalid JSON
       // @ts-expect-error TS(2571) FIXME: Object is of type 'unknown'.
       if (error.name === 'SyntaxError') {
-        writeFileAtomic.sync(this.path, '')
+        writeFileAtomicWithRetry(this.path, '', { mode: 0o0600 })
         return {}
       }
 
@@ -64,7 +64,7 @@ export class LocalState {
     try {
       // Make sure the folder exists as it could have been deleted in the meantime
       fs.mkdirSync(path.dirname(this.path), { recursive: true })
-      writeFileAtomic.sync(this.path, JSON.stringify(val, null, '\t'))
+      writeFileAtomicWithRetry(this.path, JSON.stringify(val, null, '\t'), { mode: 0o0600 })
     } catch (error) {
       // Improve the message of permission errors
       // @ts-expect-error TS(2571) FIXME: Object is of type 'unknown'.
