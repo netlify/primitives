@@ -4,7 +4,7 @@ import fss from 'node:fs'
 import path from 'node:path'
 import * as dot from 'dot-prop'
 
-import { sync as writeFileAtomicSync } from 'write-file-atomic'
+import { writeFileSync } from 'atomically'
 
 import { getLegacyPathInHome, getPathInHome } from './paths.js'
 
@@ -55,14 +55,14 @@ export class GlobalConfigStore<T extends Record<string, any> = Record<string, an
     try {
       return JSON.parse(raw) as T
     } catch {
-      writeFileAtomicSync(this.#storagePath, '', { mode: 0o0600 })
+      writeFileSync(this.#storagePath, '', { mode: 0o0600 })
       return {} as T
     }
   }
 
   private writeConfig(value: T) {
     fss.mkdirSync(path.dirname(this.#storagePath), { mode: 0o0700, recursive: true })
-    writeFileAtomicSync(this.#storagePath, JSON.stringify(value, undefined, '\t'), { mode: 0o0600 })
+    writeFileSync(this.#storagePath, JSON.stringify(value, undefined, '\t'), { mode: 0o0600 })
   }
 }
 
