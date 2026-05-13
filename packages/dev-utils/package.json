@@ -49,7 +49,6 @@
     "@netlify/types": "2.6.0",
     "@types/node": "^18.19.110",
     "@types/parse-gitignore": "^1.0.2",
-    "@types/write-file-atomic": "^4.0.3",
     "execa": "^8.0.1",
     "tsup": "^8.0.0",
     "vitest": "^3.0.0"
@@ -68,6 +67,6 @@
     "parse-gitignore": "^2.0.0",
     "semver": "^7.7.2",
     "tmp-promise": "^3.0.3",
-    "write-file-atomic": "^5.0.1"
+    "atomically": "^2.0.3"
   }
 }

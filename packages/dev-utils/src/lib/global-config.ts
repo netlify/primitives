@@ -4,7 +4,7 @@ import fss from 'node:fs'
 import path from 'node:path'
 import * as dot from 'dot-prop'
 
-import { sync as writeFileAtomicSync } from 'write-file-atomic'
+import { writeFileSync as writeFileAtomicSync } from 'atomically'
 
 import { getLegacyPathInHome, getPathInHome } from './paths.js'
 
