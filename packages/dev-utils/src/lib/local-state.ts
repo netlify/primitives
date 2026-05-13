@@ -4,7 +4,7 @@ import process from 'process'
 
 import { deleteProperty, getProperty, hasProperty, setProperty } from 'dot-prop'
 import { file as findUpSync } from 'empathic/find'
-import writeFileAtomic from 'write-file-atomic'
+import { writeFileSync } from 'atomically'
 
 import { getPathInProject } from './paths.js'
 
@@ -52,7 +52,7 @@ export class LocalState {
       // Empty the file if it encounters invalid JSON
       // @ts-expect-error TS(2571) FIXME: Object is of type 'unknown'.
       if (error.name === 'SyntaxError') {
-        writeFileAtomic.sync(this.path, '')
+        writeFileSync(this.path, '')
         return {}
       }
 
@@ -64,7 +64,7 @@ export class LocalState {
     try {
       // Make sure the folder exists as it could have been deleted in the meantime
       fs.mkdirSync(path.dirname(this.path), { recursive: true })
-      writeFileAtomic.sync(this.path, JSON.stringify(val, null, '\t'))
+      writeFileSync(this.path, JSON.stringify(val, null, '\t'))
     } catch (error) {
       // Improve the message of permission errors
       // @ts-expect-error TS(2571) FIXME: Object is of type 'unknown'.
