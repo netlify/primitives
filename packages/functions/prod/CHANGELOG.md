@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.1](https://github.com/netlify/primitives/compare/functions-v5.2.0...functions-v5.2.1) (2026-05-12)
+
+
+### Bug Fixes
+
+* update readme badges to point to current repo ([#594](https://github.com/netlify/primitives/issues/594)) ([0e05d46](https://github.com/netlify/primitives/commit/0e05d46b645b66d20d01e824fe5b82a121b491a2))
+
 ## [5.2.0](https://github.com/netlify/primitives/compare/functions-v5.1.5...functions-v5.2.0) (2026-04-07)
 
 
