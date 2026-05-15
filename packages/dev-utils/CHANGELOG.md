@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.4](https://github.com/netlify/primitives/compare/dev-utils-v4.4.3...dev-utils-v4.4.4) (2026-05-15)
+
+
+### Bug Fixes
+
+* **dev-utils:** replace `write-file-atomic` with `atomically` ([#686](https://github.com/netlify/primitives/issues/686)) ([39b6fb5](https://github.com/netlify/primitives/commit/39b6fb5a5db961e4423f425ed3a65c2f274f65fc))
+
 ## [4.4.3](https://github.com/netlify/primitives/compare/dev-utils-v4.4.2...dev-utils-v4.4.3) (2026-03-19)
 
 
