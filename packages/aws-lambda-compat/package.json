@@ -1,6 +1,6 @@
 {
   "name": "@netlify/aws-lambda-compat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AWS Lambda compatibility wrapper for Netlify Functions",
   "type": "module",
   "main": "./dist/main.js",
@@ -51,7 +51,7 @@
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/types": "2.6.0"
+    "@netlify/types": "2.7.0"
   },
   "devDependencies": {
     "npm-run-all2": "^5.0.0",

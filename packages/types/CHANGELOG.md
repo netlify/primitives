@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/netlify/primitives/compare/types-v2.6.0...types-v2.7.0) (2026-05-18)
+
+
+### Features
+
+* export function regions ([#689](https://github.com/netlify/primitives/issues/689)) ([1725879](https://github.com/netlify/primitives/commit/172587985ec7be9e2576839763f20e154b38ed25))
+
 ## [2.6.0](https://github.com/netlify/primitives/compare/types-v2.5.0...types-v2.6.0) (2026-03-19)
 
 
