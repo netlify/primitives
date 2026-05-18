@@ -54,7 +54,7 @@ describe.runIf(isSupportedNode && !isWindows && !skipLiveTests)('build output wh
     const response = await page.goto(`${baseUrl}/deferred`)
     expect(response?.status()).toBe(200)
     // This is eventually rendered on the client once it's ready
-    await page.waitForSelector('text=Hello deferred!')
+    await page.getByText('Hello deferred!').waitFor()
   })
 
   test('Handles Server Routes', async () => {
@@ -71,37 +71,32 @@ describe.runIf(isSupportedNode && !isWindows && !skipLiveTests)('build output wh
     const response = await page.goto(`${baseUrl}/posts`)
     expect(response?.status()).toBe(200)
     // A Server Function is used on client-side navigation to a post page
-    await page.click('text=sunt aut facere repe')
-    await page.waitForSelector('text=quia et suscipit suscipit')
+    await page.getByText('sunt aut facere repe').click()
+    await page.getByText('quia et suscipit suscipit').waitFor()
   })
 
   test('Renders basic RSC page with server components', async () => {
     const response = await page.goto(`${baseUrl}/rsc-basic`)
     expect(response?.status()).toBe(200)
     // The greeting is rendered by a server component via renderServerComponent
-    await page.waitForSelector('[data-testid="rsc-greeting"]')
-    const greetingText = await page.textContent('[data-testid="rsc-greeting"]')
-    expect(greetingText).toContain('Hello from a Server Component!')
+    await page.getByTestId('rsc-greeting').filter({ hasText: 'Hello from a Server Component!' }).waitFor()
     // The user list is also rendered as a server component with data fetching
-    await page.waitForSelector('[data-testid="rsc-user-list"]')
-    const userListText = await page.textContent('[data-testid="rsc-user-list"]')
-    expect(userListText).toContain('Ervin Howell')
+    await page.getByTestId('rsc-user-list').filter({ hasText: 'Ervin Howell' }).waitFor()
   })
 
   test('Renders composite RSC page with client component children', async () => {
     const response = await page.goto(`${baseUrl}/rsc-composite`)
     expect(response?.status()).toBe(200)
     // The card shell is rendered on the server via createCompositeComponent
-    await page.waitForSelector('[data-testid="rsc-card"]')
-    const cardText = await page.textContent('[data-testid="rsc-card"]')
-    expect(cardText).toContain('Server-Rendered Card')
-    // The counter is a client component passed as a children slot
-    await page.waitForSelector('[data-testid="client-counter"]')
-    const initialValue = await page.textContent('[data-testid="counter-value"]')
-    expect(initialValue).toBe('0')
+    await page.getByTestId('rsc-card').filter({ hasText: 'Server-Rendered Card' }).waitFor()
+    // The counter is a client component passed as a children slot.
+    // Wait for hydration before clicking — the button is in the SSR markup
+    // but its event listener isn't attached until React hydrates on the client.
+    await page.getByTestId('client-counter').and(page.locator('[data-hydrated="true"]')).waitFor()
+    const counterValue = page.getByTestId('counter-value')
+    expect(await counterValue.textContent()).toBe('0')
     // Verify client interactivity works within the server-rendered shell
-    await page.click('[data-testid="counter-button"]')
-    const updatedValue = await page.textContent('[data-testid="counter-value"]')
-    expect(updatedValue).toBe('1')
+    await page.getByTestId('counter-button').click()
+    await counterValue.filter({ hasText: /^1$/ }).waitFor()
   })
 })
