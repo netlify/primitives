@@ -32,6 +32,6 @@ export type {
 } from './lib/events/identity.js'
 export type { FormSubmittedEvent, FormSubmittedHandler } from './lib/events/submission.js'
 export type { EnvironmentVariables } from './lib/environment-variables.js'
-export { FUNCTION_REGIONS, FUNCTION_REGION_CODES } from './lib/function-regions.js'
+export type { FunctionRegion } from './lib/function-regions.js'
 export type { NetlifyGlobal } from './lib/globals.js'
 export type { Site } from './lib/context/site.js'
