@@ -32,9 +32,11 @@
   "scripts": {
     "build": "tsup-node",
     "prepack": "npm run build",
-    "test": "vitest run",
+    "test": "npm run test:types && npm run test:vitest",
     "test:dev": "vitest",
-    "test:ci": "npm run build && vitest run",
+    "test:ci": "npm run build && npm run test:types && npm run test:vitest",
+    "test:types": "tsc --noEmit",
+    "test:vitest": "vitest run",
     "dev": "tsup-node --watch",
     "publint": "npx -y publint --strict"
   },
