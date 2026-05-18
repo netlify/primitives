@@ -1,0 +1,13 @@
+export type FunctionRegion =
+  | 'cmh'
+  | 'dub'
+  | 'fra'
+  | 'gru'
+  | 'iad'
+  | 'lhr'
+  | 'nrt'
+  | 'pdx'
+  | 'sfo'
+  | 'sin'
+  | 'syd'
+  | 'yul'
