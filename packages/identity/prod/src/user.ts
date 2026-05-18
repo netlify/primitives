@@ -126,7 +126,7 @@ export const toUser = (userData: UserData): User => {
  * object is unavailable (e.g., Identity API is unreachable on the server).
  *
  * JWT claims only contain `sub`, `email`, `exp`, `app_metadata`, and
- * `user_metadata`. All other User fields (timestamps, aud, role, etc.)
+ * `user_metadata`. All other User fields like timestamps, aud, role, etc.
  * will be `undefined`.
  */
 const claimsToUser = (claims: IdentityUser): User => {
