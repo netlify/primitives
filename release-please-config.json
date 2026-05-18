@@ -31,6 +31,7 @@
     "packages/functions/dev": {},
     "packages/functions/prod": {},
     "packages/headers": {},
+    "packages/identity/prod": {},
     "packages/images": {},
     "packages/nuxt-module": {},
     "packages/otel": {},
