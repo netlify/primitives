@@ -24,7 +24,7 @@ describe('getContext', () => {
     expect(result).toBe(mockContext)
   })
 
-  test('returns null when called outside a request scope', () => {
-    expect(getContext()).toBeNull()
+  test('throws when called outside a request scope', () => {
+    expect(() => getContext()).toThrow(/only be called within a Netlify serverless function/)
   })
 })
