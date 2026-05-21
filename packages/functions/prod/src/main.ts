@@ -7,6 +7,7 @@ declare global {
 }
 
 export { builder } from './lib/builder.js'
+export { getContext } from './lib/get_context.js'
 export { purgeCache } from './lib/purge_cache.js'
 export { schedule } from './lib/schedule.js'
 export { stream } from './lib/stream.js'

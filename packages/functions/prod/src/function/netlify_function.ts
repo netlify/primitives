@@ -14,8 +14,10 @@ import type {
   FormSubmittedHandler,
 } from '@netlify/types'
 
-export interface NetlifyFunction {
-  fetch?: (req: Request, context: Context) => Response | Promise<Response>
+type FetchHandler = (req: Request, context: Context) => Response | Promise<Response>
+type BackgroundFetchHandler = (req: Request, context: Context) => void | Promise<void>
+
+interface BaseNetlifyFunction {
   deployBuilding?: DeployBuildingHandler
   deploySucceeded?: DeploySucceededHandler
   deployFailed?: DeployFailedHandler
@@ -28,5 +30,16 @@ export interface NetlifyFunction {
   userValidate?: UserValidateHandler
   userModified?: UserModifiedHandler
   userDeleted?: UserDeletedHandler
-  config?: Config
 }
+
+// `config.background` discriminates between a regular `fetch` handler (must
+// return `Response`) and a background one (response is discarded).
+export type NetlifyFunction =
+  | (BaseNetlifyFunction & {
+      fetch?: FetchHandler
+      config?: Config & { background?: false }
+    })
+  | (BaseNetlifyFunction & {
+      fetch?: BackgroundFetchHandler
+      config: Config & { background: true }
+    })

@@ -10,6 +10,7 @@ export interface BuildResult {
   buildPath: string
   excludedRoutes?: ExtendedRoute[]
   includedFiles?: string[]
+  invocationMode?: FunctionResult['invocationMode']
   outputModuleFormat?: ModuleFormat
   mainFile: string
   routes?: ExtendedRoute[]
