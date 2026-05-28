@@ -19,19 +19,33 @@ export interface User {
   appMetadata?: Record<string, unknown>
 }
 
-interface IdentityEvent {
+interface BaseIdentityEvent {
   user: User
+}
+
+interface DeniableIdentityEvent extends BaseIdentityEvent {
+  /**
+   * Denies the action that triggered this event. The end user's request is
+   * rejected with a 401.
+   *
+   * ```ts
+   * if (!isAllowedEmail(event.user.email)) {
+   *   return event.deny()
+   * }
+   * ```
+   */
+  deny(): undefined
 }
 
 interface IdentityHandlerResult {
   user: User
 }
 
-export type UserLoginEvent = IdentityEvent
-export type UserSignupEvent = IdentityEvent
-export type UserValidateEvent = IdentityEvent
-export type UserModifiedEvent = IdentityEvent
-export type UserDeletedEvent = IdentityEvent
+export type UserLoginEvent = DeniableIdentityEvent
+export type UserSignupEvent = DeniableIdentityEvent
+export type UserValidateEvent = DeniableIdentityEvent
+export type UserModifiedEvent = DeniableIdentityEvent
+export type UserDeletedEvent = BaseIdentityEvent
 
 type MaybePromise<T> = T | Promise<T>
 

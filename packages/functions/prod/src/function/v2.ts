@@ -1,5 +1,7 @@
 export type { Context } from '@netlify/types'
 
+import type { FunctionRegion } from '@netlify/types'
+
 type Path = `/${string}`
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'
 type CronSchedule = string
@@ -15,6 +17,13 @@ interface RateLimitConfig {
 }
 
 interface BaseConfig {
+  /**
+   * If `true`, the function runs in background (fire-and-forget) mode: the
+   * platform returns an immediate response to the client and the function's
+   * return value is discarded.
+   */
+  background?: boolean
+
   /**
    * Defines metadata about the framework or extension that has generated the
    * function, if applicable. Typically contains the nane and the version.
@@ -40,7 +49,40 @@ interface BaseConfig {
    * {@link} https://ntl.fyi/rate-limiting-code
    */
   rateLimit?: RateLimitConfig
+
+  /**
+   * Airport code for the region where the function should be deployed.
+   *
+   * @example
+   * 'iad'
+   */
+  region?: FunctionRegion
 }
+
+type MemoryOrVcpu =
+  | {
+      /**
+       * Maximum amount of memory (in MB) the function can use. Accepts either
+       * a number (e.g. `2048`) or a human-friendly string (e.g. `"2gb"`,
+       * `"1024mb"`).
+       *
+       * Mutually exclusive with `vcpu`.
+       */
+      memory?: number | string
+
+      vcpu?: never
+    }
+  | {
+      memory?: never
+
+      /**
+       * Number of vCPUs the function should be provisioned with. Allowed
+       * range is 0.5–2.
+       *
+       * Mutually exclusive with `memory`.
+       */
+      vcpu?: number
+    }
 
 interface ConfigWithPath extends BaseConfig {
   /**
@@ -86,4 +128,4 @@ interface ConfigWithSchedule extends BaseConfig {
   schedule: CronSchedule
 }
 
-export type Config = ConfigWithPath | ConfigWithSchedule
+export type Config = (ConfigWithPath | ConfigWithSchedule) & MemoryOrVcpu

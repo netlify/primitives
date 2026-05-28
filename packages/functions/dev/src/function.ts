@@ -79,9 +79,21 @@ export class NetlifyFunction {
   private readonly timeoutBackground: number
   private readonly timeoutSynchronous: number
 
-  // Determines whether this is a background function based on the function
-  // name.
-  public readonly isBackground: boolean
+  // Determines whether this is a background function. Checks (in order):
+  //  1. ZISI build data — `invocationMode === 'background'` captures the
+  //     filename suffix AND the in-source `config.background: true`.
+  //  2. The TOML config — `[functions.<name>] background = true`.
+  //  3. The filename suffix as a last-resort fallback (used pre-build and for
+  //     non-ZISI runtimes).
+  get isBackground(): boolean {
+    if (this.buildData?.invocationMode === 'background') {
+      return true
+    }
+    if (this.config.functions?.[this.name]?.background === true) {
+      return true
+    }
+    return this.name.endsWith(BACKGROUND_FUNCTION_SUFFIX)
+  }
 
   private buildQueue?: Promise<BuildResult | undefined>
   private buildData?: BuildResult
@@ -122,8 +134,6 @@ export class NetlifyFunction {
     this.timeoutBackground = timeoutBackground
     this.timeoutSynchronous = timeoutSynchronous
     this.settings = settings
-
-    this.isBackground = name.endsWith(BACKGROUND_FUNCTION_SUFFIX)
 
     const functionConfig = config.functions?.[name]
     this.schedule = functionConfig?.schedule
