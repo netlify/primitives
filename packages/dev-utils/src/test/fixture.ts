@@ -51,7 +51,7 @@ export class Fixture {
       this.directory = await tmp.dir({ unsafeCleanup: true })
 
       // Resolve the canonical path so file watching sees the same form the OS
-      // reports for events. Avoids two crashes:
+      // reports for events.
       this.directory.path = await fs.realpath(this.directory.path)
     }
 
