@@ -16,13 +16,18 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        node-version: ['24.15.0']
+        node-version: ['24']
+        # `node-install-version` is what `setup-node` actually installs.
+        # `node-version` is the display value used in the matrix job name
+        # (which required status checks are pinned to), so it must stay stable.
+        node-install-version: ['24.15.0']
         include:
           - os: ubuntu-latest
             # Many of our dependencies require 20.6.0, so we use the same minimum.
             # But there is a blocking bug in 20.6.0, fixed in 20.6.1:
             # https://github.com/nuxt/nuxt/issues/23020#issuecomment-1719828889
             node-version: '20.6.1'
+            node-install-version: '20.6.1'
       fail-fast: false
     steps:
       # Increasing the maximum number of open files. See:
@@ -34,15 +39,15 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Node.js ${{ matrix.node-version }}
+      - name: Node.js ${{ matrix.node-install-version }}
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node-install-version }}
           cache: 'npm'
       # Use npm@10 on Node 22+ due to https://github.com/npm/cli/issues/8489
       - name: Setup npm version
         run: npm install -g npm@10
-        if: "${{ startsWith(matrix.node-version, '24') }}"
+        if: "${{ matrix.node-version == '24' }}"
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
