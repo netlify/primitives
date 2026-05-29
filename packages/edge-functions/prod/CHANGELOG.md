@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.0.8](https://github.com/netlify/primitives/compare/edge-functions-v3.0.7...edge-functions-v3.0.8) (2026-05-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 2.7.0 to 2.8.0
+
 ## [3.0.7](https://github.com/netlify/primitives/compare/edge-functions-v3.0.6...edge-functions-v3.0.7) (2026-05-18)
 
 

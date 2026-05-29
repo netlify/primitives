@@ -1,6 +1,6 @@
 {
   "name": "@netlify/nuxt",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Nuxt module providing local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -54,8 +54,8 @@
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/dev": "^4.18.6",
-    "@netlify/dev-utils": "^4.4.5",
+    "@netlify/dev": "^4.18.7",
+    "@netlify/dev-utils": "^4.4.6",
     "@nuxt/kit": "^4.0.0",
     "h3": "^1.15.3"
   },

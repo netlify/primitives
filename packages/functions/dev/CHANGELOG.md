@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.0](https://github.com/netlify/primitives/compare/functions-dev-v1.2.11...functions-dev-v1.3.0) (2026-05-29)
+
+
+### Features
+
+* add function config properties ([#696](https://github.com/netlify/primitives/issues/696)) ([e43cd8f](https://github.com/netlify/primitives/commit/e43cd8f132ec7d5c4517c29cb7c6dbe9dbd5b6b7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.8 to 10.7.9
+    * @netlify/dev-utils bumped from 4.4.5 to 4.4.6
+    * @netlify/functions bumped from 5.2.2 to 5.3.0
+
 ## [1.2.11](https://github.com/netlify/primitives/compare/functions-dev-v1.2.10...functions-dev-v1.2.11) (2026-05-18)
 
 

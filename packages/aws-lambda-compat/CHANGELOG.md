@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.2](https://github.com/netlify/primitives/compare/aws-lambda-compat-v1.0.1...aws-lambda-compat-v1.0.2) (2026-05-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 2.7.0 to 2.8.0
+
 ## [1.0.1](https://github.com/netlify/primitives/compare/aws-lambda-compat-v1.0.0...aws-lambda-compat-v1.0.1) (2026-05-18)
 
 

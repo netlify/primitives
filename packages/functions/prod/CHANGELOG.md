@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.3.0](https://github.com/netlify/primitives/compare/functions-v5.2.2...functions-v5.3.0) (2026-05-29)
+
+
+### Features
+
+* add function config properties ([#696](https://github.com/netlify/primitives/issues/696)) ([e43cd8f](https://github.com/netlify/primitives/commit/e43cd8f132ec7d5c4517c29cb7c6dbe9dbd5b6b7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 2.7.0 to 2.8.0
+
 ## [5.2.2](https://github.com/netlify/primitives/compare/functions-v5.2.1...functions-v5.2.2) (2026-05-18)
 
 

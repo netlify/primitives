@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.4.6](https://github.com/netlify/primitives/compare/dev-utils-v4.4.5...dev-utils-v4.4.6) (2026-05-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.7.0 to 2.8.0
+
 ## [4.4.5](https://github.com/netlify/primitives/compare/dev-utils-v4.4.4...dev-utils-v4.4.5) (2026-05-18)
 
 

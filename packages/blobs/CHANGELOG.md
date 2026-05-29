@@ -1,5 +1,15 @@
 # Changelog
 
+## [10.7.9](https://github.com/netlify/primitives/compare/blobs-v10.7.8...blobs-v10.7.9) (2026-05-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.4.5 to 4.4.6
+    * @netlify/otel bumped from ^6.0.2 to ^6.0.3
+
 ## [10.7.8](https://github.com/netlify/primitives/compare/blobs-v10.7.7...blobs-v10.7.8) (2026-05-18)
 
 

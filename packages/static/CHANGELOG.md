@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.1.10](https://github.com/netlify/primitives/compare/static-v3.1.9...static-v3.1.10) (2026-05-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.5 to ^4.4.6
+
 ## [3.1.9](https://github.com/netlify/primitives/compare/static-v3.1.8...static-v3.1.9) (2026-05-18)
 
 
