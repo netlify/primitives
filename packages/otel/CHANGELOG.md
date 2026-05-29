@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.0.3](https://github.com/netlify/primitives/compare/otel-v6.0.2...otel-v6.0.3) (2026-05-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.5 to ^4.4.6
+
 ## [6.0.2](https://github.com/netlify/primitives/compare/otel-v6.0.1...otel-v6.0.2) (2026-05-18)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.0](https://github.com/netlify/primitives/compare/types-v2.7.0...types-v2.8.0) (2026-05-29)
+
+
+### Features
+
+* add function config properties ([#696](https://github.com/netlify/primitives/issues/696)) ([e43cd8f](https://github.com/netlify/primitives/commit/e43cd8f132ec7d5c4517c29cb7c6dbe9dbd5b6b7))
+
 ## [2.7.0](https://github.com/netlify/primitives/compare/types-v2.6.0...types-v2.7.0) (2026-05-18)
 
 
