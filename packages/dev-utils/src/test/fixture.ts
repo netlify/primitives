@@ -50,13 +50,9 @@ export class Fixture {
     if (!this.directory) {
       this.directory = await tmp.dir({ unsafeCleanup: true })
 
-      // `/var` is a symlink to `/private/var`, which causes unexpected behavior
-      // in the file watching logic, so we use the linked directory instead.
-      // TODO: Find a better way to do this. Maybe this is an issue that needs to
-      // be solved upstream in `@netlify/zip-it-and-ship-it`.
-      if (this.directory.path.startsWith('/var/')) {
-        this.directory.path = this.directory.path.replace('/var/', '/private/var/')
-      }
+      // Resolve the canonical path so file watching sees the same form the OS
+      // reports for events.
+      this.directory.path = await fs.realpath(this.directory.path)
     }
 
     if (this.sourceDirectory) {
