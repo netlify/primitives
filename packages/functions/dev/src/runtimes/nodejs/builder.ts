@@ -180,7 +180,7 @@ export const getZISIBuilder = async ({
 }: HandlerOptions): Promise<FunctionBuilder | null> => {
   const functionsConfig = netlifyConfigToZisiConfig(config.functions, projectRoot)
   const packageJson = await readPackageUp({ cwd: path.dirname(func.mainFile) })
-  const hasTypeModule = Boolean(packageJson && packageJson.packageJson.type === 'module')
+  const hasTypeModule = packageJson?.packageJson.type === 'module'
   const featureFlags: FeatureFlags = {}
 
   if (metadata.runtimeAPIVersion === 2) {

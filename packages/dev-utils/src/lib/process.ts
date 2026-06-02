@@ -12,7 +12,7 @@ export interface ProcessRef {
 
 export const killProcess = (ps?: ExecaChildProcess) => {
   // If the process is no longer running, there's nothing left to do.
-  if (!ps || ps.exitCode !== null) {
+  if (ps?.exitCode !== null) {
     return
   }
 

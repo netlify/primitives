@@ -59,7 +59,7 @@ interface InjectEnvironmentVariablesOptions {
  */
 export const injectEnvVariables = async ({
   accountSlug,
-  baseVariables = {},
+  baseVariables,
   envAPI,
   netlifyAPI,
   siteID,
@@ -262,7 +262,7 @@ const fetchEnvelopeItems = async function ({
  */
 export const formatEnvelopeData = ({
   context = 'dev',
-  envelopeItems = [],
+  envelopeItems,
   scope = 'any',
   source,
 }: {
