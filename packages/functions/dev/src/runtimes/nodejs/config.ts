@@ -10,7 +10,7 @@ export interface TOMLFunctionConfig {
 }
 
 interface NormalizeFunctionsConfigOptions {
-  functionsConfig: Record<string, TOMLFunctionConfig>
+  functionsConfig?: Record<string, TOMLFunctionConfig>
   projectRoot: string
   siteEnv?: Record<string, string>
 }
@@ -19,7 +19,7 @@ interface NormalizeFunctionsConfigOptions {
 // match to the properties that @netlify/zip-it-and-ship-it expects. We do that
 // translation here.
 export const normalizeFunctionsConfig = ({
-  functionsConfig,
+  functionsConfig = {},
   projectRoot,
   siteEnv = {},
 }: NormalizeFunctionsConfigOptions) =>
