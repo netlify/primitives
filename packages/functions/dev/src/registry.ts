@@ -9,7 +9,6 @@ import { SYNCHRONOUS_FUNCTION_TIMEOUT, BACKGROUND_FUNCTION_TIMEOUT } from '@netl
 import { ListedFunction, listFunctions, Manifest } from '@netlify/zip-it-and-ship-it'
 import extractZip from 'extract-zip'
 
-
 import { BuildCache } from './builder.js'
 import { NetlifyFunction } from './function.js'
 import { runtimes } from './runtimes/index.js'
