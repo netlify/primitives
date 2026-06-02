@@ -6,11 +6,11 @@
   "release-type": "node",
   "separate-pull-requests": false,
   "packages": {
+    "packages/ai": {},
     "packages/aws-lambda-compat": {
       "prerelease": true,
       "prerelease-type": "beta"
     },
-    "packages/ai": {},
     "packages/blobs": {},
     "packages/cache": {},
     "packages/database/dev": {
@@ -33,16 +33,11 @@
     "packages/headers": {},
     "packages/identity/prod": {},
     "packages/images": {},
-    "packages/nuxt-module": {},
     "packages/otel": {},
     "packages/redirects": {},
     "packages/runtime": {},
     "packages/runtime-utils": {},
     "packages/static": {},
-    "packages/types": {},
-    "packages/vite-plugin": {},
-    "packages/vite-plugin-tanstack-start": {
-      "exclude-paths": ["packages/vite-plugin-tanstack-start/test"]
-    }
+    "packages/types": {}
   }
 }
