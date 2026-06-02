@@ -64,7 +64,7 @@
     "@types/node": "^22.0.0",
     "jsdom": "^28.1.0",
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "gotrue-js": "^1.0.1"

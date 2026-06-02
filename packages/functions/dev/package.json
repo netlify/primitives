@@ -61,7 +61,7 @@
     "@types/source-map-support": "^0.5.10",
     "npm-run-all2": "^5.0.0",
     "tsup": "^8.0.2",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   },
   "engines": {
     "node": ">=20.6.1"

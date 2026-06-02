@@ -39,7 +39,7 @@
     "@netlify/dev-utils": "^4.4.6",
     "@types/mime-types": "^2.1.4",
     "tsup": "^8.5.0",
-    "vitest": "^3.1.4"
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "mime-types": "^3.0.0"

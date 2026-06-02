@@ -50,7 +50,7 @@
     "@netlify/database-dev": "0.10.1",
     "@types/pg": "^8.11.0",
     "tsup": "^8.0.2",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   },
   "engines": {
     "node": ">=20.6.1"

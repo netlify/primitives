@@ -76,7 +76,7 @@
     "@netlify/types": "2.8.0",
     "npm-run-all2": "^7.0.2",
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "@netlify/runtime-utils": "2.3.0"

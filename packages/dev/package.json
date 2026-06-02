@@ -53,7 +53,7 @@
     "@netlify/api": "^14.0.18",
     "@netlify/types": "2.8.0",
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "@netlify/ai": "^0.4.1",

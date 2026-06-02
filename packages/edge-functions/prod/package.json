@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "@netlify/types": "2.8.0"

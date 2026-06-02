@@ -51,7 +51,7 @@
     "@types/parse-gitignore": "^1.0.2",
     "execa": "^8.0.1",
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "@whatwg-node/server": "^0.10.0",

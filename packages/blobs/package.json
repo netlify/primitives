@@ -77,7 +77,7 @@
     "semver": "^7.5.3",
     "tmp-promise": "^3.0.3",
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "@netlify/dev-utils": "4.4.6",

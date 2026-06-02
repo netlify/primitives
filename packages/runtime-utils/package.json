@@ -51,6 +51,6 @@
   "devDependencies": {
     "@types/node": "^18.19.110",
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   }
 }

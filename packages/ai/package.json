@@ -63,7 +63,7 @@
     "npm-run-all2": "^7.0.2",
     "tsup": "8.5.1",
     "typescript": "5.9.3",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   },
   "repository": {
     "type": "git",

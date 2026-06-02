@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/jsonwebtoken": "9.0.10",
     "tsup": "^8.5.0",
-    "vitest": "^3.1.4"
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "@netlify/dev-utils": "4.4.6",

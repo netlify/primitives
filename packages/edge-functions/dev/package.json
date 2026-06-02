@@ -49,6 +49,6 @@
   "devDependencies": {
     "execa": "^8.0.1",
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.1.0"
   }
 }

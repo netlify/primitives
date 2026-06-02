@@ -39,7 +39,7 @@
     "@netlify/dev-utils": "^4.4.6",
     "@types/node": "^20.17.57",
     "tsup": "^8.0.0",
-    "vitest": "^3.1.4"
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "@netlify/headers-parser": "^9.0.3"
