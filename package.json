@@ -37,6 +37,9 @@
   },
   "keywords": [],
   "license": "MIT",
+  "overrides": {
+    "typescript": "^5"
+  },
   "devDependencies": {
     "@eslint/compat": "^1.2.9",
     "jsdom": "^28.1.0",
