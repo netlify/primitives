@@ -747,19 +747,4 @@ export default [
       '@typescript-eslint/no-unsafe-assignment': 'off',
     },
   },
-  {
-    files: ['packages/vite-plugin/src/lib/logger.ts'],
-    rules: {
-      '@typescript-eslint/no-confusing-void-expression': 'off',
-    },
-  },
-  {
-    files: ['packages/vite-plugin/src/main.ts'],
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-misused-promises': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
-    },
-  },
 ]
