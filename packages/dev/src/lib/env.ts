@@ -59,7 +59,8 @@ interface InjectEnvironmentVariablesOptions {
  */
 export const injectEnvVariables = async ({
   accountSlug,
-  baseVariables,
+  // eslint-disable-next-line @typescript-eslint/no-useless-default-assignment
+  baseVariables = {},
   envAPI,
   netlifyAPI,
   siteID,
@@ -262,7 +263,8 @@ const fetchEnvelopeItems = async function ({
  */
 export const formatEnvelopeData = ({
   context = 'dev',
-  envelopeItems,
+  // eslint-disable-next-line @typescript-eslint/no-useless-default-assignment
+  envelopeItems = [],
   scope = 'any',
   source,
 }: {
