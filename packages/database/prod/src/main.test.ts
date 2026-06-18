@@ -174,9 +174,9 @@ describe('getDatabase', () => {
     // ...and the next query rebuilds the underlying client for the new
     // credentials instead of reusing the stale one.
     expect(db.driver).toBe('serverless')
-    if (db.driver !== 'serverless') return
-    // The real call signature is tagged-template only; cast to invoke it with a
-    // plain string in the test, which is all the apply trap needs.
+    if (db.driver !== 'serverless')
+      return // The real call signature is tagged-template only; cast to invoke it with a
+      // plain string in the test, which is all the apply trap needs.
     ;(db.httpClient as unknown as (query: string) => unknown)('select 1')
     expect(mockNeon).toHaveBeenLastCalledWith(OTHER_CONNECTION_STRING)
   })
