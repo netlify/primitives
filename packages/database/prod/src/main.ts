@@ -62,7 +62,7 @@ export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnectio
     // Node.js 22.
     /* eslint-disable n/no-unsupported-features/node-builtins */
     if (!neonConfig.webSocketConstructor && typeof WebSocket === 'undefined') {
-      neonConfig.webSocketConstructor = ws as unknown as typeof WebSocket
+      neonConfig.webSocketConstructor = ws
     }
     /* eslint-enable n/no-unsupported-features/node-builtins */
 

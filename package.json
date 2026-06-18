@@ -23,11 +23,8 @@
     "packages/static",
     "packages/ai",
     "packages/dev",
-    "packages/nuxt-module",
     "packages/aws-lambda-compat",
-    "packages/identity/prod",
-    "packages/vite-plugin",
-    "packages/vite-plugin-tanstack-start"
+    "packages/identity/prod"
   ],
   "version": "0.0.0",
   "scripts": {
@@ -40,8 +37,12 @@
   },
   "keywords": [],
   "license": "MIT",
+  "overrides": {
+    "typescript": "^5"
+  },
   "devDependencies": {
     "@eslint/compat": "^1.2.9",
+    "jsdom": "^26",
     "@eslint/js": "^9.27.0",
     "@vitest/eslint-plugin": "^1.2.1",
     "eslint": "^9.0.0",

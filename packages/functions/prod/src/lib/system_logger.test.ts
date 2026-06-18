@@ -24,12 +24,12 @@ test('Log Level', () => {
 
 test('Fields', () => {
   const originalLog = console.log
-  const logs: string[][] = []
+  const logs: unknown[][] = []
   console.log = (...message) => logs.push(message)
   systemLogger.withError(new Error('boom')).withFields({ foo: 'bar' }).log('hello!')
   expect(logs.length).toBe(1)
   expect(logs[0][0]).toBe('__nfSystemLog')
-  const log = JSON.parse(logs[0][1])
+  const log = JSON.parse(logs[0][1] as string)
   expect(log.msg).toBe('hello!')
   expect(log.fields.foo).toBe('bar')
   expect(log.fields.error).toBe('boom')

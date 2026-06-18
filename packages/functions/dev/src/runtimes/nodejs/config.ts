@@ -10,7 +10,7 @@ export interface TOMLFunctionConfig {
 }
 
 interface NormalizeFunctionsConfigOptions {
-  functionsConfig: Record<string, TOMLFunctionConfig>
+  functionsConfig?: Record<string, TOMLFunctionConfig>
   projectRoot: string
   siteEnv?: Record<string, string>
 }
