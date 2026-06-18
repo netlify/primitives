@@ -83,8 +83,8 @@ function createRefreshingHttpClient(readConnectionString: () => string): NeonHtt
 
   return new Proxy<NeonHttpClient>(target, {
     apply: (_target, _thisArg, args: unknown[]) => (getClient() as (...callArgs: unknown[]) => unknown)(...args),
-    get: (_target, prop) => {
-      const value = (getClient() as unknown as Record<string | symbol, unknown>)[prop]
+    get: (_target, prop, receiver) => {
+      const value: unknown = Reflect.get(getClient(), prop, receiver)
 
       // Data property: nothing to defer, hand back the value as-is.
       if (typeof value !== 'function') {
@@ -95,9 +95,7 @@ function createRefreshingHttpClient(readConnectionString: () => string): NeonHtt
       // client. This is what makes a captured method reference use the updated
       // credentials after rotation.
       return (...args: unknown[]): unknown => {
-        const fn = (getClient() as unknown as Record<string | symbol, unknown>)[prop] as (
-          ...callArgs: unknown[]
-        ) => unknown
+        const fn = Reflect.get(getClient(), prop, receiver) as (...callArgs: unknown[]) => unknown
 
         return fn.apply(getClient(), args)
       }
