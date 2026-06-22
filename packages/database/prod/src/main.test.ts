@@ -9,7 +9,7 @@ const { mockWaddlerNodePostgres, mockWaddlerNeonHttp, mockPgPool, mockNeonPool, 
     mockPgPool: vi.fn(),
     mockNeonPool: vi.fn(),
     mockNeon: vi.fn().mockReturnValue('neon-http-client'),
-    mockNeonConfig: {},
+    mockNeonConfig: {} as Record<string, unknown>,
   }),
 )
 
