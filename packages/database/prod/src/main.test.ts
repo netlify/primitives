@@ -93,7 +93,7 @@ describe('getDatabase', () => {
 
     const result = getDatabase()
 
-    expect(mockWaddlerNeonHttp).toHaveBeenCalledWith({ client: 'neon-http-client' })
+    expect(mockWaddlerNeonHttp).toHaveBeenCalledWith({ client: expect.any(Function) })
     expect(mockNeonPool).toHaveBeenCalledWith({ connectionString: CONNECTION_STRING })
     expect(mockWaddlerNodePostgres).not.toHaveBeenCalled()
     expect(mockPgPool).not.toHaveBeenCalled()
@@ -102,7 +102,7 @@ describe('getDatabase', () => {
       driver: 'serverless',
       sql: 'neon-http-sql',
       pool: expect.any(Object),
-      httpClient: 'neon-http-client',
+      httpClient: expect.any(Function),
       connectionString: CONNECTION_STRING,
     })
   })
@@ -151,6 +151,34 @@ describe('getDatabase', () => {
 
     expect(mockPgPool).toHaveBeenCalledWith({ connectionString: CONNECTION_STRING })
     expect(result.connectionString).toBe(CONNECTION_STRING)
+  })
+
+  it('re-resolves NETLIFY_DB_URL on use so rotated credentials take effect', () => {
+    process.env.NETLIFY_DB_URL = CONNECTION_STRING
+    process.env.NETLIFY_DB_DRIVER = 'serverless'
+    // Return a callable (with the connection string attached) so the httpClient
+    // Proxy can be invoked.
+    mockNeon.mockImplementation((connectionString: string) => Object.assign(() => undefined, { connectionString }))
+
+    // A connection obtained once, as with the common module-scope pattern.
+    const db = getDatabase()
+    expect(db.connectionString).toBe(CONNECTION_STRING)
+    expect(mockNeon).toHaveBeenLastCalledWith(CONNECTION_STRING)
+
+    // Credentials rotate: NETLIFY_DB_URL is refreshed with a new value.
+    process.env.NETLIFY_DB_URL = OTHER_CONNECTION_STRING
+
+    // The live connection string reflects the rotation immediately...
+    expect(db.connectionString).toBe(OTHER_CONNECTION_STRING)
+
+    // ...and the next query rebuilds the underlying client for the new
+    // credentials instead of reusing the stale one.
+    expect(db.driver).toBe('serverless')
+    if (db.driver !== 'serverless')
+      return // The real call signature is tagged-template only; cast to invoke it with a
+      // plain string in the test, which is all the apply trap needs.
+    ;(db.httpClient as unknown as (query: string) => unknown)('select 1')
+    expect(mockNeon).toHaveBeenLastCalledWith(OTHER_CONNECTION_STRING)
   })
 })
 
