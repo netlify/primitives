@@ -202,17 +202,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - if:
-          ${{ steps.release.outputs['packages/nuxt-module--release_created'] || github.event_name == 'workflow_dispatch'
-          }}
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/nuxt-module/ --provenance --access=public || true
-          else
-            npm publish packages/nuxt-module/ --provenance --access=public
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if:
           ${{ steps.release.outputs['packages/redirects--release_created'] || github.event_name == 'workflow_dispatch'
           }}
         run: |
@@ -248,28 +237,6 @@ jobs:
             npm publish packages/dev/ --provenance --access=public || true
           else
             npm publish packages/dev/ --provenance --access=public
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if:
-          ${{ steps.release.outputs['packages/vite-plugin--release_created'] || github.event_name == 'workflow_dispatch'
-          }}
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/vite-plugin/ --provenance --access=public || true
-          else
-            npm publish packages/vite-plugin/ --provenance --access=public
-          fi
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - if:
-          ${{ steps.release.outputs['packages/vite-plugin-tanstack-start--release_created'] || github.event_name ==
-          'workflow_dispatch' }}
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            npm publish packages/vite-plugin-tanstack-start/ --provenance --access=public || true
-          else
-            npm publish packages/vite-plugin-tanstack-start/ --provenance --access=public
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

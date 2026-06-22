@@ -9,17 +9,6 @@ import { SYNCHRONOUS_FUNCTION_TIMEOUT, BACKGROUND_FUNCTION_TIMEOUT } from '@netl
 import { ListedFunction, listFunctions, Manifest } from '@netlify/zip-it-and-ship-it'
 import extractZip from 'extract-zip'
 
-import type {
-  FunctionBuildErrorEvent,
-  FunctionExtractedEvent,
-  FunctionLoadedEvent,
-  FunctionMissingTypesPackageEvent,
-  FunctionNotInvokableOnPathEvent,
-  FunctionRegisteredEvent,
-  FunctionReloadingEvent,
-  FunctionRemovedEvent,
-} from './events.js'
-
 import { BuildCache } from './builder.js'
 import { NetlifyFunction } from './function.js'
 import { runtimes } from './runtimes/index.js'
@@ -149,7 +138,8 @@ export class FunctionsRegistry {
       require.resolve(TYPES_PACKAGE, { paths: [this.projectRoot] })
     } catch (error) {
       if ((error as NodeJS.ErrnoException)?.code === 'MODULE_NOT_FOUND') {
-        this.handleEvent({ name: 'FunctionMissingTypesPackageEvent' } as FunctionMissingTypesPackageEvent)
+        const event = { name: 'FunctionMissingTypesPackageEvent' }
+        this.handleEvent(event)
       }
     }
   }
@@ -160,7 +150,8 @@ export class FunctionsRegistry {
    */
   async buildFunctionAndWatchFiles(func: NetlifyFunction, firstLoad = false) {
     if (!firstLoad) {
-      this.handleEvent({ function: func, name: 'FunctionReloadingEvent' } as FunctionReloadingEvent)
+      const event = { function: func, name: 'FunctionReloadingEvent' }
+      this.handleEvent(event)
     }
 
     const {
@@ -170,9 +161,11 @@ export class FunctionsRegistry {
     } = await func.build({ buildDirectory: this.destPath, cache: this.buildCache })
 
     if (buildError) {
-      this.handleEvent({ function: func, name: 'FunctionBuildErrorEvent' } as FunctionBuildErrorEvent)
+      const event = { function: func, name: 'FunctionBuildErrorEvent' }
+      this.handleEvent(event)
     } else {
-      this.handleEvent({ firstLoad, function: func, name: 'FunctionLoadedEvent' } as FunctionLoadedEvent)
+      const event = { firstLoad, function: func, name: 'FunctionLoadedEvent' }
+      this.handleEvent(event)
     }
 
     if (func.isTypeScript()) {
@@ -256,11 +249,8 @@ export class FunctionsRegistry {
       const { routes = [] } = func
 
       if (routes.length !== 0) {
-        this.handleEvent({
-          function: func,
-          name: 'FunctionNotInvokableOnPathEvent',
-          urlPath,
-        } as FunctionNotInvokableOnPathEvent)
+        const event = { function: func, name: 'FunctionNotInvokableOnPathEvent', urlPath }
+        this.handleEvent(event)
 
         return
       }
@@ -293,7 +283,8 @@ export class FunctionsRegistry {
    * Adds a function to the registry
    */
   async registerFunction(name: string, func: NetlifyFunction, isReload = false) {
-    this.handleEvent({ function: func, name: 'FunctionRegisteredEvent' } as FunctionRegisteredEvent)
+    const event = { function: func, name: 'FunctionRegisteredEvent' }
+    this.handleEvent(event)
 
     // If the function file is a ZIP, we extract it and rewire its main file to
     // the new location.
@@ -312,7 +303,8 @@ export class FunctionsRegistry {
       }
 
       if (this.debug) {
-        this.handleEvent({ function: func, name: 'FunctionExtractedEvent' } as FunctionExtractedEvent)
+        const event = { function: func, name: 'FunctionExtractedEvent' }
+        this.handleEvent(event)
       }
 
       func.setRoutes(manifestEntry?.routes)
@@ -462,7 +454,8 @@ export class FunctionsRegistry {
         return
       }
 
-      this.handleEvent({ function: func, name: 'FunctionRemovedEvent' } as FunctionRemovedEvent)
+      const event = { function: func, name: 'FunctionRemovedEvent' }
+      this.handleEvent(event)
     })
 
     if (this.fileWatcher) {

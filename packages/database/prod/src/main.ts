@@ -125,9 +125,9 @@ export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnectio
     const httpClient = createRefreshingHttpClient(readConnectionString)
 
     // Unlike the stateless HTTP client, a pool holds live, already-authenticated
-    // connections, so it can't transparently swap credentials, asthat would mean
-    // tearing down the pool and interrupting in-flight queries. It stays pinned
-    // to the connection string at construction.
+    // connections, so it can't transparently swap credentials, as that would
+    // mean tearing down the pool and interrupting in-flight queries. It stays
+    // pinned to the connection string at construction.
     const pool = new NeonPool({ connectionString })
 
     return {

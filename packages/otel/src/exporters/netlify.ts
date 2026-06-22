@@ -133,7 +133,7 @@ function toAnyValue(value: unknown): IAnyValue {
   if (t === 'object' && value != null)
     return {
       kvlistValue: {
-        values: Object.entries(value as object).map(([k, v]) => toKeyValue(k, v)),
+        values: Object.entries(value).map(([k, v]) => toKeyValue(k, v)),
       },
     }
 
