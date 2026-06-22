@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/netlify/primitives/compare/database-v1.0.0...database-v1.1.0) (2026-06-22)
+
+
+### Features
+
+* **database:** support credentials rotation ([#707](https://github.com/netlify/primitives/issues/707)) ([5f5acfa](https://github.com/netlify/primitives/commit/5f5acfa973907c0ec4eabd20455715e6d75969b0))
+
 ## [1.0.0](https://github.com/netlify/primitives/compare/database-v0.7.0...database-v1.0.0) (2026-04-29)
 
 
