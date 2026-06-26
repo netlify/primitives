@@ -9,6 +9,12 @@ import { handleRequest } from '../bootstrap.mjs'
  * @typedef {import('./types.ts').RunResponseEndMessage} RunResponseEndMessage
  */
 
+// Deno@2.9.0 lazy loads globalThis.process on first access. In worker thread it will rely on Deno.cwd() that we
+// don't allow in Edge Functions. Tricking deno into thinking it does run as main process allow
+// us to workaround this case.
+// See https://github.com/denoland/deno/blob/49c38256b8affe8aca3f9893576e44de239f486c/ext/node/polyfills/process.ts#L1801
+Deno.mainModule = new URL(import.meta.url).href
+
 const consoleLog = globalThis.console.log
 /** @type {Map<string, string>} */
 const fetchRewrites = new Map()
