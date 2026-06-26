@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.22](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.21...edge-functions-dev-v1.0.22) (2026-06-26)
+
+
+### Bug Fixes
+
+* workaround deno@2.9.0 compatibility issue ([#712](https://github.com/netlify/primitives/issues/712)) ([1344d57](https://github.com/netlify/primitives/commit/1344d5799a06c02678fa821517334a4438536e7b))
+
 ## [1.0.21](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.20...edge-functions-dev-v1.0.21) (2026-06-22)
 
 
