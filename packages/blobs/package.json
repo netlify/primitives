@@ -53,6 +53,7 @@
     "test:ci": "run-s build test:ci:*",
     "test:dev:vitest": "vitest",
     "test:dev:vitest:watch": "vitest watch",
+    "test:ci:types": "tsc --noEmit",
     "test:ci:vitest": "vitest run",
     "publint": "npx -y publint --strict"
   },
