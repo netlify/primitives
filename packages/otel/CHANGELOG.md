@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.0.4](https://github.com/netlify/primitives/compare/otel-v6.0.3...otel-v6.0.4) (2026-07-24)
+
+
+### Bug Fixes
+
+* **deps:** update opentelemetry-js monorepo ([#208](https://github.com/netlify/primitives/issues/208)) ([0ee574f](https://github.com/netlify/primitives/commit/0ee574fb08ca52a449f4f99056fd0a9905c12d60))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^4.4.6 to ^4.4.7
+
 ## [6.0.3](https://github.com/netlify/primitives/compare/otel-v6.0.2...otel-v6.0.3) (2026-05-29)
 
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.1.14](https://github.com/netlify/primitives/compare/redirects-v3.1.13...redirects-v3.1.14) (2026-07-24)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#710](https://github.com/netlify/primitives/issues/710)) ([9423eb5](https://github.com/netlify/primitives/commit/9423eb5ad2dcb8f258a894928311282b938fcb04))
+* **deps:** update netlify packages ([#716](https://github.com/netlify/primitives/issues/716)) ([17e440a](https://github.com/netlify/primitives/commit/17e440aa97290db013fa3fedf6213ab7c38dc358))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.4.6 to 4.4.7
+
 ## [3.1.13](https://github.com/netlify/primitives/compare/redirects-v3.1.12...redirects-v3.1.13) (2026-05-29)
 
 
