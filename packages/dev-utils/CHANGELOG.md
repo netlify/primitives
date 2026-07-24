@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.7](https://github.com/netlify/primitives/compare/dev-utils-v4.4.6...dev-utils-v4.4.7) (2026-07-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @whatwg-node/server to ^0.11.0 ([#722](https://github.com/netlify/primitives/issues/722)) ([9b6ac82](https://github.com/netlify/primitives/commit/9b6ac829bd83a6120464e73042d10bca4bd0f416))
+
 ## [4.4.6](https://github.com/netlify/primitives/compare/dev-utils-v4.4.5...dev-utils-v4.4.6) (2026-05-29)
 
 
