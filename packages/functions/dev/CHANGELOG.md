@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.2](https://github.com/netlify/primitives/compare/functions-dev-v1.3.1...functions-dev-v1.3.2) (2026-07-24)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#710](https://github.com/netlify/primitives/issues/710)) ([9423eb5](https://github.com/netlify/primitives/commit/9423eb5ad2dcb8f258a894928311282b938fcb04))
+* **deps:** update netlify packages ([#716](https://github.com/netlify/primitives/issues/716)) ([17e440a](https://github.com/netlify/primitives/commit/17e440aa97290db013fa3fedf6213ab7c38dc358))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.9 to 10.7.10
+    * @netlify/dev-utils bumped from 4.4.6 to 4.4.7
+
 ## [1.3.1](https://github.com/netlify/primitives/compare/functions-dev-v1.3.0...functions-dev-v1.3.1) (2026-06-22)
 
 

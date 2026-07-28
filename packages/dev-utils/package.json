@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev-utils",
-  "version": "4.4.6",
+  "version": "4.4.7",
   "description": "TypeScript utilities for the local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -54,7 +54,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
-    "@whatwg-node/server": "^0.10.0",
+    "@whatwg-node/server": "^0.11.0",
     "ansis": "^4.1.0",
     "atomically": "^2.0.3",
     "chokidar": "^4.0.1",

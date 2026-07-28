@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.3](https://github.com/netlify/primitives/compare/ai-v0.4.2...ai-v0.4.3) (2026-07-24)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#710](https://github.com/netlify/primitives/issues/710)) ([9423eb5](https://github.com/netlify/primitives/commit/9423eb5ad2dcb8f258a894928311282b938fcb04))
+* **deps:** update netlify packages ([#716](https://github.com/netlify/primitives/issues/716)) ([17e440a](https://github.com/netlify/primitives/commit/17e440aa97290db013fa3fedf6213ab7c38dc358))
+
 ## [0.4.2](https://github.com/netlify/primitives/compare/ai-v0.4.1...ai-v0.4.2) (2026-06-22)
 
 
