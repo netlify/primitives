@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.1.27](https://github.com/netlify/primitives/compare/runtime-v4.1.26...runtime-v4.1.27) (2026-07-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^10.7.10 to ^10.7.11
+
 ## [4.1.26](https://github.com/netlify/primitives/compare/runtime-v4.1.25...runtime-v4.1.26) (2026-07-24)
 
 
