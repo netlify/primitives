@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.4](https://github.com/netlify/primitives/compare/ai-v0.4.3...ai-v0.4.4) (2026-07-28)
+
+
+### Bug Fixes
+
+* add missing MIT license ([#727](https://github.com/netlify/primitives/issues/727)) ([6c341bd](https://github.com/netlify/primitives/commit/6c341bd2a194d0c2e4db2e6ab35d825795a53c8e))
+
 ## [0.4.3](https://github.com/netlify/primitives/compare/ai-v0.4.2...ai-v0.4.3) (2026-07-24)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.5](https://github.com/netlify/primitives/compare/otel-v6.0.4...otel-v6.0.5) (2026-07-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @opentelemetry/core to v2.8.0 [security] ([#706](https://github.com/netlify/primitives/issues/706)) ([ce30bb3](https://github.com/netlify/primitives/commit/ce30bb30dbe510f88e047bfcc04dc91ccbf0d9bb))
+
 ## [6.0.4](https://github.com/netlify/primitives/compare/otel-v6.0.3...otel-v6.0.4) (2026-07-24)
 
 
