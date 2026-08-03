@@ -1322,6 +1322,122 @@ describe('setJSON', () => {
 
       expect(mockStore.fulfilled).toBeTruthy()
     })
+
+    describe('Conditional writes', () => {
+      test('Returns `modified: false` when `onlyIfNew` is true and key exists', async () => {
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${apiToken}` },
+            response: new Response(JSON.stringify({ url: signedURL })),
+            url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+          })
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { 'if-none-match': '*' },
+            response: new Response(null, { status: 412 }),
+            url: signedURL,
+          })
+          .inject()
+
+        const blobs = getStore({
+          name: 'production',
+          token: apiToken,
+          siteID,
+        })
+
+        const result = await blobs.setJSON(key, { value }, { onlyIfNew: true })
+
+        expect(result.modified).toBe(false)
+        expect(result.etag).toBeUndefined()
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Returns `modified: true` when `onlyIfNew` is true and key does not exist', async () => {
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${apiToken}` },
+            response: new Response(JSON.stringify({ url: signedURL })),
+            url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+          })
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { 'if-none-match': '*' },
+            response: new Response(null, { status: 201, headers: { etag: '"123"' } }),
+            url: signedURL,
+          })
+          .inject()
+
+        const blobs = getStore({
+          name: 'production',
+          token: apiToken,
+          siteID,
+        })
+
+        const result = await blobs.setJSON(key, { value }, { onlyIfNew: true })
+
+        expect(result.modified).toBe(true)
+        expect(result.etag).toBe('"123"')
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Returns `modified: false` when `onlyIfMatch` does not match', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${apiToken}` },
+            response: new Response(JSON.stringify({ url: signedURL })),
+            url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+          })
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { 'if-match': etag },
+            response: new Response(null, { status: 412 }),
+            url: signedURL,
+          })
+          .inject()
+
+        const blobs = getStore({
+          name: 'production',
+          token: apiToken,
+          siteID,
+        })
+
+        const result = await blobs.setJSON(key, { value }, { onlyIfMatch: etag })
+
+        expect(result.modified).toBe(false)
+        expect(result.etag).toBeUndefined()
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Returns `modified: true` when `onlyIfMatch` matches', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${apiToken}` },
+            response: new Response(JSON.stringify({ url: signedURL })),
+            url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+          })
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { 'if-match': etag },
+            response: new Response(null, { status: 200, headers: { etag: '"123"' } }),
+            url: signedURL,
+          })
+          .inject()
+
+        const blobs = getStore({
+          name: 'production',
+          token: apiToken,
+          siteID,
+        })
+
+        const result = await blobs.setJSON(key, { value }, { onlyIfMatch: etag })
+
+        expect(result.modified).toBe(true)
+        expect(result.etag).toBe('"123"')
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+    })
   })
 
   describe('With edge credentials', () => {
@@ -1377,6 +1493,106 @@ describe('setJSON', () => {
       await blobs.setJSON(key, { value }, { metadata })
 
       expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    describe('Conditional writes', () => {
+      test('Returns `modified: false` when `onlyIfNew` is true and key exists', async () => {
+        const mockStore = new MockFetch()
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-none-match': '*' },
+            response: new Response(null, { status: 412 }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+          .inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        const result = await blobs.setJSON(key, { value }, { onlyIfNew: true })
+
+        expect(result.modified).toBe(false)
+        expect(result.etag).toBeUndefined()
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Returns `modified: true` when `onlyIfNew` is true and key does not exist', async () => {
+        const mockStore = new MockFetch()
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-none-match': '*' },
+            response: new Response(null, { status: 201, headers: { etag: '"123"' } }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+          .inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        const result = await blobs.setJSON(key, { value }, { onlyIfNew: true })
+
+        expect(result.modified).toBe(true)
+        expect(result.etag).toBe('"123"')
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Returns `modified: false` when `onlyIfMatch` does not match', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
+            response: new Response(null, { status: 412 }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+          .inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        const result = await blobs.setJSON(key, { value }, { onlyIfMatch: etag })
+
+        expect(result.modified).toBe(false)
+        expect(result.etag).toBeUndefined()
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Returns `modified: true` when `onlyIfMatch` matches', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
+            response: new Response(null, { status: 200, headers: { etag: '"123"' } }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+          .inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        const result = await blobs.setJSON(key, { value }, { onlyIfMatch: etag })
+
+        expect(result.modified).toBe(true)
+        expect(result.etag).toBe('"123"')
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
     })
 
     test('Throws when the `metadata` parameter is above the size limit', async () => {
