@@ -5,11 +5,11 @@ import { Client, type Conditions } from './client.ts'
 import type { ConsistencyMode } from './consistency.ts'
 import { getMetadataFromResponse, Metadata } from './metadata.ts'
 import { BlobInput, HTTPMethod } from './types.ts'
-import { BlobsInternalError, collectIterator, withSpan } from './util.ts'
+import { BlobsInternalError, collectIterator, DEPLOY_STORE_PREFIX, SITE_STORE_PREFIX, withSpan } from './util.ts'
 
-export const DEPLOY_STORE_PREFIX = 'deploy:'
+export { DEPLOY_STORE_PREFIX, SITE_STORE_PREFIX } from './util.ts'
+
 export const LEGACY_STORE_INTERNAL_PREFIX = 'netlify-internal/legacy-namespace/'
-export const SITE_STORE_PREFIX = 'site:'
 
 const STATUS_OK = 200
 const STATUS_PRE_CONDITION_FAILED = 412
@@ -155,7 +155,7 @@ export class Store {
     const res = await this.client.makeRequest({ key, method: HTTPMethod.DELETE, storeName: this.name })
 
     if (![200, 204, 404].includes(res.status)) {
-      throw new BlobsInternalError(res)
+      throw new BlobsInternalError(res, { method: HTTPMethod.DELETE, storeName: this.name })
     }
   }
 
@@ -167,7 +167,7 @@ export class Store {
       const res = await this.client.makeRequest({ method: HTTPMethod.DELETE, storeName: this.name })
 
       if (res.status !== 200) {
-        throw new BlobsInternalError(res)
+        throw new BlobsInternalError(res, { method: HTTPMethod.DELETE, storeName: this.name })
       }
 
       const data = (await res.json()) as DeleteStoreResponse
@@ -470,7 +470,7 @@ export class Store {
         }
       }
 
-      throw new BlobsInternalError(res)
+      throw new BlobsInternalError(res, { method: HTTPMethod.PUT, storeName: this.name })
     })
   }
 
@@ -518,7 +518,7 @@ export class Store {
         }
       }
 
-      throw new BlobsInternalError(res)
+      throw new BlobsInternalError(res, { method: HTTPMethod.PUT, storeName: this.name })
     })
   }
 

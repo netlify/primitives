@@ -161,7 +161,7 @@ export class Client {
     })
 
     if (res.status !== 200) {
-      throw new BlobsInternalError(res)
+      throw new BlobsInternalError(res, { method, storeName })
     }
 
     const { url: signedURL } = await res.json()

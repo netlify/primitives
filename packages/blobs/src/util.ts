@@ -4,15 +4,41 @@ import type { Span } from '@netlify/otel/opentelemetry'
 
 import { NF_ERROR, NF_REQUEST_ID } from './headers.ts'
 
+export const DEPLOY_STORE_PREFIX = 'deploy:'
+export const SITE_STORE_PREFIX = 'site:'
+
+interface BlobsErrorContext {
+  method?: string
+  storeName?: string
+}
+
+const isDeniedWrite = (res: Response, { method, storeName }: BlobsErrorContext) =>
+  (res.status === 401 || res.status === 403) &&
+  (method === 'put' || method === 'delete') &&
+  storeName !== undefined &&
+  !storeName.startsWith(DEPLOY_STORE_PREFIX)
+
+const blobsErrorMessage = (res: Response, context: BlobsErrorContext) => {
+  let details = res.headers.get(NF_ERROR) || `${res.status} status code`
+
+  if (res.headers.has(NF_REQUEST_ID)) {
+    details += `, ID: ${res.headers.get(NF_REQUEST_ID)}`
+  }
+
+  if (isDeniedWrite(res, context)) {
+    const storeName = context.storeName?.startsWith(SITE_STORE_PREFIX)
+      ? context.storeName.slice(SITE_STORE_PREFIX.length)
+      : context.storeName
+
+    return `Netlify Blobs could not write to store '${storeName}' (${details}). Builds and build plugins can only write to deploy-specific stores: use 'getDeployStore' instead of 'getStore', or pass a 'token' with write access to the store. If this code is not running in a build, check that the token and site ID are valid. See https://docs.netlify.com/build/data-and-storage/netlify-blobs/#deploy-specific-stores`
+  }
+
+  return `Netlify Blobs has generated an internal error (${details})`
+}
+
 export class BlobsInternalError extends Error {
-  constructor(res: Response) {
-    let details = res.headers.get(NF_ERROR) || `${res.status} status code`
-
-    if (res.headers.has(NF_REQUEST_ID)) {
-      details += `, ID: ${res.headers.get(NF_REQUEST_ID)}`
-    }
-
-    super(`Netlify Blobs has generated an internal error (${details})`)
+  constructor(res: Response, context: BlobsErrorContext = {}) {
+    super(blobsErrorMessage(res, context))
 
     this.name = 'BlobsInternalError'
   }
