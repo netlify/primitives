@@ -481,6 +481,7 @@ export class Store {
         'blobs.key': key,
         'blobs.method': 'PUT',
         'blobs.data.type': 'json',
+        'blobs.atomic': Boolean(options.onlyIfMatch ?? options.onlyIfNew),
       })
       Store.validateKey(key)
 
@@ -491,7 +492,7 @@ export class Store {
       }
 
       const res = await this.client.makeRequest({
-        ...conditions,
+        conditions,
         body: payload,
         headers,
         key,
