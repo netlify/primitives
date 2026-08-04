@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.7.12](https://github.com/netlify/primitives/compare/blobs-v10.7.11...blobs-v10.7.12) (2026-08-04)
+
+
+### Bug Fixes
+
+* **blobs:** send conditional write headers in setJSON ([#731](https://github.com/netlify/primitives/issues/731)) ([a8d9044](https://github.com/netlify/primitives/commit/a8d9044365ac8b42d2309f11023bc176db3e5d5a))
+
 ## [10.7.11](https://github.com/netlify/primitives/compare/blobs-v10.7.10...blobs-v10.7.11) (2026-07-28)
 
 
