@@ -1123,7 +1123,7 @@ describe('set', () => {
       })
 
       await expect(blobs.set(key, 'value')).rejects.toThrowError(
-        `Netlify Blobs has generated an internal error (401 status code)`,
+        `Netlify Blobs could not write to store 'production' (401 status code). Builds and build plugins can only write to deploy-specific stores: use 'getDeployStore' instead of 'getStore', or pass a 'token' with write access to the store. If this code is not running in a build, check that the token and site ID are valid. See https://docs.netlify.com/build/data-and-storage/netlify-blobs/#deploy-specific-stores`,
       )
       expect(mockStore.fulfilled).toBeTruthy()
     })
@@ -1245,7 +1245,7 @@ describe('set', () => {
       })
 
       await expect(blobs.set(key, value)).rejects.toThrowError(
-        `Netlify Blobs has generated an internal error (401 status code)`,
+        /Netlify Blobs could not write to store 'production' \(401 status code\)/,
       )
 
       expect(mockStore.fulfilled).toBeTruthy()
@@ -1679,7 +1679,7 @@ describe('delete', () => {
       })
 
       await expect(blobs.delete(key)).rejects.toThrowError(
-        `Netlify Blobs has generated an internal error (401 status code)`,
+        /Netlify Blobs could not write to store 'production' \(401 status code\)/,
       )
       expect(mockStore.fulfilled).toBeTruthy()
     })
@@ -1745,7 +1745,7 @@ describe('delete', () => {
       })
 
       await expect(blobs.delete(key)).rejects.toThrowError(
-        `Netlify Blobs has generated an internal error (401 status code)`,
+        /Netlify Blobs could not write to store 'production' \(401 status code\)/,
       )
 
       expect(mockStore.fulfilled).toBeTruthy()
@@ -1792,7 +1792,7 @@ describe('deleteAll', () => {
       })
 
       await expect(blobs.deleteAll()).rejects.toThrowError(
-        `Netlify Blobs has generated an internal error (401 status code)`,
+        /Netlify Blobs could not write to store 'production' \(401 status code\)/,
       )
       expect(mockStore.fulfilled).toBeTruthy()
     })
@@ -1859,7 +1859,7 @@ describe('deleteAll', () => {
       })
 
       await expect(blobs.deleteAll()).rejects.toThrowError(
-        `Netlify Blobs has generated an internal error (401 status code)`,
+        /Netlify Blobs could not write to store 'production' \(401 status code\)/,
       )
 
       expect(mockStore.fulfilled).toBeTruthy()
