@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.7.13](https://github.com/netlify/primitives/compare/blobs-v10.7.12...blobs-v10.7.13) (2026-08-05)
+
+
+### Bug Fixes
+
+* **blobs:** better error message when using site stores during prebuild ([#737](https://github.com/netlify/primitives/issues/737)) ([80fe1f0](https://github.com/netlify/primitives/commit/80fe1f0106a012d7621711a0473140696b0e6942))
+
 ## [10.7.12](https://github.com/netlify/primitives/compare/blobs-v10.7.11...blobs-v10.7.12) (2026-08-04)
 
 
