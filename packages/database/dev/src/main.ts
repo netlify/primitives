@@ -6,13 +6,25 @@ import type { ConnectionState, MessageResponse } from 'pg-gateway'
 import { fromNodeSocket } from 'pg-gateway/node'
 
 import { broadcastNotifications } from './lib/notifications.js'
-import { applyMigrations, initializeTrackingTable } from './lib/migrations.js'
+import {
+  applyMigrations,
+  applyMigrationsWithDetails,
+  errorToIssues,
+  initializeTrackingTable,
+  type Migration,
+  type MigrationIssue,
+} from './lib/migrations.js'
 import type { SQLExecutor } from './lib/sql-executor.js'
 
 export { applyMigrations, initializeTrackingTable } from './lib/migrations.js'
+export type { Migration, MigrationIssue, PgErrorDetails } from './lib/migrations.js'
 export type { SQLExecutor } from './lib/sql-executor.js'
+export type TestMigrationsInEphemeralDatabaseResult =
+  | { status: 'success'; applied: Migration[] }
+  | { status: 'failure'; issues: MigrationIssue[] }
 
 const DEFAULT_HOST = 'localhost'
+const IN_MEMORY_DIRECTORY = 'memory://'
 
 type Logger = (...message: unknown[]) => void
 
@@ -71,7 +83,7 @@ export class NetlifyDB implements SQLExecutor {
   }
 
   async start(): Promise<string> {
-    if (this.directory) {
+    if (this.directory && this.directory !== IN_MEMORY_DIRECTORY) {
       await mkdir(this.directory, { recursive: true })
     }
 
@@ -218,5 +230,25 @@ export class NetlifyDB implements SQLExecutor {
 
       this.logger('Unexpected connection error:', error)
     })
+  }
+}
+
+export async function testMigrationsInEphemeralDatabase(
+  migrationsDirectory: string,
+): Promise<TestMigrationsInEphemeralDatabaseResult> {
+  const inMemoryNetlifyDB = new NetlifyDB({ directory: IN_MEMORY_DIRECTORY })
+  await inMemoryNetlifyDB.start()
+
+  try {
+    const applied = await applyMigrationsWithDetails(inMemoryNetlifyDB, migrationsDirectory)
+    return { status: 'success', applied }
+  } catch (error) {
+    const issues = errorToIssues(error)
+    if (issues.length === 0) {
+      return { status: 'success', applied: [] }
+    }
+    return { status: 'failure', issues }
+  } finally {
+    await inMemoryNetlifyDB.stop()
   }
 }
