@@ -1,6 +1,7 @@
 import { join } from 'node:path'
 
-import { Reactive, EventInspector, FileWatcher, Fixture } from '@netlify/dev-utils'
+import { FileWatcher, Reactive } from '@netlify/dev-utils'
+import { EventInspector, Fixture } from '@netlify/test-utils'
 import { describe, expect, test } from 'vitest'
 
 import { FunctionsHandler } from './main.js'

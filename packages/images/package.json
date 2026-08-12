@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@netlify/dev-utils": "^4.4.7",
+    "@netlify/test-utils": "*",
     "tsup": "^8.5.0",
     "vitest": "^3.1.4"
   },

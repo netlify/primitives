@@ -1,4 +1,5 @@
-import { createImageServerHandler, createMockLogger, getImageResponseSize, HTTPServer } from '@netlify/dev-utils'
+import { HTTPServer } from '@netlify/dev-utils'
+import { createImageServerHandler, createMockLogger, getImageResponseSize } from '@netlify/test-utils'
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 import { createIPXWebServer } from 'ipx'
 

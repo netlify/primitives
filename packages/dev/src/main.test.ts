@@ -3,7 +3,8 @@ import { IncomingMessage } from 'node:http'
 import { Socket } from 'node:net'
 import { resolve } from 'node:path'
 
-import { createImageServerHandler, Fixture, generateImage, getImageResponseSize, HTTPServer } from '@netlify/dev-utils'
+import { HTTPServer } from '@netlify/dev-utils'
+import { createImageServerHandler, Fixture, generateImage, getImageResponseSize } from '@netlify/test-utils'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import { isFile } from './lib/fs.js'
