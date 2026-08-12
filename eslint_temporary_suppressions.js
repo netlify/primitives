@@ -11,7 +11,7 @@ export default [
   /* Global rule suppressions */
 
   {
-    ignores: ['**/*.test.?(c|m)[jt]s?(x)', '**/test/*', '**/tsup.config.ts'],
+    ignores: ['**/*.test.?(c|m)[jt]s?(x)', '**/test/*', '**/tsup.config.ts', 'packages/test-utils/src/**'],
     rules: {
       'n/no-unsupported-features/node-builtins': [
         'error',
@@ -282,13 +282,13 @@ export default [
     },
   },
   {
-    files: ['packages/dev-utils/src/test/event_inspector.ts'],
+    files: ['packages/test-utils/src/event_inspector.ts'],
     rules: {
       '@typescript-eslint/restrict-template-expressions': 'off',
     },
   },
   {
-    files: ['packages/dev-utils/src/test/fetch.ts'],
+    files: ['packages/test-utils/src/fetch.ts'],
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/restrict-plus-operands': 'off',
@@ -296,7 +296,7 @@ export default [
     },
   },
   {
-    files: ['packages/dev-utils/src/test/fixture.ts'],
+    files: ['packages/test-utils/src/fixture.ts'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
     },

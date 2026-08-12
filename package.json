@@ -5,6 +5,7 @@
   "workspaces": [
     "packages/types",
     "packages/dev-utils",
+    "packages/test-utils",
     "packages/runtime-utils",
     "packages/otel",
     "packages/blobs",

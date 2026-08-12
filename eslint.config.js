@@ -98,7 +98,7 @@ export default tseslint.config(
 
   // Tests
   {
-    files: ['**/*.test.?(c|m)[jt]s?(x)', '**/test/*'],
+    files: ['**/*.test.?(c|m)[jt]s?(x)', '**/test/*', 'packages/test-utils/src/**'],
     plugins: { vitest },
     rules: {
       ...vitest.configs.recommended.rules,

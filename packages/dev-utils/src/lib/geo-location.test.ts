@@ -2,7 +2,7 @@ import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest'
 import type { MockedFunction } from 'vitest'
 
 import { getGeoLocation, mockLocation } from './geo-location.js'
-import { MockFetch } from '../test/fetch.js'
+import { MockFetch } from '@netlify/test-utils'
 
 describe('geolocation', () => {
   let mockState: {
