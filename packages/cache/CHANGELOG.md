@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.10](https://github.com/netlify/primitives/compare/cache-v3.4.9...cache-v3.4.10) (2026-08-12)
+
+
+### Bug Fixes
+
+* **deps:** use extracted `@netlify/test-utils` ([5f9c2f9](https://github.com/netlify/primitives/commit/5f9c2f976eab109976c7331cb776c688fe82f813))
+
 ## [3.4.9](https://github.com/netlify/primitives/compare/cache-v3.4.8...cache-v3.4.9) (2026-07-24)
 
 

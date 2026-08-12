@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.12](https://github.com/netlify/primitives/compare/static-v3.1.11...static-v3.1.12) (2026-08-12)
+
+
+### Bug Fixes
+
+* **deps:** use extracted `@netlify/test-utils` ([5f9c2f9](https://github.com/netlify/primitives/commit/5f9c2f976eab109976c7331cb776c688fe82f813))
+
 ## [3.1.11](https://github.com/netlify/primitives/compare/static-v3.1.10...static-v3.1.11) (2026-07-24)
 
 

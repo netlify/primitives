@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.0.0](https://github.com/netlify/primitives/compare/dev-utils-v4.4.7...dev-utils-v5.0.0) (2026-08-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* move internal test utils out of @netlify/dev-utils
+
+### Bug Fixes
+
+* move internal test utils out of @netlify/dev-utils ([bbe5351](https://github.com/netlify/primitives/commit/bbe5351b9bfa32c09787b1b706b147e65580867d))
+
 ## [4.4.7](https://github.com/netlify/primitives/compare/dev-utils-v4.4.6...dev-utils-v4.4.7) (2026-07-24)
 
 

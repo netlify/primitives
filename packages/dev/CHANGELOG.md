@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.18.13](https://github.com/netlify/primitives/compare/dev-v4.18.12...dev-v4.18.13) (2026-08-12)
+
+
+### Bug Fixes
+
+* **deps:** use extracted `@netlify/test-utils` ([5f9c2f9](https://github.com/netlify/primitives/commit/5f9c2f976eab109976c7331cb776c688fe82f813))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.12 to 10.7.13
+    * @netlify/dev-utils bumped from 4.4.7 to 5.0.0
+    * @netlify/edge-functions-dev bumped from 1.0.23 to 1.0.24
+    * @netlify/functions-dev bumped from 1.3.4 to 1.3.5
+    * @netlify/headers bumped from 2.1.12 to 2.1.13
+    * @netlify/images bumped from 1.3.11 to 1.3.12
+    * @netlify/redirects bumped from 3.1.14 to 3.1.15
+    * @netlify/runtime bumped from 4.1.28 to 4.1.29
+    * @netlify/static bumped from 3.1.11 to 3.1.12
+
 ## [4.18.12](https://github.com/netlify/primitives/compare/dev-v4.18.11...dev-v4.18.12) (2026-08-04)
 
 
