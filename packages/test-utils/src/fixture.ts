@@ -1,14 +1,12 @@
 import { exec } from 'node:child_process'
 import { promises as fs } from 'node:fs'
-import { EOL } from 'node:os'
+import { EOL, tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { promisify } from 'node:util'
 
-import tmp from 'tmp-promise'
-
 const run = promisify(exec)
 export class Fixture {
-  directory?: tmp.DirectoryResult
+  directory?: string
   sourceDirectory?: string
   files: Record<string, string | Buffer>
   npmDependencies: Record<string, string>
@@ -23,7 +21,7 @@ export class Fixture {
       throw new Error("Fixture hasn't been initialized. Did you call `create()`?")
     }
 
-    return this.directory.path
+    return this.directory
   }
 
   private async installNpmDependencies() {
@@ -48,21 +46,21 @@ export class Fixture {
 
   async create() {
     if (!this.directory) {
-      this.directory = await tmp.dir({ unsafeCleanup: true })
+      this.directory = await fs.mkdtemp(join(tmpdir(), 'netlify-test-utils-'))
 
       // Resolve the canonical path so file watching sees the same form the OS
       // reports for events.
-      this.directory.path = await fs.realpath(this.directory.path)
+      this.directory = await fs.realpath(this.directory)
     }
 
     if (this.sourceDirectory) {
-      console.debug(`Copying fixture from ${this.sourceDirectory} to ${this.directory.path}`)
-      await fs.cp(this.sourceDirectory, this.directory.path, { recursive: true })
+      console.debug(`Copying fixture from ${this.sourceDirectory} to ${this.directory}`)
+      await fs.cp(this.sourceDirectory, this.directory, { recursive: true })
       console.debug('Copied fixture')
     }
 
     for (const relativePath in this.files) {
-      const filePath = join(this.directory.path, relativePath)
+      const filePath = join(this.directory, relativePath)
 
       await fs.mkdir(dirname(filePath), { recursive: true })
       await fs.writeFile(filePath, this.files[relativePath])
@@ -70,7 +68,7 @@ export class Fixture {
 
     await this.installNpmDependencies()
 
-    return this.directory.path
+    return this.directory
   }
 
   async deleteFile(path: string) {
@@ -89,7 +87,7 @@ export class Fixture {
     // There's not much use in cleaning up in CI, plus this fails in some case on Windows images
     if (process.env.CI) return
 
-    await fs.rm(this.directory!.path, { force: true, recursive: true })
+    await fs.rm(this.directory!, { force: true, recursive: true })
   }
 
   fromDirectory(path: string) {
