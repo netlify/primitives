@@ -1,6 +1,4 @@
-import type { Logger } from '@netlify/dev-utils'
-
-export const createMockLogger = (): Logger => ({
+export const createMockLogger = () => ({
   log: () => {},
   warn: () => {},
   error: () => {},

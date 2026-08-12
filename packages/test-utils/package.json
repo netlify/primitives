@@ -19,7 +19,6 @@
     "js-image-generator": "^1.0.4"
   },
   "devDependencies": {
-    "@netlify/dev-utils": "*",
     "@types/node": "^18.19.110",
     "typescript": "^5.8.3",
     "vitest": "^3.0.0"
