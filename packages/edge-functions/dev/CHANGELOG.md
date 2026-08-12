@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.24](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.23...edge-functions-dev-v1.0.24) (2026-08-12)
+
+
+### Bug Fixes
+
+* **deps:** use extracted `@netlify/test-utils` ([5f9c2f9](https://github.com/netlify/primitives/commit/5f9c2f976eab109976c7331cb776c688fe82f813))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.4.7 to 5.0.0
+
 ## [1.0.23](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.22...edge-functions-dev-v1.0.23) (2026-07-24)
 
 

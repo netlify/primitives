@@ -1,5 +1,21 @@
 # Changelog
 
+## [10.7.13](https://github.com/netlify/primitives/compare/blobs-v10.7.12...blobs-v10.7.13) (2026-08-12)
+
+
+### Bug Fixes
+
+* **blobs:** better error message when using site stores during prebuild ([#737](https://github.com/netlify/primitives/issues/737)) ([80fe1f0](https://github.com/netlify/primitives/commit/80fe1f0106a012d7621711a0473140696b0e6942))
+* **deps:** use extracted `@netlify/test-utils` ([5f9c2f9](https://github.com/netlify/primitives/commit/5f9c2f976eab109976c7331cb776c688fe82f813))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 4.4.7 to 5.0.0
+    * @netlify/otel bumped from ^6.0.5 to ^6.0.6
+
 ## [10.7.12](https://github.com/netlify/primitives/compare/blobs-v10.7.11...blobs-v10.7.12) (2026-08-04)
 
 

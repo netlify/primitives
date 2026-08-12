@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.5](https://github.com/netlify/primitives/compare/functions-dev-v1.3.4...functions-dev-v1.3.5) (2026-08-12)
+
+
+### Bug Fixes
+
+* **deps:** use extracted `@netlify/test-utils` ([5f9c2f9](https://github.com/netlify/primitives/commit/5f9c2f976eab109976c7331cb776c688fe82f813))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.12 to 10.7.13
+    * @netlify/dev-utils bumped from 4.4.7 to 5.0.0
+
 ## [1.3.4](https://github.com/netlify/primitives/compare/functions-dev-v1.3.3...functions-dev-v1.3.4) (2026-08-04)
 
 

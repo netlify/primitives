@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.1.29](https://github.com/netlify/primitives/compare/runtime-v4.1.28...runtime-v4.1.29) (2026-08-12)
+
+
+### Bug Fixes
+
+* **deps:** use extracted `@netlify/test-utils` ([5f9c2f9](https://github.com/netlify/primitives/commit/5f9c2f976eab109976c7331cb776c688fe82f813))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^10.7.12 to ^10.7.13
+    * @netlify/cache bumped from 3.4.9 to 3.4.10
+
 ## [4.1.28](https://github.com/netlify/primitives/compare/runtime-v4.1.27...runtime-v4.1.28) (2026-08-04)
 
 
