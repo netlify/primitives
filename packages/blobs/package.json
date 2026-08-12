@@ -71,6 +71,7 @@
     "test": "test"
   },
   "devDependencies": {
+    "@netlify/test-utils": "*",
     "@types/node": "^18.19.110",
     "node-fetch": "^3.3.1",
     "npm-run-all2": "^8.0.4",

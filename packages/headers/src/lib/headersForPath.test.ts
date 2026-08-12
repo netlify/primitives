@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { expect, it } from 'vitest'
-import { Fixture } from '@netlify/dev-utils'
+import { Fixture } from '@netlify/test-utils'
 
 import { parseHeaders } from './parseHeaders.js'
 import { headersForPath } from './headersForPath.js'

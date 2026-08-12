@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 
-import { Fixture, MockFetch } from '@netlify/dev-utils'
+import { Fixture, MockFetch } from '@netlify/test-utils'
 import { describe, expect, test } from 'vitest'
 
 import { RedirectsHandler } from './main.js'

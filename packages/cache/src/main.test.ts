@@ -1,4 +1,4 @@
-import { MockFetch } from '@netlify/dev-utils'
+import { MockFetch } from '@netlify/test-utils'
 import { describe, test, expect } from 'vitest'
 
 import { NetlifyCacheStorage } from './bootstrap/cachestorage.js'

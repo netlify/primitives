@@ -1,5 +1,5 @@
 import type { NetlifyCacheStorage } from '@netlify/cache/bootstrap'
-import { MockFetch } from '@netlify/dev-utils'
+import { MockFetch } from '@netlify/test-utils'
 import { base64Decode } from '@netlify/runtime-utils'
 import { describe, expect, test } from 'vitest'
 

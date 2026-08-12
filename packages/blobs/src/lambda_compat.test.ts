@@ -1,6 +1,6 @@
 import { env, version as nodeVersion } from 'node:process'
 
-import { MockFetch } from '@netlify/dev-utils'
+import { MockFetch } from '@netlify/test-utils'
 import semver from 'semver'
 import { describe, test, expect, beforeAll, afterEach } from 'vitest'
 

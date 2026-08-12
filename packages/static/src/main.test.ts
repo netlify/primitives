@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 
-import { Fixture } from '@netlify/dev-utils'
+import { Fixture } from '@netlify/test-utils'
 import { describe, expect, test } from 'vitest'
 
 import { StaticHandler } from './main.js'

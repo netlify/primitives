@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { expect, it, vi } from 'vitest'
-import { Fixture, createMockLogger } from '@netlify/dev-utils'
+import { Fixture, createMockLogger } from '@netlify/test-utils'
 
 import { parseHeaders } from './parseHeaders.js'
 

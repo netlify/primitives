@@ -2,7 +2,8 @@ import path from 'node:path'
 
 import { describe, expect, test, beforeAll, afterAll } from 'vitest'
 
-import { Fixture, HTTPServer } from '@netlify/dev-utils'
+import { HTTPServer } from '@netlify/dev-utils'
+import { Fixture } from '@netlify/test-utils'
 import { EdgeFunctionsHandler } from './main.js'
 
 describe('`EdgeFunctionsHandler`', () => {

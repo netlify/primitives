@@ -37,6 +37,7 @@
   "author": "Netlify Inc.",
   "devDependencies": {
     "@netlify/dev-utils": "^4.4.7",
+    "@netlify/test-utils": "*",
     "@types/node": "^20.17.57",
     "tsup": "^8.0.0",
     "vitest": "^3.1.4"
