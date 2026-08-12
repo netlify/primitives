@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events'
 
-import type { DevEvent } from '../lib/event.js'
+import type { DevEvent } from '@netlify/dev-utils'
 
 const DEFAULT_TIMEOUT = 5000
 

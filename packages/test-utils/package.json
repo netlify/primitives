@@ -1,0 +1,28 @@
+{
+  "name": "@netlify/test-utils",
+  "version": "0.0.0",
+  "description": "Internal test utilities for the Netlify primitives monorepo",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^18.14.0 || >=20"
+  },
+  "exports": "./src/main.ts",
+  "scripts": {
+    "build": "echo 'No build' && exit 0",
+    "test": "vitest run --passWithNoTests",
+    "dev": "tsc --noEmit --watch"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "image-size": "^2.0.2",
+    "js-image-generator": "^1.0.4",
+    "tmp-promise": "^3.0.3"
+  },
+  "devDependencies": {
+    "@netlify/dev-utils": "*",
+    "@types/node": "^18.19.110",
+    "typescript": "^5.8.3",
+    "vitest": "^3.0.0"
+  }
+}

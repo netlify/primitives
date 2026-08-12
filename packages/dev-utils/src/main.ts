@@ -20,9 +20,3 @@ export {
   type FileWatchSubscriptionOptions,
 } from './lib/file-watcher/index.js'
 export { watchDebounced } from './lib/watch-debounced.js'
-
-export { EventInspector } from './test/event_inspector.js'
-export { MockFetch } from './test/fetch.js'
-export { Fixture } from './test/fixture.js'
-export { createImageServerHandler, generateImage, getImageResponseSize } from './test/image.js'
-export { createMockLogger } from './test/logger.js'

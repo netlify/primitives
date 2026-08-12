@@ -46,6 +46,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
+    "@netlify/test-utils": "*",
     "@netlify/types": "2.8.0",
     "@types/node": "^18.19.110",
     "@types/parse-gitignore": "^1.0.2",
@@ -63,10 +64,7 @@
     "dot-prop": "9.0.0",
     "empathic": "^2.0.0",
     "env-paths": "^3.0.0",
-    "image-size": "^2.0.2",
-    "js-image-generator": "^1.0.4",
     "parse-gitignore": "^2.0.0",
-    "semver": "^7.7.2",
-    "tmp-promise": "^3.0.3"
+    "semver": "^7.7.2"
   }
 }
