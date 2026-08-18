@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.1](https://github.com/netlify/primitives/compare/functions-dev-v2.0.0...functions-dev-v2.0.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency cron-parser to v5 ([#218](https://github.com/netlify/primitives/issues/218)) ([3792469](https://github.com/netlify/primitives/commit/37924690ddc842f1396065573f9b4ba2d7a96ccc))
+* **deps:** update dependency read-package-up to v12 ([#538](https://github.com/netlify/primitives/issues/538)) ([78cf19f](https://github.com/netlify/primitives/commit/78cf19ff235d788ea280810ba96c3b3cc7a61e9f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.0.0 to 11.0.1
+    * @netlify/dev-utils bumped from 6.0.0 to 6.0.1
+
 ## [2.0.0](https://github.com/netlify/primitives/compare/functions-dev-v1.3.5...functions-dev-v2.0.0) (2026-08-18)
 
 

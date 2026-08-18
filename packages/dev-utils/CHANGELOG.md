@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.1](https://github.com/netlify/primitives/compare/dev-utils-v6.0.0...dev-utils-v6.0.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency chokidar to v5 ([#585](https://github.com/netlify/primitives/issues/585)) ([74c306a](https://github.com/netlify/primitives/commit/74c306a3449e2c6b7aedaf9e8cad4d8457c8917f))
+
 ## [6.0.0](https://github.com/netlify/primitives/compare/dev-utils-v5.0.0...dev-utils-v6.0.0) (2026-08-18)
 
 
