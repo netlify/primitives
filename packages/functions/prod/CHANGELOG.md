@@ -1,5 +1,23 @@
 # Changelog
 
+## [6.0.0](https://github.com/netlify/primitives/compare/functions-v5.3.0...functions-v6.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 2.8.0 to 3.0.0
+
 ## [5.3.0](https://github.com/netlify/primitives/compare/functions-v5.2.2...functions-v5.3.0) (2026-05-29)
 
 
