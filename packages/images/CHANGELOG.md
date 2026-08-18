@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.0.0](https://github.com/netlify/primitives/compare/images-v1.3.12...images-v2.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^5.0.0 to ^6.0.0
+
 ## [1.3.12](https://github.com/netlify/primitives/compare/images-v1.3.11...images-v1.3.12) (2026-08-12)
 
 
