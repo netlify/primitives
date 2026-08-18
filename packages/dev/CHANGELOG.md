@@ -1,5 +1,40 @@
 # Changelog
 
+## [5.0.0](https://github.com/netlify/primitives/compare/dev-v4.18.13...dev-v5.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/zip-it-and-ship-it to ^15.3.1 ([#732](https://github.com/netlify/primitives/issues/732)) ([51b4ccf](https://github.com/netlify/primitives/commit/51b4ccfd58ac71f1cdccb40423c3e01ef15fc762))
+
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^0.4.4 to ^1.0.0
+    * @netlify/blobs bumped from 10.7.13 to 11.0.0
+    * @netlify/database-dev bumped from 0.10.1 to 1.0.0
+    * @netlify/dev-utils bumped from 5.0.0 to 6.0.0
+    * @netlify/edge-functions-dev bumped from 1.0.24 to 2.0.0
+    * @netlify/functions-dev bumped from 1.3.5 to 2.0.0
+    * @netlify/headers bumped from 2.1.13 to 3.0.0
+    * @netlify/images bumped from 1.3.12 to 2.0.0
+    * @netlify/redirects bumped from 3.1.15 to 4.0.0
+    * @netlify/runtime bumped from 4.1.29 to 5.0.0
+    * @netlify/static bumped from 3.1.12 to 4.0.0
+  * devDependencies
+    * @netlify/types bumped from 2.8.0 to 3.0.0
+
 ## [4.18.13](https://github.com/netlify/primitives/compare/dev-v4.18.12...dev-v4.18.13) (2026-08-12)
 
 
