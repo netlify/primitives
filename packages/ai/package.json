@@ -4,7 +4,7 @@
   "description": "TypeScript utilities for interacting with Netlify AI features",
   "type": "module",
   "engines": {
-    "node": ">=20.6.1"
+    "node": ">=22.12.0"
   },
   "main": "./dist/main.cjs",
   "module": "./dist/main.js",
@@ -56,7 +56,7 @@
     "publint": "npx -y publint --strict"
   },
   "dependencies": {
-    "@netlify/api": "^15.1.0"
+    "@netlify/api": "^15.1.1"
   },
   "devDependencies": {
     "@types/node": "20.14.15",
