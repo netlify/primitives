@@ -4,7 +4,7 @@
   "description": "TypeScript utilities for interacting with Netlify Edge Functions",
   "type": "module",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.12.0"
   },
   "main": "./dist/main.js",
   "exports": {

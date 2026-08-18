@@ -4,7 +4,7 @@
   "description": "Local emulation for Netlify Edge Functions",
   "type": "module",
   "engines": {
-    "node": ">=20.6.1"
+    "node": ">=22.12.0"
   },
   "main": "./dist/node/main.js",
   "exports": {

@@ -4,7 +4,7 @@
   "description": "TypeScript utilities for interacting with Netlify AI features",
   "type": "module",
   "engines": {
-    "node": ">=20.6.1"
+    "node": ">=22.12.0"
   },
   "main": "./dist/main.cjs",
   "module": "./dist/main.js",
