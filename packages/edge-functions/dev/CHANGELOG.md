@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.1](https://github.com/netlify/primitives/compare/edge-functions-dev-v2.0.0...edge-functions-dev-v2.0.1) (2026-08-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.0.0 to 6.0.1
+
 ## [2.0.0](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.24...edge-functions-dev-v2.0.0) (2026-08-18)
 
 
