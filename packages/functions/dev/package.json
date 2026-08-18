@@ -45,7 +45,7 @@
     "@netlify/blobs": "10.7.13",
     "@netlify/dev-utils": "5.0.0",
     "@netlify/functions": "5.3.0",
-    "@netlify/zip-it-and-ship-it": "^15.3.0",
+    "@netlify/zip-it-and-ship-it": "^15.3.4",
     "cron-parser": "^4.9.0",
     "decache": "^4.6.2",
     "extract-zip": "^2.0.1",
@@ -65,6 +65,6 @@
     "vitest": "^3.0.0"
   },
   "engines": {
-    "node": ">=20.6.1"
+    "node": ">=22.12.0"
   }
 }

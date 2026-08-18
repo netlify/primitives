@@ -4,7 +4,7 @@
   "description": "TypeScript implementtion of Netlify's static file serving logic",
   "type": "module",
   "engines": {
-    "node": ">=20.6.1"
+    "node": ">=22.12.0"
   },
   "main": "./dist/main.js",
   "exports": "./dist/main.js",
