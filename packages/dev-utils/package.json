@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev-utils",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "TypeScript utilities for the local emulation of the Netlify environment",
   "type": "module",
   "engines": {
@@ -47,7 +47,7 @@
   "author": "Netlify Inc.",
   "devDependencies": {
     "@netlify/test-utils": "*",
-    "@netlify/types": "2.8.0",
+    "@netlify/types": "3.0.0",
     "@types/node": "^18.19.110",
     "@types/parse-gitignore": "^1.0.2",
     "execa": "^8.0.1",
