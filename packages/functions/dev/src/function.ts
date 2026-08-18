@@ -4,7 +4,7 @@ import { version as nodeVersion } from 'node:process'
 import { EnvironmentContext } from '@netlify/blobs'
 import { headers as netlifyHeaders, MemoizeCache, renderFunctionErrorPage } from '@netlify/dev-utils'
 import type { ExtendedRoute, FunctionResult, Route } from '@netlify/zip-it-and-ship-it'
-import CronParser from 'cron-parser'
+import { CronExpression, CronExpressionParser } from 'cron-parser'
 import semver from 'semver'
 
 import { BuildResult } from './builder.js'
@@ -20,8 +20,8 @@ const V2_MIN_NODE_VERSION = '18.14.0'
 // Returns a new set with all elements of `setA` that don't exist in `setB`.
 const difference = (setA: Set<string>, setB: Set<string>) => new Set([...setA].filter((item) => !setB.has(item)))
 
-const getNextRun = function (schedule: string) {
-  const cron = CronParser.parseExpression(schedule, {
+const getNextRun = function (schedule: string): Date {
+  const cron: CronExpression = CronExpressionParser.parse(schedule, {
     tz: 'Etc/UTC',
   })
   return cron.next().toDate()
