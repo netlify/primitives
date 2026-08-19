@@ -1,5 +1,21 @@
 # Changelog
 
+## [5.0.3](https://github.com/netlify/primitives/compare/dev-v5.0.2...dev-v5.0.3) (2026-08-19)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#754](https://github.com/netlify/primitives/issues/754)) ([ecdc9f5](https://github.com/netlify/primitives/commit/ecdc9f51ea67b72d649d0a6b5d8dbea9919a8404))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^1.0.0 to ^1.0.1
+    * @netlify/functions-dev bumped from 2.0.2 to 2.0.3
+    * @netlify/redirects bumped from 4.0.1 to 4.0.2
+
 ## [5.0.2](https://github.com/netlify/primitives/compare/dev-v5.0.1...dev-v5.0.2) (2026-08-19)
 
 
