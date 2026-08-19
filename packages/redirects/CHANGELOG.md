@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.0.2](https://github.com/netlify/primitives/compare/redirects-v4.0.1...redirects-v4.0.2) (2026-08-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency cookie to v2 ([#724](https://github.com/netlify/primitives/issues/724)) ([4cbb639](https://github.com/netlify/primitives/commit/4cbb639e45e6444ed3d0fc3905631db26278e456))
+* **deps:** update netlify packages ([#754](https://github.com/netlify/primitives/issues/754)) ([ecdc9f5](https://github.com/netlify/primitives/commit/ecdc9f51ea67b72d649d0a6b5d8dbea9919a8404))
+
 ## [4.0.1](https://github.com/netlify/primitives/compare/redirects-v4.0.0...redirects-v4.0.1) (2026-08-18)
 
 
