@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0](https://github.com/netlify/primitives/compare/ai-v0.4.4...ai-v1.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/zip-it-and-ship-it to ^15.3.1 ([#732](https://github.com/netlify/primitives/issues/732)) ([51b4ccf](https://github.com/netlify/primitives/commit/51b4ccfd58ac71f1cdccb40423c3e01ef15fc762))
+
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
 ## [0.4.4](https://github.com/netlify/primitives/compare/ai-v0.4.3...ai-v0.4.4) (2026-07-28)
 
 
