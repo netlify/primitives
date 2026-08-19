@@ -53,12 +53,11 @@
     "jwt-decode": "^4.0.0",
     "lambda-local": "^2.2.0",
     "read-package-up": "^12.0.0",
-    "semver": "^7.6.3",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "verkit": "^0.4.0"
   },
   "devDependencies": {
     "@netlify/test-utils": "*",
-    "@types/semver": "^7.5.8",
     "@types/source-map-support": "^0.5.10",
     "npm-run-all2": "^5.0.0",
     "tsup": "^8.0.2",
