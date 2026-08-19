@@ -1,5 +1,30 @@
 # Changelog
 
+## [6.0.1](https://github.com/netlify/primitives/compare/dev-utils-v6.0.0...dev-utils-v6.0.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency chokidar to v5 ([#585](https://github.com/netlify/primitives/issues/585)) ([74c306a](https://github.com/netlify/primitives/commit/74c306a3449e2c6b7aedaf9e8cad4d8457c8917f))
+
+## [6.0.0](https://github.com/netlify/primitives/compare/dev-utils-v5.0.0...dev-utils-v6.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 2.8.0 to 3.0.0
+
 ## [5.0.0](https://github.com/netlify/primitives/compare/dev-utils-v4.4.7...dev-utils-v5.0.0) (2026-08-12)
 
 

@@ -1,5 +1,44 @@
 # Changelog
 
+## [11.0.2](https://github.com/netlify/primitives/compare/blobs-v11.0.1...blobs-v11.0.2) (2026-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/otel bumped from ^7.0.1 to ^7.0.2
+
+## [11.0.1](https://github.com/netlify/primitives/compare/blobs-v11.0.0...blobs-v11.0.1) (2026-08-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.0.0 to 6.0.1
+    * @netlify/otel bumped from ^7.0.0 to ^7.0.1
+
+## [11.0.0](https://github.com/netlify/primitives/compare/blobs-v10.7.13...blobs-v11.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 5.0.0 to 6.0.0
+    * @netlify/otel bumped from ^6.0.6 to ^7.0.0
+    * @netlify/runtime-utils bumped from 2.3.0 to 3.0.0
+
 ## [10.7.13](https://github.com/netlify/primitives/compare/blobs-v10.7.12...blobs-v10.7.13) (2026-08-12)
 
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.0](https://github.com/netlify/primitives/compare/database-proxy-v0.1.5...database-proxy-v0.2.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/database-dev bumped from 0.10.1 to 1.0.0
+
 ## [0.1.5](https://github.com/netlify/primitives/compare/database-proxy-v0.1.4...database-proxy-v0.1.5) (2026-04-27)
 
 

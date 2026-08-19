@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.0.0](https://github.com/netlify/primitives/compare/database-v1.1.0...database-v2.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 2.3.0 to 3.0.0
+
 ## [1.1.0](https://github.com/netlify/primitives/compare/database-v1.0.0...database-v1.1.0) (2026-06-22)
 
 
