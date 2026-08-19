@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.0.2](https://github.com/netlify/primitives/compare/runtime-v5.0.1...runtime-v5.0.2) (2026-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^11.0.1 to ^11.0.2
+
 ## [5.0.1](https://github.com/netlify/primitives/compare/runtime-v5.0.0...runtime-v5.0.1) (2026-08-18)
 
 
