@@ -11,6 +11,7 @@ import { base64Encode, streamToString } from '../test/util.js'
 import { MissingBlobsEnvironmentError } from './environment.js'
 import { NF_ERROR, NF_REQUEST_ID } from './headers.js'
 import { getDeployStore, getStore, setEnvironmentContext } from './main.js'
+import { BlobsInternalError } from './util.js'
 
 beforeAll(async () => {
   if (semver.lt(nodeVersion, '18.0.0')) {
@@ -355,6 +356,34 @@ describe('get', () => {
         expect(result.etag).toBe('"123"')
         expect(mockStore.fulfilled).toBeTruthy()
       })
+
+      test('Throws when the store returns an unexpected status code', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${apiToken}` },
+            response: new Response(JSON.stringify({ url: signedURL })),
+            url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+          })
+          .put({
+            headers: { 'if-match': etag },
+            response: new Response(null, { status: 400 }),
+            url: signedURL,
+          })
+          .inject()
+
+        const blobs = getStore({
+          name: 'production',
+          token: apiToken,
+          siteID,
+        })
+
+        const result = blobs.set(key, value, { onlyIfMatch: etag })
+
+        await expect(result).rejects.toThrowError(BlobsInternalError)
+        await expect(result).rejects.toThrowError('Netlify Blobs has generated an internal error (400 status code)')
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
     })
   })
 
@@ -552,6 +581,62 @@ describe('get', () => {
 
         expect(result.modified).toBe(true)
         expect(result.etag).toBe('"123"')
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Throws when the store returns an unexpected status code', async () => {
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-none-match': '*' },
+            response: new Response(null, { status: 400 }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+          .inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        const result = blobs.set(key, value, { onlyIfNew: true })
+
+        await expect(result).rejects.toThrowError(BlobsInternalError)
+        await expect(result).rejects.toThrowError('Netlify Blobs has generated an internal error (400 status code)')
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Throws when the store keeps returning a server error until retries are exhausted', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+
+        // Failed requests are retried `MAX_RETRY` (5, in `src/retry.ts`) times
+        // before the last failing response is returned, so the initial request
+        // and all 5 retries have to be mocked.
+        const attempts = 6
+
+        for (let index = 0; index < attempts; index++) {
+          mockStore.put({
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
+            response: new Response(null, { status: 503 }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+        }
+
+        mockStore.inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        const result = blobs.set(key, value, { onlyIfMatch: etag })
+
+        await expect(result).rejects.toThrowError(BlobsInternalError)
+        await expect(result).rejects.toThrowError('Netlify Blobs has generated an internal error (503 status code)')
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
@@ -1437,6 +1522,35 @@ describe('setJSON', () => {
         expect(result.etag).toBe('"123"')
         expect(mockStore.fulfilled).toBeTruthy()
       })
+
+      test('Throws when the store returns an unexpected status code', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${apiToken}` },
+            response: new Response(JSON.stringify({ url: signedURL })),
+            url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+          })
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { 'if-match': etag },
+            response: new Response(null, { status: 400 }),
+            url: signedURL,
+          })
+          .inject()
+
+        const blobs = getStore({
+          name: 'production',
+          token: apiToken,
+          siteID,
+        })
+
+        const result = blobs.setJSON(key, { value }, { onlyIfMatch: etag })
+
+        await expect(result).rejects.toThrowError(BlobsInternalError)
+        await expect(result).rejects.toThrowError('Netlify Blobs has generated an internal error (400 status code)')
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
     })
   })
 
@@ -1591,6 +1705,65 @@ describe('setJSON', () => {
 
         expect(result.modified).toBe(true)
         expect(result.etag).toBe('"123"')
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Throws when the store returns an unexpected status code', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
+            response: new Response(null, { status: 400 }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+          .inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        const result = blobs.setJSON(key, { value }, { onlyIfMatch: etag })
+
+        await expect(result).rejects.toThrowError(BlobsInternalError)
+        await expect(result).rejects.toThrowError('Netlify Blobs has generated an internal error (400 status code)')
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Throws when the store keeps returning a server error until retries are exhausted', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+
+        // Failed requests are retried `MAX_RETRY` (5, in `src/retry.ts`) times
+        // before the last failing response is returned, so the initial request
+        // and all 5 retries have to be mocked.
+        const attempts = 6
+
+        for (let index = 0; index < attempts; index++) {
+          mockStore.put({
+            body: JSON.stringify({ value }),
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
+            response: new Response(null, { status: 503 }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+        }
+
+        mockStore.inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        const result = blobs.setJSON(key, { value }, { onlyIfMatch: etag })
+
+        await expect(result).rejects.toThrowError(BlobsInternalError)
+        await expect(result).rejects.toThrowError('Netlify Blobs has generated an internal error (503 status code)')
         expect(mockStore.fulfilled).toBeTruthy()
       })
     })
