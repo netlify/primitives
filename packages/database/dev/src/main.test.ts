@@ -9,7 +9,22 @@ import { NetlifyDB } from './main.js'
 let server: NetlifyDB | undefined
 let tmpDir: tmp.DirectoryResult | undefined
 
+const clients: Client[] = []
+
+const createClient = (connectionString: string) => {
+  const client = new Client({ connectionString })
+
+  clients.push(client)
+
+  return client
+}
+
 afterEach(async () => {
+  // `end()` resolves immediately for a client that never connected or is
+  // already closed, so every registered client can be closed unconditionally.
+  await Promise.all(clients.map((client) => client.end()))
+  clients.length = 0
+
   if (server) {
     await server.stop()
     server = undefined
@@ -55,16 +70,16 @@ test('Accepts client connections when no username can be read from the environme
   delete process.env.PGUSER
   pgDefaults.user = undefined
 
-  const client = new Client({ connectionString })
+  const client = createClient(connectionString)
 
   try {
     await client.connect()
 
     const result = await client.query<{ value: number }>('SELECT 1 AS value')
     expect(result.rows[0].value).toBe(1)
-
-    await client.end()
   } finally {
+    await client.end()
+
     pgDefaults.user = hostUser
 
     if (PGUSER !== undefined) {
@@ -77,7 +92,7 @@ test('Accepts PostgreSQL client connections', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const client = new Client({ connectionString })
+  const client = createClient(connectionString)
 
   await client.connect()
 
@@ -91,7 +106,7 @@ test('Executes basic SQL queries', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const client = new Client({ connectionString })
+  const client = createClient(connectionString)
 
   await client.connect()
 
@@ -135,8 +150,8 @@ test('Supports multiple concurrent client connections', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const client1 = new Client({ connectionString })
-  const client2 = new Client({ connectionString })
+  const client1 = createClient(connectionString)
+  const client2 = createClient(connectionString)
 
   await client1.connect()
   await client2.connect()
@@ -173,7 +188,7 @@ test('Persists data to disk when directory is provided', async () => {
   server = new NetlifyDB({ directory: tmpDir.path })
   const connectionString1 = await server.start()
 
-  const client1 = new Client({ connectionString: connectionString1 })
+  const client1 = createClient(connectionString1)
 
   await client1.connect()
 
@@ -193,7 +208,7 @@ test('Persists data to disk when directory is provided', async () => {
   server = new NetlifyDB({ directory: tmpDir.path })
   const connectionString2 = await server.start()
 
-  const client2 = new Client({ connectionString: connectionString2 })
+  const client2 = createClient(connectionString2)
 
   await client2.connect()
 
@@ -210,7 +225,7 @@ test('Uses in-memory storage when no directory is provided', async () => {
   server = new NetlifyDB()
   const connectionString1 = await server.start()
 
-  const client1 = new Client({ connectionString: connectionString1 })
+  const client1 = createClient(connectionString1)
 
   await client1.connect()
 
@@ -233,7 +248,7 @@ test('Uses in-memory storage when no directory is provided', async () => {
   server = new NetlifyDB()
   const connectionString2 = await server.start()
 
-  const client2 = new Client({ connectionString: connectionString2 })
+  const client2 = createClient(connectionString2)
 
   await client2.connect()
 
@@ -247,8 +262,8 @@ test('Delivers LISTEN/NOTIFY across separate connections', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const listener = new Client({ connectionString })
-  const notifier = new Client({ connectionString })
+  const listener = createClient(connectionString)
+  const notifier = createClient(connectionString)
 
   await listener.connect()
   await notifier.connect()
@@ -281,8 +296,8 @@ test('Supports UNLISTEN to stop receiving notifications', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const listener = new Client({ connectionString })
-  const notifier = new Client({ connectionString })
+  const listener = createClient(connectionString)
+  const notifier = createClient(connectionString)
 
   await listener.connect()
   await notifier.connect()
@@ -311,9 +326,9 @@ test('Delivers notifications to multiple listeners', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const listener1 = new Client({ connectionString })
-  const listener2 = new Client({ connectionString })
-  const notifier = new Client({ connectionString })
+  const listener1 = createClient(connectionString)
+  const listener2 = createClient(connectionString)
+  const notifier = createClient(connectionString)
 
   await listener1.connect()
   await listener2.connect()
@@ -348,9 +363,9 @@ test('Cleans up subscriptions when a connection closes', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const listener = new Client({ connectionString })
-  const notifier = new Client({ connectionString })
-  const observer = new Client({ connectionString })
+  const listener = createClient(connectionString)
+  const notifier = createClient(connectionString)
+  const observer = createClient(connectionString)
 
   await listener.connect()
   await notifier.connect()
@@ -383,8 +398,8 @@ test('Handles quoted channel names', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const listener = new Client({ connectionString })
-  const notifier = new Client({ connectionString })
+  const listener = createClient(connectionString)
+  const notifier = createClient(connectionString)
 
   await listener.connect()
   await notifier.connect()
@@ -409,7 +424,7 @@ test('Resets the database by dropping all tables', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const client = new Client({ connectionString })
+  const client = createClient(connectionString)
 
   await client.connect()
 
@@ -435,7 +450,7 @@ test('Allows creating tables again after reset', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const client = new Client({ connectionString })
+  const client = createClient(connectionString)
 
   await client.connect()
 
@@ -453,7 +468,7 @@ test('Drops custom schemas on reset', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  const client = new Client({ connectionString })
+  const client = createClient(connectionString)
 
   await client.connect()
 
@@ -478,7 +493,7 @@ test('Stops the server cleanly', async () => {
   const connectionString = await server.start()
 
   // Verify server is running
-  const client = new Client({ connectionString })
+  const client = createClient(connectionString)
 
   await client.connect()
   await client.end()
@@ -488,7 +503,7 @@ test('Stops the server cleanly', async () => {
   server = undefined
 
   // New connections should fail
-  const client2 = new Client({ connectionString })
+  const client2 = createClient(connectionString)
 
   await expect(client2.connect()).rejects.toThrow()
 })
