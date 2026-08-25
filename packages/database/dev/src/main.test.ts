@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs'
 
-import { Client } from 'pg'
+import { Client, defaults as pgDefaults } from 'pg'
 import tmp from 'tmp-promise'
 import { test, expect, afterEach } from 'vitest'
 
@@ -25,7 +25,7 @@ test('Starts a server and returns a connection string', async () => {
   server = new NetlifyDB()
   const connectionString = await server.start()
 
-  expect(connectionString).toMatch(/^postgres:\/\/localhost:\d+\/postgres$/)
+  expect(connectionString).toMatch(/^postgres:\/\/postgres@localhost:\d+\/postgres$/)
 })
 
 test('Uses the specified port when provided', async () => {
@@ -33,7 +33,44 @@ test('Uses the specified port when provided', async () => {
   server = new NetlifyDB({ port })
   const connectionString = await server.start()
 
-  expect(connectionString).toBe(`postgres://localhost:${String(port)}/postgres`)
+  expect(connectionString).toBe(`postgres://postgres@localhost:${String(port)}/postgres`)
+})
+
+test('Returns a connection string that carries a username', async () => {
+  server = new NetlifyDB()
+  const connectionString = await server.start()
+
+  expect(new URL(connectionString).username).not.toBe('')
+})
+
+test('Accepts client connections when no username can be read from the environment', async () => {
+  server = new NetlifyDB()
+  const connectionString = await server.start()
+
+  const { PGUSER } = process.env
+  const hostUser = pgDefaults.user
+
+  // Edge Functions isolates expose neither `PGUSER` nor `USER`, so `pg` has no
+  // username to put in the startup message.
+  delete process.env.PGUSER
+  pgDefaults.user = undefined
+
+  const client = new Client({ connectionString })
+
+  try {
+    await client.connect()
+
+    const result = await client.query<{ value: number }>('SELECT 1 AS value')
+    expect(result.rows[0].value).toBe(1)
+
+    await client.end()
+  } finally {
+    pgDefaults.user = hostUser
+
+    if (PGUSER !== undefined) {
+      process.env.PGUSER = PGUSER
+    }
+  }
 })
 
 test('Accepts PostgreSQL client connections', async () => {
