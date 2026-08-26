@@ -7,11 +7,11 @@ import type { EnvironmentContext as BlobsContext } from '@netlify/blobs'
 import { DevEventHandler, FileWatcher, type FileWatchSubscriptionHandle, Reactive } from '@netlify/dev-utils'
 import { SYNCHRONOUS_FUNCTION_TIMEOUT, BACKGROUND_FUNCTION_TIMEOUT } from '@netlify/functions'
 import { ListedFunction, listFunctions, Manifest } from '@netlify/zip-it-and-ship-it'
-import extractZip from 'extract-zip'
 
 import { BuildCache } from './builder.js'
 import { NetlifyFunction } from './function.js'
 import { runtimes } from './runtimes/index.js'
+import { extractZip } from './zip.js'
 
 export const DEFAULT_FUNCTION_URL_EXPRESSION = /^\/.netlify\/(functions|builders)\/([^/]+).*/
 const TYPES_PACKAGE = '@netlify/functions'
@@ -510,7 +510,7 @@ export class FunctionsRegistry {
   async unzipFunction(func: NetlifyFunction) {
     const targetDirectory = resolve(this.projectRoot, this.destPath, '.unzipped', func.name)
 
-    await extractZip(func.mainFile, { dir: targetDirectory })
+    await extractZip(func.mainFile, targetDirectory)
 
     return targetDirectory
   }
