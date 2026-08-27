@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.0.4](https://github.com/netlify/primitives/compare/dev-v5.0.3...dev-v5.0.4) (2026-08-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/database-dev bumped from 1.0.0 to 1.0.1
+    * @netlify/functions-dev bumped from 2.0.3 to 2.0.4
+
 ## [5.0.3](https://github.com/netlify/primitives/compare/dev-v5.0.2...dev-v5.0.3) (2026-08-19)
 
 
