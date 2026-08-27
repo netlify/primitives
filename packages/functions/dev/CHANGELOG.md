@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.4](https://github.com/netlify/primitives/compare/functions-dev-v2.0.3...functions-dev-v2.0.4) (2026-08-27)
+
+
+### Bug Fixes
+
+* **deps:** replace extract-zip with yauzl ([#762](https://github.com/netlify/primitives/issues/762)) ([34c868f](https://github.com/netlify/primitives/commit/34c868f751a680c0445cc2300e0ad88fffe7668d))
+
 ## [2.0.3](https://github.com/netlify/primitives/compare/functions-dev-v2.0.2...functions-dev-v2.0.3) (2026-08-19)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/netlify/primitives/compare/database-dev-v1.0.0...database-dev-v1.0.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* **database:** include a username in the local connection string ([#760](https://github.com/netlify/primitives/issues/760)) ([bbf92ba](https://github.com/netlify/primitives/commit/bbf92ba3fd3c3730dd7ebd46821708a4b4eaa85e))
+
 ## [1.0.0](https://github.com/netlify/primitives/compare/database-dev-v0.10.1...database-dev-v1.0.0) (2026-08-18)
 
 
