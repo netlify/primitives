@@ -14,6 +14,11 @@ export type { SQLExecutor } from './lib/sql-executor.js'
 
 const DEFAULT_HOST = 'localhost'
 
+// pg-gateway rejects any startup message without a `user`, and `pg` only falls
+// back to `process.env.USER`, which Edge Functions isolates don't expose. The
+// server authenticates with `trust`, so the value is arbitrary.
+const DEFAULT_USER = 'postgres'
+
 type Logger = (...message: unknown[]) => void
 
 export interface NetlifyDBOptions {
@@ -99,7 +104,7 @@ export class NetlifyDB implements SQLExecutor {
         const { address, port } = this.server?.address() as AddressInfo
         const host = address === '::1' || address === '127.0.0.1' ? 'localhost' : address
 
-        resolve(`postgres://${host}:${String(port)}/postgres`)
+        resolve(`postgres://${DEFAULT_USER}@${host}:${String(port)}/postgres`)
       })
     })
   }
