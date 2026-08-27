@@ -48,18 +48,19 @@
     "@netlify/zip-it-and-ship-it": "^15.4.0",
     "cron-parser": "^5.0.0",
     "decache": "^4.6.2",
-    "extract-zip": "^2.0.1",
     "is-stream": "^4.0.1",
     "jwt-decode": "^4.0.0",
     "lambda-local": "^2.2.0",
     "read-package-up": "^12.0.0",
     "semver": "^7.6.3",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "yauzl": "^3.4.0"
   },
   "devDependencies": {
     "@netlify/test-utils": "*",
     "@types/semver": "^7.5.8",
     "@types/source-map-support": "^0.5.10",
+    "@types/yauzl": "^3.4.0",
     "@types/yazl": "^3.3.1",
     "npm-run-all2": "^5.0.0",
     "tsup": "^8.0.2",
