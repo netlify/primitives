@@ -23,10 +23,7 @@ export const fetchAndRetry = async (
     // almost always means the URL expired before we got to it, rather than a
     // genuine permissions error (those are caught earlier, when the signed
     // URL itself is requested from the Netlify API).
-    const isRetryable =
-      res.status === 429 ||
-      res.status >= 500 ||
-      (getRetryUrl !== undefined && res.status === 403)
+    const isRetryable = res.status === 429 || res.status >= 500 || (getRetryUrl !== undefined && res.status === 403)
 
     if (attemptsLeft > 0 && isRetryable) {
       const delay = getDelay(res.headers.get(RATE_LIMIT_HEADER))
