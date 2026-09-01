@@ -7,21 +7,32 @@ const MIN_RETRY_DELAY = 1000
 const MAX_RETRY = 5
 const RATE_LIMIT_HEADER = 'X-RateLimit-Reset'
 
+export type GetRetryUrl = () => Promise<string>
+
 export const fetchAndRetry = async (
   fetch: Fetcher,
   url: string,
   options: RequestInit,
   attemptsLeft = MAX_RETRY,
+  getRetryUrl?: GetRetryUrl,
 ): ReturnType<typeof globalThis.fetch> => {
   try {
     const res = await fetch(url, options)
 
-    if (attemptsLeft > 0 && (res.status === 429 || res.status >= 500)) {
+    // A 403 is only treated as retryable for signed-URL requests, where it
+    // almost always means the URL expired before we got to it, rather than a
+    // genuine permissions error (those are caught earlier, when the signed
+    // URL itself is requested from the Netlify API).
+    const isRetryable =
+      res.status === 429 ||
+      res.status >= 500 ||
+      (getRetryUrl !== undefined && res.status === 403)
+
+    if (attemptsLeft > 0 && isRetryable) {
       const delay = getDelay(res.headers.get(RATE_LIMIT_HEADER))
-
       await sleep(delay)
-
-      return fetchAndRetry(fetch, url, options, attemptsLeft - 1)
+      const retryUrl = getRetryUrl ? await getRetryUrl() : url
+      return fetchAndRetry(fetch, retryUrl, options, attemptsLeft - 1, getRetryUrl)
     }
 
     return res
@@ -31,10 +42,9 @@ export const fetchAndRetry = async (
     }
 
     const delay = getDelay()
-
     await sleep(delay)
-
-    return fetchAndRetry(fetch, url, options, attemptsLeft - 1)
+    const retryUrl = getRetryUrl ? await getRetryUrl() : url
+    return fetchAndRetry(fetch, retryUrl, options, attemptsLeft - 1, getRetryUrl)
   }
 }
 

@@ -4,7 +4,7 @@ import { encodeMetadata, Metadata, METADATA_HEADER_EXTERNAL, METADATA_HEADER_INT
 import { InvalidBlobsRegionError, isValidRegion } from './region.ts'
 import { fetchAndRetry } from './retry.ts'
 import { BlobInput, Fetcher, HTTPMethod } from './types.ts'
-import { BlobsInternalError } from './util.ts'
+import { createBlobsInternalError } from './util.ts'
 
 export const SIGNED_URL_ACCEPT_HEADER = 'application/json;type=signed-url'
 
@@ -161,7 +161,7 @@ export class Client {
     })
 
     if (res.status !== 200) {
-      throw new BlobsInternalError(res, { method, storeName })
+      throw await createBlobsInternalError(res, { method, storeName })
     }
 
     const { url: signedURL } = await res.json()
@@ -219,7 +219,24 @@ export class Client {
       options.duplex = 'half'
     }
 
-    return fetchAndRetry(this.fetch, url, options)
+    // mint a fresh signed URL if the previous one expired
+    const usesSignedUrl =
+      !this.edgeURL &&
+      key !== undefined &&
+      storeName !== undefined &&
+      method !== HTTPMethod.HEAD &&
+      method !== HTTPMethod.DELETE
+
+    let getRetryUrl
+
+    if (usesSignedUrl) {
+      getRetryUrl = async () => {
+        const finalRequest = await this.getFinalRequest({ consistency, key, metadata, method, parameters, storeName })
+        return finalRequest.url
+      }
+    }
+
+    return fetchAndRetry(this.fetch, url, options, undefined, getRetryUrl)
   }
 }
 

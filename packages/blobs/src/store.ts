@@ -5,7 +5,14 @@ import { Client, type Conditions } from './client.ts'
 import type { ConsistencyMode } from './consistency.ts'
 import { getMetadataFromResponse, Metadata } from './metadata.ts'
 import { BlobInput, HTTPMethod } from './types.ts'
-import { BlobsInternalError, collectIterator, DEPLOY_STORE_PREFIX, SITE_STORE_PREFIX, withSpan } from './util.ts'
+import {
+  BlobsInternalError,
+  collectIterator,
+  createBlobsInternalError,
+  DEPLOY_STORE_PREFIX,
+  SITE_STORE_PREFIX,
+  withSpan,
+} from './util.ts'
 
 export { DEPLOY_STORE_PREFIX, SITE_STORE_PREFIX } from './util.ts'
 
@@ -470,7 +477,7 @@ export class Store {
         }
       }
 
-      throw new BlobsInternalError(res, { method: HTTPMethod.PUT, storeName: this.name })
+      throw await createBlobsInternalError(res, { method: HTTPMethod.PUT, storeName: this.name })
     })
   }
 

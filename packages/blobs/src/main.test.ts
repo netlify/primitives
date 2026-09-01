@@ -1145,6 +1145,69 @@ describe('set', () => {
     })
 
     test('Retries failed operations', async () => {
+      // A signed URL can expire between when it's issued and when a retry actually
+      // happens, so each retry re-requests a fresh signed URL instead of reusing the
+      // original one - see FRB-2338.
+      const getSignedUrl = () => ({
+        headers: { authorization: `Bearer ${apiToken}` },
+        response: new Response(JSON.stringify({ url: signedURL })),
+        url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+      })
+
+      const mockStore = new MockFetch()
+        .put(getSignedUrl())
+        .put({
+          body: value,
+          headers: {
+            'cache-control': 'max-age=0, stale-while-revalidate=60',
+          },
+          response: new Response(null, { status: 500 }),
+          url: signedURL,
+        })
+        .put(getSignedUrl())
+        .put({
+          body: value,
+          headers: {
+            'cache-control': 'max-age=0, stale-while-revalidate=60',
+          },
+          response: new Error('Some network problem'),
+          url: signedURL,
+        })
+        .put(getSignedUrl())
+        .put({
+          body: value,
+          headers: {
+            'cache-control': 'max-age=0, stale-while-revalidate=60',
+          },
+          response: new Response(null, { headers: { 'X-RateLimit-Reset': '10' }, status: 429 }),
+          url: signedURL,
+        })
+        .put(getSignedUrl())
+        .put({
+          body: value,
+          headers: {
+            'cache-control': 'max-age=0, stale-while-revalidate=60',
+          },
+          response: new Response(null),
+          url: signedURL,
+        })
+        .inject()
+
+      const blobs = getStore({
+        name: 'production',
+        token: apiToken,
+        siteID,
+      })
+
+      await blobs.set(key, value)
+
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('Retries a 403 on the signed URL PUT by requesting a fresh one', async () => {
+      const expiredError = `<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>AccessDenied</Code><Message>Request has expired</Message></Error>`
+
       const mockStore = new MockFetch()
         .put({
           headers: { authorization: `Bearer ${apiToken}` },
@@ -1156,24 +1219,13 @@ describe('set', () => {
           headers: {
             'cache-control': 'max-age=0, stale-while-revalidate=60',
           },
-          response: new Response(null, { status: 500 }),
+          response: new Response(expiredError, { status: 403 }),
           url: signedURL,
         })
         .put({
-          body: value,
-          headers: {
-            'cache-control': 'max-age=0, stale-while-revalidate=60',
-          },
-          response: new Error('Some network problem'),
-          url: signedURL,
-        })
-        .put({
-          body: value,
-          headers: {
-            'cache-control': 'max-age=0, stale-while-revalidate=60',
-          },
-          response: new Response(null, { headers: { 'X-RateLimit-Reset': '10' }, status: 429 }),
-          url: signedURL,
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
         })
         .put({
           body: value,

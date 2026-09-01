@@ -18,7 +18,7 @@ const isDeniedWrite = (res: Response, { method, storeName }: BlobsErrorContext) 
   storeName !== undefined &&
   !storeName.startsWith(DEPLOY_STORE_PREFIX)
 
-const blobsErrorMessage = (res: Response, context: BlobsErrorContext) => {
+const blobsErrorMessage = (res: Response, context: BlobsErrorContext, responseBody?: string) => {
   let details = res.headers.get(NF_ERROR) || `${res.status} status code`
 
   if (res.headers.has(NF_REQUEST_ID)) {
@@ -33,15 +33,44 @@ const blobsErrorMessage = (res: Response, context: BlobsErrorContext) => {
     return `Netlify Blobs could not write to store '${storeName}' (${details}). Builds and build plugins can only write to deploy-specific stores: use 'getDeployStore' instead of 'getStore', or pass a 'token' with write access to the store. If this code is not running in a build, check that the token and site ID are valid. See https://docs.netlify.com/build/data-and-storage/netlify-blobs/#deploy-specific-stores`
   }
 
-  return `Netlify Blobs has generated an internal error (${details})`
+  let message = `Netlify Blobs has generated an internal error (${details})`
+
+  // fall back to raw body: see FRB-2338
+  if (!res.headers.get(NF_ERROR) && responseBody) {
+    message += `: ${responseBody}`
+  }
+
+  return message
 }
 
 export class BlobsInternalError extends Error {
-  constructor(res: Response, context: BlobsErrorContext = {}) {
-    super(blobsErrorMessage(res, context))
+  readonly responseBody?: string
+  readonly status: number
+
+  constructor(res: Response, context: BlobsErrorContext = {}, responseBody?: string) {
+    super(blobsErrorMessage(res, context, responseBody))
 
     this.name = 'BlobsInternalError'
+    this.status = res.status
+    this.responseBody = responseBody
   }
+}
+
+/**
+ * Builds a BlobsInternalError, reading the response body first so that it can be
+ * surfaced when there's no more specific detail available. Use this instead of the
+ * constructor directly wherever the response body might be diagnostic.
+ */
+export const createBlobsInternalError = async (
+  res: Response,
+  context: BlobsErrorContext = {},
+): Promise<BlobsInternalError> => {
+  const responseBody = await res
+    .clone()
+    .text()
+    .catch(() => undefined)
+
+  return new BlobsInternalError(res, context, responseBody)
 }
 
 export const collectIterator = async <T>(iterator: AsyncIterable<T>): Promise<T[]> => {
