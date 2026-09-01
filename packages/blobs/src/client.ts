@@ -164,7 +164,7 @@ export class Client {
       throw await createBlobsInternalError(res, { method, storeName })
     }
 
-    const { url: signedURL } = await res.json()
+    const { url: signedURL } = (await res.json()) as { url: string }
     const userHeaders = encodedMetadata ? { [METADATA_HEADER_INTERNAL]: encodedMetadata } : undefined
 
     return {
