@@ -47,11 +47,11 @@ export function getConnectionString(): string {
 function ensureNeonWebSocket(): void {
   // We can remove this, and the dependency on `ws`, once we stop supporting
   // Node.js 22.
-  /* eslint-disable n/no-unsupported-features/node-builtins */
+   
   if (!neonConfig.webSocketConstructor && typeof WebSocket === 'undefined') {
     neonConfig.webSocketConstructor = ws
   }
-  /* eslint-enable n/no-unsupported-features/node-builtins */
+   
 }
 
 // Returns an HTTP client that lazily loads the connection string from the
