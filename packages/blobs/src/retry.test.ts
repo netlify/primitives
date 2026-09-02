@@ -6,20 +6,21 @@ afterEach(() => {
   vi.resetModules()
 })
 
-test('does not read protected Deno environment variables during import', async () => {
-  const getEnvironmentVariable = vi.fn(() => {
-    throw new Error('Requires env access')
+test('does not access the process environment during import', async () => {
+  const accessEnvironment = vi.fn(() => {
+    throw new Error('Environment access is not allowed')
   })
-  vi.stubGlobal('Deno', { env: { get: getEnvironmentVariable } })
+  vi.stubGlobal('process', {
+    get env() {
+      return accessEnvironment()
+    },
+  })
 
-  const { getStore } = await import('./main.ts')
-  const store = getStore({ name: 'store', siteID: 'site-id', token: 'token' })
-
-  expect(store).toBeDefined()
-  expect(getEnvironmentVariable).not.toHaveBeenCalled()
+  await expect(import('./retry.ts')).resolves.toHaveProperty('fetchAndRetry')
+  expect(accessEnvironment).not.toHaveBeenCalled()
 })
 
-test('uses the shorter retry delay in Node test environments', async () => {
+test('uses the production retry delay in test environments', async () => {
   vi.useFakeTimers()
 
   const { fetchAndRetry } = await import('./retry.ts')
@@ -29,7 +30,7 @@ test('uses the shorter retry delay in Node test environments', async () => {
     .mockResolvedValueOnce(new Response(null))
   const response = fetchAndRetry(fetch, 'https://example.com', {})
 
-  await vi.advanceTimersByTimeAsync(0)
+  await vi.advanceTimersByTimeAsync(4999)
   expect(fetch).toHaveBeenCalledTimes(1)
 
   await vi.advanceTimersByTimeAsync(1)
