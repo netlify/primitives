@@ -3,7 +3,7 @@ import { env, version as nodeVersion } from 'node:process'
 
 import { MockFetch } from '@netlify/test-utils'
 import { base64Decode } from '@netlify/runtime-utils'
-import semver from 'semver'
+import { isLess } from 'verkit'
 import { describe, test, expect, beforeAll, afterEach } from 'vitest'
 
 import { base64Encode, streamToString } from '../test/util.js'
@@ -13,7 +13,7 @@ import { NF_ERROR, NF_REQUEST_ID } from './headers.js'
 import { getDeployStore, getStore, setEnvironmentContext } from './main.js'
 
 beforeAll(async () => {
-  if (semver.lt(nodeVersion, '18.0.0')) {
+  if (isLess(nodeVersion, '18.0.0')) {
     const nodeFetch = await import('node-fetch')
 
     // @ts-expect-error Expected type mismatch between native implementation and node-fetch
