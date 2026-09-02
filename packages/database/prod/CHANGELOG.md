@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/netlify/primitives/compare/database-v2.0.0...database-v2.0.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* retry using new signed url and improve messaging for failed requests ([#768](https://github.com/netlify/primitives/issues/768)) ([884d5c9](https://github.com/netlify/primitives/commit/884d5c9f783e432b0469facdacbf0cf83788b8f5))
+
 ## [2.0.0](https://github.com/netlify/primitives/compare/database-v1.1.0...database-v2.0.0) (2026-08-18)
 
 
