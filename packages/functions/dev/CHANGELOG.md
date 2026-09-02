@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.5](https://github.com/netlify/primitives/compare/functions-dev-v2.0.4...functions-dev-v2.0.5) (2026-09-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.0.2 to 11.0.3
+
 ## [2.0.4](https://github.com/netlify/primitives/compare/functions-dev-v2.0.3...functions-dev-v2.0.4) (2026-08-27)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.0.3](https://github.com/netlify/primitives/compare/blobs-v11.0.2...blobs-v11.0.3) (2026-09-02)
+
+
+### Bug Fixes
+
+* retry using new signed url and improve messaging for failed requests ([#768](https://github.com/netlify/primitives/issues/768)) ([884d5c9](https://github.com/netlify/primitives/commit/884d5c9f783e432b0469facdacbf0cf83788b8f5))
+
 ## [11.0.2](https://github.com/netlify/primitives/compare/blobs-v11.0.1...blobs-v11.0.2) (2026-08-19)
 
 
