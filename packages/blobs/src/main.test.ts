@@ -4,7 +4,7 @@ import { env, version as nodeVersion } from 'node:process'
 import { MockFetch } from '@netlify/test-utils'
 import { base64Decode } from '@netlify/runtime-utils'
 import semver from 'semver'
-import { describe, test, expect, beforeAll, afterEach } from 'vitest'
+import { describe, test, expect, beforeAll, afterEach, vi } from 'vitest'
 
 import { base64Encode, streamToString } from '../test/util.js'
 
@@ -30,6 +30,7 @@ beforeAll(async () => {
 afterEach(() => {
   delete env.NETLIFY_BLOBS_CONTEXT
   delete globalThis.netlifyBlobsContext
+  vi.useRealTimers()
 })
 
 const deployID = '6527dfab35be400008332a1d'
@@ -1145,6 +1146,8 @@ describe('set', () => {
     })
 
     test('Retries failed operations', async () => {
+      vi.useFakeTimers()
+
       const mockStore = new MockFetch()
         .put({
           headers: { authorization: `Bearer ${apiToken}` },
@@ -1191,7 +1194,10 @@ describe('set', () => {
         siteID,
       })
 
-      await blobs.set(key, value)
+      const operation = blobs.set(key, value)
+
+      await vi.runAllTimersAsync()
+      await operation
 
       expect(mockStore.fulfilled).toBeTruthy()
     })
@@ -1252,6 +1258,8 @@ describe('set', () => {
     })
 
     test('Retries failed operations', async () => {
+      vi.useFakeTimers()
+
       const mockStore = new MockFetch()
         .put({
           body: value,
@@ -1286,7 +1294,10 @@ describe('set', () => {
         siteID,
       })
 
-      await blobs.set(key, value)
+      const operation = blobs.set(key, value)
+
+      await vi.runAllTimersAsync()
+      await operation
 
       expect(mockStore.fulfilled).toBeTruthy()
     })
