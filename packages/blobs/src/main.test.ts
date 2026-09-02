@@ -1145,9 +1145,6 @@ describe('set', () => {
     })
 
     test('Retries failed operations', async () => {
-      // A signed URL can expire between when it's issued and when a retry actually
-      // happens, so each retry re-requests a fresh signed URL instead of reusing the
-      // original one - see FRB-2338.
       const getSignedUrl = () => ({
         headers: { authorization: `Bearer ${apiToken}` },
         response: new Response(JSON.stringify({ url: signedURL })),
