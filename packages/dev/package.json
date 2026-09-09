@@ -59,7 +59,7 @@
   "dependencies": {
     "@netlify/ai": "^1.0.1",
     "@netlify/blobs": "11.0.3",
-    "@netlify/config": "^25.2.3",
+    "@netlify/config": "^25.2.5",
     "@netlify/database-dev": "1.0.1",
     "@netlify/dev-utils": "6.0.1",
     "@netlify/edge-functions-dev": "2.0.1",
