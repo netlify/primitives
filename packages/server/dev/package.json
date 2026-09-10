@@ -1,0 +1,48 @@
+{
+  "name": "@netlify/server-dev",
+  "version": "0.1.0",
+  "description": "Local development emulation of Netlify Server",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "main": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "dev": "tsup-node --watch",
+    "build": "tsup-node",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "publint": "npx -y publint --strict"
+  },
+  "dependencies": {
+    "@netlify/dev-utils": "6.0.1",
+    "@netlify/serverless-functions-api": "^2.20.0",
+    "get-port": "^7.1.0"
+  },
+  "devDependencies": {
+    "@netlify/test-utils": "*",
+    "npm-run-all2": "^5.0.0",
+    "tsup": "^8.0.2",
+    "vitest": "^3.0.0",
+    "ws": "^8.18.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netlify/primitives.git",
+    "directory": "packages/server/dev"
+  },
+  "license": "MIT"
+}

@@ -37,6 +37,12 @@
     "packages/redirects": {},
     "packages/runtime": {},
     "packages/runtime-utils": {},
+    "packages/server/dev": {
+      "prerelease": true,
+      "prerelease-type": "beta",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true
+    },
     "packages/static": {},
     "packages/types": {}
   }

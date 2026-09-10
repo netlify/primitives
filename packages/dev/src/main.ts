@@ -1,5 +1,7 @@
+import { Buffer } from 'node:buffer'
 import { promises as fs } from 'node:fs'
 import { IncomingMessage } from 'node:http'
+import type { Duplex } from 'node:stream'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -21,6 +23,7 @@ import { FunctionsHandler } from '@netlify/functions-dev'
 import { HeadersHandler, type HeadersCollector } from '@netlify/headers'
 import { ImageHandler } from '@netlify/images'
 import { RedirectsHandler } from '@netlify/redirects'
+import { ServerHandler } from '@netlify/server-dev'
 import { StaticHandler } from '@netlify/static'
 import { NetlifyDB } from '@netlify/database-dev'
 
@@ -76,6 +79,13 @@ export interface Features {
    * {@link} https://docs.netlify.com/functions/overview/
    */
   functions?: {
+    enabled?: boolean
+  }
+
+  /**
+   * [Experimental] Configuration options for Netlify Server.
+   */
+  server?: {
     enabled?: boolean
   }
 
@@ -190,7 +200,7 @@ interface HandleOptions {
   serverAddress?: string
 }
 
-export type ResponseType = 'edge-function' | 'function' | 'image' | 'redirect' | 'static'
+export type ResponseType = 'edge-function' | 'function' | 'image' | 'redirect' | 'server' | 'static'
 
 export class NetlifyDev {
   #apiHost?: string
@@ -213,6 +223,7 @@ export class NetlifyDev {
     headers: boolean
     images: boolean
     redirects: boolean
+    server: boolean
     static: boolean
   }
   #db?: NetlifyDB
@@ -222,6 +233,7 @@ export class NetlifyDev {
   #logger: Logger
   #projectRoot: string
   #redirectsHandler?: RedirectsHandler
+  #serverHandler?: ServerHandler
   #serverAddress?: string | null
   #siteID?: string
   #staticHandler?: StaticHandler
@@ -252,6 +264,7 @@ export class NetlifyDev {
       headers: options.headers?.enabled !== false,
       images: options.images?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
+      server: options.server?.enabled === true,
       static: options.staticFiles?.enabled !== false,
     }
     this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')
@@ -338,7 +351,23 @@ export class NetlifyDev {
       return { response: await functionMatch.handle(getWriteRequest()), type: 'function' }
     }
 
-    // 4. Check if the request matches a redirect rule.
+    // 4. Check if the request matches a server.
+    const serverMatch = await this.#serverHandler?.match(readRequest)
+    if (serverMatch) {
+      const staticMatch = await this.#staticHandler?.match(readRequest)
+
+      if (staticMatch) {
+        const response = await staticMatch.handle()
+
+        await this.#headersHandler?.apply(readRequest, response, options.headersCollector)
+
+        return { response, type: 'static' }
+      }
+
+      return { response: await serverMatch.handle(getWriteRequest()), type: 'server' }
+    }
+
+    // 5. Check if the request matches a redirect rule.
     const redirectMatch = await this.#redirectsHandler?.match(readRequest)
     if (redirectMatch) {
       const redirectRequest = new Request(redirectMatch.target)
@@ -383,7 +412,7 @@ export class NetlifyDev {
       }
     }
 
-    // 5. Check if the request matches a static file.
+    // 6. Check if the request matches a static file.
     const staticMatch = await this.#staticHandler?.match(readRequest)
     if (staticMatch) {
       const response = await staticMatch.handle()
@@ -681,6 +710,26 @@ export class NetlifyDev {
       })
     }
 
+    if (this.#features.server) {
+      geolocation ??= await getGeoLocation({
+        enabled: this.#features.geolocation,
+        cache: this.#geolocationConfig?.cache ?? true,
+        state,
+      })
+
+      const serverHandler = new ServerHandler({
+        accountID: config?.siteInfo?.account_id,
+        fileWatcher,
+        geolocation,
+        logger: this.#logger,
+        projectRoot: this.#projectRoot,
+        siteID,
+      })
+
+      this.#serverHandler = serverHandler
+      this.#cleanupJobs.push(() => serverHandler.stop())
+    }
+
     if (this.#features.headers) {
       this.#headersHandler = new HeadersHandler({
         configPath: this.#config?.configPath,
@@ -725,6 +774,14 @@ export class NetlifyDev {
     return {
       serverAddress,
     }
+  }
+
+  async handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): Promise<boolean> {
+    if (!this.#serverHandler) {
+      return false
+    }
+
+    return await this.#serverHandler.handleUpgrade(request, socket, head)
   }
 
   get db(): NetlifyDB | undefined {
