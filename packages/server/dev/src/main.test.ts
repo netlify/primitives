@@ -167,7 +167,9 @@ test.skipIf(unsupportedNodeVersion)('restarts the server process when the entryp
     return body.pid
   }
 
-  const firstPid = await getPid()
+  // Retried because the watcher can replay the fixture copy as an event right
+  // after subscribing, restarting the server mid-boot and failing one request.
+  const firstPid = await vi.waitFor(getPid, { interval: 250, timeout: 15_000 })
 
   await fs.appendFile(path.join(serverDirectory, 'index.mjs'), '\n// touched\n')
 

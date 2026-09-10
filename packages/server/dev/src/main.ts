@@ -146,10 +146,14 @@ export class ServerHandler {
 
     if (this.#accountID) {
       headers.set('x-nf-account-id', this.#accountID)
+    } else {
+      headers.delete('x-nf-account-id')
     }
 
     if (this.#geolocation) {
       headers.set('x-nf-geo', Buffer.from(JSON.stringify(this.#geolocation)).toString('base64'))
+    } else {
+      headers.delete('x-nf-geo')
     }
   }
 

@@ -69,6 +69,8 @@ export class ServerProcess {
       stdio: ['ignore', 'pipe', 'pipe', 'pipe'],
     })
 
+    this.#child = child
+
     this.pipeLogs(child)
 
     child.on('exit', (code) => {
@@ -85,28 +87,37 @@ export class ServerProcess {
 
     const readyStream = child.stdio[3]
 
-    await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error(`Timed out waiting for the server to start listening on port ${String(port)}`))
-      }, READINESS_TIMEOUT_MS)
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error(`Timed out waiting for the server to start listening on port ${String(port)}`))
+        }, READINESS_TIMEOUT_MS)
 
-      readyStream?.once('data', () => {
-        clearTimeout(timeout)
-        resolve()
+        readyStream?.once('data', () => {
+          clearTimeout(timeout)
+          resolve()
+        })
+
+        child.once('exit', (code) => {
+          clearTimeout(timeout)
+          reject(new Error(`Server process exited with code ${String(code)} before it was ready`))
+        })
+
+        child.once('error', (error) => {
+          clearTimeout(timeout)
+          reject(error)
+        })
       })
+    } catch (error) {
+      child.kill('SIGKILL')
 
-      child.once('exit', (code) => {
-        clearTimeout(timeout)
-        reject(new Error(`Server process exited with code ${String(code)} before it was ready`))
-      })
+      if (this.#child === child) {
+        this.#child = undefined
+      }
 
-      child.once('error', (error) => {
-        clearTimeout(timeout)
-        reject(error)
-      })
-    })
+      throw error
+    }
 
-    this.#child = child
     this.#port = port
 
     return port

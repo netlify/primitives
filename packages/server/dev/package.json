@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@netlify/dev-utils": "6.0.1",
-    "@netlify/serverless-functions-api": "^2.20.0",
+    "@netlify/serverless-functions-api": "^2.21.1",
     "get-port": "^7.1.0"
   },
   "devDependencies": {

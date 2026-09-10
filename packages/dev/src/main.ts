@@ -307,7 +307,7 @@ export class NetlifyDev {
     destPath: string,
     options: HandleOptions = {},
   ): Promise<{ response: Response; type: ResponseType } | undefined> {
-    const serverAddress = this.getServerAddress(options.serverAddress)
+    const getServerAddress = () => this.getServerAddress(options.serverAddress)
 
     // Try to match the request against the different steps in our request chain.
     //
@@ -318,7 +318,7 @@ export class NetlifyDev {
     const edgeFunctionMatch = await this.#edgeFunctionsHandler?.match(readRequest)
     if (edgeFunctionMatch) {
       return {
-        response: await edgeFunctionMatch.handle(getWriteRequest(), serverAddress),
+        response: await edgeFunctionMatch.handle(getWriteRequest(), getServerAddress()),
         type: 'edge-function',
       }
     }
@@ -326,7 +326,7 @@ export class NetlifyDev {
     // 2. Check if the request matches an image.
     const imageMatch = this.#imageHandler?.match(readRequest)
     if (imageMatch) {
-      const response = await imageMatch.handle(serverAddress)
+      const response = await imageMatch.handle(getServerAddress())
       return { response, type: 'image' }
     }
 
@@ -374,7 +374,7 @@ export class NetlifyDev {
       // If the redirect rule matches Image CDN, we'll serve it.
       const imageMatch = this.#imageHandler?.match(redirectRequest)
       if (imageMatch) {
-        const response = await imageMatch.handle(serverAddress)
+        const response = await imageMatch.handle(getServerAddress())
         return { response, type: 'image' }
       }
 

@@ -129,6 +129,35 @@ describe('Handling requests', () => {
         await fixture.destroy()
       },
     )
+
+    // Netlify Server requires Node.js 24.
+    test.skipIf(Number.parseInt(process.versions.node) < 24)(
+      'serves requests when every feature needing the passthrough server is disabled',
+      async () => {
+        const fixture = new Fixture().withFile(
+          'netlify/server/index.mjs',
+          `import { createServer } from 'node:http'
+           createServer((req, res) => res.end('server:' + req.url)).listen(process.env.PORT)`,
+        )
+        const directory = await fixture.create()
+        const dev = new NetlifyDev({
+          projectRoot: directory,
+          edgeFunctions: { enabled: false },
+          geolocation: { enabled: false },
+          images: { enabled: false },
+          server: { enabled: true },
+        })
+        await dev.start()
+
+        const serverResult = await dev.handleAndIntrospect(new Request('https://site.netlify/some/path'))
+
+        expect(serverResult?.type).toBe('server')
+        expect(await serverResult?.response.text()).toBe('server:/some/path')
+
+        await dev.stop()
+        await fixture.destroy()
+      },
+    )
   })
 
   describe('No linked site', () => {
