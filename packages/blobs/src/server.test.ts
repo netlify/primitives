@@ -2,15 +2,15 @@ import { Buffer } from 'node:buffer'
 import { promises as fs } from 'node:fs'
 import { env, version as nodeVersion } from 'node:process'
 
-import semver from 'semver'
 import tmp from 'tmp-promise'
+import { isLess } from 'verkit'
 import { test, expect, beforeAll, afterEach } from 'vitest'
 
 import { getDeployStore, getStore, listStores } from './main.js'
 import { BlobsServer } from './server.js'
 
 beforeAll(async () => {
-  if (semver.lt(nodeVersion, '18.0.0')) {
+  if (isLess(nodeVersion, '18.0.0')) {
     const nodeFetch = await import('node-fetch')
 
     // @ts-expect-error Expected type mismatch between native implementation and node-fetch

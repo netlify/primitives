@@ -5,7 +5,9 @@ import { EnvironmentContext } from '@netlify/blobs'
 import { headers as netlifyHeaders, MemoizeCache, renderFunctionErrorPage } from '@netlify/dev-utils'
 import type { ExtendedRoute, FunctionResult, Route } from '@netlify/zip-it-and-ship-it'
 import { CronExpression, CronExpressionParser } from 'cron-parser'
-import semver from 'semver'
+
+// @ts-expect-error typescript doesn't like it with `"moduleResolution": "node"`
+import { isLess } from 'verkit'
 
 import { BuildResult } from './builder.js'
 import { Runtime } from './runtimes/index.js'
@@ -182,7 +184,7 @@ export class NetlifyFunction {
   }
 
   isSupported() {
-    return !(this.buildData?.runtimeAPIVersion === 2 && semver.lt(nodeVersion, V2_MIN_NODE_VERSION))
+    return !(this.buildData?.runtimeAPIVersion === 2 && isLess(nodeVersion, V2_MIN_NODE_VERSION))
   }
 
   isTypeScript() {
