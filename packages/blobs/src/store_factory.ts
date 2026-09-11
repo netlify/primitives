@@ -53,6 +53,14 @@ export const getDeployStore: {
 export interface GetStoreOptions extends Partial<ClientOptions> {
   deployID?: string
   name?: string
+
+  /**
+   * The region where the store's data is held. Unlike deploy-scoped stores,
+   * site-wide stores do not take this from the environment, so omitting it
+   * means the API picks its default region rather than the site's configured
+   * Functions region. A store's data does not move if this value changes.
+   */
+  region?: Region
 }
 
 /**
