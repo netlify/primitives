@@ -36,7 +36,7 @@
     "@netlify/test-utils": "*",
     "npm-run-all2": "^5.0.0",
     "tsup": "^8.0.2",
-    "vitest": "^3.0.0",
+    "vitest": "^4.1.11",
     "ws": "^8.18.0"
   },
   "repository": {
