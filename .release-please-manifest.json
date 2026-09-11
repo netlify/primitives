@@ -19,6 +19,7 @@
   "packages/redirects": "4.0.2",
   "packages/runtime": "5.0.3",
   "packages/runtime-utils": "3.0.0",
+  "packages/server/dev": "0.1.0",
   "packages/static": "4.0.0",
   "packages/types": "3.0.0"
 }

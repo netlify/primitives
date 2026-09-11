@@ -68,6 +68,7 @@
     "@netlify/images": "2.0.1",
     "@netlify/redirects": "4.0.2",
     "@netlify/runtime": "5.0.3",
+    "@netlify/server-dev": "0.1.0",
     "@netlify/static": "4.0.0",
     "ulid": "^3.0.0"
   }
