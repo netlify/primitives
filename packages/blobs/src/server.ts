@@ -210,7 +210,8 @@ export class BlobsServer {
 
     this.dispatchOnRequestEvent(Operation.GET, url)
 
-    const headers: Record<string, string> = {}
+    const etag = await BlobsServer.generateETag(dataPath)
+    const headers: Record<string, string> = { etag }
 
     try {
       const rawData = await fs.readFile(metadataPath, 'utf8')
@@ -224,6 +225,10 @@ export class BlobsServer {
       if (!isNodeError(error) || error.code !== 'ENOENT') {
         this.logDebug('Could not read metadata file:', error)
       }
+    }
+
+    if (req.headers.get('if-none-match') === etag) {
+      return new Response(null, { headers, status: 304 })
     }
 
     try {
@@ -260,9 +265,11 @@ export class BlobsServer {
       const rawData = await fs.readFile(metadataPath, 'utf8')
       const metadata = JSON.parse(rawData)
       const encodedMetadata = encodeMetadata(metadata)
+      const etag = await BlobsServer.generateETag(dataPath)
 
       return new Response(null, {
         headers: {
+          etag,
           [METADATA_HEADER_INTERNAL]: encodedMetadata ?? '',
         },
       })
