@@ -1,6 +1,6 @@
 {
   "name": "@netlify/server-dev",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local development emulation of Netlify Server",
   "type": "module",
   "engines": {
