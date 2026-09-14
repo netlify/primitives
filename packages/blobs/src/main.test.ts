@@ -2684,3 +2684,123 @@ describe('setEnvironmentContext', () => {
     expect(context.token).toBe(apiToken)
   })
 })
+
+describe('Region configuration in site-wide stores', () => {
+  describe('Without a `region` option', () => {
+    test('The client sends no region to API calls, letting the API use its default', async () => {
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .get({
+          response: new Response(value),
+          url: signedURL,
+        })
+        .inject()
+
+      const store = getStore({ name: 'production', siteID, token: apiToken })
+
+      expect(await store.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('The client does not inherit the region from the context, unlike deploy-scoped stores', async () => {
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(value),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
+
+      const context = {
+        edgeURL,
+        primaryRegion: 'eu-central-1',
+        siteID,
+        token: apiToken,
+      }
+
+      env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
+
+      const store = getStore('production')
+
+      expect(await store.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+  })
+
+  describe('With a `region` option', () => {
+    test('The client sends that region to API calls', async () => {
+      const mockRegion = 'eu-central-1'
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}?region=${mockRegion}`,
+        })
+        .get({
+          response: new Response(value),
+          url: signedURL,
+        })
+        .inject()
+
+      const store = getStore({ name: 'production', region: mockRegion, siteID, token: apiToken })
+
+      expect(await store.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('The client sends that region to edge calls', async () => {
+      const mockRegion = 'eu-central-1'
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(value),
+          url: `${edgeURL}/region:${mockRegion}/${siteID}/site:production/${key}`,
+        })
+        .inject()
+
+      const context = {
+        edgeURL,
+        siteID,
+        token: apiToken,
+      }
+
+      env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
+
+      const store = getStore({ name: 'production', region: mockRegion })
+
+      expect(await store.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('The client sends that region when the store is created with the name overload', async () => {
+      const mockRegion = 'ap-southeast-2'
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}?region=${mockRegion}`,
+        })
+        .get({
+          response: new Response(value),
+          url: signedURL,
+        })
+        .inject()
+
+      const store = getStore('production', { region: mockRegion, siteID, token: apiToken })
+
+      expect(await store.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('The client throws an error if the region supplied is not supported', async () => {
+      // @ts-expect-error Knowingly supplying an invalid value to `region`.
+      expect(() => getStore({ name: 'production', region: 'eu-west-1', siteID, token: apiToken })).toThrowError(
+        'eu-west-1 is not a supported Netlify Blobs region.',
+      )
+    })
+  })
+})
