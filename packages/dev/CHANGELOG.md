@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.1.0](https://github.com/netlify/primitives/compare/dev-v5.0.5...dev-v5.1.0) (2026-09-11)
+
+
+### Features
+
+* add experimental `server` package ([#777](https://github.com/netlify/primitives/issues/777)) ([540042d](https://github.com/netlify/primitives/commit/540042d3d5679b96902b6c47d9405b5e816fb8a0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/server-dev bumped from 0.1.0 to 0.1.1
+
 ## [5.0.5](https://github.com/netlify/primitives/compare/dev-v5.0.4...dev-v5.0.5) (2026-09-02)
 
 
