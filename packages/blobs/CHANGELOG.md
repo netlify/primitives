@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.1.0](https://github.com/netlify/primitives/compare/blobs-v11.0.3...blobs-v11.1.0) (2026-09-14)
+
+
+### Features
+
+* **blobs:** accept a region for site-wide stores ([#773](https://github.com/netlify/primitives/issues/773)) ([beae253](https://github.com/netlify/primitives/commit/beae253275420a6edfaaf27653dc3ed850cd8aac))
+
 ## [11.0.3](https://github.com/netlify/primitives/compare/blobs-v11.0.2...blobs-v11.0.3) (2026-09-02)
 
 
