@@ -1,7 +1,9 @@
 import { platform } from 'node:os'
 
 import type { ExecaChildProcess } from 'execa'
-import { satisfies } from 'semver'
+
+// @ts-expect-error typescript doesn't like it with `"moduleResolution": "node"`
+import { satisfies } from 'verkit'
 
 // 1 second
 const SERVER_KILL_TIMEOUT = 1e3
