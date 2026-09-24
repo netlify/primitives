@@ -1,7 +1,34 @@
 import { Client, ClientOptions, getClientOptions } from './client.ts'
-import { getEnvironmentContext, MissingBlobsEnvironmentError } from './environment.ts'
+import { type EnvironmentContext, getEnvironmentContext, MissingBlobsEnvironmentError } from './environment.ts'
 import { Region, REGION_AUTO } from './region.ts'
 import { Store } from './store.ts'
+
+/**
+ * Returns the region a deploy-scoped store should read from. Its data lives in
+ * the region the deploy was built in, so leaving this unset would fall back to
+ * the API default and address a bucket that does not hold it.
+ */
+const getDeployStoreRegion = (clientOptions: ReturnType<typeof getClientOptions>, context: EnvironmentContext) => {
+  if (clientOptions.region) {
+    return clientOptions.region
+  }
+
+  // Edge requests are routed to a regional origin by the URL, so the region
+  // has to be resolved here rather than by the API.
+  if (clientOptions.edgeURL || clientOptions.uncachedEdgeURL) {
+    if (!context.primaryRegion) {
+      throw new Error(
+        'When accessing a deploy store, the Netlify Blobs client needs to be configured with a region, and one was not found in the environment. To manually set the region, set the `region` property in the store options. If you are using the Netlify CLI, you may have an outdated version; run `npm install -g netlify-cli@latest` to update and try again.',
+      )
+    }
+
+    return context.primaryRegion
+  }
+
+  // For API requests, we can use `auto` and let the API choose the right
+  // region.
+  return REGION_AUTO
+}
 
 export interface GetDeployStoreOptions extends Partial<ClientOptions> {
   deployID?: string
@@ -27,23 +54,7 @@ export const getDeployStore: {
 
   const clientOptions = getClientOptions(mergedOptions, context)
 
-  if (!clientOptions.region) {
-    // If a region hasn't been supplied and we're dealing with an edge request,
-    // use the region from the context if one is defined, otherwise throw.
-    if (clientOptions.edgeURL || clientOptions.uncachedEdgeURL) {
-      if (!context.primaryRegion) {
-        throw new Error(
-          'When accessing a deploy store, the Netlify Blobs client needs to be configured with a region, and one was not found in the environment. To manually set the region, set the `region` property in the `getDeployStore` options. If you are using the Netlify CLI, you may have an outdated version; run `npm install -g netlify-cli@latest` to update and try again.',
-        )
-      }
-
-      clientOptions.region = context.primaryRegion
-    } else {
-      // For API requests, we can use `auto` and let the API choose the right
-      // region.
-      clientOptions.region = REGION_AUTO
-    }
-  }
+  clientOptions.region = getDeployStoreRegion(clientOptions, context)
 
   const client = new Client(clientOptions)
 
@@ -97,12 +108,17 @@ export const getStore: {
   }
 
   if (typeof input?.deployID === 'string') {
-    const clientOptions = getClientOptions(input)
+    const context = getEnvironmentContext()
+    const clientOptions = getClientOptions(input, context)
     const { deployID } = input
 
     if (!deployID) {
       throw new MissingBlobsEnvironmentError(['deployID'])
     }
+
+    // This is a deploy-scoped store, so it needs a region just like one opened
+    // with `getDeployStore`.
+    clientOptions.region = getDeployStoreRegion(clientOptions, context)
 
     const client = new Client(clientOptions)
 

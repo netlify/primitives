@@ -1946,22 +1946,24 @@ describe('deleteAll', () => {
 describe('Deploy scope', () => {
   test('Returns a deploy-scoped store if the `deployID` parameter is supplied and the environment context is present', async () => {
     const mockToken = 'some-token'
+    const mockRegion = 'us-east-2'
     const mockStore = new MockFetch()
       .get({
         headers: { authorization: `Bearer ${mockToken}` },
         response: new Response(value),
-        url: `${edgeURL}/${siteID}/deploy:${deployID}/${key}`,
+        url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
       })
       .get({
         headers: { authorization: `Bearer ${mockToken}` },
         response: new Response(value),
-        url: `${edgeURL}/${siteID}/deploy:${deployID}/${key}`,
+        url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
       })
       .inject()
 
     const context = {
       edgeURL,
       siteID,
+      primaryRegion: mockRegion,
       token: mockToken,
     }
 
@@ -1983,7 +1985,7 @@ describe('Deploy scope', () => {
       .get({
         headers: { authorization: `Bearer ${apiToken}` },
         response: new Response(JSON.stringify({ url: signedURL })),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}/${key}`,
+        url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}/${key}?region=auto`,
       })
       .get({
         response: new Response(value),
@@ -1992,7 +1994,7 @@ describe('Deploy scope', () => {
       .get({
         headers: { authorization: `Bearer ${apiToken}` },
         response: new Response(JSON.stringify({ url: signedURL })),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}/${key}`,
+        url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}/${key}?region=auto`,
       })
       .get({
         response: new Response(value),
@@ -2659,6 +2661,61 @@ describe('Region configuration in deploy-scoped stores', () => {
       expect(await streamToString(stream as unknown as NodeJS.ReadableStream)).toBe(value)
 
       expect(mockStore.fulfilled).toBeTruthy()
+    })
+  })
+
+  describe('Opened with `getStore` rather than `getDeployStore`', () => {
+    test('The client sends a `region=auto` parameter to API calls', async () => {
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}/${key}?region=auto`,
+        })
+        .get({
+          response: new Response(value),
+          url: signedURL,
+        })
+        .inject()
+
+      const deployStore = getStore({ deployID, siteID, token: apiToken })
+
+      expect(await deployStore.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('The client sends the region configured in the context to edge calls', async () => {
+      const mockRegion = 'us-east-2'
+      const mockToken = 'some-token'
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${mockToken}` },
+          response: new Response(value),
+          url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
+        })
+        .inject()
+
+      const context = {
+        edgeURL,
+        deployID,
+        siteID,
+        primaryRegion: mockRegion,
+        token: mockToken,
+      }
+
+      env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
+
+      const deployStore = getStore({ deployID })
+
+      expect(await deployStore.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('Throws an error if using the edge URL and no region is configured in the context', () => {
+      // The store throws while being constructed, so no request is ever made.
+      expect(() => getStore({ deployID, edgeURL, siteID, token: 'some-token' })).toThrowError(
+        /needs to be configured with a region/,
+      )
     })
   })
 })
