@@ -5,16 +5,16 @@ import { Store } from './store.ts'
 
 /**
  * Returns the region a deploy-scoped store should read from. Its data lives in
- * the region the deploy was built in, so leaving this unset would fall back to
- * the API default and address a bucket that does not hold it.
+ * the region the deploy was built in, so leaving this unset falls back to the
+ * API default and reads from the wrong one.
  */
 const getDeployStoreRegion = (clientOptions: ReturnType<typeof getClientOptions>, context: EnvironmentContext) => {
   if (clientOptions.region) {
     return clientOptions.region
   }
 
-  // Edge requests are routed to a regional origin by the URL, so the region
-  // has to be resolved here rather than by the API.
+  // The region travels in the URL on edge requests, so it has to be resolved
+  // here rather than by the API.
   if (clientOptions.edgeURL || clientOptions.uncachedEdgeURL) {
     if (!context.primaryRegion) {
       throw new Error(
