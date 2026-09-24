@@ -1,8 +1,9 @@
 import path from 'node:path'
 
-import { describe, expect, test, beforeAll, afterAll } from 'vitest'
+import { describe, expect, test, beforeAll, afterAll, afterEach, vi } from 'vitest'
 
 import { HTTPServer } from '@netlify/dev-utils'
+import { DenoBridge } from '@netlify/edge-bundler'
 import { Fixture } from '@netlify/test-utils'
 import { EdgeFunctionsHandler } from './main.js'
 
@@ -27,6 +28,10 @@ describe('`EdgeFunctionsHandler`', () => {
 
   afterAll(async () => {
     await server.stop()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   test('Runs an edge function', async () => {
@@ -56,6 +61,7 @@ describe('`EdgeFunctionsHandler`', () => {
       )
 
     const directory = await fixture.create()
+    const runInBackground = vi.spyOn(DenoBridge.prototype, 'runInBackground')
     const handler = new EdgeFunctionsHandler({
       configDeclarations: [],
       directories: [path.resolve(directory, 'netlify/edge-functions')],
@@ -73,6 +79,9 @@ describe('`EdgeFunctionsHandler`', () => {
     req.headers.set('x-nf-request-id', 'req-id')
 
     const match = await handler.match(req)
+    expect(runInBackground).toHaveBeenCalledOnce()
+    expect(runInBackground.mock.calls[0]?.[0]).not.toContain('--allow-scripts')
+    expect(runInBackground.mock.calls[0]?.[0]).toContain('--node-modules-dir=manual')
     expect(match).toBeTruthy()
 
     const res = await match?.handle(req, serverAddress)
@@ -193,6 +202,63 @@ describe('`EdgeFunctionsHandler`', () => {
     expect(await res?.json()).toStrictEqual({
       slug: 'hello-world',
     })
+
+    await fixture.destroy()
+  })
+
+  test('Runs an edge function with an npm package that has an install script', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'local-package/package.json',
+        JSON.stringify({
+          name: 'test-package',
+          version: '1.0.0',
+          type: 'module',
+          scripts: {
+            postinstall: `node -e "require('fs').writeFileSync('value.js', 'export const installed = true\\n')"`,
+          },
+        }),
+      )
+      .withFile('local-package/index.js', `export { installed } from './value.js'`)
+      .withFile('local-package/value.js', `export const installed = false`)
+      .withFile(
+        'netlify/edge-functions/install-script.mjs',
+        `import { installed } from 'test-package'
+
+        export default async () => Response.json({ installed })
+
+        export const config = { path: '/install-script' };`,
+      )
+      .withPackages({
+        'test-package': 'file:./local-package',
+      })
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const req = new Request('https://site.netlify/install-script')
+    req.headers.set('x-nf-request-id', 'req-id')
+
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req, serverAddress)
+
+    expect(await res?.json()).toStrictEqual({ installed: true })
 
     await fixture.destroy()
   })
