@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.1.3](https://github.com/netlify/primitives/compare/dev-v5.1.2...dev-v5.1.3) (2026-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.1.0 to 11.1.1
+    * @netlify/functions-dev bumped from 2.0.7 to 2.0.8
+    * @netlify/runtime bumped from 5.0.4 to 5.0.5
+
 ## [5.1.2](https://github.com/netlify/primitives/compare/dev-v5.1.1...dev-v5.1.2) (2026-09-16)
 
 

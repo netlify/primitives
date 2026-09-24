@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.1.1](https://github.com/netlify/primitives/compare/blobs-v11.1.0...blobs-v11.1.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* **blobs:** resolve the region for deploy stores opened with `getStore` ([#788](https://github.com/netlify/primitives/issues/788)) ([e8bddcc](https://github.com/netlify/primitives/commit/e8bddcc0d48b3b9105c5158a2abbb789704ff1fc))
+
 ## [11.1.0](https://github.com/netlify/primitives/compare/blobs-v11.0.3...blobs-v11.1.0) (2026-09-14)
 
 
