@@ -1,8 +1,9 @@
 import path from 'node:path'
 
-import { describe, expect, test, beforeAll, afterAll } from 'vitest'
+import { describe, expect, test, beforeAll, afterAll, afterEach, vi } from 'vitest'
 
 import { HTTPServer } from '@netlify/dev-utils'
+import { DenoBridge } from '@netlify/edge-bundler'
 import { Fixture } from '@netlify/test-utils'
 import { EdgeFunctionsHandler } from './main.js'
 
@@ -27,6 +28,10 @@ describe('`EdgeFunctionsHandler`', () => {
 
   afterAll(async () => {
     await server.stop()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   test('Runs an edge function', async () => {
@@ -56,6 +61,7 @@ describe('`EdgeFunctionsHandler`', () => {
       )
 
     const directory = await fixture.create()
+    const runInBackground = vi.spyOn(DenoBridge.prototype, 'runInBackground')
     const handler = new EdgeFunctionsHandler({
       configDeclarations: [],
       directories: [path.resolve(directory, 'netlify/edge-functions')],
@@ -73,6 +79,8 @@ describe('`EdgeFunctionsHandler`', () => {
     req.headers.set('x-nf-request-id', 'req-id')
 
     const match = await handler.match(req)
+    expect(runInBackground).toHaveBeenCalledOnce()
+    expect(runInBackground.mock.calls[0]?.[0]).not.toContain('--allow-scripts')
     expect(match).toBeTruthy()
 
     const res = await match?.handle(req, serverAddress)

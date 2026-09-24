@@ -307,7 +307,7 @@ export class EdgeFunctionsHandler {
       denoPort,
       requestTimeout: this.requestTimeout,
     }
-    const denoFlags: string[] = ['--allow-scripts', '--quiet', '--no-lock']
+    const denoFlags: string[] = ['--quiet', '--no-lock']
     const script = `import('${pathToFileURL(denoRunPath).toString()}');`
 
     try {
