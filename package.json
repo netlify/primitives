@@ -22,6 +22,7 @@
     "packages/redirects",
     "packages/runtime",
     "packages/server/dev",
+    "packages/server/prod",
     "packages/static",
     "packages/ai",
     "packages/dev",
