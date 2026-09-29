@@ -132,26 +132,6 @@ test.skipIf(unsupportedNodeVersion)('serves a TypeScript entry through native ty
   expect(body.url).toBe('/ts-path')
 })
 
-test.skipIf(unsupportedNodeVersion)('matches only the paths the in-source config claims', async () => {
-  const handler = createHandler(path.join(fixturesDirectory, 'narrowed'))
-
-  expect(await handler.match(new Request('http://localhost/'))).toBeUndefined()
-  expect(await handler.match(new Request('http://localhost/other/api'))).toBeUndefined()
-  expect(await handler.match(new Request('http://localhost/health/check'))).toBeUndefined()
-
-  // Literal paths compare without regard to case or a trailing slash.
-  expect(await handler.match(new Request('http://localhost/health/'))).toBeDefined()
-
-  const match = await handler.match(new Request('http://localhost/api/users?page=2'))
-
-  assert(match)
-  expect(match.preferStatic).toBe(true)
-
-  const response = await match.handle(new Request('http://localhost/api/users?page=2'))
-
-  expect(await response.json()).toEqual({ url: '/api/users?page=2' })
-})
-
 test('fails with a clear error when there are multiple entrypoints', async () => {
   const handler = createHandler(path.join(fixturesDirectory, 'multiple-entries'))
 

@@ -8,7 +8,6 @@ import process from 'node:process'
 import type { Duplex } from 'node:stream'
 
 import type { FileWatcher, Geolocation, Logger } from '@netlify/dev-utils'
-import { getServerRoutes, type ExtendedRoute } from '@netlify/zip-it-and-ship-it'
 
 import { ServerProcess } from './server_process.js'
 
@@ -31,26 +30,6 @@ const NON_FORWARDABLE_HEADERS = new Set([
   'upgrade',
 ])
 
-interface ServerEntry {
-  path: string
-  routes: ExtendedRoute[]
-}
-
-// Mirrors how the edge matches a server route.
-const matchesRoute = (route: ExtendedRoute, pathname: string) => {
-  if ('expression' in route) {
-    return new RegExp(route.expression).test(pathname)
-  }
-
-  if ('literal' in route) {
-    const trimSlash = (value: string) => (value.endsWith('/') ? value.slice(0, -1) : value)
-
-    return trimSlash(pathname).toLowerCase() === trimSlash(route.literal).toLowerCase()
-  }
-
-  return pathname === '/'
-}
-
 export interface ServerMatch {
   handle: (request: Request) => Promise<Response>
   preferStatic: boolean
@@ -67,7 +46,7 @@ interface ServerHandlerOptions {
 
 export class ServerHandler {
   #accountID?: string
-  #entryPromise?: Promise<ServerEntry | undefined>
+  #entryPromise?: Promise<string | undefined>
   #geolocation?: Geolocation
   #logger: Logger
   #process?: ServerProcess
@@ -139,18 +118,8 @@ export class ServerHandler {
     return path.join(this.#serverDirectory, candidates[0])
   }
 
-  private async loadEntry(): Promise<ServerEntry | undefined> {
-    const entryPath = await this.findEntry()
-
-    if (!entryPath) {
-      return undefined
-    }
-
-    return { path: entryPath, routes: await getServerRoutes(entryPath) }
-  }
-
-  private getEntry(): Promise<ServerEntry | undefined> {
-    this.#entryPromise ??= this.loadEntry().catch((error: unknown) => {
+  private getEntry(): Promise<string | undefined> {
+    this.#entryPromise ??= this.findEntry().catch((error: unknown) => {
       this.#entryPromise = undefined
 
       throw error
@@ -160,13 +129,13 @@ export class ServerHandler {
   }
 
   private async ensureProcess(): Promise<number> {
-    const entry = await this.getEntry()
+    const entryPath = await this.getEntry()
 
-    if (!entry) {
+    if (!entryPath) {
       throw new Error(`No server entrypoint found in ${SERVER_DIRECTORY}`)
     }
 
-    this.#process ??= new ServerProcess({ entryPath: entry.path, logger: this.#logger })
+    this.#process ??= new ServerProcess({ entryPath, logger: this.#logger })
 
     return this.#process.ensureStarted()
   }
@@ -222,14 +191,12 @@ export class ServerHandler {
   }
 
   /**
-   * Matches the requests whose path the server claims, which is every path
-   * unless its in-source `config` narrows it down.
+   * Matches every request when a server entrypoint exists.
    */
-  async match(request: Request): Promise<ServerMatch | undefined> {
-    const entry = await this.getEntry()
-    const { pathname } = new URL(request.url)
+  async match(_request: Request): Promise<ServerMatch | undefined> {
+    const entryPath = await this.getEntry()
 
-    if (!entry?.routes.some((route) => matchesRoute(route, pathname))) {
+    if (!entryPath) {
       return undefined
     }
 
@@ -244,10 +211,9 @@ export class ServerHandler {
    * socket to the server process.
    */
   async handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): Promise<boolean> {
-    const entry = await this.getEntry().catch(() => undefined)
-    const { pathname } = new URL(request.url ?? '/', 'http://localhost')
+    const entryPath = await this.getEntry().catch(() => undefined)
 
-    if (!entry?.routes.some((route) => matchesRoute(route, pathname))) {
+    if (!entryPath) {
       return false
     }
 
