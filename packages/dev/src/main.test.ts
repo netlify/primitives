@@ -59,6 +59,107 @@ describe('Handling requests', () => {
     await fixture.destroy()
   })
 
+  describe('Netlify Server', () => {
+    test('is disabled unless explicitly enabled', async () => {
+      const fixture = new Fixture()
+        .withFile(
+          'netlify.toml',
+          `[build]
+           publish = "public"
+        `,
+        )
+        .withFile('public/index.html', 'Hello from static file')
+        .withFile(
+          'netlify/server/index.mjs',
+          `import { createServer } from 'node:http'
+           createServer((req, res) => res.end('from server')).listen(process.env.PORT)`,
+        )
+      const directory = await fixture.create()
+      const dev = new NetlifyDev({
+        projectRoot: directory,
+        geolocation: { enabled: false },
+        redirects: { enabled: false },
+      })
+      await dev.start()
+
+      const result = await dev.handleAndIntrospect(new Request('https://site.netlify/hello'))
+
+      expect(result).toBeUndefined()
+
+      await dev.stop()
+      await fixture.destroy()
+    })
+
+    // Netlify Server requires Node.js 24.
+    test.skipIf(Number.parseInt(process.versions.node) < 24)(
+      'serves every path from the server, with static files taking precedence',
+      async () => {
+        const fixture = new Fixture()
+          .withFile(
+            'netlify.toml',
+            `[build]
+           publish = "public"
+        `,
+          )
+          .withFile('public/asset.txt', 'from static file')
+          .withFile(
+            'netlify/server/index.mjs',
+            `import { createServer } from 'node:http'
+           createServer((req, res) => res.end('server:' + req.url)).listen(process.env.PORT)`,
+          )
+        const directory = await fixture.create()
+        const dev = new NetlifyDev({
+          projectRoot: directory,
+          geolocation: { enabled: false },
+          server: { enabled: true },
+        })
+        await dev.start()
+
+        const serverResult = await dev.handleAndIntrospect(new Request('https://site.netlify/some/path?q=1'))
+
+        expect(serverResult?.type).toBe('server')
+        expect(await serverResult?.response.text()).toBe('server:/some/path?q=1')
+
+        const staticResult = await dev.handleAndIntrospect(new Request('https://site.netlify/asset.txt'))
+
+        expect(staticResult?.type).toBe('static')
+        expect(await staticResult?.response.text()).toBe('from static file')
+
+        await dev.stop()
+        await fixture.destroy()
+      },
+    )
+
+    // Netlify Server requires Node.js 24.
+    test.skipIf(Number.parseInt(process.versions.node) < 24)(
+      'serves requests when every feature needing the passthrough server is disabled',
+      async () => {
+        const fixture = new Fixture().withFile(
+          'netlify/server/index.mjs',
+          `import { createServer } from 'node:http'
+           createServer((req, res) => res.end('server:' + req.url)).listen(process.env.PORT)`,
+        )
+        const directory = await fixture.create()
+        const dev = new NetlifyDev({
+          projectRoot: directory,
+          edgeFunctions: { enabled: false },
+          geolocation: { enabled: false },
+          images: { enabled: false },
+          server: { enabled: true },
+        })
+        await dev.start()
+
+        const serverResult = await dev.handleAndIntrospect(new Request('https://site.netlify/some/path'))
+
+        expect(serverResult?.type).toBe('server')
+        expect(await serverResult?.response.text()).toBe('server:/some/path')
+
+        await dev.stop()
+        await fixture.destroy()
+      },
+    )
+  })
+
   describe('No linked site', () => {
     test('Same-site rewrite to a static file', async () => {
       const fixture = new Fixture()

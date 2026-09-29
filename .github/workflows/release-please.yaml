@@ -231,6 +231,17 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - if:
+          ${{ steps.release.outputs['packages/server/dev--release_created'] || github.event_name == 'workflow_dispatch'
+          }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            npm publish packages/server/dev/ --provenance --access=public || true
+          else
+            npm publish packages/server/dev/ --provenance --access=public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - if: ${{ steps.release.outputs['packages/dev--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then

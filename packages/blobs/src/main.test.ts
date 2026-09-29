@@ -1145,6 +1145,66 @@ describe('set', () => {
     })
 
     test('Retries failed operations', async () => {
+      const getSignedUrl = () => ({
+        headers: { authorization: `Bearer ${apiToken}` },
+        response: new Response(JSON.stringify({ url: signedURL })),
+        url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+      })
+
+      const mockStore = new MockFetch()
+        .put(getSignedUrl())
+        .put({
+          body: value,
+          headers: {
+            'cache-control': 'max-age=0, stale-while-revalidate=60',
+          },
+          response: new Response(null, { status: 500 }),
+          url: signedURL,
+        })
+        .put(getSignedUrl())
+        .put({
+          body: value,
+          headers: {
+            'cache-control': 'max-age=0, stale-while-revalidate=60',
+          },
+          response: new Error('Some network problem'),
+          url: signedURL,
+        })
+        .put(getSignedUrl())
+        .put({
+          body: value,
+          headers: {
+            'cache-control': 'max-age=0, stale-while-revalidate=60',
+          },
+          response: new Response(null, { headers: { 'X-RateLimit-Reset': '10' }, status: 429 }),
+          url: signedURL,
+        })
+        .put(getSignedUrl())
+        .put({
+          body: value,
+          headers: {
+            'cache-control': 'max-age=0, stale-while-revalidate=60',
+          },
+          response: new Response(null),
+          url: signedURL,
+        })
+        .inject()
+
+      const blobs = getStore({
+        name: 'production',
+        token: apiToken,
+        siteID,
+      })
+
+      await blobs.set(key, value)
+
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('Retries a 403 on the signed URL PUT by requesting a fresh one', async () => {
+      const expiredError = `<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>AccessDenied</Code><Message>Request has expired</Message></Error>`
+
       const mockStore = new MockFetch()
         .put({
           headers: { authorization: `Bearer ${apiToken}` },
@@ -1156,24 +1216,13 @@ describe('set', () => {
           headers: {
             'cache-control': 'max-age=0, stale-while-revalidate=60',
           },
-          response: new Response(null, { status: 500 }),
+          response: new Response(expiredError, { status: 403 }),
           url: signedURL,
         })
         .put({
-          body: value,
-          headers: {
-            'cache-control': 'max-age=0, stale-while-revalidate=60',
-          },
-          response: new Error('Some network problem'),
-          url: signedURL,
-        })
-        .put({
-          body: value,
-          headers: {
-            'cache-control': 'max-age=0, stale-while-revalidate=60',
-          },
-          response: new Response(null, { headers: { 'X-RateLimit-Reset': '10' }, status: 429 }),
-          url: signedURL,
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
         })
         .put({
           body: value,
@@ -1897,22 +1946,24 @@ describe('deleteAll', () => {
 describe('Deploy scope', () => {
   test('Returns a deploy-scoped store if the `deployID` parameter is supplied and the environment context is present', async () => {
     const mockToken = 'some-token'
+    const mockRegion = 'us-east-2'
     const mockStore = new MockFetch()
       .get({
         headers: { authorization: `Bearer ${mockToken}` },
         response: new Response(value),
-        url: `${edgeURL}/${siteID}/deploy:${deployID}/${key}`,
+        url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
       })
       .get({
         headers: { authorization: `Bearer ${mockToken}` },
         response: new Response(value),
-        url: `${edgeURL}/${siteID}/deploy:${deployID}/${key}`,
+        url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
       })
       .inject()
 
     const context = {
       edgeURL,
       siteID,
+      primaryRegion: mockRegion,
       token: mockToken,
     }
 
@@ -1934,7 +1985,7 @@ describe('Deploy scope', () => {
       .get({
         headers: { authorization: `Bearer ${apiToken}` },
         response: new Response(JSON.stringify({ url: signedURL })),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}/${key}`,
+        url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}/${key}?region=auto`,
       })
       .get({
         response: new Response(value),
@@ -1943,7 +1994,7 @@ describe('Deploy scope', () => {
       .get({
         headers: { authorization: `Bearer ${apiToken}` },
         response: new Response(JSON.stringify({ url: signedURL })),
-        url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}/${key}`,
+        url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}/${key}?region=auto`,
       })
       .get({
         response: new Response(value),
@@ -2612,6 +2663,61 @@ describe('Region configuration in deploy-scoped stores', () => {
       expect(mockStore.fulfilled).toBeTruthy()
     })
   })
+
+  describe('Opened with `getStore` rather than `getDeployStore`', () => {
+    test('The client sends a `region=auto` parameter to API calls', async () => {
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/deploy:${deployID}/${key}?region=auto`,
+        })
+        .get({
+          response: new Response(value),
+          url: signedURL,
+        })
+        .inject()
+
+      const deployStore = getStore({ deployID, siteID, token: apiToken })
+
+      expect(await deployStore.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('The client sends the region configured in the context to edge calls', async () => {
+      const mockRegion = 'us-east-2'
+      const mockToken = 'some-token'
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${mockToken}` },
+          response: new Response(value),
+          url: `${edgeURL}/region:${mockRegion}/${siteID}/deploy:${deployID}/${key}`,
+        })
+        .inject()
+
+      const context = {
+        edgeURL,
+        deployID,
+        siteID,
+        primaryRegion: mockRegion,
+        token: mockToken,
+      }
+
+      env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
+
+      const deployStore = getStore({ deployID })
+
+      expect(await deployStore.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('Throws an error if using the edge URL and no region is configured in the context', () => {
+      // The store throws while being constructed, so no request is ever made.
+      expect(() => getStore({ deployID, edgeURL, siteID, token: 'some-token' })).toThrowError(
+        /needs to be configured with a region/,
+      )
+    })
+  })
 })
 
 describe('setEnvironmentContext', () => {
@@ -2633,5 +2739,125 @@ describe('setEnvironmentContext', () => {
     expect(context.primaryRegion).toBe('us-east-1')
     expect(context.siteID).toBe(siteID)
     expect(context.token).toBe(apiToken)
+  })
+})
+
+describe('Region configuration in site-wide stores', () => {
+  describe('Without a `region` option', () => {
+    test('The client sends no region to API calls, letting the API use its default', async () => {
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+        })
+        .get({
+          response: new Response(value),
+          url: signedURL,
+        })
+        .inject()
+
+      const store = getStore({ name: 'production', siteID, token: apiToken })
+
+      expect(await store.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('The client does not inherit the region from the context, unlike deploy-scoped stores', async () => {
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(value),
+          url: `${edgeURL}/${siteID}/site:production/${key}`,
+        })
+        .inject()
+
+      const context = {
+        edgeURL,
+        primaryRegion: 'eu-central-1',
+        siteID,
+        token: apiToken,
+      }
+
+      env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
+
+      const store = getStore('production')
+
+      expect(await store.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+  })
+
+  describe('With a `region` option', () => {
+    test('The client sends that region to API calls', async () => {
+      const mockRegion = 'eu-central-1'
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}?region=${mockRegion}`,
+        })
+        .get({
+          response: new Response(value),
+          url: signedURL,
+        })
+        .inject()
+
+      const store = getStore({ name: 'production', region: mockRegion, siteID, token: apiToken })
+
+      expect(await store.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('The client sends that region to edge calls', async () => {
+      const mockRegion = 'eu-central-1'
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(value),
+          url: `${edgeURL}/region:${mockRegion}/${siteID}/site:production/${key}`,
+        })
+        .inject()
+
+      const context = {
+        edgeURL,
+        siteID,
+        token: apiToken,
+      }
+
+      env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
+
+      const store = getStore({ name: 'production', region: mockRegion })
+
+      expect(await store.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('The client sends that region when the store is created with the name overload', async () => {
+      const mockRegion = 'ap-southeast-2'
+      const mockStore = new MockFetch()
+        .get({
+          headers: { authorization: `Bearer ${apiToken}` },
+          response: new Response(JSON.stringify({ url: signedURL })),
+          url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}?region=${mockRegion}`,
+        })
+        .get({
+          response: new Response(value),
+          url: signedURL,
+        })
+        .inject()
+
+      const store = getStore('production', { region: mockRegion, siteID, token: apiToken })
+
+      expect(await store.get(key)).toBe(value)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('The client throws an error if the region supplied is not supported', async () => {
+      // @ts-expect-error Knowingly supplying an invalid value to `region`.
+      expect(() => getStore({ name: 'production', region: 'eu-west-1', siteID, token: apiToken })).toThrowError(
+        'eu-west-1 is not a supported Netlify Blobs region.',
+      )
+    })
   })
 })

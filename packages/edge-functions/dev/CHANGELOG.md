@@ -1,5 +1,40 @@
 # Changelog
 
+## [2.0.1](https://github.com/netlify/primitives/compare/edge-functions-dev-v2.0.0...edge-functions-dev-v2.0.1) (2026-08-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.0.0 to 6.0.1
+
+## [2.0.0](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.24...edge-functions-dev-v2.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/edge-bundler to v16 ([cdf2d48](https://github.com/netlify/primitives/commit/cdf2d48987d635acc84d0901a984f3580f45f6f8))
+* **deps:** update dependency @netlify/zip-it-and-ship-it to ^15.3.1 ([#732](https://github.com/netlify/primitives/issues/732)) ([51b4ccf](https://github.com/netlify/primitives/commit/51b4ccfd58ac71f1cdccb40423c3e01ef15fc762))
+
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 5.0.0 to 6.0.0
+    * @netlify/edge-functions bumped from 3.0.8 to 4.0.0
+    * @netlify/runtime-utils bumped from 2.3.0 to 3.0.0
+
 ## [1.0.24](https://github.com/netlify/primitives/compare/edge-functions-dev-v1.0.23...edge-functions-dev-v1.0.24) (2026-08-12)
 
 

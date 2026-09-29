@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/netlify/primitives/compare/types-v2.8.0...types-v3.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
 ## [2.8.0](https://github.com/netlify/primitives/compare/types-v2.7.0...types-v2.8.0) (2026-05-29)
 
 

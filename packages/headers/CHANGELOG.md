@@ -1,5 +1,37 @@
 # Changelog
 
+## [3.0.1](https://github.com/netlify/primitives/compare/headers-v3.0.0...headers-v3.0.1) (2026-08-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^6.0.0 to ^6.0.1
+
+## [3.0.0](https://github.com/netlify/primitives/compare/headers-v2.1.13...headers-v3.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/zip-it-and-ship-it to ^15.3.1 ([#732](https://github.com/netlify/primitives/issues/732)) ([51b4ccf](https://github.com/netlify/primitives/commit/51b4ccfd58ac71f1cdccb40423c3e01ef15fc762))
+
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^5.0.0 to ^6.0.0
+
 ## [2.1.13](https://github.com/netlify/primitives/compare/headers-v2.1.12...headers-v2.1.13) (2026-08-12)
 
 

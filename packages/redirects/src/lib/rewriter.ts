@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { toMultiValueHeaders } from '@netlify/dev-utils'
-import cookie from 'cookie'
+import { parseCookie } from 'cookie'
 import redirector, { type Match, type RedirectMatcher } from 'netlify-redirector'
 
 import { parseRedirects } from './parser.js'
@@ -77,7 +77,7 @@ export const createRewriter = async function ({
   return async function rewriter(req: Request): Promise<Match | null> {
     const matcherFunc = await getMatcher()
     const reqUrl = new URL(req.url)
-    const cookieValues = cookie.parse(req.headers.get('cookie') || '')
+    const cookieValues = parseCookie(req.headers.get('cookie') || '')
     const headers: Record<string, string | string[]> = {
       'x-language': cookieValues.nf_lang || getLanguage(req.headers.get('accept-language')),
       'x-country': cookieValues.nf_country || geoCountry || 'us',

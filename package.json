@@ -21,6 +21,7 @@
     "packages/images",
     "packages/redirects",
     "packages/runtime",
+    "packages/server/dev",
     "packages/static",
     "packages/ai",
     "packages/dev",

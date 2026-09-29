@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/netlify/primitives/compare/static-v3.1.12...static-v4.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
 ## [3.1.12](https://github.com/netlify/primitives/compare/static-v3.1.11...static-v3.1.12) (2026-08-12)
 
 

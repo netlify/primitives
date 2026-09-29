@@ -1,5 +1,40 @@
 # Changelog
 
+## [4.0.2](https://github.com/netlify/primitives/compare/redirects-v4.0.1...redirects-v4.0.2) (2026-08-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency cookie to v2 ([#724](https://github.com/netlify/primitives/issues/724)) ([4cbb639](https://github.com/netlify/primitives/commit/4cbb639e45e6444ed3d0fc3905631db26278e456))
+* **deps:** update netlify packages ([#754](https://github.com/netlify/primitives/issues/754)) ([ecdc9f5](https://github.com/netlify/primitives/commit/ecdc9f51ea67b72d649d0a6b5d8dbea9919a8404))
+
+## [4.0.1](https://github.com/netlify/primitives/compare/redirects-v4.0.0...redirects-v4.0.1) (2026-08-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.0.0 to 6.0.1
+
+## [4.0.0](https://github.com/netlify/primitives/compare/redirects-v3.1.15...redirects-v4.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 5.0.0 to 6.0.0
+
 ## [3.1.15](https://github.com/netlify/primitives/compare/redirects-v3.1.14...redirects-v3.1.15) (2026-08-12)
 
 

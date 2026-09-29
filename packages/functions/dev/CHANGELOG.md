@@ -1,5 +1,103 @@
 # Changelog
 
+## [2.0.8](https://github.com/netlify/primitives/compare/functions-dev-v2.0.7...functions-dev-v2.0.8) (2026-09-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.1.0 to 11.1.1
+
+## [2.0.7](https://github.com/netlify/primitives/compare/functions-dev-v2.0.6...functions-dev-v2.0.7) (2026-09-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/zip-it-and-ship-it to v16 ([#784](https://github.com/netlify/primitives/issues/784)) ([90b4517](https://github.com/netlify/primitives/commit/90b4517ab5b64c9562d0aa700c020e77e83bb73b))
+
+## [2.0.6](https://github.com/netlify/primitives/compare/functions-dev-v2.0.5...functions-dev-v2.0.6) (2026-09-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.0.3 to 11.1.0
+
+## [2.0.5](https://github.com/netlify/primitives/compare/functions-dev-v2.0.4...functions-dev-v2.0.5) (2026-09-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.0.2 to 11.0.3
+
+## [2.0.4](https://github.com/netlify/primitives/compare/functions-dev-v2.0.3...functions-dev-v2.0.4) (2026-08-27)
+
+
+### Bug Fixes
+
+* **deps:** replace extract-zip with yauzl ([#762](https://github.com/netlify/primitives/issues/762)) ([34c868f](https://github.com/netlify/primitives/commit/34c868f751a680c0445cc2300e0ad88fffe7668d))
+
+## [2.0.3](https://github.com/netlify/primitives/compare/functions-dev-v2.0.2...functions-dev-v2.0.3) (2026-08-19)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#754](https://github.com/netlify/primitives/issues/754)) ([ecdc9f5](https://github.com/netlify/primitives/commit/ecdc9f51ea67b72d649d0a6b5d8dbea9919a8404))
+
+## [2.0.2](https://github.com/netlify/primitives/compare/functions-dev-v2.0.1...functions-dev-v2.0.2) (2026-08-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.0.1 to 11.0.2
+
+## [2.0.1](https://github.com/netlify/primitives/compare/functions-dev-v2.0.0...functions-dev-v2.0.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency cron-parser to v5 ([#218](https://github.com/netlify/primitives/issues/218)) ([3792469](https://github.com/netlify/primitives/commit/37924690ddc842f1396065573f9b4ba2d7a96ccc))
+* **deps:** update dependency read-package-up to v12 ([#538](https://github.com/netlify/primitives/issues/538)) ([78cf19f](https://github.com/netlify/primitives/commit/78cf19ff235d788ea280810ba96c3b3cc7a61e9f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.0.0 to 11.0.1
+    * @netlify/dev-utils bumped from 6.0.0 to 6.0.1
+
+## [2.0.0](https://github.com/netlify/primitives/compare/functions-dev-v1.3.5...functions-dev-v2.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745))
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/zip-it-and-ship-it to ^15.3.1 ([#732](https://github.com/netlify/primitives/issues/732)) ([51b4ccf](https://github.com/netlify/primitives/commit/51b4ccfd58ac71f1cdccb40423c3e01ef15fc762))
+
+
+### Miscellaneous Chores
+
+* require Node.js 22.12 or newer ([#745](https://github.com/netlify/primitives/issues/745)) ([097cbb0](https://github.com/netlify/primitives/commit/097cbb0c0abaf96e667ff3b2cae25909e048ce5f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 10.7.13 to 11.0.0
+    * @netlify/dev-utils bumped from 5.0.0 to 6.0.0
+    * @netlify/functions bumped from 5.3.0 to 6.0.0
+
 ## [1.3.5](https://github.com/netlify/primitives/compare/functions-dev-v1.3.4...functions-dev-v1.3.5) (2026-08-12)
 
 
