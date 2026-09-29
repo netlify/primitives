@@ -2,10 +2,10 @@ import { AsyncLocalStorage } from 'node:async_hooks'
 import { createServer, type Server } from 'node:http'
 import type { AddressInfo } from 'node:net'
 
-import { afterEach, beforeEach, describe, expect, test } from 'vitest'
+import { afterEach, assert, beforeEach, describe, expect, test } from 'vitest'
 import { WebSocket as WsClient } from 'ws'
 
-import { getContext, onHealthCheck, onShutdown, onStart, upgradeWebSocket, WebSocket } from './main.js'
+import { CloseEvent, getContext, onHealthCheck, onShutdown, onStart, upgradeWebSocket, WebSocket } from './main.js'
 
 // These keys are the contract with the platform, so the tests spell them out
 // rather than importing them.
@@ -285,6 +285,65 @@ describe('upgradeWebSocket', () => {
     await closedPromise
 
     expect(events).toEqual(['open', 'close:1000:bye:true'])
+  })
+
+  test('Behaves like a browser socket: instance constants, handler `this`, clean closes, and sends after close', async () => {
+    let socket: WebSocket | undefined
+    let handlerThisIsSocket: boolean | undefined
+    let closeEvent: CloseEvent | undefined
+    let closed: () => void
+    const closedPromise = new Promise<void>((resolve) => {
+      closed = resolve
+    })
+
+    const { port } = await startPlatform((request) => {
+      const upgrade = upgradeWebSocket(request)
+
+      socket = upgrade.socket
+      socket.onmessage = function () {
+        handlerThisIsSocket = this === socket
+      }
+      socket.onclose = (event) => {
+        closeEvent = event
+        closed()
+      }
+
+      return upgrade.response
+    })
+
+    const client = await connect(port)
+    const received = new Promise<void>((resolve) => {
+      const check = () => {
+        if (handlerThisIsSocket !== undefined) {
+          resolve()
+        } else {
+          setImmediate(check)
+        }
+      }
+
+      check()
+    })
+
+    client.send('hi')
+    await received
+
+    assert(socket)
+    expect(handlerThisIsSocket).toBe(true)
+    expect([socket.CONNECTING, socket.OPEN, socket.CLOSING, socket.CLOSED]).toEqual([0, 1, 2, 3])
+
+    // A clean close is one where the closing handshake completed, whatever the
+    // code.
+    client.close(4000, 'done')
+    await closedPromise
+
+    expect(closeEvent).toBeInstanceOf(CloseEvent)
+    expect(closeEvent?.code).toBe(4000)
+    expect(closeEvent?.wasClean).toBe(true)
+
+    // Like browsers, sending on a closed socket discards the data.
+    expect(() => {
+      socket?.send('too late')
+    }).not.toThrow()
   })
 
   test('Agrees on the protocol it is given', async () => {

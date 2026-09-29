@@ -27,6 +27,11 @@ export class WebSocket extends EventTarget {
   static readonly CLOSING = 2
   static readonly CLOSED = 3
 
+  readonly CONNECTING = WebSocket.CONNECTING
+  readonly OPEN = WebSocket.OPEN
+  readonly CLOSING = WebSocket.CLOSING
+  readonly CLOSED = WebSocket.CLOSED
+
   #binaryType: BinaryType = 'blob'
   #ws: WsWebSocket
 
@@ -54,8 +59,8 @@ export class WebSocket extends EventTarget {
       this.#emit(new MessageEvent('message', { data: payload }), this.onmessage)
     })
 
-    ws.on('close', (code: number, reason: Buffer) => {
-      this.#emit(new CloseEvent('close', { code, reason: reason.toString(), wasClean: code === 1000 }), this.onclose)
+    ws.addEventListener('close', ({ code, reason, wasClean }) => {
+      this.#emit(new CloseEvent('close', { code, reason, wasClean }), this.onclose)
     })
 
     ws.on('error', () => {
@@ -70,7 +75,7 @@ export class WebSocket extends EventTarget {
   }
 
   #emit<E extends Event>(event: E, handler: ((event: E) => void) | null) {
-    handler?.(event)
+    handler?.call(this, event)
     this.dispatchEvent(event)
   }
 
@@ -104,8 +109,10 @@ export class WebSocket extends EventTarget {
   }
 
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
-    if (this.#ws.readyState !== WebSocket.OPEN) {
-      throw new DOMException('WebSocket is not open', 'InvalidStateError')
+    // Like browsers, only throw before the connection opens. Data sent after
+    // it starts closing is discarded.
+    if (this.#ws.readyState === WebSocket.CONNECTING) {
+      throw new DOMException('WebSocket is still connecting', 'InvalidStateError')
     }
 
     this.#ws.send(data)
