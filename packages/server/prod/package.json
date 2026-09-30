@@ -1,0 +1,49 @@
+{
+  "name": "@netlify/server",
+  "version": "0.0.0",
+  "description": "TypeScript utilities for Netlify Server",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "main": "./dist/main.cjs",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/main.d.cts",
+        "default": "./dist/main.cjs"
+      },
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "dev": "tsup-node --watch",
+    "build": "tsup-node",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "publint": "npx -y publint --strict"
+  },
+  "dependencies": {
+    "@netlify/types": "3.0.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.0",
+    "tsup": "^8.0.2",
+    "vitest": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netlify/primitives.git",
+    "directory": "packages/server/prod"
+  },
+  "license": "MIT"
+}
