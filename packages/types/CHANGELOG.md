@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/netlify/primitives/compare/types-v3.0.0...types-v3.1.0) (2026-09-30)
+
+
+### Features
+
+* add `@netlify/server` ([#794](https://github.com/netlify/primitives/issues/794)) ([e6f4217](https://github.com/netlify/primitives/commit/e6f421784c9b09d11fdd40cea69315a37bcf4d0f))
+
 ## [3.0.0](https://github.com/netlify/primitives/compare/types-v2.8.0...types-v3.0.0) (2026-08-18)
 
 
