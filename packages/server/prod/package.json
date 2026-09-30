@@ -1,6 +1,6 @@
 {
   "name": "@netlify/server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "TypeScript utilities for Netlify Server",
   "type": "module",
   "engines": {
@@ -32,7 +32,7 @@
     "publint": "npx -y publint --strict"
   },
   "dependencies": {
-    "@netlify/types": "3.1.0",
+    "@netlify/types": "3.2.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {

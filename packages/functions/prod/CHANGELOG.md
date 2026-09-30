@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.0.2](https://github.com/netlify/primitives/compare/functions-v6.0.1...functions-v6.0.2) (2026-09-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 3.1.0 to 3.2.0
+
 ## [6.0.1](https://github.com/netlify/primitives/compare/functions-v6.0.0...functions-v6.0.1) (2026-09-30)
 
 

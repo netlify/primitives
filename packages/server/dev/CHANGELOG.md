@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.3](https://github.com/netlify/primitives/compare/server-dev-v0.1.2...server-dev-v0.1.3) (2026-09-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.0.2 to 6.0.3
+
 ## [0.1.2](https://github.com/netlify/primitives/compare/server-dev-v0.1.1...server-dev-v0.1.2) (2026-09-30)
 
 
