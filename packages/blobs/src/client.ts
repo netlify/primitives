@@ -55,6 +55,14 @@ export class Client {
   private token: string
   private uncachedEdgeURL?: string
 
+  /**
+   * Whether requests reach Blobs through the edge rather than the API. Only
+   * runtime environments are given an edge URL.
+   */
+  get edgeAccess() {
+    return this.edgeURL !== undefined
+  }
+
   constructor({ apiURL, consistency, edgeURL, fetch, region, siteID, token, uncachedEdgeURL }: InternalClientOptions) {
     this.apiURL = apiURL
     this.consistency = consistency ?? 'eventual'
@@ -161,7 +169,7 @@ export class Client {
     })
 
     if (res.status !== 200) {
-      throw await createBlobsInternalError(res, { method, storeName })
+      throw await createBlobsInternalError(res, { edgeAccess: this.edgeAccess, method, storeName })
     }
 
     const { url: signedURL } = (await res.json()) as { url: string }
