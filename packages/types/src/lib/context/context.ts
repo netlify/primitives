@@ -1,5 +1,6 @@
 import { Cookies } from './cookies.js'
 import { Geo } from './geo.js'
+import { NetlifyUser } from './netlify-user.js'
 import { Server } from './server.js'
 import { Site } from './site.js'
 
@@ -43,5 +44,11 @@ export interface Context {
   server: Server
   site: Site
   url: URL
+
+  /**
+   * The Netlify user who passed SSO site protection for this request.
+   */
+  user?: NetlifyUser
+
   waitUntil: (promise: Promise<unknown>) => void
 }
