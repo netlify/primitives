@@ -34,4 +34,5 @@ export type { FormSubmittedEvent, FormSubmittedHandler } from './lib/events/subm
 export type { EnvironmentVariables } from './lib/environment-variables.js'
 export type { FunctionRegion } from './lib/function-regions.js'
 export type { NetlifyGlobal } from './lib/globals.js'
+export type { ServerRegion } from './lib/server-regions.js'
 export type { Site } from './lib/context/site.js'
