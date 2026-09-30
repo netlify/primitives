@@ -20,7 +20,7 @@
   "packages/runtime": "5.0.5",
   "packages/runtime-utils": "3.0.0",
   "packages/server/dev": "0.1.1",
-  "packages/server/prod": "0.0.0",
+  "packages/server/prod": "0.1.0",
   "packages/static": "4.0.0",
   "packages/types": "3.0.0"
 }
