@@ -8,6 +8,11 @@ export const DEPLOY_STORE_PREFIX = 'deploy:'
 export const SITE_STORE_PREFIX = 'site:'
 
 interface BlobsErrorContext {
+  /**
+   * Whether the request went to the Blobs edge, which only runtime
+   * environments are given. Builds reach Blobs through the API instead.
+   */
+  edgeAccess?: boolean
   method?: string
   storeName?: string
 }
@@ -30,7 +35,15 @@ const blobsErrorMessage = (res: Response, context: BlobsErrorContext, responseBo
       ? context.storeName.slice(SITE_STORE_PREFIX.length)
       : context.storeName
 
-    return `Netlify Blobs could not write to store '${storeName}' (${details}). Builds and build plugins can only write to deploy-specific stores: use 'getDeployStore' instead of 'getStore', or pass a 'token' with write access to the store. If this code is not running in a build, check that the token and site ID are valid. See https://docs.netlify.com/build/data-and-storage/netlify-blobs/#deploy-specific-stores`
+    const summary = `Netlify Blobs could not write to store '${storeName}' (${details}).`
+
+    // The deploy-store restriction is a build one, and builds reach Blobs
+    // through the API, so a request that went to the edge cannot have hit it.
+    if (context.edgeAccess) {
+      return summary
+    }
+
+    return `${summary} Builds and build plugins can only write to deploy-specific stores: use 'getDeployStore' instead of 'getStore', or pass a 'token' with write access to the store. If this code is not running in a build, check that the token and site ID are valid. See https://docs.netlify.com/build/data-and-storage/netlify-blobs/#deploy-specific-stores`
   }
 
   let message = `Netlify Blobs has generated an internal error (${details})`
