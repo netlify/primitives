@@ -5,6 +5,7 @@ import pg from 'pg'
 import type { ProvisionCallback } from '../main.js'
 import { parseConnectionString } from '../main.js'
 
+import { isProvisionHeldError } from './provision-gate.js'
 import {
   SSL_REQUEST_CODE,
   PROTOCOL_VERSION_3_0,
@@ -28,7 +29,9 @@ async function handleStartup(options: HandleStartupOptions): Promise<net.Socket>
     connectionString = await provision()
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Provisioning failed'
-    logger('Provisioning error:', message)
+    if (!isProvisionHeldError(err)) {
+      logger('Provisioning error:', message)
+    }
     clientSocket.end(buildErrorResponse(message))
     cleanup()
     throw err
@@ -171,7 +174,9 @@ export function handleConnection(clientSocket: net.Socket, options: ConnectionHa
           remoteSocket = stream
         },
         (err: unknown) => {
-          logger('Startup error:', err)
+          if (!isProvisionHeldError(err)) {
+            logger('Startup error:', err)
+          }
           cleanup()
         },
       )
