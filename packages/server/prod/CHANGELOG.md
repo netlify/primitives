@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.2](https://github.com/netlify/primitives/compare/server-v0.1.1...server-v0.1.2) (2026-09-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 3.1.0 to 3.2.0
+
 ## [0.1.1](https://github.com/netlify/primitives/compare/server-v0.1.0...server-v0.1.1) (2026-09-30)
 
 
