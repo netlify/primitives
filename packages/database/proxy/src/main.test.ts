@@ -2,6 +2,7 @@ import { Client } from 'pg'
 import { test, expect, afterEach, describe } from 'vitest'
 import { NetlifyDB } from '@netlify/database-dev'
 
+import type { ProvisionRetryOptions } from './main.js'
 import { NetlifyDBProxy } from './main.js'
 
 let backend: NetlifyDB | undefined
@@ -182,5 +183,135 @@ describe('NetlifyDBProxy', () => {
     const result = await client2.query('SELECT 1 AS value')
     expect(result.rows).toEqual([{ value: 1 }])
     await client2.end()
+  })
+})
+
+describe('provisioning backoff', () => {
+  async function setupFailingProxy(
+    provision: () => Promise<string>,
+    retry?: ProvisionRetryOptions,
+  ): Promise<{ proxyUrl: string; logged: unknown[][] }> {
+    const logged: unknown[][] = []
+
+    proxy = new NetlifyDBProxy({
+      provision,
+      retry,
+      logger: (...args: unknown[]) => logged.push(args),
+    })
+
+    return { proxyUrl: await proxy.start(), logged }
+  }
+
+  async function failingConnect(proxyUrl: string): Promise<string> {
+    const client = new Client({ connectionString: proxyUrl })
+    client.on('error', () => {})
+
+    try {
+      await client.connect()
+    } catch (err) {
+      return err instanceof Error ? err.message : String(err)
+    } finally {
+      await client.end().catch(() => {})
+    }
+
+    throw new Error('expected the connection to be refused')
+  }
+
+  test('calls provision once however many connections arrive while it fails', async () => {
+    let calls = 0
+    const { proxyUrl } = await setupFailingProxy(() => {
+      calls += 1
+
+      return Promise.reject(new Error('boom'))
+    })
+
+    await failingConnect(proxyUrl)
+    await failingConnect(proxyUrl)
+    await failingConnect(proxyUrl)
+
+    expect(calls).toBe(1)
+  })
+
+  test('calls provision again once the wait has passed', async () => {
+    let calls = 0
+    const { proxyUrl } = await setupFailingProxy(
+      () => {
+        calls += 1
+
+        return Promise.reject(new Error('boom'))
+      },
+      { baseMs: 150 },
+    )
+
+    await failingConnect(proxyUrl)
+    await failingConnect(proxyUrl)
+    expect(calls).toBe(1)
+
+    await new Promise((resolve) => setTimeout(resolve, 200))
+    await failingConnect(proxyUrl)
+    expect(calls).toBe(2)
+  })
+
+  test('never calls provision again after a permanent failure', async () => {
+    let calls = 0
+    const { proxyUrl } = await setupFailingProxy(
+      () => {
+        calls += 1
+
+        return Promise.reject(new Error('branch limit reached'))
+      },
+      { baseMs: 10, isPermanent: (err) => err instanceof Error && err.message.includes('branch limit') },
+    )
+
+    await failingConnect(proxyUrl)
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    await failingConnect(proxyUrl)
+    await failingConnect(proxyUrl)
+
+    expect(calls).toBe(1)
+  })
+
+  test('logs the real failure but not the refusals it holds off', async () => {
+    const { proxyUrl, logged } = await setupFailingProxy(() => Promise.reject(new Error('boom')))
+
+    await failingConnect(proxyUrl)
+    const afterFirst = logged.length
+    await failingConnect(proxyUrl)
+    await failingConnect(proxyUrl)
+
+    expect(logged.filter((args) => args[0] === 'Provisioning error:')).toHaveLength(1)
+    expect(logged).toHaveLength(afterFirst)
+  })
+
+  test('tells the client why the connection was refused', async () => {
+    const { proxyUrl } = await setupFailingProxy(() => Promise.reject(new Error('boom')), { baseMs: 5_000 })
+
+    await failingConnect(proxyUrl)
+
+    expect(await failingConnect(proxyUrl)).toContain('retrying in 5s')
+  })
+
+  test('resumes normally once provisioning succeeds', async () => {
+    backend = new NetlifyDB({ logger: () => {} })
+    const backendUrl = await backend.start()
+
+    let calls = 0
+    const { proxyUrl } = await setupFailingProxy(
+      () => {
+        calls += 1
+
+        return calls === 1 ? Promise.reject(new Error('boom')) : Promise.resolve(backendUrl)
+      },
+      { baseMs: 150 },
+    )
+
+    await failingConnect(proxyUrl)
+    await new Promise((resolve) => setTimeout(resolve, 200))
+
+    const client = new Client({ connectionString: proxyUrl })
+    await client.connect()
+    const result = await client.query('SELECT 1 AS value')
+    expect(result.rows).toEqual([{ value: 1 }])
+    await client.end()
   })
 })
