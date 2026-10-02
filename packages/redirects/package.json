@@ -43,9 +43,9 @@
   },
   "dependencies": {
     "@netlify/dev-utils": "6.0.3",
+    "@netlify/redirect-matcher": "^0.4.2",
     "@netlify/redirect-parser": "^16.1.1",
     "cookie": "^2.0.0",
-    "jsonwebtoken": "9.0.3",
-    "netlify-redirector": "^0.5.0"
+    "jsonwebtoken": "9.0.3"
   }
 }
