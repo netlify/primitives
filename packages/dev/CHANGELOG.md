@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.1.6](https://github.com/netlify/primitives/compare/dev-v5.1.5...dev-v5.1.6) (2026-10-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/redirects bumped from 4.0.4 to 4.1.0
+
 ## [5.1.5](https://github.com/netlify/primitives/compare/dev-v5.1.4...dev-v5.1.5) (2026-09-30)
 
 

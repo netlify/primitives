@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/netlify/primitives/compare/redirects-v4.0.4...redirects-v4.1.0) (2026-10-02)
+
+
+### Features
+
+* **redirects:** match with @netlify/redirect-matcher ([#800](https://github.com/netlify/primitives/issues/800)) ([a3345e6](https://github.com/netlify/primitives/commit/a3345e61b56a9bf594ff421862af72f59ea39ad0))
+
 ## [4.0.4](https://github.com/netlify/primitives/compare/redirects-v4.0.3...redirects-v4.0.4) (2026-09-30)
 
 
