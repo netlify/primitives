@@ -1,5 +1,7 @@
-import { mkdir } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
+import { mkdir, readFile, rename } from 'node:fs/promises'
 import { createServer as createNetServer, type AddressInfo, type Server, type Socket } from 'node:net'
+import { join, resolve } from 'node:path'
 
 import { PGlite } from '@electric-sql/pglite'
 import type { ConnectionState, MessageResponse } from 'pg-gateway'
@@ -36,6 +38,41 @@ export interface NetlifyDBOptions {
    * Port to run the database server on. If not provided, picks a random available port.
    */
   port?: number
+}
+
+// Postgres records the major version that created a data directory in this
+// file at its root.
+async function readDataDirectoryVersion(directory: string): Promise<string | undefined> {
+  const version = await readFile(join(directory, 'PG_VERSION'), 'utf8').catch(() => undefined)
+
+  return version?.trim().match(/^\d+$/)?.[0]
+}
+
+// PGlite doesn't expose the Postgres version it bundles, so it's read from a
+// throwaway in-memory instance.
+async function readBundledVersion(): Promise<{ major: string; version: string }> {
+  const db = await PGlite.create()
+
+  try {
+    const { rows } = await db.query<{ major: string; version: string }>(
+      `SELECT current_setting('server_version') AS version,
+              (current_setting('server_version_num')::int / 10000)::text AS major`,
+    )
+
+    return rows[0]
+  } finally {
+    await db.close()
+  }
+}
+
+function getBackupPath(directory: string, version: string): string {
+  const backupPath = `${resolve(directory)}.pg${version}`
+
+  if (!existsSync(backupPath)) {
+    return backupPath
+  }
+
+  return `${backupPath}-${new Date().toISOString().replaceAll(/[:.]/g, '-')}`
 }
 
 export async function resetDatabase(db: SQLExecutor): Promise<void> {
@@ -76,11 +113,7 @@ export class NetlifyDB implements SQLExecutor {
   }
 
   async start(): Promise<string> {
-    if (this.directory) {
-      await mkdir(this.directory, { recursive: true })
-    }
-
-    this.db = await PGlite.create(this.directory)
+    this.db = this.directory ? await this.openDirectory(this.directory) : await PGlite.create()
 
     await initializeTrackingTable(this.db)
 
@@ -186,6 +219,42 @@ export class NetlifyDB implements SQLExecutor {
       await this.db.close()
       this.db = undefined
     }
+  }
+
+  // A data directory created by a different Postgres major version can't be
+  // opened, so it's moved aside (never deleted) and a fresh database takes its
+  // place. Any other failure to open the directory is left to the caller.
+  private async openDirectory(directory: string): Promise<PGlite> {
+    await mkdir(directory, { recursive: true })
+
+    const previousVersion = await readDataDirectoryVersion(directory)
+
+    let bundled: { major: string; version: string }
+
+    try {
+      return await PGlite.create(directory)
+    } catch (error) {
+      if (previousVersion === undefined) {
+        throw error
+      }
+
+      bundled = await readBundledVersion()
+
+      if (bundled.major === previousVersion) {
+        throw error
+      }
+    }
+
+    const backupPath = getBackupPath(directory, previousVersion)
+
+    await rename(directory, backupPath)
+    await mkdir(directory)
+
+    this.logger(
+      `The local database was created by PostgreSQL ${previousVersion}, but this version of the dev server bundles PostgreSQL ${bundled.version}. The old data was moved to ${backupPath} and a new, empty database was created. Apply your migrations again to recreate the schema.`,
+    )
+
+    return PGlite.create(directory)
   }
 
   private handleConnection(socket: Socket): void {
