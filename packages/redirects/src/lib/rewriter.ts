@@ -58,8 +58,13 @@ export const createRewriter = async function ({
     })
   }
 
-  const getMatcher = async (): Promise<Matcher> => {
+  const getMatcher = async (): Promise<Pick<Matcher, 'match'>> => {
     if (matcher) return matcher
+
+    // Without rules, skip compiling the matcher's WebAssembly module.
+    if (redirects.length === 0) {
+      return { match: () => null }
+    }
 
     matcher = await createMatcher(redirects, { jwtSecret, jwtRoleClaim })
     if (matcher.parseErrors.length !== 0) {
