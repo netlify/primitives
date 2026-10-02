@@ -475,7 +475,15 @@ export class Store {
       })
 
       if (conditions) {
-        return res.status === STATUS_PRE_CONDITION_FAILED ? { modified: false } : { etag, modified: true }
+        if (res.status === STATUS_PRE_CONDITION_FAILED) {
+          return { modified: false }
+        }
+
+        // A conditional write can succeed with any 2xx status, not just 200. Any
+        // other status falls through to the error below.
+        if (res.ok) {
+          return { etag, modified: true }
+        }
       }
 
       if (res.status === STATUS_OK) {
@@ -527,7 +535,15 @@ export class Store {
       })
 
       if (conditions) {
-        return res.status === STATUS_PRE_CONDITION_FAILED ? { modified: false } : { etag, modified: true }
+        if (res.status === STATUS_PRE_CONDITION_FAILED) {
+          return { modified: false }
+        }
+
+        // A conditional write can succeed with any 2xx status, not just 200. Any
+        // other status falls through to the error below.
+        if (res.ok) {
+          return { etag, modified: true }
+        }
       }
 
       if (res.status === STATUS_OK) {
