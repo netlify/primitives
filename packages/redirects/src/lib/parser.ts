@@ -43,10 +43,10 @@ const handleRedirectParsingErrors = (errors: ParsedRedirects['errors']) => {
   console.log(`Redirects syntax errors:\n${errorMessage}`)
 }
 
-// `netlify-redirector` does not handle the same shape as the backend:
-//  - `from` is called `origin`
+// `@netlify/redirect-matcher` reads a different rule shape from the backend's:
 //  - `query` is called `params`
-//  - `conditions.role|country|language` are capitalized
+//  - `signed` becomes `sign.jwt_secret`
+// `origin` is ignored by the matcher but kept for `ignoreSPARedirect`.
 const normalizeRedirect = function (input: Redirect) {
   const { conditions, from, query, signed, ...redirect } = input
 

@@ -74,7 +74,8 @@ export class RedirectsHandler {
       return
     }
 
-    if (rule.force404) {
+    if (rule.type === 'forcedNotFound') {
+      // `handle` serves a forced 404 without reading `target`.
       return {
         external: false,
         force: true,
@@ -82,25 +83,23 @@ export class RedirectsHandler {
         hiddenProxy: false,
         redirect: false,
         statusCode: 404,
-        target: new URL(''),
+        target: new URL(request.url),
         targetRelative: '',
       }
     }
 
     const requestURL = new URL(request.url)
-    const headers = {
-      ...(rule.force404 ? {} : rule.proxyHeaders),
-    }
+    const headers = { ...rule.proxyHeaders }
     const hiddenProxy = Object.entries(headers).some(
       ([key, val]) => key.toLowerCase() === 'x-nf-hidden-proxy' && val === 'true',
     )
     const target = new URL(rule.to, request.url)
     const match: RedirectsMatch = {
-      external: 'to' in rule && /^https?:\/\//.exec(rule.to) != null,
+      external: /^https?:\/\//.exec(rule.to) != null,
       force: rule.force,
       headers,
       hiddenProxy,
-      redirect: 'status' in rule && rule.status != null && rule.status >= 300 && rule.status <= 400,
+      redirect: rule.status >= 300 && rule.status <= 400,
       statusCode: rule.status,
       target,
       targetRelative: `${rule.to}${requestURL.search}${requestURL.hash}`,
@@ -112,8 +111,9 @@ export class RedirectsHandler {
       })
     }
 
-    if (rule.signingSecret) {
-      const signingSecretVar = process.env[rule.signingSecret]
+    const signingSecretName = rule.signer?.jwtSecret
+    if (signingSecretName) {
+      const signingSecretVar = process.env[signingSecretName]
 
       if (signingSecretVar) {
         match.headers['x-nf-sign'] = signRedirect({
@@ -123,7 +123,7 @@ export class RedirectsHandler {
           siteURL: this.siteURL,
         })
       } else {
-        match.error = new Error(`Could not sign redirect because environment variable ${rule.signingSecret} is not set`)
+        match.error = new Error(`Could not sign redirect because environment variable ${signingSecretName} is not set`)
       }
     }
 
