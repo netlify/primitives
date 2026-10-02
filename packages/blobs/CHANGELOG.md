@@ -1,5 +1,30 @@
 # Changelog
 
+## [11.1.3](https://github.com/netlify/primitives/compare/blobs-v11.1.2...blobs-v11.1.3) (2026-09-30)
+
+
+### Bug Fixes
+
+* **blobs:** stop blaming builds for runtime write failures ([#793](https://github.com/netlify/primitives/issues/793)) ([547f70b](https://github.com/netlify/primitives/commit/547f70b76929c1e7d141ba3ada42d5d864148299))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.0.2 to 6.0.3
+    * @netlify/otel bumped from ^7.0.3 to ^7.0.4
+
+## [11.1.2](https://github.com/netlify/primitives/compare/blobs-v11.1.1...blobs-v11.1.2) (2026-09-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.0.1 to 6.0.2
+    * @netlify/otel bumped from ^7.0.2 to ^7.0.3
+
 ## [11.1.1](https://github.com/netlify/primitives/compare/blobs-v11.1.0...blobs-v11.1.1) (2026-09-24)
 
 

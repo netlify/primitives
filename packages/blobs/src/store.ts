@@ -162,7 +162,11 @@ export class Store {
     const res = await this.client.makeRequest({ key, method: HTTPMethod.DELETE, storeName: this.name })
 
     if (![200, 204, 404].includes(res.status)) {
-      throw new BlobsInternalError(res, { method: HTTPMethod.DELETE, storeName: this.name })
+      throw new BlobsInternalError(res, {
+        edgeAccess: this.client.edgeAccess,
+        method: HTTPMethod.DELETE,
+        storeName: this.name,
+      })
     }
   }
 
@@ -174,7 +178,11 @@ export class Store {
       const res = await this.client.makeRequest({ method: HTTPMethod.DELETE, storeName: this.name })
 
       if (res.status !== 200) {
-        throw new BlobsInternalError(res, { method: HTTPMethod.DELETE, storeName: this.name })
+        throw new BlobsInternalError(res, {
+          edgeAccess: this.client.edgeAccess,
+          method: HTTPMethod.DELETE,
+          storeName: this.name,
+        })
       }
 
       const data = (await res.json()) as DeleteStoreResponse
@@ -477,7 +485,11 @@ export class Store {
         }
       }
 
-      throw await createBlobsInternalError(res, { method: HTTPMethod.PUT, storeName: this.name })
+      throw await createBlobsInternalError(res, {
+        edgeAccess: this.client.edgeAccess,
+        method: HTTPMethod.PUT,
+        storeName: this.name,
+      })
     })
   }
 
@@ -525,7 +537,11 @@ export class Store {
         }
       }
 
-      throw new BlobsInternalError(res, { method: HTTPMethod.PUT, storeName: this.name })
+      throw new BlobsInternalError(res, {
+        edgeAccess: this.client.edgeAccess,
+        method: HTTPMethod.PUT,
+        storeName: this.name,
+      })
     })
   }
 

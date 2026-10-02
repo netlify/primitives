@@ -1,5 +1,27 @@
 # Changelog
 
+## [5.0.7](https://github.com/netlify/primitives/compare/runtime-v5.0.6...runtime-v5.0.7) (2026-09-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^11.1.2 to ^11.1.3
+    * @netlify/cache bumped from 4.0.1 to 4.0.2
+    * @netlify/types bumped from 3.1.0 to 3.2.0
+
+## [5.0.6](https://github.com/netlify/primitives/compare/runtime-v5.0.5...runtime-v5.0.6) (2026-09-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from ^11.1.1 to ^11.1.2
+    * @netlify/cache bumped from 4.0.0 to 4.0.1
+    * @netlify/types bumped from 3.0.0 to 3.1.0
+
 ## [5.0.5](https://github.com/netlify/primitives/compare/runtime-v5.0.4...runtime-v5.0.5) (2026-09-24)
 
 

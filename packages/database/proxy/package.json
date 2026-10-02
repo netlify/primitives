@@ -11,7 +11,7 @@
       }
     }
   },
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Transparent PostgreSQL proxy for Netlify Database with dynamic provisioning",
   "files": [
     "dist/**/*.js",

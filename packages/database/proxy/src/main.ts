@@ -1,6 +1,11 @@
 import net from 'node:net'
 
 import { handleConnection } from './lib/connection.js'
+import type { ProvisionRetryOptions } from './lib/provision-gate.js'
+import { gateProvisioning } from './lib/provision-gate.js'
+
+export { ProvisionHeldError, isProvisionHeldError } from './lib/provision-gate.js'
+export type { ProvisionRetryOptions } from './lib/provision-gate.js'
 
 export interface ConnectionCredentials {
   host: string
@@ -19,6 +24,7 @@ export interface NetlifyDBProxyOptions {
   port?: number
   logger?: (...args: unknown[]) => void
   provision: ProvisionCallback
+  retry?: ProvisionRetryOptions
 }
 
 export function parseConnectionString(connectionString: string): ConnectionCredentials {
@@ -47,7 +53,7 @@ export class NetlifyDBProxy {
     this.host = options.host ?? '127.0.0.1'
     this.port = options.port ?? 0
     this.logger = options.logger ?? (() => {})
-    this.provision = options.provision
+    this.provision = gateProvisioning(options.provision, options.retry)
   }
 
   async start(): Promise<string> {

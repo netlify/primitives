@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/netlify/primitives/compare/database-proxy-v0.2.1...database-proxy-v0.2.2) (2026-10-01)
+
+
+### Features
+
+* throttle provisioning retries ([#798](https://github.com/netlify/primitives/issues/798)) ([2512971](https://github.com/netlify/primitives/commit/2512971b8de5fef3650a38b8f58c4bfdf177dee6))
+
 ## [0.2.1](https://github.com/netlify/primitives/compare/database-proxy-v0.2.0...database-proxy-v0.2.1) (2026-08-27)
 
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## [6.0.3](https://github.com/netlify/primitives/compare/dev-utils-v6.0.2...dev-utils-v6.0.3) (2026-09-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 3.1.0 to 3.2.0
+
+## [6.0.2](https://github.com/netlify/primitives/compare/dev-utils-v6.0.1...dev-utils-v6.0.2) (2026-09-30)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 3.0.0 to 3.1.0
+
 ## [6.0.1](https://github.com/netlify/primitives/compare/dev-utils-v6.0.0...dev-utils-v6.0.1) (2026-08-18)
 
 

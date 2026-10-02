@@ -51,6 +51,42 @@ describe('BlobsInternalError', () => {
 
     expect(error.message).toContain('401 status code, ID: req_123')
   })
+
+  const edgeWrites = [
+    { method: 'put', storeName: 'site:content', displayName: 'content', status: 401 },
+    { method: 'delete', storeName: 'site:content', displayName: 'content', status: 403 },
+    { method: 'delete', storeName: 'legacy-store', displayName: 'legacy-store', status: 403 },
+  ]
+
+  it.each(edgeWrites)(
+    'drops the build guidance for a $status on $method to $storeName reached over the edge',
+    ({ method, storeName, displayName, status }) => {
+      const error = new BlobsInternalError(new Response(null, { status }), { edgeAccess: true, method, storeName })
+
+      expect(error.message).toContain(`Netlify Blobs could not write to store '${displayName}'`)
+      expect(error.message).toContain(`${String(status)} status code`)
+      expect(error.message).not.toContain('getDeployStore')
+      expect(error.message).not.toContain('build')
+      expect(error.message).not.toContain('internal error')
+    },
+  )
+
+  it('keeps the build guidance when the request did not go over the edge', () => {
+    const error = new BlobsInternalError(new Response(null, { status: 401 }), {
+      edgeAccess: false,
+      method: 'put',
+      storeName: 'site:content',
+    })
+
+    expect(error.message).toContain('getDeployStore')
+  })
+
+  it('includes the request ID in the edge write-denied message', () => {
+    const response = new Response(null, { headers: { 'x-nf-request-id': 'req_456' }, status: 403 })
+    const error = new BlobsInternalError(response, { edgeAccess: true, method: 'delete', storeName: 'site:content' })
+
+    expect(error.message).toContain('403 status code, ID: req_456')
+  })
 })
 
 describe('win32 safe names', () => {

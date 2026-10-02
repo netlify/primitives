@@ -1293,9 +1293,12 @@ describe('set', () => {
         siteID,
       })
 
-      await expect(blobs.set(key, value)).rejects.toThrowError(
-        /Netlify Blobs could not write to store 'production' \(401 status code\)/,
-      )
+      const error = await blobs.set(key, value).catch((err: unknown) => err as Error)
+
+      expect(error.message).toContain(`Netlify Blobs could not write to store 'production' (401 status code)`)
+
+      // The deploy-store restriction cannot apply to a write that reached the edge.
+      expect(error.message).not.toContain('getDeployStore')
 
       expect(mockStore.fulfilled).toBeTruthy()
     })
