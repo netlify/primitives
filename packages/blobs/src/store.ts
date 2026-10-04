@@ -1,4 +1,4 @@
-import type { Span } from '@netlify/otel/opentelemetry'
+import type { Span } from '@opentelemetry/api'
 import type { DeleteStoreResponse } from './backend/delete_store.ts'
 import type { ListResponse, ListResponseBlob } from './backend/list.ts'
 import { Client, type Conditions } from './client.ts'

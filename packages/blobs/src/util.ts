@@ -1,6 +1,7 @@
+import { createRequire } from 'node:module'
 import process from 'node:process'
-import { getTracer, withActiveSpan } from '@netlify/otel'
-import type { Span } from '@netlify/otel/opentelemetry'
+
+import type { Span } from '@opentelemetry/api'
 
 import { NF_ERROR, NF_REQUEST_ID } from './headers.ts'
 
@@ -122,11 +123,26 @@ export function decodeName(string: string): string {
   return process.platform == 'win32' ? decodeWin32SafeName(string) : string
 }
 
+type Otel = typeof import('@netlify/otel')
+
+// `@netlify/otel` is an optional peer. A sync `require` (rather than `import()`) keeps `withSpan`
+// callable from sync call sites such as `list()`, which returns an iterable rather than a promise.
+const loadOtel = (): Otel | undefined => {
+  try {
+    return createRequire(import.meta.url)('@netlify/otel') as Otel
+  } catch {
+    return undefined
+  }
+}
+
+const otel = loadOtel()
+
 // Allow users to pass in their own active span or defaults to creating a new active span
 export function withSpan<F extends (span?: Span) => ReturnType<F>>(span: Span | undefined, name: string, fn: F) {
   if (span) return fn(span)
+  if (!otel) return fn()
 
-  return withActiveSpan(getTracer(), name, (span) => {
+  return otel.withActiveSpan(otel.getTracer(), name, (span) => {
     return fn(span)
   })
 }

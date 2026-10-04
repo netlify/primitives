@@ -10,6 +10,7 @@ export default defineConfig([
     bundle: true,
     format: ['cjs', 'esm'],
     dts: true,
+    shims: true,
     outDir: './dist',
     watch: argv.includes('--watch'),
   },

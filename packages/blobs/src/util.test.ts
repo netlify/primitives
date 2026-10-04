@@ -1,6 +1,6 @@
-import { it, expect, describe } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 
-import { BlobsInternalError, decodeWin32SafeName, encodeWin32SafeName } from './util.ts'
+import { BlobsInternalError, decodeWin32SafeName, encodeWin32SafeName, withSpan } from './util.ts'
 
 describe('BlobsInternalError', () => {
   const unauthorizedWrites = [
@@ -91,5 +91,48 @@ describe('win32 safe names', () => {
     const unsafe = 'hello|.*<>wo:rld'
     const safe = encodeWin32SafeName(unsafe)
     expect(decodeWin32SafeName(safe)).toEqual(unsafe)
+  })
+})
+
+describe('withSpan', () => {
+  const tracerHook = globalThis as { __netlify__getTracer?: unknown }
+
+  afterEach(() => {
+    tracerHook.__netlify__getTracer = undefined
+  })
+
+  it('runs the callback without a span when no tracer is registered', () => {
+    const spans: unknown[] = []
+
+    const result = withSpan(undefined, 'blobs.test', (span) => {
+      spans.push(span)
+      return 'done'
+    })
+
+    expect(result).toBe('done')
+    expect(spans).toEqual([undefined])
+  })
+
+  it('reuses a span passed in by the caller', () => {
+    const span = { setAttributes: () => {} }
+    const result = withSpan(span as never, 'blobs.test', (received) => received)
+
+    expect(result).toBe(span)
+  })
+
+  it('creates a span through the registered tracer', () => {
+    const span = { setAttributes: () => {} }
+    const names: string[] = []
+    tracerHook.__netlify__getTracer = () => ({
+      withActiveSpan: (name: string, fn: (span: unknown) => unknown) => {
+        names.push(name)
+        return fn(span)
+      },
+    })
+
+    const result = withSpan(undefined, 'blobs.test', (received) => received)
+
+    expect(result).toBe(span)
+    expect(names).toEqual(['blobs.test'])
   })
 })
