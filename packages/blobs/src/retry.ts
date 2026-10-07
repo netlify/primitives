@@ -1,6 +1,7 @@
 import { getEnvironment } from '@netlify/runtime-utils'
 
 import type { Fetcher } from './types.ts'
+import { discardBody } from './util.ts'
 
 const DEFAULT_RETRY_DELAY = getEnvironment().get('NODE_ENV') === 'test' ? 1 : 5000
 const MIN_RETRY_DELAY = 1000
@@ -26,6 +27,8 @@ export const fetchAndRetry = async (
     const isRetryable = res.status === 429 || res.status >= 500 || (getRetryUrl !== undefined && res.status === 403)
 
     if (attemptsLeft > 0 && isRetryable) {
+      await discardBody(res)
+
       const delay = getDelay(res.headers.get(RATE_LIMIT_HEADER))
       await sleep(delay)
       const retryUrl = getRetryUrl ? await getRetryUrl() : url

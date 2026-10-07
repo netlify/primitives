@@ -86,6 +86,15 @@ export const createBlobsInternalError = async (
   return new BlobsInternalError(res, context, responseBody)
 }
 
+/**
+ * Cancels the body of a response that won't be read. Until its body is read or
+ * cancelled, a response keeps its connection in use, so the connection can't be
+ * reused or closed until the response is garbage collected.
+ */
+export const discardBody = async (res: Response) => {
+  await res.body?.cancel().catch(() => {})
+}
+
 export const collectIterator = async <T>(iterator: AsyncIterable<T>): Promise<T[]> => {
   const result: T[] = []
 

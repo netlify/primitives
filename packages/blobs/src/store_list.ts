@@ -3,7 +3,7 @@ import { Client, ClientOptions, getClientOptions } from './client.ts'
 import { getEnvironmentContext } from './environment.ts'
 import { DEPLOY_STORE_PREFIX, SITE_STORE_PREFIX } from './store.ts'
 import { HTTPMethod } from './types.ts'
-import { collectIterator } from './util.ts'
+import { collectIterator, discardBody } from './util.ts'
 
 export function listStores(options: Partial<ClientOptions> & { paginate: true }): AsyncIterable<ListStoresResponse>
 export function listStores(options?: Partial<ClientOptions> & { paginate?: false }): Promise<ListStoresResponse>
@@ -57,6 +57,8 @@ const getListIterator = (client: Client, prefix: string): AsyncIterable<ListStor
           })
 
           if (res.status === 404) {
+            await discardBody(res)
+
             return { done: true, value: undefined }
           }
 
