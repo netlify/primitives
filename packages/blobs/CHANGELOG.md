@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.1.4](https://github.com/netlify/primitives/compare/blobs-v11.1.3...blobs-v11.1.4) (2026-10-08)
+
+
+### Bug Fixes
+
+* **blobs:** cancel response bodies the client does not read ([#802](https://github.com/netlify/primitives/issues/802)) ([6d62ac9](https://github.com/netlify/primitives/commit/6d62ac94c776850c055747d9e196158680b97bc9))
+
 ## [11.1.3](https://github.com/netlify/primitives/compare/blobs-v11.1.2...blobs-v11.1.3) (2026-09-30)
 
 
