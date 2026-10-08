@@ -10,7 +10,7 @@ import { base64Encode, streamToString } from '../test/util.js'
 
 import { MissingBlobsEnvironmentError } from './environment.js'
 import { NF_ERROR, NF_REQUEST_ID } from './headers.js'
-import { getDeployStore, getStore, setEnvironmentContext } from './main.js'
+import { getDeployStore, getStore, listStores, setEnvironmentContext } from './main.js'
 
 beforeAll(async () => {
   if (semver.lt(nodeVersion, '18.0.0')) {
@@ -2862,5 +2862,113 @@ describe('Region configuration in site-wide stores', () => {
         'eu-west-1 is not a supported Netlify Blobs region.',
       )
     })
+  })
+})
+
+// A response whose body is neither read nor cancelled keeps its connection in use
+// until the response is garbage collected, and a runtime that pings busy HTTP/2
+// connections keeps that connection, and the process holding it, active.
+describe('Releases the body of responses it does not return', () => {
+  const storeURL = `${edgeURL}/${siteID}/site:production`
+  const blobURL = `${storeURL}/${key}`
+  const getEdgeStore = () => getStore({ edgeURL, name: 'production', token: edgeToken, siteID })
+  const invalidType = { type: 'invalid' } as unknown as { type: 'text' }
+
+  test.each([
+    { name: 'get, for a missing blob', method: 'get', url: blobURL, status: 404, call: () => getEdgeStore().get(key) },
+    {
+      name: 'get, for a failed request',
+      method: 'get',
+      url: blobURL,
+      status: 401,
+      call: () => getEdgeStore().get(key),
+    },
+    {
+      name: 'get, for an invalid type',
+      method: 'get',
+      url: blobURL,
+      status: 200,
+      call: () => getEdgeStore().get(key, invalidType),
+    },
+    {
+      name: 'getWithMetadata, for a missing blob',
+      method: 'get',
+      url: blobURL,
+      status: 404,
+      call: () => getEdgeStore().getWithMetadata(key),
+    },
+    {
+      name: 'getWithMetadata, for a failed request',
+      method: 'get',
+      url: blobURL,
+      status: 401,
+      call: () => getEdgeStore().getWithMetadata(key),
+    },
+    {
+      name: 'getWithMetadata, for an invalid type',
+      method: 'get',
+      url: blobURL,
+      status: 200,
+      call: () => getEdgeStore().getWithMetadata(key, invalidType),
+    },
+    { name: 'delete', method: 'delete', url: blobURL, status: 200, call: () => getEdgeStore().delete(key) },
+    {
+      name: 'delete, for a missing blob',
+      method: 'delete',
+      url: blobURL,
+      status: 404,
+      call: () => getEdgeStore().delete(key),
+    },
+    {
+      name: 'delete, for a failed request',
+      method: 'delete',
+      url: blobURL,
+      status: 401,
+      call: () => getEdgeStore().delete(key),
+    },
+    {
+      name: 'deleteAll, for a failed request',
+      method: 'delete',
+      url: storeURL,
+      status: 401,
+      call: () => getEdgeStore().deleteAll(),
+    },
+    { name: 'set', method: 'put', url: blobURL, status: 200, call: () => getEdgeStore().set(key, value) },
+    { name: 'setJSON', method: 'put', url: blobURL, status: 200, call: () => getEdgeStore().setJSON(key, { value }) },
+    { name: 'list, for a missing store', method: 'get', url: storeURL, status: 404, call: () => getEdgeStore().list() },
+    {
+      name: 'list, for a failed request',
+      method: 'get',
+      url: storeURL,
+      status: 401,
+      call: () => getEdgeStore().list(),
+    },
+    {
+      name: 'listStores, when there are no stores',
+      method: 'get',
+      url: `${edgeURL}/${siteID}?prefix=site%3A`,
+      status: 404,
+      call: () => listStores({ edgeURL, token: edgeToken, siteID }),
+    },
+  ] as const)('$name', async ({ call, method, status, url }) => {
+    const response = new Response('response body', { status })
+    const mockStore = new MockFetch()[method]({ response, url }).inject()
+
+    await call().catch(() => {})
+
+    expect(response.bodyUsed).toBe(true)
+    expect(mockStore.fulfilled).toBeTruthy()
+  })
+
+  test('the requests it retries', async () => {
+    const failed = new Response('response body', { status: 500 })
+    const mockStore = new MockFetch()
+      .get({ response: failed, url: blobURL })
+      .get({ response: new Response(value), url: blobURL })
+      .inject()
+
+    expect(await getEdgeStore().get(key)).toBe(value)
+    expect(failed.bodyUsed).toBe(true)
+    expect(mockStore.fulfilled).toBeTruthy()
   })
 })

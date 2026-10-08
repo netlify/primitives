@@ -10,6 +10,7 @@ import {
   collectIterator,
   createBlobsInternalError,
   DEPLOY_STORE_PREFIX,
+  discardBody,
   SITE_STORE_PREFIX,
   withSpan,
 } from './util.ts'
@@ -161,6 +162,8 @@ export class Store {
   async delete(key: string) {
     const res = await this.client.makeRequest({ key, method: HTTPMethod.DELETE, storeName: this.name })
 
+    await discardBody(res)
+
     if (![200, 204, 404].includes(res.status)) {
       throw new BlobsInternalError(res, {
         edgeAccess: this.client.edgeAccess,
@@ -178,6 +181,8 @@ export class Store {
       const res = await this.client.makeRequest({ method: HTTPMethod.DELETE, storeName: this.name })
 
       if (res.status !== 200) {
+        await discardBody(res)
+
         throw new BlobsInternalError(res, {
           edgeAccess: this.client.edgeAccess,
           method: HTTPMethod.DELETE,
@@ -234,10 +239,14 @@ export class Store {
       })
 
       if (res.status === 404) {
+        await discardBody(res)
+
         return null
       }
 
       if (res.status !== 200) {
+        await discardBody(res)
+
         throw new BlobsInternalError(res)
       }
 
@@ -261,6 +270,8 @@ export class Store {
       if (type === 'stream') {
         return res.body
       }
+
+      await discardBody(res)
 
       throw new BlobsInternalError(res)
     })
@@ -373,10 +384,14 @@ export class Store {
       })
 
       if (res.status === 404) {
+        await discardBody(res)
+
         return null
       }
 
       if (res.status !== 200 && res.status !== 304) {
+        await discardBody(res)
+
         throw new BlobsInternalError(res)
       }
 
@@ -409,6 +424,8 @@ export class Store {
       if (type === 'stream') {
         return { data: res.body, ...result }
       }
+
+      await discardBody(res)
 
       throw new Error(`Invalid 'type' property: ${type}. Expected: arrayBuffer, blob, json, stream, or text.`)
     })
@@ -475,10 +492,14 @@ export class Store {
       })
 
       if (conditions) {
+        await discardBody(res)
+
         return res.status === STATUS_PRE_CONDITION_FAILED ? { modified: false } : { etag, modified: true }
       }
 
       if (res.status === STATUS_OK) {
+        await discardBody(res)
+
         return {
           etag,
           modified: true,
@@ -519,6 +540,8 @@ export class Store {
         method: HTTPMethod.PUT,
         storeName: this.name,
       })
+
+      await discardBody(res)
 
       const etag = res.headers.get('etag') ?? ''
       span?.setAttributes({
@@ -675,10 +698,14 @@ export class Store {
               let directories: string[] = []
 
               if (![200, 204, 404].includes(res.status)) {
+                await discardBody(res)
+
                 throw new BlobsInternalError(res)
               }
 
               if (res.status === 404) {
+                await discardBody(res)
+
                 done = true
               } else {
                 const page = (await res.json()) as ListResponse
