@@ -13,6 +13,7 @@ export const ERROR_CODES = {
   invalid_directive:
     'Responses must have a cache control header with caching directives (https://ntl.fyi/cache_api_invalid_directive).',
   status: 'Responses must have a status code between 200 and 299 (https://ntl.fyi/cache_api_status).',
+  body_too_large: 'Responses must not be larger than 10 MB (https://docs.netlify.com/build/caching/cache-api/#limits).',
 }
 
 export const GENERIC_ERROR = 'The server has returned an unexpected error (https://ntl.fyi/cache_api_error).'
