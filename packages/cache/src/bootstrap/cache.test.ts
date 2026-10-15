@@ -292,6 +292,28 @@ describe('Cache API', () => {
       expect(logger).toHaveBeenCalledWith(`Failed to write to the cache: ${ERROR_CODES.no_ttl}`)
     })
 
+    test('logs a message when the response is too large to be added to the cache', async () => {
+      const logger = vi.fn()
+      const mockFetch = new MockFetch()
+        .post({
+          url: 'https://example.netlify/.netlify/cache/https%3A%2F%2Fnetlify.com%2F',
+          response: new Response(null, { headers: { 'netlify-programmable-error': 'body_too_large' }, status: 413 }),
+        })
+        .inject()
+      const cache = new NetlifyCache({
+        getContext: () => ({ host, logger, token, url }),
+        name: 'my-cache',
+        userAgent,
+      })
+
+      await cache.put(new Request('https://netlify.com'), new Response('<h1>Hello world</h1>'))
+
+      mockFetch.restore()
+      expect(mockFetch.fulfilled).toBe(true)
+
+      expect(logger).toHaveBeenCalledWith(`Failed to write to the cache: ${ERROR_CODES.body_too_large}`)
+    })
+
     test('is a no-op when the `getContext` callback returns `null`', async () => {
       const mockFetch = new MockFetch().inject()
       const cache = new NetlifyCache({
