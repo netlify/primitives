@@ -1,6 +1,7 @@
 import process from 'node:process'
 
-import semver from 'semver'
+// @ts-expect-error typescript doesn't like it with `"moduleResolution": "node"`
+import { isGreaterOrEqual } from 'verkit'
 import { beforeEach, afterEach, expect, test } from 'vitest'
 
 import { invokeLambda } from '../../test/helpers/main.mjs'
@@ -9,7 +10,7 @@ import { MockFetch } from '../../test/helpers/mock_fetch.mjs'
 import { purgeCache } from './purge_cache.js'
 
 const globalFetch = globalThis.fetch
-const hasFetchAPI = semver.gte(process.version, '18.0.0')
+const hasFetchAPI = isGreaterOrEqual(process.version, '18.0.0')
 
 beforeEach(() => {
   delete process.env.NETLIFY_PURGE_API_TOKEN
