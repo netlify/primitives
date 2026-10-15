@@ -554,6 +554,36 @@ test('Handles conditional writes', async () => {
   await fs.rm(directory.path, { force: true, recursive: true })
 })
 
+test('Returns ETags and handles conditional reads', async () => {
+  const directory = await tmp.dir()
+  const server = new BlobsServer({
+    directory: directory.path,
+    token,
+  })
+  const { port } = await server.start()
+  const store = getStore({
+    edgeURL: `http://localhost:${port}`,
+    name: 'my-store',
+    token,
+    siteID,
+  })
+  const key = 'conditional-key'
+  const value = 'value'
+  const metadata = { name: 'test-metadata', }
+
+  const writeResult = await store.set(key, value, { metadata })
+  const etag = writeResult.etag
+
+  expect(etag).toBeTypeOf('string')
+  expect(await store.getWithMetadata(key)).toEqual({ data: value, etag, metadata })
+  expect(await store.getMetadata(key)).toEqual({ etag, metadata })
+  expect(await store.getWithMetadata(key, { etag: '"stale-etag"' })).toEqual({ data: value, etag, metadata })
+  expect(await store.getWithMetadata(key, { etag })).toEqual({ data: null, etag, metadata })
+
+  await server.stop()
+  await fs.rm(directory.path, { force: true, recursive: true })
+})
+
 test('Deletes all blobs from a store', async () => {
   const directory = await tmp.dir()
   const server = new BlobsServer({
