@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.1.8](https://github.com/netlify/primitives/compare/dev-v5.1.7...dev-v5.1.8) (2026-10-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime bumped from 5.0.8 to 5.0.9
+
 ## [5.1.7](https://github.com/netlify/primitives/compare/dev-v5.1.6...dev-v5.1.7) (2026-10-08)
 
 
