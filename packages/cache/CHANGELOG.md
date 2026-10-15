@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/netlify/primitives/compare/cache-v4.0.2...cache-v4.1.0) (2026-10-15)
+
+
+### Features
+
+* **cache:** explain insertions rejected for being too large ([#804](https://github.com/netlify/primitives/issues/804)) ([bc14244](https://github.com/netlify/primitives/commit/bc14244c76614ac5bfd936248ea9623079679cb4))
+
 ## [4.0.2](https://github.com/netlify/primitives/compare/cache-v4.0.1...cache-v4.0.2) (2026-09-30)
 
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.0.9](https://github.com/netlify/primitives/compare/runtime-v5.0.8...runtime-v5.0.9) (2026-10-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/cache bumped from 4.0.2 to 4.1.0
+
 ## [5.0.8](https://github.com/netlify/primitives/compare/runtime-v5.0.7...runtime-v5.0.8) (2026-10-08)
 
 
