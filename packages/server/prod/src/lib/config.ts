@@ -1,4 +1,4 @@
-import type { ServerRegion } from '@netlify/types'
+import type { ServerRegion, ServerSize } from '@netlify/types'
 
 type Path = `/${string}`
 
@@ -20,10 +20,27 @@ export interface Config {
   path?: Path | Path[]
 
   /**
+   * One or more URL paths within `path` that the server doesn't handle. Paths
+   * must begin with a forward slash.
+   *
+   * @example
+   * ['/api/internal', '/api/admin/*']
+   */
+  excludedPath?: Path | Path[]
+
+  /**
    * Airport code for the region where the server should run.
    *
    * @example
-   * 'iad'
+   * 'cmh'
    */
   region?: ServerRegion
+
+  /**
+   * Size of the instances the server runs on. Defaults to `small`.
+   *
+   * @example
+   * 'medium'
+   */
+  size?: ServerSize
 }

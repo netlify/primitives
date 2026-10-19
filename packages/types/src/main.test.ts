@@ -4,12 +4,17 @@ import { fileURLToPath } from 'node:url'
 
 import { expect, expectTypeOf, test } from 'vitest'
 
-import type { Context, NetlifyGlobal } from './main.js'
+import type { Context, NetlifyGlobal, ServerRegion, ServerSize } from './main.js'
 import * as main from './main.js'
 
 test('Exports types', () => {
   expectTypeOf<Context>().toExtend<object>()
   expectTypeOf<NetlifyGlobal>().toExtend<object>()
+})
+
+test('Server regions and sizes are the ones servers run on', () => {
+  expectTypeOf<ServerRegion>().toEqualTypeOf<'cmh' | 'fra'>()
+  expectTypeOf<ServerSize>().toEqualTypeOf<'small' | 'medium' | 'large'>()
 })
 
 test('Does not export runtime code', () => {

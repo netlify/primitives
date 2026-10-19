@@ -20,8 +20,16 @@ import type { Config } from '@netlify/server'
 
 export const config: Config = {
   region: 'fra',
+  size: 'medium',
 }
 ```
+
+- `region`: airport code for the region where the server runs, `cmh` or `fra`.
+- `size`: size of the instances the server runs on, `small`, `medium` or `large`. Defaults to `small`.
+
+The server handles every path that the rest of the site doesn't claim, which is what most servers want. To narrow that
+down, `path` takes one or more URL paths for the server to handle, and `excludedPath` takes paths within them that it
+shouldn't. Paths start with `/`.
 
 ### Request context
 
