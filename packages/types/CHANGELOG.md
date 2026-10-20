@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/netlify/primitives/compare/types-v3.2.0...types-v3.3.0) (2026-10-20)
+
+
+### Features
+
+* add `excludedPath` and `size` to server config ([#807](https://github.com/netlify/primitives/issues/807)) ([1a97513](https://github.com/netlify/primitives/commit/1a97513de4233f8d581246b011e448c6a708390f))
+
 ## [3.2.0](https://github.com/netlify/primitives/compare/types-v3.1.0...types-v3.2.0) (2026-09-30)
 
 
