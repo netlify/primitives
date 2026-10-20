@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.1.1](https://github.com/netlify/primitives/compare/redirects-v4.1.0...redirects-v4.1.1) (2026-10-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.0.3 to 6.0.4
+
 ## [4.1.0](https://github.com/netlify/primitives/compare/redirects-v4.0.4...redirects-v4.1.0) (2026-10-02)
 
 

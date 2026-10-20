@@ -1,5 +1,24 @@
 # Changelog
 
+## [5.1.8](https://github.com/netlify/primitives/compare/dev-v5.1.7...dev-v5.1.8) (2026-10-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.1.4 to 11.1.5
+    * @netlify/dev-utils bumped from 6.0.3 to 6.0.4
+    * @netlify/edge-functions-dev bumped from 2.0.3 to 2.0.4
+    * @netlify/functions-dev bumped from 2.0.11 to 2.0.12
+    * @netlify/headers bumped from 3.0.3 to 3.0.4
+    * @netlify/images bumped from 2.0.3 to 2.0.4
+    * @netlify/redirects bumped from 4.1.0 to 4.1.1
+    * @netlify/runtime bumped from 5.0.8 to 5.0.9
+    * @netlify/server-dev bumped from 0.1.3 to 0.1.4
+  * devDependencies
+    * @netlify/types bumped from 3.2.0 to 3.3.0
+
 ## [5.1.7](https://github.com/netlify/primitives/compare/dev-v5.1.6...dev-v5.1.7) (2026-10-08)
 
 

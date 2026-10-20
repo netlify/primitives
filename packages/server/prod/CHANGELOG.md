@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.3](https://github.com/netlify/primitives/compare/server-v0.1.2...server-v0.1.3) (2026-10-20)
+
+
+### Features
+
+* add `excludedPath` and `size` to server config ([#807](https://github.com/netlify/primitives/issues/807)) ([1a97513](https://github.com/netlify/primitives/commit/1a97513de4233f8d581246b011e448c6a708390f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 3.2.0 to 3.3.0
+
 ## [0.1.2](https://github.com/netlify/primitives/compare/server-v0.1.1...server-v0.1.2) (2026-09-30)
 
 
