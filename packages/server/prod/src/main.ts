@@ -1,4 +1,4 @@
-export type { Context, ServerRegion } from '@netlify/types'
+export type { Context, ServerRegion, ServerSize } from '@netlify/types'
 
 export type { Config } from './lib/config.js'
 export { getContext } from './lib/context.js'

@@ -8,9 +8,26 @@ test('Config takes one path or several, each starting with a slash', () => {
   expectTypeOf({ path: 'api/*' as const }).not.toExtend<Config>()
 })
 
+test('Config takes one excluded path or several, each starting with a slash', () => {
+  expectTypeOf({ excludedPath: '/api/internal' as const }).toExtend<Config>()
+  expectTypeOf({
+    excludedPath: ['/api/internal', '/api/admin/*'] as ['/api/internal', '/api/admin/*'],
+  }).toExtend<Config>()
+  expectTypeOf({ excludedPath: 'api/internal' as const }).not.toExtend<Config>()
+})
+
 test('Config takes only the regions servers run in', () => {
-  expectTypeOf({ region: 'iad' as const }).toExtend<Config>()
+  expectTypeOf({ region: 'cmh' as const }).toExtend<Config>()
+  expectTypeOf({ region: 'fra' as const }).toExtend<Config>()
+  expectTypeOf({ region: 'iad' as const }).not.toExtend<Config>()
   expectTypeOf({ region: 'sfo' as const }).not.toExtend<Config>()
+})
+
+test('Config takes only the sizes servers run on', () => {
+  expectTypeOf({ size: 'small' as const }).toExtend<Config>()
+  expectTypeOf({ size: 'medium' as const }).toExtend<Config>()
+  expectTypeOf({ size: 'large' as const }).toExtend<Config>()
+  expectTypeOf({ size: 'xlarge' as const }).not.toExtend<Config>()
 })
 
 test('Health check hooks return a report, or nothing, synchronously or not', () => {
