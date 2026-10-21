@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.0.6](https://github.com/netlify/primitives/compare/otel-v7.0.5...otel-v7.0.6) (2026-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update opentelemetry-js monorepo ([#808](https://github.com/netlify/primitives/issues/808)) ([1ca0868](https://github.com/netlify/primitives/commit/1ca086879323de978e5867ec57ab32f5c185ec43))
+
 ## [7.0.5](https://github.com/netlify/primitives/compare/otel-v7.0.4...otel-v7.0.5) (2026-10-20)
 
 

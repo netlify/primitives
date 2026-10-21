@@ -11,7 +11,7 @@
       }
     }
   },
-  "version": "2.0.12",
+  "version": "2.0.13",
   "description": "Local dev emulation of Netlify Functions",
   "files": [
     "dist/**/*.js",
@@ -42,7 +42,7 @@
   },
   "author": "Netlify Inc.",
   "dependencies": {
-    "@netlify/blobs": "11.1.5",
+    "@netlify/blobs": "11.1.6",
     "@netlify/dev-utils": "6.0.4",
     "@netlify/functions": "6.0.3",
     "@netlify/zip-it-and-ship-it": "^16.4.1",

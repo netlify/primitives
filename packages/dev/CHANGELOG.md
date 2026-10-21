@@ -1,5 +1,23 @@
 # Changelog
 
+## [5.1.9](https://github.com/netlify/primitives/compare/dev-v5.1.8...dev-v5.1.9) (2026-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#757](https://github.com/netlify/primitives/issues/757)) ([0db4487](https://github.com/netlify/primitives/commit/0db4487f55677b7cac1bad3123987027515045af))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^1.0.1 to ^1.0.2
+    * @netlify/blobs bumped from 11.1.5 to 11.1.6
+    * @netlify/edge-functions-dev bumped from 2.0.4 to 2.0.5
+    * @netlify/functions-dev bumped from 2.0.12 to 2.0.13
+    * @netlify/runtime bumped from 5.0.9 to 5.0.10
+
 ## [5.1.8](https://github.com/netlify/primitives/compare/dev-v5.1.7...dev-v5.1.8) (2026-10-20)
 
 
