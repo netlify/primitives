@@ -1,5 +1,5 @@
 import type { Logger } from '@netlify/dev-utils'
-import { createIPX, createIPXWebServer, ipxFSStorage, ipxHttpStorage } from 'ipx'
+import { createIPX, createIPXFetchHandler, ipxFSStorage, ipxHttpStorage } from 'ipx'
 
 interface ImagesConfig {
   remote_images: string[]
@@ -123,7 +123,7 @@ export class ImageHandler {
           }),
         })
 
-        const ipxHandler = createIPXWebServer(ipx)
+        const ipxHandler = createIPXFetchHandler(ipx)
 
         const ipxRequest = new Request(this.generateIPXRequestURL(sourceImageUrl, url.searchParams), request)
         return ipxHandler(ipxRequest)
