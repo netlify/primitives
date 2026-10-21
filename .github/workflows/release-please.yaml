@@ -36,7 +36,7 @@ jobs:
       - name: Checkout tag for manual publish
         if: github.event_name == 'workflow_dispatch'
         run: git checkout ${{ github.event.inputs.tag }}
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '*'
           cache: 'npm'
