@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.5](https://github.com/netlify/primitives/compare/images-v2.0.4...images-v2.0.5) (2026-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency ipx to v4 ([#811](https://github.com/netlify/primitives/issues/811)) ([f21dec9](https://github.com/netlify/primitives/commit/f21dec90f3e575890552fbe0740e0f058cd34faa))
+
 ## [2.0.4](https://github.com/netlify/primitives/compare/images-v2.0.3...images-v2.0.4) (2026-10-20)
 
 

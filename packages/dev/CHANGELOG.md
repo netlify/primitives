@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.1.10](https://github.com/netlify/primitives/compare/dev-v5.1.9...dev-v5.1.10) (2026-10-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/images bumped from 2.0.4 to 2.0.5
+
 ## [5.1.9](https://github.com/netlify/primitives/compare/dev-v5.1.8...dev-v5.1.9) (2026-10-21)
 
 

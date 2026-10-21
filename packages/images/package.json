@@ -1,6 +1,6 @@
 {
   "name": "@netlify/images",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "TypeScript implementation of Netlify's Image CDN",
   "type": "module",
   "engines": {
