@@ -1,7 +1,7 @@
 import { HTTPServer } from '@netlify/dev-utils'
 import { createImageServerHandler, createMockLogger, getImageResponseSize } from '@netlify/test-utils'
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
-import { createIPXWebServer } from 'ipx'
+import { createIPXFetchHandler } from 'ipx'
 
 import { ImageHandler } from './main.js'
 
@@ -10,14 +10,14 @@ const mockedIpxResponse = new Response('Mocked response from IPX')
 vi.mock('ipx', async () => {
   return {
     ...(await vi.importActual('ipx')),
-    createIPXWebServer: vi.fn(() => () => Promise.resolve(mockedIpxResponse.clone())),
+    createIPXFetchHandler: vi.fn(() => () => Promise.resolve(mockedIpxResponse.clone())),
   }
 })
 
-const mockCreateIPXWebServer = vi.mocked(createIPXWebServer)
+const mockCreateIPXFetchHandler = vi.mocked(createIPXFetchHandler)
 
 beforeEach(() => {
-  mockCreateIPXWebServer.mockReset()
+  mockCreateIPXFetchHandler.mockReset()
 })
 
 describe('`ImageHandler`', () => {
@@ -154,8 +154,8 @@ describe('`ImageHandler`', () => {
       })
 
       beforeEach(async () => {
-        mockCreateIPXWebServer.mockImplementation(
-          (await vi.importActual<typeof import('ipx')>('ipx')).createIPXWebServer,
+        mockCreateIPXFetchHandler.mockImplementation(
+          (await vi.importActual<typeof import('ipx')>('ipx')).createIPXFetchHandler,
         )
       })
 
@@ -281,8 +281,8 @@ describe('`ImageHandler`', () => {
       })
 
       test('allow remote images matching configured patterns', async () => {
-        mockCreateIPXWebServer.mockImplementation(
-          (await vi.importActual<typeof import('ipx')>('ipx')).createIPXWebServer,
+        mockCreateIPXFetchHandler.mockImplementation(
+          (await vi.importActual<typeof import('ipx')>('ipx')).createIPXFetchHandler,
         )
 
         const imageHandler = new ImageHandler({
@@ -313,8 +313,8 @@ describe('`ImageHandler`', () => {
       }, 30_000)
 
       test('allow matching any remote image when using a wildcard pattern', async () => {
-        mockCreateIPXWebServer.mockImplementation(
-          (await vi.importActual<typeof import('ipx')>('ipx')).createIPXWebServer,
+        mockCreateIPXFetchHandler.mockImplementation(
+          (await vi.importActual<typeof import('ipx')>('ipx')).createIPXFetchHandler,
         )
 
         const imageHandler = new ImageHandler({
