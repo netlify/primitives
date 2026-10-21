@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.0.13](https://github.com/netlify/primitives/compare/functions-dev-v2.0.12...functions-dev-v2.0.13) (2026-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#757](https://github.com/netlify/primitives/issues/757)) ([0db4487](https://github.com/netlify/primitives/commit/0db4487f55677b7cac1bad3123987027515045af))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.1.5 to 11.1.6
+
 ## [2.0.12](https://github.com/netlify/primitives/compare/functions-dev-v2.0.11...functions-dev-v2.0.12) (2026-10-20)
 
 
