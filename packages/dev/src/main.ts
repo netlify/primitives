@@ -27,8 +27,19 @@ import { ServerHandler } from '@netlify/server-dev'
 import { StaticHandler } from '@netlify/static'
 import { NetlifyDB } from '@netlify/database-dev'
 
-export { applyMigrations, initializeTrackingTable, resetDatabase } from '@netlify/database-dev'
-export type { SQLExecutor } from '@netlify/database-dev'
+export {
+  applyMigrations,
+  initializeTrackingTable,
+  resetDatabase,
+  testMigrationsInEphemeralDatabase,
+} from '@netlify/database-dev'
+export type {
+  Migration,
+  MigrationIssue,
+  PgErrorDetails,
+  SQLExecutor,
+  TestMigrationsInEphemeralDatabaseResult,
+} from '@netlify/database-dev'
 
 import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
