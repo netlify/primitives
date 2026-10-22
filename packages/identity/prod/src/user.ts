@@ -199,15 +199,17 @@ const resolveIdentityUrl = (): string | null => {
  * Returns the currently authenticated user, or `null` if not logged in.
  * Never throws; returns `null` on any failure.
  *
- * Always returns a full {@link User} object with all available fields
- * (email, roles, timestamps, metadata, etc.) regardless of whether the
- * call happens in the browser or on the server.
+ * Returns the best available {@link User} object, in the browser or on the
+ * server: the full user (email, roles, timestamps, metadata, etc.) when the
+ * Identity API can be asked, otherwise the fields in the JWT claims.
  *
  * In the browser, checks localStorage first. If no localStorage
  * session exists, hydrates from the `nf_jwt` cookie (set by server-side login).
  *
- * On the server, fetches the full user from the Identity API using the JWT from
- * the request. Falls back to JWT claims if the Identity API is unreachable.
+ * On the server, fetches the full user from the Identity API using the `nf_jwt`
+ * cookie from the request. Falls back to JWT claims if there is no cookie, if
+ * it belongs to a different user than the server-validated claims, or if the
+ * Identity API is unreachable.
  *
  * On the server in a Next.js App Router context, calls `headers()` from
  * `next/headers` to opt the route into dynamic rendering. Without this,
@@ -249,12 +251,15 @@ export const getUser = async (): Promise<User | null> => {
   // Trigger Next.js dynamic rendering if in a Next.js RSC context
   triggerNextjsDynamic()
 
-  // Get the JWT from the identity context header or cookie
+  // Get the user's JWT from the cookie. The identity context's token is the
+  // operator token for admin calls (see admin.ts), which GoTrue's /user rejects.
   const identityContext = globalThis.netlifyIdentityContext
-  const serverJwt = identityContext?.token ?? getServerCookie(NF_JWT_COOKIE)
+  const serverJwt = getServerCookie(NF_JWT_COOKIE)
+  const verifiedSub = identityContext?.user?.sub
 
-  // Try to fetch the full user from GoTrue for a complete User object
-  if (serverJwt) {
+  // Try to fetch the full user from GoTrue for a complete User object, unless
+  // the cookie belongs to a different user than the server-validated one
+  if (serverJwt && (!verifiedSub || decodeJwtPayload(serverJwt)?.sub === verifiedSub)) {
     const identityUrl = resolveIdentityUrl()
     if (identityUrl) {
       const fullUser = await fetchFullUser(identityUrl, serverJwt)
