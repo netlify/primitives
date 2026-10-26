@@ -9,6 +9,7 @@ createServer((req, res) => {
   res.end(
     JSON.stringify({
       capturedAtImport,
+      clientIP: req.headers['x-nf-client-connection-ip'] ?? null,
       geo: req.headers['x-nf-geo'] ?? null,
       pid: process.pid,
       siteID: req.headers['x-nf-site-id'] ?? null,
