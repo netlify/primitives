@@ -21,11 +21,14 @@ import type { Config } from '@netlify/server'
 export const config: Config = {
   region: 'fra',
   size: 'medium',
+  scale: { max: 2 },
 }
 ```
 
 - `region`: airport code for the region where the server runs, `cmh` or `fra`.
 - `size`: size of the instances the server runs on, `small`, `medium` or `large`. Defaults to `small`.
+- `scale`: how many instances the server can run at once. `min` is how many it keeps running at all times, regardless of
+  traffic, defaulting to 0, and `max` is how many it scales to, defaulting to the highest your plan allows.
 
 The server handles every path that the rest of the site doesn't claim, which is what most servers want. To narrow that
 down, `path` takes one or more URL paths for the server to handle, and `excludedPath` takes paths within them that it

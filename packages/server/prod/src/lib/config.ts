@@ -43,4 +43,17 @@ export interface Config {
    * 'medium'
    */
   size?: ServerSize
+
+  /**
+   * How many instances the server can run at once. `min` is how many it keeps
+   * running at all times, regardless of traffic, defaulting to 0, and `max` is
+   * how many it scales to, defaulting to the highest your plan allows.
+   *
+   * @example
+   * { max: 2 }
+   */
+  scale?: {
+    min?: number
+    max?: number
+  }
 }
