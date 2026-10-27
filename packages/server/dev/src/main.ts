@@ -141,7 +141,10 @@ export class ServerHandler {
   }
 
   private setRequestHeaders(headers: Headers, remoteAddress?: string) {
-    headers.set('x-nf-client-connection-ip', remoteAddress ?? headers.get('x-forwarded-for') ?? '')
+    // X-Forwarded-For lists the client first, followed by any proxies.
+    const forwardedFor = headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+
+    headers.set('x-nf-client-connection-ip', remoteAddress ?? forwardedFor ?? '')
     headers.set('x-nf-site-id', this.#siteID ?? UNLINKED_SITE_MOCK_ID)
 
     if (this.#accountID) {

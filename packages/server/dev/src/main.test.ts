@@ -100,6 +100,21 @@ test.skipIf(unsupportedNodeVersion)(
   },
 )
 
+test.skipIf(unsupportedNodeVersion)('takes the client address from the first X-Forwarded-For entry', async () => {
+  const handler = createHandler(path.join(fixturesDirectory, 'basic'))
+
+  const match = await handler.match(new Request('http://localhost/'))
+
+  assert(match)
+
+  const response = await match.handle(
+    new Request('http://localhost/', { headers: { 'x-forwarded-for': '203.0.113.7, 10.0.0.1' } }),
+  )
+  const body = (await response.json()) as Record<string, unknown>
+
+  expect(body.clientIP).toBe('203.0.113.7')
+})
+
 test.skipIf(unsupportedNodeVersion)('serves a fetch-form entry', async () => {
   const handler = createHandler(path.join(fixturesDirectory, 'fetch'))
 
