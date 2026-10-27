@@ -1760,7 +1760,7 @@ describe('setJSON', () => {
           .put({
             body: JSON.stringify({ value }),
             headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
-            response: new Response(null, { status: 400 }),
+            response: new Response('something went wrong', { status: 400 }),
             url: `${edgeURL}/${siteID}/site:production/${key}`,
           })
           .inject()
@@ -1773,7 +1773,7 @@ describe('setJSON', () => {
         })
 
         await expect(blobs.setJSON(key, { value }, { onlyIfMatch: etag })).rejects.toThrowError(
-          'Netlify Blobs has generated an internal error (400 status code)',
+          'Netlify Blobs has generated an internal error (400 status code): something went wrong',
         )
         expect(mockStore.fulfilled).toBeTruthy()
       })

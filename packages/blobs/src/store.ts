@@ -561,8 +561,6 @@ export class Store {
         storeName: this.name,
       })
 
-      await discardBody(res)
-
       const etag = res.headers.get('etag') ?? ''
       span?.setAttributes({
         'blobs.response.etag': etag,
@@ -571,14 +569,18 @@ export class Store {
 
       if (conditions) {
         if (res.status === STATUS_PRE_CONDITION_FAILED || res.status === STATUS_CONFLICT) {
+          await discardBody(res)
+
           return { modified: false }
         }
 
         if (res.ok) {
+          await discardBody(res)
+
           return { etag, modified: true }
         }
 
-        throw new BlobsInternalError(res, {
+        throw await createBlobsInternalError(res, {
           edgeAccess: this.client.edgeAccess,
           method: HTTPMethod.PUT,
           storeName: this.name,
@@ -586,13 +588,15 @@ export class Store {
       }
 
       if (res.status === STATUS_OK) {
+        await discardBody(res)
+
         return {
           etag,
           modified: true,
         }
       }
 
-      throw new BlobsInternalError(res, {
+      throw await createBlobsInternalError(res, {
         edgeAccess: this.client.edgeAccess,
         method: HTTPMethod.PUT,
         storeName: this.name,
