@@ -30,6 +30,14 @@ test('Config takes only the sizes servers run on', () => {
   expectTypeOf({ size: 'xlarge' as const }).not.toExtend<Config>()
 })
 
+test('Config takes a minimum and a maximum number of instances, each optional', () => {
+  expectTypeOf({ scale: { min: 0, max: 3 } }).toExtend<Config>()
+  expectTypeOf({ scale: { max: 2 } }).toExtend<Config>()
+  expectTypeOf({ scale: {} }).toExtend<Config>()
+  expectTypeOf({ scale: { max: '2' } }).not.toExtend<Config>()
+  expectTypeOf({ scale: 2 }).not.toExtend<Config>()
+})
+
 test('Health check hooks return a report, or nothing, synchronously or not', () => {
   expectTypeOf(() => ({ utilization: { db_pool: 0.4 } })).toExtend<HealthCheckHook>()
   expectTypeOf(() =>
