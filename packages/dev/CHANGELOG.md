@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.1.11](https://github.com/netlify/primitives/compare/dev-v5.1.10...dev-v5.1.11) (2026-10-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/server-dev bumped from 0.1.4 to 0.1.5
+
 ## [5.1.10](https://github.com/netlify/primitives/compare/dev-v5.1.9...dev-v5.1.10) (2026-10-21)
 
 

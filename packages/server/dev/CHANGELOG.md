@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/netlify/primitives/compare/server-dev-v0.1.4...server-dev-v0.1.5) (2026-10-27)
+
+
+### Bug Fixes
+
+* **server-dev:** take the client address from `X-Forwarded-For` ([#816](https://github.com/netlify/primitives/issues/816)) ([3bf7726](https://github.com/netlify/primitives/commit/3bf772699be5b7e28713ba3835d6aad585790752))
+
 ## [0.1.4](https://github.com/netlify/primitives/compare/server-dev-v0.1.3...server-dev-v0.1.4) (2026-10-20)
 
 
