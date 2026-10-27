@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/netlify/primitives/compare/server-v0.1.3...server-v0.1.4) (2026-10-27)
+
+
+### Features
+
+* **server:** add `scale` configuration property ([#818](https://github.com/netlify/primitives/issues/818)) ([39872a7](https://github.com/netlify/primitives/commit/39872a7587ff66aaaee46c503be73cf6a0318d09))
+
 ## [0.1.3](https://github.com/netlify/primitives/compare/server-v0.1.2...server-v0.1.3) (2026-10-20)
 
 
