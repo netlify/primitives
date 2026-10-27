@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.1.7](https://github.com/netlify/primitives/compare/blobs-v11.1.6...blobs-v11.1.7) (2026-10-27)
+
+
+### Bug Fixes
+
+* **blobs:** fix race with concurrent conditional writes ([#820](https://github.com/netlify/primitives/issues/820)) ([0047610](https://github.com/netlify/primitives/commit/004761048faf5346c3ae50b68c9fd0263dc0986d))
+
 ## [11.1.6](https://github.com/netlify/primitives/compare/blobs-v11.1.5...blobs-v11.1.6) (2026-10-21)
 
 
