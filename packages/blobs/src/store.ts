@@ -20,7 +20,12 @@ export { DEPLOY_STORE_PREFIX, SITE_STORE_PREFIX } from './util.ts'
 export const LEGACY_STORE_INTERNAL_PREFIX = 'netlify-internal/legacy-namespace/'
 
 const STATUS_OK = 200
+
+// The condition attached to a conditional write did not hold.
 const STATUS_PRE_CONDITION_FAILED = 412
+
+// A conditional write lost a race against a concurrent write to the same key.
+const STATUS_CONFLICT = 409
 
 interface BaseStoreOptions {
   client: Client
@@ -103,7 +108,8 @@ type UpdateOnlyOptions = {
   /**
    * If specified, the operation will only succeed if the entry already exists
    * in the store and its current ETag matches this value. If it doesn't match,
-   * the operation will return with `modified: false`.
+   * or if a concurrent write to the same key wins the race, the operation will
+   * return with `modified: false`.
    */
   onlyIfMatch?: string
 
@@ -492,9 +498,23 @@ export class Store {
       })
 
       if (conditions) {
-        await discardBody(res)
+        if (res.status === STATUS_PRE_CONDITION_FAILED || res.status === STATUS_CONFLICT) {
+          await discardBody(res)
 
-        return res.status === STATUS_PRE_CONDITION_FAILED ? { modified: false } : { etag, modified: true }
+          return { modified: false }
+        }
+
+        if (res.ok) {
+          await discardBody(res)
+
+          return { etag, modified: true }
+        }
+
+        throw await createBlobsInternalError(res, {
+          edgeAccess: this.client.edgeAccess,
+          method: HTTPMethod.PUT,
+          storeName: this.name,
+        })
       }
 
       if (res.status === STATUS_OK) {
@@ -550,7 +570,19 @@ export class Store {
       })
 
       if (conditions) {
-        return res.status === STATUS_PRE_CONDITION_FAILED ? { modified: false } : { etag, modified: true }
+        if (res.status === STATUS_PRE_CONDITION_FAILED || res.status === STATUS_CONFLICT) {
+          return { modified: false }
+        }
+
+        if (res.ok) {
+          return { etag, modified: true }
+        }
+
+        throw new BlobsInternalError(res, {
+          edgeAccess: this.client.edgeAccess,
+          method: HTTPMethod.PUT,
+          storeName: this.name,
+        })
       }
 
       if (res.status === STATUS_OK) {
