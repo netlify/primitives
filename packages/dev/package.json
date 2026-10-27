@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev",
-  "version": "5.1.10",
+  "version": "5.1.11",
   "description": "Emulation of the Netlify environment for local development",
   "type": "module",
   "engines": {
@@ -68,7 +68,7 @@
     "@netlify/images": "2.0.5",
     "@netlify/redirects": "4.1.1",
     "@netlify/runtime": "5.0.10",
-    "@netlify/server-dev": "0.1.4",
+    "@netlify/server-dev": "0.1.5",
     "@netlify/static": "4.0.0",
     "ulid": "^3.0.0"
   }
