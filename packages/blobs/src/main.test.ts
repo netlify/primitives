@@ -326,6 +326,36 @@ describe('get', () => {
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
+      test('Returns `modified: false` when `onlyIfMatch` loses a race and the API returns a 409', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${apiToken}` },
+            response: new Response(JSON.stringify({ url: signedURL })),
+            url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+          })
+          .put({
+            headers: { 'if-match': etag },
+            response: new Response(null, { status: 409 }),
+            url: signedURL,
+          })
+          .inject()
+
+        const blobs = getStore({
+          name: 'production',
+          token: apiToken,
+          siteID,
+        })
+
+        const result = await blobs.set(key, value, {
+          onlyIfMatch: etag,
+        })
+
+        expect(result.modified).toBe(false)
+        expect(result.etag).toBeUndefined()
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
       test('Returns `modified: true` when `onlyIfMatch` matches', async () => {
         const etag = 'etag-123'
         const mockStore = new MockFetch()
@@ -526,6 +556,55 @@ describe('get', () => {
         })
 
         expect(result.modified).toBe(false)
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Returns `modified: false` when `onlyIfMatch` loses a race and the API returns a 409', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
+            response: new Response(null, { status: 409 }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+          .inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        const result = await blobs.set(key, value, {
+          onlyIfMatch: etag,
+        })
+
+        expect(result.modified).toBe(false)
+        expect(result.etag).toBeUndefined()
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Throws when a conditional write fails with an unexpected status', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
+            response: new Response(null, { status: 400 }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+          .inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        await expect(blobs.set(key, value, { onlyIfMatch: etag })).rejects.toThrowError(
+          'Netlify Blobs has generated an internal error (400 status code)',
+        )
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
@@ -1461,6 +1540,35 @@ describe('setJSON', () => {
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
+      test('Returns `modified: false` when `onlyIfMatch` loses a race and the API returns a 409', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            headers: { authorization: `Bearer ${apiToken}` },
+            response: new Response(JSON.stringify({ url: signedURL })),
+            url: `https://api.netlify.com/api/v1/blobs/${siteID}/site:production/${key}`,
+          })
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { 'if-match': etag },
+            response: new Response(null, { status: 409 }),
+            url: signedURL,
+          })
+          .inject()
+
+        const blobs = getStore({
+          name: 'production',
+          token: apiToken,
+          siteID,
+        })
+
+        const result = await blobs.setJSON(key, { value }, { onlyIfMatch: etag })
+
+        expect(result.modified).toBe(false)
+        expect(result.etag).toBeUndefined()
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
       test('Returns `modified: true` when `onlyIfMatch` matches', async () => {
         const etag = 'etag-123'
         const mockStore = new MockFetch()
@@ -1618,6 +1726,55 @@ describe('setJSON', () => {
 
         expect(result.modified).toBe(false)
         expect(result.etag).toBeUndefined()
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Returns `modified: false` when `onlyIfMatch` loses a race and the API returns a 409', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
+            response: new Response(null, { status: 409 }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+          .inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        const result = await blobs.setJSON(key, { value }, { onlyIfMatch: etag })
+
+        expect(result.modified).toBe(false)
+        expect(result.etag).toBeUndefined()
+        expect(mockStore.fulfilled).toBeTruthy()
+      })
+
+      test('Throws when a conditional write fails with an unexpected status', async () => {
+        const etag = 'etag-123'
+        const mockStore = new MockFetch()
+          .put({
+            body: JSON.stringify({ value }),
+            headers: { authorization: `Bearer ${edgeToken}`, 'if-match': etag },
+            response: new Response('something went wrong', { status: 400 }),
+            url: `${edgeURL}/${siteID}/site:production/${key}`,
+          })
+          .inject()
+
+        const blobs = getStore({
+          edgeURL,
+          name: 'production',
+          token: edgeToken,
+          siteID,
+        })
+
+        await expect(blobs.setJSON(key, { value }, { onlyIfMatch: etag })).rejects.toThrowError(
+          'Netlify Blobs has generated an internal error (400 status code): something went wrong',
+        )
         expect(mockStore.fulfilled).toBeTruthy()
       })
 
