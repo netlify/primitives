@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/netlify/primitives/compare/server-v0.1.4...server-v0.1.5) (2026-10-30)
+
+
+### Features
+
+* **server:** add `getWebSockets` + `drained` parameter ([#828](https://github.com/netlify/primitives/issues/828)) ([021aa04](https://github.com/netlify/primitives/commit/021aa0429a198b54c0bd50b503475050a955524b))
+
 ## [0.1.4](https://github.com/netlify/primitives/compare/server-v0.1.3...server-v0.1.4) (2026-10-27)
 
 
