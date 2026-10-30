@@ -1,6 +1,6 @@
 {
   "name": "@netlify/server",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "TypeScript utilities for Netlify Server",
   "type": "module",
   "engines": {
