@@ -10,6 +10,8 @@ export {
   type HealthCheckOptions,
   type HealthReport,
   type LifecycleHook,
+  type ShutdownContext,
+  type ShutdownHook,
 } from './lib/lifecycle.js'
-export { upgradeWebSocket, type UpgradeWebSocketOptions, type WebSocketUpgrade } from './lib/upgrade.js'
+export { getWebSockets, upgradeWebSocket, type UpgradeWebSocketOptions, type WebSocketUpgrade } from './lib/upgrade.js'
 export { CloseEvent, WebSocket } from './lib/websocket.js'

@@ -1,6 +1,20 @@
 export type LifecycleHook = () => void | Promise<void>
 
 /**
+ * What a shutdown hook receives.
+ */
+export interface ShutdownContext {
+  /**
+   * Resolves once the requests, WebSockets and background work in progress
+   * have all finished, or once the platform stops waiting for them. It never
+   * rejects.
+   */
+  drained: Promise<void>
+}
+
+export type ShutdownHook = (context: ShutdownContext) => void | Promise<void>
+
+/**
  * What a health check hook reports. Every field is optional.
  */
 export interface HealthReport {
@@ -44,7 +58,7 @@ interface HealthCheckRegistration {
 
 interface Lifecycle {
   start: LifecycleHook[]
-  shutdown: LifecycleHook[]
+  shutdown: ShutdownHook[]
   health: HealthCheckRegistration[]
   started: boolean
 }
@@ -91,14 +105,19 @@ export const onStart = (hook: LifecycleHook): void => {
 }
 
 /**
- * Registers a hook that runs when an instance is shutting down, after it stops
- * receiving traffic. Use it to close connections and flush buffers.
+ * Registers a hook that runs as soon as an instance starts shutting down, when
+ * it stops receiving new traffic. Use it to stop long-running work, close
+ * WebSockets and save state.
  *
- * Hooks run one at a time, in the order they were registered. A hook that
- * throws is logged, and the ones after it still run. They share a grace
- * period, and the instance stops when it runs out.
+ * Requests, WebSockets and background work already in progress keep running.
+ * Await `drained` to wait for them, for example before closing a database pool
+ * they may still be using.
+ *
+ * Hooks run at the same time, so one that awaits `drained` doesn't hold back
+ * the others. A hook that throws is logged. They share a grace period, and the
+ * instance stops when it runs out.
  */
-export const onShutdown = (hook: LifecycleHook): void => {
+export const onShutdown = (hook: ShutdownHook): void => {
   assertHook('onShutdown', hook)
 
   getLifecycle().shutdown.push(hook)

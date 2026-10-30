@@ -11,6 +11,10 @@ import { WebSocket } from './websocket.js'
 const requestNodePrimitivesSymbol = Symbol.for('$netlify.requestNodePrimitives')
 const responseUpgradedSymbol = Symbol.for('$netlify.responseUpgraded')
 
+// Kept on the global object so that every copy of this package loaded in the
+// process, such as its CommonJS and ES module builds, sees the same sockets.
+const openSocketsSymbol = Symbol.for('@netlify/server/websockets')
+
 interface NodePrimitives {
   request: IncomingMessage
   socket: Duplex
@@ -42,6 +46,24 @@ export interface WebSocketUpgrade {
    */
   response: Response
 }
+
+const getOpenSockets = (): Set<WebSocket> => {
+  const globalRef = globalThis as Record<symbol, Set<WebSocket> | undefined>
+
+  globalRef[openSocketsSymbol] ??= new Set()
+
+  return globalRef[openSocketsSymbol]
+}
+
+/**
+ * Returns the WebSocket connections that this instance has open, from every
+ * call to `upgradeWebSocket`. Clients connected to other instances aren't
+ * included.
+ *
+ * Use it to close every connection when the instance shuts down, or to send a
+ * message to every client connected to it.
+ */
+export const getWebSockets = (): WebSocket[] => [...getOpenSockets()]
 
 const keepAlive = (ws: WsWebSocket, idleTimeoutSeconds: number) => {
   let isAlive = true
@@ -102,5 +124,13 @@ export const upgradeWebSocket = (request: Request, options: UpgradeWebSocketOpti
 
   Object.defineProperty(response, responseUpgradedSymbol, { value: true })
 
-  return { socket: new WebSocket(ws), response }
+  const socket = new WebSocket(ws)
+  const openSockets = getOpenSockets()
+
+  openSockets.add(socket)
+  ws.once('close', () => {
+    openSockets.delete(socket)
+  })
+
+  return { socket, response }
 }
