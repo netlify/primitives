@@ -5,7 +5,17 @@ import type { AddressInfo } from 'node:net'
 import { afterEach, assert, beforeEach, describe, expect, test } from 'vitest'
 import { WebSocket as WsClient } from 'ws'
 
-import { CloseEvent, getContext, onHealthCheck, onShutdown, onStart, upgradeWebSocket, WebSocket } from './main.js'
+import {
+  CloseEvent,
+  getContext,
+  getWebSockets,
+  onHealthCheck,
+  onShutdown,
+  onStart,
+  upgradeWebSocket,
+  WebSocket,
+  type ShutdownContext,
+} from './main.js'
 
 // These keys are the contract with the platform, so the tests spell them out
 // rather than importing them.
@@ -18,7 +28,7 @@ const globalRef = globalThis as Record<symbol, unknown>
 
 interface Lifecycle {
   start: (() => unknown)[]
-  shutdown: (() => unknown)[]
+  shutdown: ((context: ShutdownContext) => unknown)[]
   health: { hook: () => unknown; interval: number }[]
   started: boolean
 }
@@ -118,6 +128,21 @@ describe('onShutdown', () => {
     onShutdown(hook)
 
     expect((globalRef[LIFECYCLE_KEY] as Lifecycle).shutdown).toEqual([hook])
+  })
+
+  test('Passes the shutdown context to the hooks', async () => {
+    let received: ShutdownContext | undefined
+
+    onShutdown((context: ShutdownContext) => {
+      received = context
+    })
+
+    const [hook] = (globalRef[LIFECYCLE_KEY] as Lifecycle).shutdown
+    const context = { drained: Promise.resolve() }
+
+    await hook(context)
+
+    expect(received).toBe(context)
   })
 
   test('Throws when given something other than a function', () => {
@@ -344,6 +369,45 @@ describe('upgradeWebSocket', () => {
     expect(() => {
       socket?.send('too late')
     }).not.toThrow()
+  })
+
+  test('Lists the open sockets, so they can all be closed at once', async () => {
+    const sockets: WebSocket[] = []
+    const { port } = await startPlatform((request) => {
+      const { socket, response } = upgradeWebSocket(request)
+
+      sockets.push(socket)
+
+      return response
+    })
+
+    const clients = [await connect(port), await connect(port)]
+
+    expect(getWebSockets()).toEqual(expect.arrayContaining(sockets))
+
+    const clientCodes = clients.map(
+      (client) =>
+        new Promise<number>((resolve) => {
+          client.once('close', resolve)
+        }),
+    )
+    const serverCloses = sockets.map(
+      (socket) =>
+        new Promise((resolve) => {
+          socket.addEventListener('close', resolve)
+        }),
+    )
+
+    for (const socket of getWebSockets()) {
+      socket.close(1012, 'Server restarting')
+    }
+
+    expect(await Promise.all(clientCodes)).toEqual([1012, 1012])
+
+    await Promise.all(serverCloses)
+
+    expect(getWebSockets()).not.toContain(sockets[0])
+    expect(getWebSockets()).not.toContain(sockets[1])
   })
 
   test('Agrees on the protocol it is given', async () => {

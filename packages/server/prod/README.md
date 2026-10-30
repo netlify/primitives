@@ -53,7 +53,10 @@ app.get('/', (req, res) => {
 instance waits for it, and fails to start if it throws. This is how code that cannot use top-level `await`, such as a
 CommonJS app, holds traffic until it is ready.
 
-`onShutdown` registers a hook that runs when the instance is being recycled, after it stops receiving traffic.
+`onShutdown` registers a hook that runs as soon as the instance starts shutting down, when it stops receiving new
+traffic. Requests, WebSockets and background work already in progress keep running. The hook receives `drained`, a
+promise that resolves once they have all finished. Act straight away on anything that only stops when told, and await
+`drained` before closing resources the work in progress may still be using.
 
 ```js
 const { onShutdown, onStart } = require('@netlify/server')
@@ -63,12 +66,18 @@ onStart(async () => {
   app.listen(process.env.PORT)
 })
 
-onShutdown(async () => {
+onShutdown(async ({ drained }) => {
+  queue.stop()
+
+  await drained
   await db.end()
 })
 ```
 
-Hooks of each kind run one at a time, in registration order. Shutdown hooks share a bounded grace period.
+`drained` also resolves if the platform stops waiting with work still in progress.
+
+Start hooks run one at a time, in registration order. Shutdown hooks run at the same time, so one that awaits `drained`
+doesn't hold back the others, and they share a bounded grace period.
 
 ### Health checks
 
@@ -130,4 +139,18 @@ export default async (req: Request) => {
 
   return new Response('Connect with a WebSocket client')
 }
+```
+
+`getWebSockets()` returns the connections the instance has open, which is how you close them all when it shuts down.
+Closing with code `1012` tells clients that the server is restarting, so they can reconnect straight away and reach a
+new instance.
+
+```ts
+import { getWebSockets, onShutdown } from '@netlify/server'
+
+onShutdown(() => {
+  for (const socket of getWebSockets()) {
+    socket.close(1012, 'Server restarting')
+  }
+})
 ```
