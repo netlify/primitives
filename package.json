@@ -45,7 +45,6 @@
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.9",
-    "jsdom": "^26",
     "@eslint/js": "^9.27.0",
     "@vitest/eslint-plugin": "^1.2.1",
     "eslint": "^9.0.0",
@@ -53,6 +52,7 @@
     "eslint-plugin-n": "17.21.3",
     "execa": "^8.0.1",
     "husky": "^9.0.0",
+    "jsdom": "^26",
     "pkg-pr-new": "^0.0.86",
     "prettier": "^3.0.0",
     "typescript-eslint": "^8.33.0"
