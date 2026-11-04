@@ -32,7 +32,6 @@
     "publint": "npx -y publint --strict"
   },
   "dependencies": {
-    "@netlify/cache": "4.1.0",
     "@netlify/types": "3.3.0",
     "ws": "^8.18.0"
   },

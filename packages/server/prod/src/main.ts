@@ -1,7 +1,5 @@
 export type { Context, ServerRegion, ServerSize } from '@netlify/types'
 
-export { purgeCache, type PurgeCacheOptions } from '@netlify/cache'
-
 export type { Config } from './lib/config.js'
 export { getContext } from './lib/context.js'
 export {
