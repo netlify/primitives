@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/netlify/primitives/compare/cache-v4.1.0...cache-v4.2.0) (2026-11-04)
+
+
+### Features
+
+* move `purgeCache` to `@netlify/cache` ([#832](https://github.com/netlify/primitives/issues/832)) ([26510d6](https://github.com/netlify/primitives/commit/26510d6d5ebac2a6486daf40a916731ec68c1629))
+
 ## [4.1.0](https://github.com/netlify/primitives/compare/cache-v4.0.2...cache-v4.1.0) (2026-10-20)
 
 
