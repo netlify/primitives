@@ -1,5 +1,7 @@
 import { env } from 'process'
 
+import type { NetlifyGlobal } from '@netlify/types'
+
 interface BasePurgeCacheOptions {
   apiURL?: string
   deployAlias?: string
@@ -21,6 +23,9 @@ interface PurgeCacheOptionsWithDomain extends BasePurgeCacheOptions {
 }
 
 type PurgeCacheOptions = PurgeCacheOptionsWithSiteID | PurgeCacheOptionsWithSiteSlug | PurgeCacheOptionsWithDomain
+
+// The site of the request being handled, if any.
+const getRequestSiteID = () => (globalThis as { Netlify?: NetlifyGlobal }).Netlify?.context?.site.id
 
 interface PurgeAPIPayload {
   cache_tags?: string[]
@@ -54,9 +59,9 @@ export const purgeCache = async (options: PurgeCacheOptions = {}) => {
   } else if ('domain' in options) {
     payload.domain = options.domain
   } else {
-    // The `siteID` from `options` takes precedence over the one from the
-    // environment.
-    const siteID = options.siteID || env.SITE_ID
+    // `options.siteID` wins, then the request's site, then `SITE_ID`, which
+    // Netlify Server doesn't set.
+    const siteID = options.siteID || getRequestSiteID() || env.SITE_ID
 
     if (!siteID) {
       throw new Error(

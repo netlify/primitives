@@ -9,6 +9,7 @@ import { MockFetch } from '../../test/helpers/mock_fetch.mjs'
 import { purgeCache } from './purge_cache.js'
 
 const globalFetch = globalThis.fetch
+const globalNetlify = globalThis.Netlify
 const hasFetchAPI = semver.gte(process.version, '18.0.0')
 
 beforeEach(() => {
@@ -19,7 +20,13 @@ beforeEach(() => {
 
 afterEach(() => {
   globalThis.fetch = globalFetch
+  globalThis.Netlify = globalNetlify
 })
+
+// Sets the `Netlify` global the way the runtime does while handling a request.
+const setRequestSite = (siteID: string) => {
+  globalThis.Netlify = { context: { site: { id: siteID } } } as unknown as typeof globalThis.Netlify
+}
 
 test('Calls the purge API endpoint and returns `undefined` if the operation was successful', async () => {
   if (!hasFetchAPI) {
@@ -149,4 +156,62 @@ test('Accepts a custom user-agent', async () => {
 
   expect(response).toBeUndefined()
   expect(mockAPI.fulfilled).toBeTruthy()
+})
+
+test('Reads the site ID from the request when the environment does not have one', async () => {
+  const mockSiteID = 'site-from-request'
+  const mockToken = '1q2w3e4r5t6y7u8i9o0p'
+
+  process.env.NETLIFY_PURGE_API_TOKEN = mockToken
+  setRequestSite(mockSiteID)
+
+  const mockAPI = new MockFetch().post({
+    body: (payload: string) => {
+      const data = JSON.parse(payload)
+
+      expect(data.site_id).toBe(mockSiteID)
+    },
+    headers: { Authorization: `Bearer ${mockToken}` },
+    method: 'post',
+    response: new Response(null, { status: 202 }),
+    url: `https://api.netlify.com/api/v1/purge`,
+  })
+
+  globalThis.fetch = mockAPI.fetcher
+
+  await purgeCache()
+
+  expect(mockAPI.fulfilled).toBeTruthy()
+})
+
+test('Prefers the site ID from the request over the one from the environment', async () => {
+  const mockToken = '1q2w3e4r5t6y7u8i9o0p'
+
+  process.env.NETLIFY_PURGE_API_TOKEN = mockToken
+  process.env.SITE_ID = 'site-from-environment'
+  setRequestSite('site-from-request')
+
+  const mockAPI = new MockFetch().post({
+    body: (payload: string) => {
+      const data = JSON.parse(payload)
+
+      expect(data.site_id).toBe('site-from-request')
+    },
+    headers: { Authorization: `Bearer ${mockToken}` },
+    method: 'post',
+    response: new Response(null, { status: 202 }),
+    url: `https://api.netlify.com/api/v1/purge`,
+  })
+
+  globalThis.fetch = mockAPI.fetcher
+
+  await purgeCache()
+
+  expect(mockAPI.fulfilled).toBeTruthy()
+})
+
+test('Throws when neither the request nor the environment has a site ID', async () => {
+  process.env.NETLIFY_PURGE_API_TOKEN = '1q2w3e4r5t6y7u8i9o0p'
+
+  await expect(purgeCache()).rejects.toThrow('The Netlify site ID was not found in the execution environment.')
 })
