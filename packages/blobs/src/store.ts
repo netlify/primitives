@@ -168,7 +168,7 @@ export class Store {
   async delete(key: string) {
     const res = await this.client.makeRequest({ key, method: HTTPMethod.DELETE, storeName: this.name })
 
-    await discardBody(res)
+    discardBody(res)
 
     if (![200, 204, 404].includes(res.status)) {
       throw new BlobsInternalError(res, {
@@ -187,7 +187,7 @@ export class Store {
       const res = await this.client.makeRequest({ method: HTTPMethod.DELETE, storeName: this.name })
 
       if (res.status !== 200) {
-        await discardBody(res)
+        discardBody(res)
 
         throw new BlobsInternalError(res, {
           edgeAccess: this.client.edgeAccess,
@@ -245,13 +245,13 @@ export class Store {
       })
 
       if (res.status === 404) {
-        await discardBody(res)
+        discardBody(res)
 
         return null
       }
 
       if (res.status !== 200) {
-        await discardBody(res)
+        discardBody(res)
 
         throw new BlobsInternalError(res)
       }
@@ -277,7 +277,7 @@ export class Store {
         return res.body
       }
 
-      await discardBody(res)
+      discardBody(res)
 
       throw new BlobsInternalError(res)
     })
@@ -390,13 +390,13 @@ export class Store {
       })
 
       if (res.status === 404) {
-        await discardBody(res)
+        discardBody(res)
 
         return null
       }
 
       if (res.status !== 200 && res.status !== 304) {
-        await discardBody(res)
+        discardBody(res)
 
         throw new BlobsInternalError(res)
       }
@@ -431,7 +431,7 @@ export class Store {
         return { data: res.body, ...result }
       }
 
-      await discardBody(res)
+      discardBody(res)
 
       throw new Error(`Invalid 'type' property: ${type}. Expected: arrayBuffer, blob, json, stream, or text.`)
     })
@@ -499,13 +499,13 @@ export class Store {
 
       if (conditions) {
         if (res.status === STATUS_PRE_CONDITION_FAILED || res.status === STATUS_CONFLICT) {
-          await discardBody(res)
+          discardBody(res)
 
           return { modified: false }
         }
 
         if (res.ok) {
-          await discardBody(res)
+          discardBody(res)
 
           return { etag, modified: true }
         }
@@ -518,7 +518,7 @@ export class Store {
       }
 
       if (res.status === STATUS_OK) {
-        await discardBody(res)
+        discardBody(res)
 
         return {
           etag,
@@ -569,13 +569,13 @@ export class Store {
 
       if (conditions) {
         if (res.status === STATUS_PRE_CONDITION_FAILED || res.status === STATUS_CONFLICT) {
-          await discardBody(res)
+          discardBody(res)
 
           return { modified: false }
         }
 
         if (res.ok) {
-          await discardBody(res)
+          discardBody(res)
 
           return { etag, modified: true }
         }
@@ -588,7 +588,7 @@ export class Store {
       }
 
       if (res.status === STATUS_OK) {
-        await discardBody(res)
+        discardBody(res)
 
         return {
           etag,
@@ -734,13 +734,13 @@ export class Store {
               let directories: string[] = []
 
               if (![200, 204, 404].includes(res.status)) {
-                await discardBody(res)
+                discardBody(res)
 
                 throw new BlobsInternalError(res)
               }
 
               if (res.status === 404) {
-                await discardBody(res)
+                discardBody(res)
 
                 done = true
               } else {
