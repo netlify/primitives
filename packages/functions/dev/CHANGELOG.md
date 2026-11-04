@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.15](https://github.com/netlify/primitives/compare/functions-dev-v2.0.14...functions-dev-v2.0.15) (2026-11-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/functions bumped from 6.0.3 to 6.1.0
+
 ## [2.0.14](https://github.com/netlify/primitives/compare/functions-dev-v2.0.13...functions-dev-v2.0.14) (2026-10-27)
 
 
