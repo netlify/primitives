@@ -72,6 +72,7 @@
     "test": "test"
   },
   "dependencies": {
+    "@netlify/cache": "4.1.0",
     "@netlify/types": "3.3.0"
   },
   "devDependencies": {

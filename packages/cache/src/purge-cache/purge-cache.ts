@@ -1,5 +1,4 @@
-import { env } from 'process'
-
+import { getEnvironment } from '@netlify/runtime-utils'
 import type { NetlifyGlobal } from '@netlify/types'
 
 interface BasePurgeCacheOptions {
@@ -22,10 +21,16 @@ interface PurgeCacheOptionsWithDomain extends BasePurgeCacheOptions {
   domain: string
 }
 
-type PurgeCacheOptions = PurgeCacheOptionsWithSiteID | PurgeCacheOptionsWithSiteSlug | PurgeCacheOptionsWithDomain
+export type PurgeCacheOptions =
+  | PurgeCacheOptionsWithSiteID
+  | PurgeCacheOptionsWithSiteSlug
+  | PurgeCacheOptionsWithDomain
 
 // The site of the request being handled, if any.
 const getRequestSiteID = () => (globalThis as { Netlify?: NetlifyGlobal }).Netlify?.context?.site.id
+
+// An empty string counts as not set.
+const firstNonEmpty = (...values: (string | undefined)[]) => values.find((value) => value !== undefined && value !== '')
 
 interface PurgeAPIPayload {
   cache_tags?: string[]
@@ -36,20 +41,15 @@ interface PurgeAPIPayload {
 }
 
 export const purgeCache = async (options: PurgeCacheOptions = {}) => {
-  if (globalThis.fetch === undefined) {
-    throw new Error(
-      "`fetch` is not available. Please ensure you're using Node.js version 18.0.0 or above. Refer to https://ntl.fyi/functions-runtime for more information.",
-    )
-  }
-
+  const env = getEnvironment()
   const payload: PurgeAPIPayload = {
     cache_tags: options.tags,
     deploy_alias: options.deployAlias,
   }
-  const token = env.NETLIFY_PURGE_API_TOKEN || options.token
+  const token = firstNonEmpty(env.get('NETLIFY_PURGE_API_TOKEN'), options.token)
 
-  if (env.NETLIFY_LOCAL && !token) {
-    const scope = options.tags?.length ? ` for tags ${options.tags?.join(', ')}` : ''
+  if (env.get('NETLIFY_LOCAL') && !token) {
+    const scope = options.tags?.length ? ` for tags ${options.tags.join(', ')}` : ''
     console.log(`Skipping purgeCache${scope} in local development.`)
     return
   }
@@ -61,7 +61,7 @@ export const purgeCache = async (options: PurgeCacheOptions = {}) => {
   } else {
     // `options.siteID` wins, then the request's site, then `SITE_ID`, which
     // Netlify Server doesn't set.
-    const siteID = options.siteID || getRequestSiteID() || env.SITE_ID
+    const siteID = firstNonEmpty(options.siteID, getRequestSiteID(), env.get('SITE_ID'))
 
     if (!siteID) {
       throw new Error(
@@ -87,7 +87,7 @@ export const purgeCache = async (options: PurgeCacheOptions = {}) => {
     headers['user-agent'] = options.userAgent
   }
 
-  const apiURL = options.apiURL || 'https://api.netlify.com'
+  const apiURL = firstNonEmpty(options.apiURL) ?? 'https://api.netlify.com'
   const response = await fetch(`${apiURL}/api/v1/purge`, {
     method: 'POST',
     headers,
@@ -95,6 +95,6 @@ export const purgeCache = async (options: PurgeCacheOptions = {}) => {
   })
 
   if (!response.ok) {
-    throw new Error(`Cache purge API call returned an unexpected status code: ${response.status}`)
+    throw new Error(`Cache purge API call returned an unexpected status code: ${String(response.status)}`)
   }
 }
