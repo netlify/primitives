@@ -59,8 +59,6 @@ export const purgeCache = async (options: PurgeCacheOptions = {}) => {
   } else if ('domain' in options) {
     payload.domain = options.domain
   } else {
-    // `options.siteID` wins, then the request's site, then `SITE_ID`, which
-    // Netlify Server doesn't set.
     const siteID = firstNonEmpty(options.siteID, getRequestSiteID(), env.get('SITE_ID'))
 
     if (!siteID) {
