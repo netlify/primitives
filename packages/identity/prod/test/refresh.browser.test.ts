@@ -359,9 +359,13 @@ describe('token refresh across tabs', () => {
     stopTokenRefresh()
   })
 
-  it("refreshes on its own when the other tab's session never arrives", async () => {
+  it('refreshes on its own when the cookie is stale and no other session arrives', async () => {
     mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
     mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
+    // Every refresh in another tab writes localStorage, so its session would arrive with a
+    // `storage` event. Without one, the cookie changed outside the browser session. This test
+    // covers a stale cookie: gotrue-js rotated this session in a call that doesn't write
+    // cookies, so 'first-refresh' is still valid.
     installLocks(() => {
       document.cookie = 'nf_refresh=changed-elsewhere; path=/'
     })
