@@ -1,3 +1,4 @@
+import { purgeCache as purgeCacheFromCache } from '@netlify/cache'
 import type { NetlifyGlobal } from '@netlify/types'
 
 declare global {
@@ -8,7 +9,10 @@ declare global {
 
 export { builder } from './lib/builder.js'
 export { getContext } from './lib/get_context.js'
-export { purgeCache } from './lib/purge_cache.js'
+/**
+ * @deprecated Import `purgeCache` from `@netlify/cache` instead.
+ */
+export const purgeCache = purgeCacheFromCache
 export { schedule } from './lib/schedule.js'
 export { stream } from './lib/stream.js'
 export { SYNCHRONOUS_FUNCTION_TIMEOUT, BACKGROUND_FUNCTION_TIMEOUT } from './lib/consts.js'

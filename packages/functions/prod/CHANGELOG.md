@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.1.0](https://github.com/netlify/primitives/compare/functions-v6.0.3...functions-v6.1.0) (2026-11-04)
+
+
+### Features
+
+* move `purgeCache` to `@netlify/cache` ([#832](https://github.com/netlify/primitives/issues/832)) ([26510d6](https://github.com/netlify/primitives/commit/26510d6d5ebac2a6486daf40a916731ec68c1629))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/cache bumped from 4.1.0 to 4.2.0
+
 ## [6.0.3](https://github.com/netlify/primitives/compare/functions-v6.0.2...functions-v6.0.3) (2026-10-20)
 
 
