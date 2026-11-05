@@ -46,6 +46,12 @@ export function getConnectionString(): string {
 
 const SSL_MODES_TREATED_AS_VERIFY_FULL = new Set(['prefer', 'require', 'verify-ca'])
 
+// lastSearchParam returns the last value of a query parameter, which is the one
+// node-postgres uses when a parameter is repeated.
+function lastSearchParam(url: URL, name: string): string | null {
+  return url.searchParams.getAll(name).at(-1) ?? null
+}
+
 // withExplicitSSLMode replaces `prefer`, `require` and `verify-ca` with
 // `verify-full`. node-postgres already treats them as `verify-full`, but logs a
 // warning when it sees them.
@@ -58,13 +64,13 @@ function withExplicitSSLMode(connectionString: string): string {
     return connectionString
   }
 
-  // `uselibpqcompat` gives these modes libpq's meaning, so strings that set it
-  // are returned unchanged.
-  if (url.searchParams.has('uselibpqcompat')) {
+  // `uselibpqcompat=true` gives these modes libpq's meaning, so strings that set
+  // it are returned unchanged.
+  if (lastSearchParam(url, 'uselibpqcompat') === 'true') {
     return connectionString
   }
 
-  const sslMode = url.searchParams.get('sslmode')
+  const sslMode = lastSearchParam(url, 'sslmode')
 
   if (sslMode === null || !SSL_MODES_TREATED_AS_VERIFY_FULL.has(sslMode)) {
     return connectionString

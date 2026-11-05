@@ -167,6 +167,25 @@ describe('getDatabase', () => {
   })
 
   it.each([
+    [
+      'postgres://user:pass@localhost:5432/mydb?uselibpqcompat=false&sslmode=require',
+      'postgres://user:pass@localhost:5432/mydb?uselibpqcompat=false&sslmode=verify-full',
+    ],
+    [
+      'postgres://user:pass@localhost:5432/mydb?sslmode=disable&sslmode=require',
+      'postgres://user:pass@localhost:5432/mydb?sslmode=verify-full',
+    ],
+  ])('rewrites %s to verify-full', (connectionString, expected) => {
+    process.env.NETLIFY_DB_URL = connectionString
+
+    getDatabase()
+
+    expect(mockPgPool).toHaveBeenCalledWith({ connectionString: expected })
+  })
+
+  it.each([
+    'postgres://user:pass@localhost:5432/mydb?sslmode=require&sslmode=disable',
+    'postgres://user:pass@localhost:5432/mydb?uselibpqcompat=false&uselibpqcompat=true&sslmode=require',
     'postgres://user:pass@localhost:5432/mydb?sslmode=disable',
     'postgres://user:pass@localhost:5432/mydb?sslmode=no-verify',
     'postgres://user:pass@localhost:5432/mydb?sslmode=verify-full',
