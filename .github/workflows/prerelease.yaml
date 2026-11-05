@@ -19,9 +19,6 @@ jobs:
         with:
           node-version: '24'
           check-latest: true
-      # Use npm@10 on Node 22+ due to https://github.com/npm/cli/issues/8489
-      - name: Setup npm version
-        run: npm install -g npm@10
       - name: Setup Deno
         uses: denoland/setup-deno@11b63cf76cfcafb4e43f97b6cad24d8e8438f62d # v1.5.2
         with:
