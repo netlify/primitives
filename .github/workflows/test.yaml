@@ -16,11 +16,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        node-version: ['24']
+        node-version: ['26']
         # `node-install-version` is what `setup-node` actually installs.
         # `node-version` is the display value used in the matrix job name
         # (which required status checks are pinned to), so it must stay stable.
-        node-install-version: ['24.15.0']
+        node-install-version: ['26.13.0']
         include:
           - os: ubuntu-latest
             # Test the minimum supported Node.js version.
