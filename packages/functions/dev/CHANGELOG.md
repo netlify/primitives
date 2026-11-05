@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.16](https://github.com/netlify/primitives/compare/functions-dev-v2.0.15...functions-dev-v2.0.16) (2026-11-05)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#842](https://github.com/netlify/primitives/issues/842)) ([450cdb7](https://github.com/netlify/primitives/commit/450cdb76a192dccaf1b3af2833046db64e015a95))
+
 ## [2.0.15](https://github.com/netlify/primitives/compare/functions-dev-v2.0.14...functions-dev-v2.0.15) (2026-11-04)
 
 

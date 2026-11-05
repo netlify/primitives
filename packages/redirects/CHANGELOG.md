@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.2](https://github.com/netlify/primitives/compare/redirects-v4.1.1...redirects-v4.1.2) (2026-11-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @netlify/redirect-matcher to ^0.8.0 ([#843](https://github.com/netlify/primitives/issues/843)) ([8503b64](https://github.com/netlify/primitives/commit/8503b64f000c68fbfe50baa8bf4347698e0be4a2))
+
 ## [4.1.1](https://github.com/netlify/primitives/compare/redirects-v4.1.0...redirects-v4.1.1) (2026-10-20)
 
 
