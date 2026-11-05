@@ -48,11 +48,10 @@
   "devDependencies": {
     "@netlify/test-utils": "*",
     "@netlify/types": "3.3.0",
-    "@types/node": "^18.19.110",
+    "@types/node": "^22.0.0",
     "@types/parse-gitignore": "^1.0.2",
     "execa": "^8.0.1",
-    "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "tsup": "^8.0.0"
   },
   "dependencies": {
     "@whatwg-node/server": "^0.11.0",

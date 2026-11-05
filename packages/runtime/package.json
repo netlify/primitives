@@ -40,8 +40,7 @@
   },
   "devDependencies": {
     "@netlify/test-utils": "*",
-    "@types/node": "^20.17.57",
-    "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0"
   }
 }

@@ -45,8 +45,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "tsup": "^8.0.0"
   },
   "dependencies": {
     "@netlify/types": "3.3.0"

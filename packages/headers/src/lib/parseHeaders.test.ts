@@ -36,7 +36,7 @@ it('allows valid syntax', async () => {
 
   const headersFile = path.resolve(directory, '_headers')
   const logger = { ...createMockLogger(), error: vi.fn() }
-  await expect(parseHeaders({ configHeaders: [], headersFiles: [headersFile], logger })).resolves.not.toThrowError()
+  await expect(parseHeaders({ configHeaders: [], headersFiles: [headersFile], logger })).resolves.not.toThrow()
 
   expect(logger.error).not.toHaveBeenCalled()
 
@@ -58,9 +58,7 @@ X-Frame-Thing:
 
   const invalidHeadersFile = path.resolve(directory, '_invalid_headers')
   const logger = { ...createMockLogger(), error: vi.fn() }
-  await expect(
-    parseHeaders({ configHeaders: [], headersFiles: [invalidHeadersFile], logger }),
-  ).resolves.not.toThrowError()
+  await expect(parseHeaders({ configHeaders: [], headersFiles: [invalidHeadersFile], logger })).resolves.not.toThrow()
 
   expect(logger.error).toHaveBeenCalledExactlyOnceWith(`Headers syntax errors:
 Could not parse header line 6:
