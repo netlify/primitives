@@ -1,0 +1,13 @@
+# @netlify/redirects
+
+[![@netlify/redirects version](https://npmx.dev/api/registry/badge/version/@netlify/redirects?color=28b5ac&name=true)](https://npmx.dev/package/@netlify/redirects)
+[![license](https://npmx.dev/api/registry/badge/license/@netlify/redirects?color=28b5ac)](https://npmx.dev/package/@netlify/redirects)
+[![node](https://npmx.dev/api/registry/badge/engines/@netlify/redirects?color=28b5ac)](https://npmx.dev/package/@netlify/redirects)
+[![downloads/mo](https://npmx.dev/api/registry/badge/downloads/@netlify/redirects?color=28b5ac)](https://npmx.dev/package/@netlify/redirects)
+
+An implementation of Netlify's [redirects and rewrites](https://docs.netlify.com/manage/routing/redirects/overview/)
+engine.
+
+This is an internal building block of [`@netlify/dev`](https://npmx.dev/package/@netlify/dev), which powers local
+development in the [Netlify CLI](https://docs.netlify.com/api-and-cli-guides/cli-guides/local-development/) and the
+Netlify Vite plugin. You probably want one of those instead.

@@ -1,7 +1,9 @@
-[![Build](https://github.com/netlify/primitives/workflows/Build/badge.svg)](https://github.com/netlify/primitives/actions)
-[![Node](https://img.shields.io/node/v/@netlify/blobs.svg?logo=node.js)](https://www.npmjs.com/package/@netlify/blobs)
-
 # @netlify/blobs
+
+[![@netlify/blobs version](https://npmx.dev/api/registry/badge/version/@netlify/blobs?color=28b5ac&name=true)](https://npmx.dev/package/@netlify/blobs)
+[![license](https://npmx.dev/api/registry/badge/license/@netlify/blobs?color=28b5ac)](https://npmx.dev/package/@netlify/blobs)
+[![node](https://npmx.dev/api/registry/badge/engines/@netlify/blobs?color=28b5ac)](https://npmx.dev/package/@netlify/blobs)
+[![downloads/mo](https://npmx.dev/api/registry/badge/downloads/@netlify/blobs?color=28b5ac)](https://npmx.dev/package/@netlify/blobs)
 
 A TypeScript client for Netlify Blobs.
 
