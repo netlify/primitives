@@ -153,6 +153,63 @@ describe('getDatabase', () => {
     expect(result.connectionString).toBe(CONNECTION_STRING)
   })
 
+  it.each(['prefer', 'require', 'verify-ca'])('passes sslmode=%s to node-postgres as verify-full', (sslMode) => {
+    const connectionString = `postgres://user:pass@ep-example-pooler.neon.tech/mydb?sslmode=${sslMode}&channel_binding=require`
+    process.env.NETLIFY_DB_URL = connectionString
+
+    const result = getDatabase()
+
+    expect(mockPgPool).toHaveBeenCalledWith({
+      connectionString:
+        'postgres://user:pass@ep-example-pooler.neon.tech/mydb?sslmode=verify-full&channel_binding=require',
+    })
+    expect(result.connectionString).toBe(connectionString)
+  })
+
+  it.each([
+    [
+      'postgres://user:pass@localhost:5432/mydb?uselibpqcompat=false&sslmode=require',
+      'postgres://user:pass@localhost:5432/mydb?uselibpqcompat=false&sslmode=verify-full',
+    ],
+    [
+      'postgres://user:pass@localhost:5432/mydb?sslmode=disable&sslmode=require',
+      'postgres://user:pass@localhost:5432/mydb?sslmode=verify-full',
+    ],
+  ])('rewrites %s to verify-full', (connectionString, expected) => {
+    process.env.NETLIFY_DB_URL = connectionString
+
+    getDatabase()
+
+    expect(mockPgPool).toHaveBeenCalledWith({ connectionString: expected })
+  })
+
+  it.each([
+    'postgres://user:pass@localhost:5432/mydb?sslmode=require&sslmode=disable',
+    'postgres://user:pass@localhost:5432/mydb?uselibpqcompat=false&uselibpqcompat=true&sslmode=require',
+    'postgres://user:pass@localhost:5432/mydb?sslmode=disable',
+    'postgres://user:pass@localhost:5432/mydb?sslmode=no-verify',
+    'postgres://user:pass@localhost:5432/mydb?sslmode=verify-full',
+    'postgres://user:pass@localhost:5432/mydb?uselibpqcompat=true&sslmode=require',
+    'socket:/var/run/postgresql?db=mydb',
+    'not a url',
+  ])('passes %s to node-postgres unchanged', (connectionString) => {
+    process.env.NETLIFY_DB_URL = connectionString
+
+    getDatabase()
+
+    expect(mockPgPool).toHaveBeenCalledWith({ connectionString })
+  })
+
+  it('passes sslmode=require to the serverless driver unchanged', () => {
+    const connectionString = 'postgres://user:pass@ep-example-pooler.neon.tech/mydb?sslmode=require'
+    process.env.NETLIFY_DB_URL = connectionString
+    process.env.NETLIFY_DB_DRIVER = 'serverless'
+
+    getDatabase()
+
+    expect(mockNeonPool).toHaveBeenCalledWith({ connectionString })
+  })
+
   it('re-resolves NETLIFY_DB_URL on use so rotated credentials take effect', () => {
     process.env.NETLIFY_DB_URL = CONNECTION_STRING
     process.env.NETLIFY_DB_DRIVER = 'serverless'
