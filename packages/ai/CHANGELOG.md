@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/netlify/primitives/compare/ai-v1.0.2...ai-v1.0.3) (2026-11-05)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#842](https://github.com/netlify/primitives/issues/842)) ([450cdb7](https://github.com/netlify/primitives/commit/450cdb76a192dccaf1b3af2833046db64e015a95))
+
 ## [1.0.2](https://github.com/netlify/primitives/compare/ai-v1.0.1...ai-v1.0.2) (2026-10-21)
 
 
