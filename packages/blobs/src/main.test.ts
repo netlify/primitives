@@ -132,7 +132,7 @@ describe('get', () => {
         siteID,
       })
 
-      await expect(blobs.get(key)).rejects.toThrowError(
+      await expect(blobs.get(key)).rejects.toThrow(
         `Netlify Blobs has generated an internal error (401 status code, ID: ${mockRequestID})`,
       )
       expect(mockStore.fulfilled).toBeTruthy()
@@ -157,9 +157,7 @@ describe('get', () => {
         siteID,
       })
 
-      await expect(blobs.get(key)).rejects.toThrowError(
-        `Netlify Blobs has generated an internal error (401 status code)`,
-      )
+      await expect(blobs.get(key)).rejects.toThrow(`Netlify Blobs has generated an internal error (401 status code)`)
 
       expect(mockStore.fulfilled).toBeTruthy()
     })
@@ -477,9 +475,7 @@ describe('get', () => {
         siteID,
       })
 
-      await expect(blobs.get(key)).rejects.toThrowError(
-        `Netlify Blobs has generated an internal error (${errorDetails})`,
-      )
+      await expect(blobs.get(key)).rejects.toThrow(`Netlify Blobs has generated an internal error (${errorDetails})`)
 
       expect(mockStore.fulfilled).toBeTruthy()
     })
@@ -602,7 +598,7 @@ describe('get', () => {
           siteID,
         })
 
-        await expect(blobs.set(key, value, { onlyIfMatch: etag })).rejects.toThrowError(
+        await expect(blobs.set(key, value, { onlyIfMatch: etag })).rejects.toThrow(
           'Netlify Blobs has generated an internal error (400 status code)',
         )
         expect(mockStore.fulfilled).toBeTruthy()
@@ -861,7 +857,7 @@ describe('getMetadata', () => {
         siteID,
       })
 
-      await expect(blobs.getMetadata(key)).rejects.toThrowError(
+      await expect(blobs.getMetadata(key)).rejects.toThrow(
         'An internal error occurred while trying to retrieve the metadata for an entry. Please try updating to the latest version of the Netlify Blobs client.',
       )
 
@@ -1002,7 +998,7 @@ describe('getWithMetadata', () => {
         siteID,
       })
 
-      await expect(blobs.getWithMetadata(key)).rejects.toThrowError(
+      await expect(blobs.getWithMetadata(key)).rejects.toThrow(
         'An internal error occurred while trying to retrieve the metadata for an entry. Please try updating to the latest version of the Netlify Blobs client.',
       )
 
@@ -1201,7 +1197,7 @@ describe('set', () => {
         siteID,
       })
 
-      await expect(blobs.set(key, 'value')).rejects.toThrowError(
+      await expect(blobs.set(key, 'value')).rejects.toThrow(
         `Netlify Blobs could not write to store 'production' (401 status code). Builds and build plugins can only write to deploy-specific stores: use 'getDeployStore' instead of 'getStore', or pass a 'token' with write access to the store. If this code is not running in a build, check that the token and site ID are valid. See https://docs.netlify.com/build/data-and-storage/netlify-blobs/#deploy-specific-stores`,
       )
       expect(mockStore.fulfilled).toBeTruthy()
@@ -1216,9 +1212,9 @@ describe('set', () => {
         siteID,
       })
 
-      await expect(blobs.set('', 'value')).rejects.toThrowError('Blob key must not be empty.')
-      await expect(blobs.set('/key', 'value')).rejects.toThrowError('Blob key must not start with forward slash (/).')
-      await expect(blobs.set('a'.repeat(801), 'value')).rejects.toThrowError(
+      await expect(blobs.set('', 'value')).rejects.toThrow('Blob key must not be empty.')
+      await expect(blobs.set('/key', 'value')).rejects.toThrow('Blob key must not start with forward slash (/).')
+      await expect(blobs.set('a'.repeat(801), 'value')).rejects.toThrow(
         'Blob key must be a sequence of Unicode characters whose UTF-8 encoding is at most 600 bytes long.',
       )
     })
@@ -1772,7 +1768,7 @@ describe('setJSON', () => {
           siteID,
         })
 
-        await expect(blobs.setJSON(key, { value }, { onlyIfMatch: etag })).rejects.toThrowError(
+        await expect(blobs.setJSON(key, { value }, { onlyIfMatch: etag })).rejects.toThrow(
           'Netlify Blobs has generated an internal error (400 status code): something went wrong',
         )
         expect(mockStore.fulfilled).toBeTruthy()
@@ -1817,7 +1813,7 @@ describe('setJSON', () => {
         siteID,
       })
 
-      await expect(blobs.setJSON(key, { value }, { metadata })).rejects.toThrowError(
+      await expect(blobs.setJSON(key, { value }, { metadata })).rejects.toThrow(
         'Metadata object exceeds the maximum size',
       )
     })
@@ -1887,7 +1883,7 @@ describe('delete', () => {
         siteID,
       })
 
-      await expect(blobs.delete(key)).rejects.toThrowError(
+      await expect(blobs.delete(key)).rejects.toThrow(
         /Netlify Blobs could not write to store 'production' \(401 status code\)/,
       )
       expect(mockStore.fulfilled).toBeTruthy()
@@ -1953,7 +1949,7 @@ describe('delete', () => {
         siteID,
       })
 
-      await expect(blobs.delete(key)).rejects.toThrowError(
+      await expect(blobs.delete(key)).rejects.toThrow(
         /Netlify Blobs could not write to store 'production' \(401 status code\)/,
       )
 
@@ -2000,7 +1996,7 @@ describe('deleteAll', () => {
         siteID,
       })
 
-      await expect(blobs.deleteAll()).rejects.toThrowError(
+      await expect(blobs.deleteAll()).rejects.toThrow(
         /Netlify Blobs could not write to store 'production' \(401 status code\)/,
       )
       expect(mockStore.fulfilled).toBeTruthy()
@@ -2067,7 +2063,7 @@ describe('deleteAll', () => {
         siteID,
       })
 
-      await expect(blobs.deleteAll()).rejects.toThrowError(
+      await expect(blobs.deleteAll()).rejects.toThrow(
         /Netlify Blobs could not write to store 'production' \(401 status code\)/,
       )
 
@@ -2347,13 +2343,13 @@ describe('Deploy scope', () => {
     const mockStore = new MockFetch().inject()
     const longDeployID = 'd'.repeat(80)
 
-    expect(() => getDeployStore({ deployID: 'deploy/ID', siteID, region: mockRegion, token: apiToken })).toThrowError(
+    expect(() => getDeployStore({ deployID: 'deploy/ID', siteID, region: mockRegion, token: apiToken })).toThrow(
       `'deploy/ID' is not a valid Netlify deploy ID`,
     )
-    expect(() => getStore({ deployID: 'deploy/ID', siteID, token: apiToken })).toThrowError(
+    expect(() => getStore({ deployID: 'deploy/ID', siteID, token: apiToken })).toThrow(
       `'deploy/ID' is not a valid Netlify deploy ID`,
     )
-    expect(() => getStore({ deployID: longDeployID, siteID, token: apiToken })).toThrowError(
+    expect(() => getStore({ deployID: longDeployID, siteID, token: apiToken })).toThrow(
       `'${longDeployID}' is not a valid Netlify deploy ID`,
     )
 
@@ -2367,7 +2363,7 @@ describe('Deploy scope', () => {
 
     env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
 
-    expect(() => getDeployStore()).toThrowError(`'uhoh!' is not a valid Netlify deploy ID`)
+    expect(() => getDeployStore()).toThrow(`'uhoh!' is not a valid Netlify deploy ID`)
   })
 })
 
@@ -2406,14 +2402,14 @@ describe(`getStore`, () => {
 
     globalThis.fetch = fetch
 
-    expect(() => getStore('production')).toThrowError(MissingBlobsEnvironmentError)
+    expect(() => getStore('production')).toThrow(MissingBlobsEnvironmentError)
     expect(() =>
       getStore({
         name: 'production',
         token: apiToken,
         siteID: '',
       }),
-    ).toThrowError(MissingBlobsEnvironmentError)
+    ).toThrow(MissingBlobsEnvironmentError)
   })
 
   test('Throws when the name of the store is not provided', async () => {
@@ -2422,7 +2418,7 @@ describe(`getStore`, () => {
     globalThis.fetch = fetch
 
     // @ts-expect-error Ignoring types, which expect an argument
-    expect(() => getStore()).toThrowError(
+    expect(() => getStore()).toThrow(
       'The `getStore` method requires the name of the store as a string or as the `name` property of an options object',
     )
 
@@ -2431,7 +2427,7 @@ describe(`getStore`, () => {
         token: apiToken,
         siteID,
       }),
-    ).toThrowError(
+    ).toThrow(
       'The `getStore` method requires the name of the store as a string or as the `name` property of an options object',
     )
   })
@@ -2447,7 +2443,7 @@ describe(`getStore`, () => {
         token: apiToken,
         siteID,
       }),
-    ).toThrowError(`Store name must not contain forward slashes (/).`)
+    ).toThrow(`Store name must not contain forward slashes (/).`)
 
     expect(() =>
       getStore({
@@ -2455,7 +2451,7 @@ describe(`getStore`, () => {
         token: apiToken,
         siteID,
       }),
-    ).toThrowError(`Store name must be a sequence of Unicode characters whose UTF-8 encoding is at most 64 bytes long.`)
+    ).toThrow(`Store name must be a sequence of Unicode characters whose UTF-8 encoding is at most 64 bytes long.`)
 
     const context = {
       siteID,
@@ -2464,7 +2460,7 @@ describe(`getStore`, () => {
 
     env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
 
-    expect(() => getStore('some/store')).toThrowError('Store name must not contain forward slashes (/).')
+    expect(() => getStore('some/store')).toThrow('Store name must not contain forward slashes (/).')
   })
 
   test('Throws when there is no `fetch` implementation available', async () => {
@@ -2478,7 +2474,7 @@ describe(`getStore`, () => {
 
     env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
 
-    expect(() => getStore('production')).toThrowError(
+    expect(() => getStore('production')).toThrow(
       'Netlify Blobs could not find a `fetch` client in the global scope. You can either update your runtime to a version that includes `fetch` (like Node.js 18.0.0 or above), or you can supply your own implementation using the `fetch` property.',
     )
   })
@@ -2622,7 +2618,7 @@ describe('Region configuration in deploy-scoped stores', () => {
         })
         .inject()
 
-      expect(() => getDeployStore({ deployID, edgeURL, siteID, token: mockToken })).toThrowError()
+      expect(() => getDeployStore({ deployID, edgeURL, siteID, token: mockToken })).toThrow()
       expect(mockStore.fulfilled).toBeFalsy()
     })
   })
@@ -2746,7 +2742,7 @@ describe('Region configuration in deploy-scoped stores', () => {
       env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify(context)).toString('base64')
 
       // @ts-expect-error Knowingly supplying an invalid value to `region`.
-      expect(() => getDeployStore({ deployID, edgeURL, siteID, region: 'eu-west-1' })).toThrowError()
+      expect(() => getDeployStore({ deployID, edgeURL, siteID, region: 'eu-west-1' })).toThrow()
       expect(mockStore.fulfilled).toBeFalsy()
     })
 
@@ -2873,7 +2869,7 @@ describe('Region configuration in deploy-scoped stores', () => {
 
     test('Throws an error if using the edge URL and no region is configured in the context', () => {
       // The store throws while being constructed, so no request is ever made.
-      expect(() => getStore({ deployID, edgeURL, siteID, token: 'some-token' })).toThrowError(
+      expect(() => getStore({ deployID, edgeURL, siteID, token: 'some-token' })).toThrow(
         /needs to be configured with a region/,
       )
     })
@@ -3015,7 +3011,7 @@ describe('Region configuration in site-wide stores', () => {
 
     test('The client throws an error if the region supplied is not supported', async () => {
       // @ts-expect-error Knowingly supplying an invalid value to `region`.
-      expect(() => getStore({ name: 'production', region: 'eu-west-1', siteID, token: apiToken })).toThrowError(
+      expect(() => getStore({ name: 'production', region: 'eu-west-1', siteID, token: apiToken })).toThrow(
         'eu-west-1 is not a supported Netlify Blobs region.',
       )
     })

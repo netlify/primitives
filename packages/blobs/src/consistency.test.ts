@@ -261,7 +261,7 @@ describe('Consistency configuration', () => {
 
     const store = getStore('productin')
 
-    await expect(store.get('my-key', { consistency: 'strong' })).rejects.toThrowError(
+    await expect(store.get('my-key', { consistency: 'strong' })).rejects.toThrow(
       "Netlify Blobs has failed to perform a read using strong consistency because the environment has not been configured with a 'uncachedEdgeURL' property",
     )
   })

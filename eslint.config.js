@@ -61,6 +61,17 @@ export default tseslint.config(
   },
   node.configs['flat/recommended'],
   {
+    settings: {
+      n: {
+        // Some packages set `allowImportingTsExtensions` but mix `.js` and `.ts` imports, which the inferred map rejects
+        typescriptExtensionMap: [
+          ['.ts', '.js'],
+          ['.mts', '.mjs'],
+          ['.cts', '.cjs'],
+          ['.tsx', '.js'],
+        ],
+      },
+    },
     rules: {
       'n/no-unpublished-import': 'off',
       'n/no-unpublished-require': 'off',
