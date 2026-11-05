@@ -248,11 +248,19 @@ describe('token refresh across tabs', () => {
     expires_at: Math.floor(Date.now() / 1000) + 3600,
   })
 
+  /** Whether this tab holds the fake lock, so a test can check what runs while it does. */
+  let lockHeld = false
+
   /** A Web Lock where `beforeGrant` stands for what another tab did while this one waited. */
-  const installLocks = (beforeGrant: () => void = () => undefined) => {
+  const installLocks = (beforeGrant: () => void | Promise<void> = () => undefined) => {
     const request = vi.fn(async (_name: string, task: () => Promise<unknown>) => {
-      beforeGrant()
-      return task()
+      await beforeGrant()
+      lockHeld = true
+      try {
+        return await task()
+      } finally {
+        lockHeld = false
+      }
     })
     Object.defineProperty(navigator, 'locks', { value: { request }, configurable: true })
     return request
@@ -276,6 +284,32 @@ describe('token refresh across tabs', () => {
     stopTokenRefresh()
   })
 
+  it('sends the refresh only once another tab has released the lock, and while it holds it', async () => {
+    mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
+    mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
+    let heldDuringJwt: boolean | undefined
+    mockJwt.mockImplementation(() => {
+      heldDuringJwt = lockHeld
+      return Promise.resolve('refreshed-jwt-token')
+    })
+    let releaseOtherTab: () => void = () => undefined
+    const otherTabDone = new Promise<void>((resolve) => {
+      releaseOtherTab = resolve
+    })
+    installLocks(() => otherTabDone)
+
+    const { startTokenRefresh, stopTokenRefresh } = await import('../src/refresh.js')
+    startTokenRefresh()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(mockJwt).not.toHaveBeenCalled()
+
+    releaseOtherTab()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(mockJwt).toHaveBeenCalledWith(true)
+    expect(heldDuringJwt).toBe(true)
+    stopTokenRefresh()
+  })
+
   it('adopts the session another tab refreshed while this one waited', async () => {
     mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
     mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
@@ -289,13 +323,20 @@ describe('token refresh across tabs', () => {
 
     // Sending 'first-refresh' again would be refused, and the refusal signs out every tab.
     expect(mockJwt).not.toHaveBeenCalled()
+    // The cookies carry the adopted session, also when gotrue-js refreshed it without them.
+    expect(document.cookie).toContain('nf_jwt=other-tab-token')
+    expect(document.cookie).toContain('nf_refresh=second-refresh')
+
+    // The adopted session schedules its own refresh, 60 s before it expires.
+    await vi.advanceTimersByTimeAsync(3541 * 1000)
+    expect(mockJwt).toHaveBeenCalledWith(true)
     stopTokenRefresh()
   })
 
   it('waits for the storage event when only the cookie shows another tab refreshed', async () => {
     mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
     mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
-    installLocks(() => {
+    const request = installLocks(() => {
       document.cookie = 'nf_refresh=second-refresh; path=/'
     })
 
@@ -309,6 +350,12 @@ describe('token refresh across tabs', () => {
     window.dispatchEvent(new StorageEvent('storage', { key: 'gotrue.user' }))
     await vi.advanceTimersByTimeAsync(10_000)
     expect(mockJwt).not.toHaveBeenCalled()
+    // The event ended the wait, so the 5 s fallback never asked for the lock again.
+    expect(request).toHaveBeenCalledTimes(1)
+
+    // The session from the storage event schedules its own refresh, 60 s before it expires.
+    await vi.advanceTimersByTimeAsync(3531 * 1000)
+    expect(mockJwt).toHaveBeenCalledWith(true)
     stopTokenRefresh()
   })
 
@@ -325,6 +372,48 @@ describe('token refresh across tabs', () => {
     expect(mockJwt).not.toHaveBeenCalled()
 
     await vi.advanceTimersByTimeAsync(5_000)
+    expect(mockJwt).toHaveBeenCalledWith(true)
+    stopTokenRefresh()
+  })
+
+  it('keeps the 5 s deadline when getUser() restarts the refresh while the tab waits', async () => {
+    mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
+    mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
+    installLocks(() => {
+      document.cookie = 'nf_refresh=changed-elsewhere; path=/'
+    })
+
+    const { startTokenRefresh, stopTokenRefresh } = await import('../src/refresh.js')
+    startTokenRefresh()
+    await vi.advanceTimersByTimeAsync(1)
+    await vi.advanceTimersByTimeAsync(3_000)
+
+    // getUser() calls startTokenRefresh() each time it finds a session.
+    startTokenRefresh()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(mockJwt).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(2_000)
+    expect(mockJwt).toHaveBeenCalledWith(true)
+    stopTokenRefresh()
+  })
+
+  it('keeps the 5 s deadline when refreshSession() is called while the tab waits', async () => {
+    mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
+    mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
+    installLocks(() => {
+      document.cookie = 'nf_refresh=changed-elsewhere; path=/'
+    })
+
+    const { refreshSession, startTokenRefresh, stopTokenRefresh } = await import('../src/refresh.js')
+    startTokenRefresh()
+    await vi.advanceTimersByTimeAsync(1)
+    await vi.advanceTimersByTimeAsync(3_000)
+
+    expect(await refreshSession()).toBeNull()
+    expect(mockJwt).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(2_000)
     expect(mockJwt).toHaveBeenCalledWith(true)
     stopTokenRefresh()
   })

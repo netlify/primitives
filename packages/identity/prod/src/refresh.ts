@@ -34,6 +34,13 @@ const ELSEWHERE_WAIT_MS = 5_000
 let refreshTimer: ReturnType<typeof setTimeout> | null = null
 let storageListener: ((event: StorageEvent) => void) | null = null
 
+/**
+ * When this tab stops waiting for another tab's session, and the refresh token it waits to see
+ * replaced. `stopTokenRefresh` leaves it in place, so a wait that starts again for the same
+ * token keeps its first deadline.
+ */
+let elsewhereDeadline: { refreshToken: string | undefined; at: number } | null = null
+
 type RefreshOutcome =
   | { kind: 'refreshed'; jwt: string }
   | { kind: 'no-user' }
@@ -72,9 +79,11 @@ const refreshOnce = (seenRefreshToken: string | undefined, trustCookie = true): 
     const user = getGoTrueClient()?.currentUser()
     if (!user) return { kind: 'no-user' }
 
-    const heldRefreshToken = user.tokenDetails()?.refresh_token
-    if (heldRefreshToken !== seenRefreshToken) {
-      // This tab already holds the session another tab refreshed.
+    const held = user.tokenDetails()
+    if (held?.refresh_token !== seenRefreshToken) {
+      // This tab already holds the session another tab refreshed. gotrue-js may have refreshed
+      // it without writing the cookies, so they are written here from that session.
+      if (held) setBrowserAuthCookies(held.access_token, held.refresh_token)
       return { kind: 'refreshed-elsewhere', adopted: true }
     }
     const cookieRefreshToken = getCookie(NF_REFRESH_COOKIE)
@@ -93,6 +102,10 @@ const refreshOnce = (seenRefreshToken: string | undefined, trustCookie = true): 
  * Schedules the next refresh after another tab refreshed: at once from the session this tab
  * now holds, or once the other tab's session arrives with the `storage` event. If it hasn't
  * arrived within `ELSEWHERE_WAIT_MS`, this tab refreshes on its own, ignoring the cookie.
+ *
+ * `getUser()` restarts the timer on every call and `refreshSession()` can be called at any
+ * time, so the wait often starts again for the same token. It then keeps its first deadline;
+ * otherwise calls less than `ELSEWHERE_WAIT_MS` apart would put the refresh off for good.
  */
 const followRefreshElsewhere = (adopted: boolean, seenRefreshToken: string | undefined): void => {
   if (adopted) {
@@ -100,6 +113,10 @@ const followRefreshElsewhere = (adopted: boolean, seenRefreshToken: string | und
     return
   }
   stopTokenRefresh()
+  if (elsewhereDeadline === null || elsewhereDeadline.refreshToken !== seenRefreshToken) {
+    elsewhereDeadline = { refreshToken: seenRefreshToken, at: Date.now() + ELSEWHERE_WAIT_MS }
+  }
+  const waitMs = Math.max(0, elsewhereDeadline.at - Date.now())
   const onStorage = (event: StorageEvent) => {
     if (event.key !== GOTRUE_STORAGE_KEY) return
     // Stops the fallback below and removes this listener before scheduling from the new session.
@@ -110,7 +127,7 @@ const followRefreshElsewhere = (adopted: boolean, seenRefreshToken: string | und
   refreshTimer = setTimeout(() => {
     stopTokenRefresh()
     void runScheduledRefresh(seenRefreshToken, false)
-  }, ELSEWHERE_WAIT_MS)
+  }, waitMs)
 }
 
 /** The timer's refresh: refreshes once, then schedules the next one from the outcome. */
