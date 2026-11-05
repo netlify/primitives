@@ -233,3 +233,114 @@ describe('refreshSession (browser)', () => {
     expect(result).toBeNull()
   })
 })
+
+describe('token refresh across tabs', () => {
+  const nearExpiry = (refreshToken: string) => ({
+    access_token: 'old-token',
+    refresh_token: refreshToken,
+    expires_in: 10,
+    expires_at: Math.floor(Date.now() / 1000) + 10,
+  })
+  const freshSession = (refreshToken: string) => ({
+    access_token: 'other-tab-token',
+    refresh_token: refreshToken,
+    expires_in: 3600,
+    expires_at: Math.floor(Date.now() / 1000) + 3600,
+  })
+
+  /** A Web Lock where `beforeGrant` stands for what another tab did while this one waited. */
+  const installLocks = (beforeGrant: () => void = () => undefined) => {
+    const request = vi.fn(async (_name: string, task: () => Promise<unknown>) => {
+      beforeGrant()
+      return task()
+    })
+    Object.defineProperty(navigator, 'locks', { value: { request }, configurable: true })
+    return request
+  }
+
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, 'locks')
+  })
+
+  it('refreshes under the shared lock', async () => {
+    mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
+    mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
+    const request = installLocks()
+
+    const { startTokenRefresh, stopTokenRefresh } = await import('../src/refresh.js')
+    startTokenRefresh()
+    await vi.advanceTimersByTimeAsync(1)
+
+    expect(request).toHaveBeenCalledWith('netlify-identity-token-refresh', expect.any(Function))
+    expect(mockJwt).toHaveBeenCalledWith(true)
+    stopTokenRefresh()
+  })
+
+  it('adopts the session another tab refreshed while this one waited', async () => {
+    mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
+    mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
+    installLocks(() => {
+      mockTokenDetails.mockReturnValue(freshSession('second-refresh'))
+    })
+
+    const { startTokenRefresh, stopTokenRefresh } = await import('../src/refresh.js')
+    startTokenRefresh()
+    await vi.advanceTimersByTimeAsync(1)
+
+    // Sending 'first-refresh' again would be refused, and the refusal signs out every tab.
+    expect(mockJwt).not.toHaveBeenCalled()
+    stopTokenRefresh()
+  })
+
+  it('waits for the storage event when only the cookie shows another tab refreshed', async () => {
+    mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
+    mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
+    installLocks(() => {
+      document.cookie = 'nf_refresh=second-refresh; path=/'
+    })
+
+    const { startTokenRefresh, stopTokenRefresh } = await import('../src/refresh.js')
+    startTokenRefresh()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(mockJwt).not.toHaveBeenCalled()
+
+    // The other tab's session arrives, and the next refresh is scheduled from it.
+    mockTokenDetails.mockReturnValue(freshSession('second-refresh'))
+    window.dispatchEvent(new StorageEvent('storage', { key: 'gotrue.user' }))
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(mockJwt).not.toHaveBeenCalled()
+    stopTokenRefresh()
+  })
+
+  it("refreshes on its own when the other tab's session never arrives", async () => {
+    mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
+    mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
+    installLocks(() => {
+      document.cookie = 'nf_refresh=changed-elsewhere; path=/'
+    })
+
+    const { startTokenRefresh, stopTokenRefresh } = await import('../src/refresh.js')
+    startTokenRefresh()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(mockJwt).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(5_000)
+    expect(mockJwt).toHaveBeenCalledWith(true)
+    stopTokenRefresh()
+  })
+
+  it('returns null from refreshSession when another tab refreshed first', async () => {
+    mockCurrentUser.mockReturnValue(gotrueUserWithJwt())
+    mockTokenDetails.mockReturnValue(nearExpiry('first-refresh'))
+    installLocks(() => {
+      mockTokenDetails.mockReturnValue(freshSession('second-refresh'))
+    })
+
+    const { refreshSession, stopTokenRefresh } = await import('../src/refresh.js')
+    const result = await refreshSession()
+
+    expect(result).toBeNull()
+    expect(mockJwt).not.toHaveBeenCalled()
+    stopTokenRefresh()
+  })
+})
