@@ -44,6 +44,37 @@ export function getConnectionString(): string {
   return connectionString
 }
 
+const SSL_MODES_TREATED_AS_VERIFY_FULL = new Set(['prefer', 'require', 'verify-ca'])
+
+// withExplicitSSLMode replaces `prefer`, `require` and `verify-ca` with
+// `verify-full`. node-postgres already treats them as `verify-full`, but logs a
+// warning when it sees them.
+function withExplicitSSLMode(connectionString: string): string {
+  let url: URL
+
+  try {
+    url = new URL(connectionString)
+  } catch {
+    return connectionString
+  }
+
+  // `uselibpqcompat` gives these modes libpq's meaning, so strings that set it
+  // are returned unchanged.
+  if (url.searchParams.has('uselibpqcompat')) {
+    return connectionString
+  }
+
+  const sslMode = url.searchParams.get('sslmode')
+
+  if (sslMode === null || !SSL_MODES_TREATED_AS_VERIFY_FULL.has(sslMode)) {
+    return connectionString
+  }
+
+  url.searchParams.set('sslmode', 'verify-full')
+
+  return url.toString()
+}
+
 function ensureNeonWebSocket(): void {
   // We can remove this, and the dependency on `ws`, once we stop supporting
   // Node.js 22.
@@ -141,7 +172,7 @@ export function getDatabase(options: GetDatabaseOptions = {}): DatabaseConnectio
   }
 
   // Default ("server"): node-postgres for long-running servers.
-  const pool = new pg.Pool({ connectionString })
+  const pool = new pg.Pool({ connectionString: withExplicitSSLMode(connectionString) })
 
   return {
     driver: 'server',
