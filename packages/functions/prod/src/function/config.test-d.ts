@@ -43,6 +43,13 @@ describe('Config', () => {
     assertType<Config>({ path: '/x/*', access: { 'x/hooks': 'public' } })
   })
 
+  test('rejects `access` without `path`', () => {
+    // @ts-expect-error `access` needs `path`
+    assertType<Config>({ access: 'public' })
+    // @ts-expect-error `access` needs `path`
+    assertType<Config>({ excludedPath: '/x', access: { '/x': 'public' } })
+  })
+
   test('rejects `access` on a scheduled function', () => {
     // @ts-expect-error `access` needs `path`, which a scheduled function cannot have
     assertType<Config>({ schedule: '5 4 * * *', access: 'public' })

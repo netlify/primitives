@@ -86,18 +86,6 @@ type MemoryOrVcpu =
 
 interface ConfigWithPath extends BaseConfig {
   /**
-   * Makes the function reachable by visitors who have not passed team login
-   * protection. `'public'` covers every path in `path`, and an object covers
-   * only the paths it maps to `'public'`. Must be set together with `path`.
-   * If `preferStatic` is `true`, static files that match a public path become
-   * public too.
-   *
-   * @example
-   * { '/api/webhooks/*': 'public' }
-   */
-  access?: 'public' | Record<Path, 'public'>
-
-  /**
    * One or more URL paths for which the function will not run, even if they
    * match a path defined with the `path` property. Paths must begin with a
    * forward slash.
@@ -120,6 +108,26 @@ interface ConfigWithPath extends BaseConfig {
   schedule?: never
 }
 
+type AccessConfig =
+  | {
+      access?: never
+    }
+  | {
+      /**
+       * Makes the function reachable by visitors who have not passed team login
+       * protection. `'public'` covers every path in `path`, and an object covers
+       * only the paths it maps to `'public'`. Must be set together with `path`.
+       * If `preferStatic` is `true`, static files that match a public path become
+       * public too.
+       *
+       * @example
+       * { '/api/webhooks/*': 'public' }
+       */
+      access: 'public' | Record<Path, 'public'>
+
+      path: Path | Path[]
+    }
+
 interface ConfigWithSchedule extends BaseConfig {
   /**
    * The `excludedPath` property cannot be used when `schedule` is used.
@@ -140,4 +148,4 @@ interface ConfigWithSchedule extends BaseConfig {
   schedule: CronSchedule
 }
 
-export type Config = (ConfigWithPath | ConfigWithSchedule) & MemoryOrVcpu
+export type Config = ((ConfigWithPath & AccessConfig) | ConfigWithSchedule) & MemoryOrVcpu
