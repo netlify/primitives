@@ -110,25 +110,31 @@ interface ConfigWithPath extends BaseConfig {
 
 type AccessConfig =
   | {
-      access?: never
-    }
-  | {
       /**
        * Makes the function reachable by visitors who have not passed team login
-       * protection. `'public'` covers every path in `path`, and an object covers
-       * only the paths it maps to `'public'`. Must be set together with `path`.
+       * protection. `'public'` covers every path in `path`, or the function's
+       * default URL, `/.netlify/functions/<name>`, if `path` is not set. An
+       * object covers only the paths it maps to `'public'`, and needs `path`.
        * If `preferStatic` is `true`, static files that match a public path become
        * public too.
        *
        * @example
        * { '/api/webhooks/*': 'public' }
        */
-      access: 'public' | Record<Path, 'public'>
+      access?: 'public'
+    }
+  | {
+      access: Record<Path, 'public'>
 
       path: Path | Path[]
     }
 
 interface ConfigWithSchedule extends BaseConfig {
+  /**
+   * The `access` property cannot be used when `schedule` is used.
+   */
+  access?: never
+
   /**
    * The `excludedPath` property cannot be used when `schedule` is used.
    */

@@ -43,15 +43,20 @@ describe('Config', () => {
     assertType<Config>({ path: '/x/*', access: { 'x/hooks': 'public' } })
   })
 
-  test('rejects `access` without `path`', () => {
-    // @ts-expect-error `access` needs `path`
+  test('accepts `public` without `path`', () => {
     assertType<Config>({ access: 'public' })
-    // @ts-expect-error `access` needs `path`
+  })
+
+  test('rejects the map form of `access` without `path`', () => {
+    // @ts-expect-error the map form needs `path`
+    assertType<Config>({ access: { '/x': 'public' } })
+    // @ts-expect-error the map form needs `path`
     assertType<Config>({ excludedPath: '/x', access: { '/x': 'public' } })
   })
 
   test('rejects `access` on a scheduled function', () => {
-    // @ts-expect-error `access` needs `path`, which a scheduled function cannot have
+    // @ts-expect-error a scheduled function cannot set `access`
     assertType<Config>({ schedule: '5 4 * * *', access: 'public' })
+    expectTypeOf({ schedule: '5 4 * * *', access: 'public' } as const).not.toExtend<Config>()
   })
 })
