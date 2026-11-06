@@ -110,6 +110,9 @@ interface ConfigWithPath extends BaseConfig {
 
 type AccessConfig =
   | {
+      access?: never
+    }
+  | {
       /**
        * Makes the function reachable by visitors who have not passed team login
        * protection. `'public'` covers every path in `path`, or the function's
@@ -121,12 +124,22 @@ type AccessConfig =
        * @example
        * { '/api/webhooks/*': 'public' }
        */
-      access?: 'public'
-    }
-  | {
-      access: Record<Path, 'public'>
+      access: 'public' | Record<Path, 'public'>
 
       path: Path | Path[]
+    }
+  | {
+      access: 'public'
+
+      /**
+       * The `excludedPath` property cannot be used with `access` when `path` is not set.
+       */
+      excludedPath?: never
+
+      /**
+       * The `method` property cannot be used with `access` when `path` is not set.
+       */
+      method?: never
     }
 
 interface ConfigWithSchedule extends BaseConfig {

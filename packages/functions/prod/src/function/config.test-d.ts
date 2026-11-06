@@ -54,6 +54,19 @@ describe('Config', () => {
     assertType<Config>({ excludedPath: '/x', access: { '/x': 'public' } })
   })
 
+  test('rejects `method` and `excludedPath` with `access` without `path`', () => {
+    // @ts-expect-error `method` needs `path` when `access` is set
+    assertType<Config>({ access: 'public', method: 'POST' })
+    // @ts-expect-error `excludedPath` needs `path` when `access` is set
+    assertType<Config>({ access: 'public', excludedPath: '/x' })
+    expectTypeOf({ access: 'public', method: 'POST' } as const).not.toExtend<Config>()
+  })
+
+  test('accepts `method` and `excludedPath` with `path` or without `access`', () => {
+    assertType<Config>({ path: '/x/*', excludedPath: '/x/y', method: 'POST', access: 'public' })
+    assertType<Config>({ excludedPath: '/x', method: 'POST' })
+  })
+
   test('rejects `access` on a scheduled function', () => {
     // @ts-expect-error a scheduled function cannot set `access`
     assertType<Config>({ schedule: '5 4 * * *', access: 'public' })
