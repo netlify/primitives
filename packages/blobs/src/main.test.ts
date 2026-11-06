@@ -3027,7 +3027,7 @@ describe('Releases the body of responses it does not return', () => {
   const getEdgeStore = () => getStore({ edgeURL, name: 'production', token: edgeToken, siteID })
   const invalidType = { type: 'invalid' } as unknown as { type: 'text' }
 
-  test.each([
+  const cases = [
     { name: 'get, for a missing blob', method: 'get', url: blobURL, status: 404, call: () => getEdgeStore().get(key) },
     {
       name: 'get, for a failed request',
@@ -3103,7 +3103,9 @@ describe('Releases the body of responses it does not return', () => {
       status: 404,
       call: () => listStores({ edgeURL, token: edgeToken, siteID }),
     },
-  ] as const)('$name', async ({ call, method, status, url }) => {
+  ] as const
+
+  test.each(cases)('$name', async ({ call, method, status, url }) => {
     const response = new Response('response body', { status })
     const mockStore = new MockFetch()[method]({ response, url }).inject()
 
@@ -3111,6 +3113,62 @@ describe('Releases the body of responses it does not return', () => {
 
     expect(response.bodyUsed).toBe(true)
     expect(mockStore.fulfilled).toBeTruthy()
+  })
+
+  // Cancelling one branch of a tee only settles once the other branch has been
+  // read to the end or cancelled too. A `fetch` wrapper that clones responses
+  // (to cache or log them) and keeps the other branch unread would therefore
+  // make an awaited cancellation hang forever (https://github.com/netlify/primitives/issues/815).
+  describe('when a fetch wrapper holds an unread clone of the response', () => {
+    const settles = async (promise: Promise<unknown>) => {
+      let timer: NodeJS.Timeout | undefined
+      const timeout = new Promise<boolean>((resolve) => {
+        timer = setTimeout(() => resolve(false), 1000)
+      })
+
+      try {
+        return await Promise.race([promise.then(() => true), timeout])
+      } finally {
+        clearTimeout(timer)
+      }
+    }
+
+    test.each(cases)('$name', async ({ call, method, status, url }) => {
+      const original = new Response('response body', { status })
+      const response = original.clone()
+      const mockStore = new MockFetch()[method]({ response, url }).inject()
+
+      expect(await settles(call().catch(() => {}))).toBe(true)
+      expect(response.bodyUsed).toBe(true)
+      expect(original.bodyUsed).toBe(false)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('getWithMetadata with a type, for a missing blob', async () => {
+      const response = new Response('response body', { status: 404 }).clone()
+      const mockStore = new MockFetch().get({ response, url: blobURL }).inject()
+
+      const result = getEdgeStore().getWithMetadata(key, { type: 'json' })
+
+      expect(await settles(result)).toBe(true)
+      expect(await result).toBeNull()
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
+
+    test('the requests it retries', async () => {
+      const failed = new Response('response body', { status: 500 }).clone()
+      const mockStore = new MockFetch()
+        .get({ response: failed, url: blobURL })
+        .get({ response: new Response(value), url: blobURL })
+        .inject()
+
+      const result = getEdgeStore().get(key)
+
+      expect(await settles(result)).toBe(true)
+      expect(await result).toBe(value)
+      expect(failed.bodyUsed).toBe(true)
+      expect(mockStore.fulfilled).toBeTruthy()
+    })
   })
 
   test('the requests it retries', async () => {

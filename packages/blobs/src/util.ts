@@ -90,9 +90,20 @@ export const createBlobsInternalError = async (
  * Cancels the body of a response that won't be read. Until its body is read or
  * cancelled, a response keeps its connection in use, so the connection can't be
  * reused or closed until the response is garbage collected.
+ *
+ * The cancellation is started but not awaited. The promise returned by
+ * `cancel()` is not guaranteed to settle: if the body is one branch of a tee
+ * (for example when a `fetch` wrapper has cloned the response and kept the
+ * other branch), it only settles once the other branch is also read to the end
+ * or cancelled. Nothing here depends on the cancellation having finished, so
+ * waiting for it could only hang the operation that triggered it.
  */
-export const discardBody = async (res: Response) => {
-  await res.body?.cancel().catch(() => {})
+export const discardBody = (res: Response) => {
+  if (!res.body || res.bodyUsed) {
+    return
+  }
+
+  res.body.cancel().catch(() => {})
 }
 
 export const collectIterator = async <T>(iterator: AsyncIterable<T>): Promise<T[]> => {

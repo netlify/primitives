@@ -57,7 +57,7 @@ const getListIterator = (client: Client, prefix: string): AsyncIterable<ListStor
           })
 
           if (res.status === 404) {
-            await discardBody(res)
+            discardBody(res)
 
             return { done: true, value: undefined }
           }
