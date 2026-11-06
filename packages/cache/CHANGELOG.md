@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.2.1](https://github.com/netlify/primitives/compare/cache-v4.2.0...cache-v4.2.1) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 3.0.0 to 3.0.1
+  * devDependencies
+    * @netlify/types bumped from 3.3.0 to 3.3.1
+
 ## [4.2.0](https://github.com/netlify/primitives/compare/cache-v4.1.0...cache-v4.2.0) (2026-11-04)
 
 
