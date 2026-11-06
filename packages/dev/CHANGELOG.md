@@ -1,5 +1,22 @@
 # Changelog
 
+## [5.1.14](https://github.com/netlify/primitives/compare/dev-v5.1.13...dev-v5.1.14) (2026-11-05)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#842](https://github.com/netlify/primitives/issues/842)) ([450cdb7](https://github.com/netlify/primitives/commit/450cdb76a192dccaf1b3af2833046db64e015a95))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/ai bumped from ^1.0.2 to ^1.0.3
+    * @netlify/edge-functions-dev bumped from 2.0.5 to 2.0.6
+    * @netlify/functions-dev bumped from 2.0.15 to 2.0.16
+    * @netlify/redirects bumped from 4.1.1 to 4.1.2
+
 ## [5.1.13](https://github.com/netlify/primitives/compare/dev-v5.1.12...dev-v5.1.13) (2026-11-04)
 
 

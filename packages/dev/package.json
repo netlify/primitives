@@ -1,6 +1,6 @@
 {
   "name": "@netlify/dev",
-  "version": "5.1.13",
+  "version": "5.1.14",
   "description": "Emulation of the Netlify environment for local development",
   "type": "module",
   "engines": {
@@ -56,16 +56,16 @@
     "tsup": "^8.0.0"
   },
   "dependencies": {
-    "@netlify/ai": "^1.0.2",
+    "@netlify/ai": "^1.0.3",
     "@netlify/blobs": "11.1.7",
     "@netlify/config": "^25.6.1",
     "@netlify/database-dev": "1.0.1",
     "@netlify/dev-utils": "6.0.4",
-    "@netlify/edge-functions-dev": "2.0.5",
-    "@netlify/functions-dev": "2.0.15",
+    "@netlify/edge-functions-dev": "2.0.6",
+    "@netlify/functions-dev": "2.0.16",
     "@netlify/headers": "3.0.4",
     "@netlify/images": "2.0.5",
-    "@netlify/redirects": "4.1.1",
+    "@netlify/redirects": "4.1.2",
     "@netlify/runtime": "5.0.12",
     "@netlify/server-dev": "0.1.5",
     "@netlify/static": "4.0.0",
