@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/netlify/primitives/compare/ai-v1.0.3...ai-v1.0.4) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
 ## [1.0.3](https://github.com/netlify/primitives/compare/ai-v1.0.2...ai-v1.0.3) (2026-11-05)
 
 
