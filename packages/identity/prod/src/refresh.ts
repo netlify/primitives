@@ -2,6 +2,7 @@ import { getGoTrueClient, isBrowser, getIdentityContext, IDENTITY_PATH } from '.
 import {
   NF_JWT_COOKIE,
   NF_REFRESH_COOKIE,
+  getCookie,
   setBrowserAuthCookies,
   setAuthCookies,
   deleteAuthCookies,
@@ -16,7 +17,134 @@ import type { NetlifyCookies, TokenResponse, GoTrueErrorBody } from './types.js'
 /** Seconds before expiry to trigger a refresh. */
 const REFRESH_MARGIN_S = 60
 
+/** Name of the Web Lock that serializes token refreshes across tabs of the same origin. */
+const REFRESH_LOCK = 'netlify-identity-token-refresh'
+
+/** Storage key gotrue-js saves the session under, which every tab of the origin shares. */
+const GOTRUE_STORAGE_KEY = 'gotrue.user'
+
+/**
+ * How long a tab waits for another tab's refreshed session to arrive before refreshing on its
+ * own. The wait ends on that tab's `storage` event, normally within milliseconds; the limit
+ * covers an `nf_refresh` cookie that changed for another reason, such as a refresh gotrue-js
+ * made by itself without updating the cookie.
+ */
+const ELSEWHERE_WAIT_MS = 5_000
+
 let refreshTimer: ReturnType<typeof setTimeout> | null = null
+let storageListener: ((event: StorageEvent) => void) | null = null
+
+/**
+ * When this tab stops waiting for another tab's session, and the refresh token it waits to see
+ * replaced. `stopTokenRefresh` leaves it in place, so a wait that starts again for the same
+ * token keeps its first deadline.
+ */
+let elsewhereDeadline: { refreshToken: string | undefined; at: number } | null = null
+
+type RefreshOutcome =
+  | { kind: 'refreshed'; jwt: string }
+  | { kind: 'no-user' }
+  | { kind: 'refreshed-elsewhere'; adopted: boolean }
+
+/**
+ * Runs `task` while holding a lock that every tab of this origin shares, or at once where
+ * the Web Locks API is unavailable.
+ */
+const withRefreshLock = async (task: () => Promise<RefreshOutcome>): Promise<RefreshOutcome> => {
+  const locks = window.navigator.locks as LockManager | undefined
+  if (!locks) return task()
+  return await locks.request(REFRESH_LOCK, task)
+}
+
+/**
+ * Refreshes the session's token, one tab at a time.
+ *
+ * Every open tab schedules its refresh from the same `expires_at`, so without coordination
+ * they send the same refresh token within milliseconds. GoTrue rotates the token on the first
+ * request and answers the second with a 400 that also expires the `nf_jwt` cookie, and
+ * gotrue-js answers that 400 by removing the session it saved in localStorage, which every
+ * tab shares. Every tab is then signed out, though the first refresh succeeded.
+ *
+ * Inside the lock, the session is read again rather than taken from the caller: a tab that
+ * waited reads the one the first tab saved, and skips the refresh when the refresh token it
+ * saw before waiting has changed. The `nf_refresh` cookie is checked as well, because the
+ * first tab writes it before it releases the lock, while gotrue-js only re-reads localStorage
+ * once the `storage` event reaches this tab.
+ *
+ * @param seenRefreshToken - The refresh token this tab held when it decided to refresh.
+ * @param trustCookie - Whether a changed `nf_refresh` cookie counts as another tab's refresh.
+ */
+const refreshOnce = (seenRefreshToken: string | undefined, trustCookie = true): Promise<RefreshOutcome> =>
+  withRefreshLock(async () => {
+    const user = getGoTrueClient()?.currentUser()
+    if (!user) return { kind: 'no-user' }
+
+    const held = user.tokenDetails()
+    if (held?.refresh_token !== seenRefreshToken) {
+      // This tab already holds the session another tab refreshed. gotrue-js may have refreshed
+      // it without writing the cookies, so they are written here from that session.
+      if (held) setBrowserAuthCookies(held.access_token, held.refresh_token)
+      return { kind: 'refreshed-elsewhere', adopted: true }
+    }
+    const cookieRefreshToken = getCookie(NF_REFRESH_COOKIE)
+    if (trustCookie && cookieRefreshToken && cookieRefreshToken !== seenRefreshToken) {
+      // Another tab refreshed, and its session reaches this tab with the next `storage` event.
+      return { kind: 'refreshed-elsewhere', adopted: false }
+    }
+
+    const jwt = await user.jwt(true)
+    setBrowserAuthCookies(jwt, user.tokenDetails()?.refresh_token)
+    emitAuthEvent(AUTH_EVENTS.TOKEN_REFRESH, toUser(user))
+    return { kind: 'refreshed', jwt }
+  })
+
+/**
+ * Schedules the next refresh after another tab refreshed: at once from the session this tab
+ * now holds, or once the other tab's session arrives with the `storage` event. If it hasn't
+ * arrived within `ELSEWHERE_WAIT_MS`, this tab refreshes on its own, ignoring the cookie.
+ *
+ * `getUser()` restarts the timer on every call and `refreshSession()` can be called at any
+ * time, so the wait often starts again for the same token. It then keeps its first deadline;
+ * otherwise calls less than `ELSEWHERE_WAIT_MS` apart would put the refresh off for good.
+ */
+const followRefreshElsewhere = (adopted: boolean, seenRefreshToken: string | undefined): void => {
+  if (adopted) {
+    startTokenRefresh()
+    return
+  }
+  stopTokenRefresh()
+  if (elsewhereDeadline === null || elsewhereDeadline.refreshToken !== seenRefreshToken) {
+    elsewhereDeadline = { refreshToken: seenRefreshToken, at: Date.now() + ELSEWHERE_WAIT_MS }
+  }
+  const waitMs = Math.max(0, elsewhereDeadline.at - Date.now())
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== GOTRUE_STORAGE_KEY) return
+    // Stops the fallback below and removes this listener before scheduling from the new session.
+    startTokenRefresh()
+  }
+  window.addEventListener('storage', onStorage)
+  storageListener = onStorage
+  refreshTimer = setTimeout(() => {
+    stopTokenRefresh()
+    void runScheduledRefresh(seenRefreshToken, false)
+  }, waitMs)
+}
+
+/** The timer's refresh: refreshes once, then schedules the next one from the outcome. */
+const runScheduledRefresh = async (seenRefreshToken: string | undefined, trustCookie = true): Promise<void> => {
+  try {
+    const outcome = await refreshOnce(seenRefreshToken, trustCookie)
+    if (outcome.kind === 'refreshed') {
+      // Schedule next refresh
+      startTokenRefresh()
+    } else if (outcome.kind === 'refreshed-elsewhere') {
+      followRefreshElsewhere(outcome.adopted, seenRefreshToken)
+    }
+  } catch {
+    // Refresh failed (e.g., refresh token revoked). Stop trying.
+    stopTokenRefresh()
+  }
+}
 
 /**
  * Starts a browser-side timer that refreshes the access token before it expires
@@ -46,20 +174,10 @@ export const startTokenRefresh = (): void => {
       : token.expires_at
   const delayMs = Math.max(0, expiresAtS - nowS - REFRESH_MARGIN_S) * 1000
 
+  const seenRefreshToken = token.refresh_token
+
   refreshTimer = setTimeout(() => {
-    void (async () => {
-      try {
-        const freshJwt = await user.jwt(true)
-        const freshDetails = user.tokenDetails()
-        setBrowserAuthCookies(freshJwt, freshDetails?.refresh_token)
-        emitAuthEvent(AUTH_EVENTS.TOKEN_REFRESH, toUser(user))
-        // Schedule next refresh
-        startTokenRefresh()
-      } catch {
-        // Refresh failed (e.g., refresh token revoked). Stop trying.
-        stopTokenRefresh()
-      }
-    })()
+    void runScheduledRefresh(seenRefreshToken)
   }, delayMs)
 }
 
@@ -70,6 +188,10 @@ export const stopTokenRefresh = (): void => {
   if (refreshTimer !== null) {
     clearTimeout(refreshTimer)
     refreshTimer = null
+  }
+  if (storageListener !== null) {
+    window.removeEventListener('storage', storageListener)
+    storageListener = null
   }
 }
 
@@ -123,11 +245,13 @@ export const refreshSession = async (): Promise<string | null> => {
     }
 
     try {
-      const jwt = await user.jwt(true)
-      setBrowserAuthCookies(jwt, user.tokenDetails()?.refresh_token)
-      emitAuthEvent(AUTH_EVENTS.TOKEN_REFRESH, toUser(user))
-      startTokenRefresh()
-      return jwt
+      const outcome = await refreshOnce(details?.refresh_token)
+      if (outcome.kind === 'refreshed') {
+        startTokenRefresh()
+        return outcome.jwt
+      }
+      if (outcome.kind === 'refreshed-elsewhere') followRefreshElsewhere(outcome.adopted, details?.refresh_token)
+      return null
     } catch {
       stopTokenRefresh()
       return null
