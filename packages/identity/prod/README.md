@@ -1,5 +1,10 @@
 # @netlify/identity
 
+[![@netlify/identity version](https://npmx.dev/api/registry/badge/version/@netlify/identity?color=28b5ac&name=true)](https://npmx.dev/package/@netlify/identity)
+[![license](https://npmx.dev/api/registry/badge/license/@netlify/identity?color=28b5ac)](https://npmx.dev/package/@netlify/identity)
+[![node](https://npmx.dev/api/registry/badge/engines/@netlify/identity?color=28b5ac)](https://npmx.dev/package/@netlify/identity)
+[![downloads/mo](https://npmx.dev/api/registry/badge/downloads/@netlify/identity?color=28b5ac)](https://npmx.dev/package/@netlify/identity)
+
 A lightweight, no-config headless authentication library for projects using Netlify Identity. Works in both browser and
 server contexts. This is NOT the Netlify Identity Widget. This library exports standalone async functions (e.g., import
 { login, getUser } from '@netlify/identity'). There is no class to instantiate and no .init() call. Just import the

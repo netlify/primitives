@@ -1,5 +1,10 @@
 # @netlify/server
 
+[![@netlify/server version](https://npmx.dev/api/registry/badge/version/@netlify/server?color=28b5ac&name=true)](https://npmx.dev/package/@netlify/server)
+[![license](https://npmx.dev/api/registry/badge/license/@netlify/server?color=28b5ac)](https://npmx.dev/package/@netlify/server)
+[![node](https://npmx.dev/api/registry/badge/engines/@netlify/server?color=28b5ac)](https://npmx.dev/package/@netlify/server)
+[![downloads/mo](https://npmx.dev/api/registry/badge/downloads/@netlify/server?color=28b5ac)](https://npmx.dev/package/@netlify/server)
+
 TypeScript utilities for Netlify Server.
 
 ## Installation

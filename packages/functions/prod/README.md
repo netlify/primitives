@@ -1,7 +1,9 @@
 # ![functions](functions.png)
 
-[![Build](https://github.com/netlify/primitives/workflows/Build/badge.svg)](https://github.com/netlify/primitives/actions)
-[![Node](https://img.shields.io/node/v/@netlify/functions.svg?logo=node.js)](https://www.npmjs.com/package/@netlify/functions)
+[![@netlify/functions version](https://npmx.dev/api/registry/badge/version/@netlify/functions?color=28b5ac&name=true)](https://npmx.dev/package/@netlify/functions)
+[![license](https://npmx.dev/api/registry/badge/license/@netlify/functions?color=28b5ac)](https://npmx.dev/package/@netlify/functions)
+[![node](https://npmx.dev/api/registry/badge/engines/@netlify/functions?color=28b5ac)](https://npmx.dev/package/@netlify/functions)
+[![downloads/mo](https://npmx.dev/api/registry/badge/downloads/@netlify/functions?color=28b5ac)](https://npmx.dev/package/@netlify/functions)
 
 JavaScript and TypeScript utilities for [Netlify Functions](https://docs.netlify.com/functions/overview/).
 
