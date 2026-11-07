@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.3](https://github.com/netlify/primitives/compare/database-proxy-v0.2.2...database-proxy-v0.2.3) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/database-dev bumped from 1.0.1 to 1.0.2
+
 ## [0.2.2](https://github.com/netlify/primitives/compare/database-proxy-v0.2.1...database-proxy-v0.2.2) (2026-10-01)
 
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.17](https://github.com/netlify/primitives/compare/functions-dev-v2.0.16...functions-dev-v2.0.17) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/blobs bumped from 11.1.7 to 11.1.8
+    * @netlify/dev-utils bumped from 6.0.4 to 6.0.5
+    * @netlify/functions bumped from 6.1.0 to 6.1.1
+
 ## [2.0.16](https://github.com/netlify/primitives/compare/functions-dev-v2.0.15...functions-dev-v2.0.16) (2026-11-05)
 
 

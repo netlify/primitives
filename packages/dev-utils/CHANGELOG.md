@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.0.5](https://github.com/netlify/primitives/compare/dev-utils-v6.0.4...dev-utils-v6.0.5) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/types bumped from 3.3.0 to 3.3.1
+
 ## [6.0.4](https://github.com/netlify/primitives/compare/dev-utils-v6.0.3...dev-utils-v6.0.4) (2026-10-20)
 
 

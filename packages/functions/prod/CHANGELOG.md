@@ -1,5 +1,20 @@
 # Changelog
 
+## [6.1.1](https://github.com/netlify/primitives/compare/functions-v6.1.0...functions-v6.1.1) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/cache bumped from 4.2.0 to 4.2.1
+    * @netlify/types bumped from 3.3.0 to 3.3.1
+
 ## [6.1.0](https://github.com/netlify/primitives/compare/functions-v6.0.3...functions-v6.1.0) (2026-11-04)
 
 

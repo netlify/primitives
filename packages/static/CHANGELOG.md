@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://github.com/netlify/primitives/compare/static-v4.0.0...static-v4.0.1) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
 ## [4.0.0](https://github.com/netlify/primitives/compare/static-v3.1.12...static-v4.0.0) (2026-08-18)
 
 
