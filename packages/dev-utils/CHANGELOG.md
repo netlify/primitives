@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.1.0](https://github.com/netlify/primitives/compare/dev-utils-v6.0.5...dev-utils-v6.1.0) (2026-11-09)
+
+
+### Features
+
+* store Netlify token in native OS secure keychain ([#830](https://github.com/netlify/primitives/issues/830)) ([321bc53](https://github.com/netlify/primitives/commit/321bc53594155f31a50a66a1eefda0ada907ab0b))
+
 ## [6.0.5](https://github.com/netlify/primitives/compare/dev-utils-v6.0.4...dev-utils-v6.0.5) (2026-11-06)
 
 
