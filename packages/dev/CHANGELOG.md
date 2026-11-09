@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.2.0](https://github.com/netlify/primitives/compare/dev-v5.1.16...dev-v5.2.0) (2026-11-09)
+
+
+### Features
+
+* **dev:** enable server by default ([#855](https://github.com/netlify/primitives/issues/855)) ([80e1395](https://github.com/netlify/primitives/commit/80e13958413a1fce9f9cb0369995237feac4a4ad))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/server-dev bumped from 0.1.7 to 0.1.8
+
 ## [5.1.16](https://github.com/netlify/primitives/compare/dev-v5.1.15...dev-v5.1.16) (2026-11-09)
 
 

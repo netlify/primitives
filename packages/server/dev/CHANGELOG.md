@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/netlify/primitives/compare/server-dev-v0.1.7...server-dev-v0.1.8) (2026-11-09)
+
+
+### Features
+
+* **dev:** enable server by default ([#855](https://github.com/netlify/primitives/issues/855)) ([80e1395](https://github.com/netlify/primitives/commit/80e13958413a1fce9f9cb0369995237feac4a4ad))
+
 ## [0.1.7](https://github.com/netlify/primitives/compare/server-dev-v0.1.6...server-dev-v0.1.7) (2026-11-09)
 
 

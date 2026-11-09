@@ -6,7 +6,7 @@
   "packages/database/dev": "1.0.2",
   "packages/database/prod": "2.0.3",
   "packages/database/proxy": "0.2.3",
-  "packages/dev": "5.1.16",
+  "packages/dev": "5.2.0",
   "packages/dev-utils": "6.1.0",
   "packages/edge-functions/dev": "2.0.8",
   "packages/edge-functions/prod": "4.0.4",
@@ -19,7 +19,7 @@
   "packages/redirects": "4.1.4",
   "packages/runtime": "5.0.14",
   "packages/runtime-utils": "3.0.1",
-  "packages/server/dev": "0.1.7",
+  "packages/server/dev": "0.1.8",
   "packages/server/prod": "0.1.6",
   "packages/static": "4.0.1",
   "packages/types": "3.3.1"
