@@ -83,7 +83,9 @@ export interface Features {
   }
 
   /**
-   * [Experimental] Configuration options for Netlify Server.
+   * Configuration options for Netlify Server.
+   *
+   * {@link} https://docs.netlify.com/build/server/
    */
   server?: {
     enabled?: boolean
@@ -264,7 +266,7 @@ export class NetlifyDev {
       headers: options.headers?.enabled !== false,
       images: options.images?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
-      server: options.server?.enabled === true,
+      server: options.server?.enabled !== false,
       static: options.staticFiles?.enabled !== false,
     }
     this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')

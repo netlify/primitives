@@ -27,7 +27,12 @@ export class ServerProcess {
   }
 
   private pipeLogs(child: ChildProcess) {
-    for (const stream of [child.stdout, child.stderr]) {
+    const streams = [
+      { stream: child.stdout, level: 'log' },
+      { stream: child.stderr, level: 'error' },
+    ] as const
+
+    for (const { stream, level } of streams) {
       let buffer = ''
 
       stream?.setEncoding('utf8')
@@ -39,7 +44,7 @@ export class ServerProcess {
 
         for (const line of lines) {
           if (line.trim() !== '') {
-            this.#logger.log(line)
+            this.#logger[level](line)
           }
         }
       })

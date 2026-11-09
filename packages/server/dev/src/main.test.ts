@@ -100,6 +100,31 @@ test.skipIf(unsupportedNodeVersion)(
   },
 )
 
+test.skipIf(unsupportedNodeVersion)('logs the server process stderr as errors', async () => {
+  const errors: string[] = []
+  const logs: string[] = []
+  const handler = createHandler(path.join(fixturesDirectory, 'logs'), {
+    logger: {
+      error: (message?: unknown) => errors.push(String(message)),
+      log: (message?: unknown) => logs.push(String(message)),
+      warn: () => {},
+    },
+  })
+
+  const match = await handler.match(new Request('http://localhost/'))
+
+  assert(match)
+
+  const response = await match.handle(new Request('http://localhost/'))
+
+  expect(await response.text()).toBe('ok')
+  await vi.waitFor(() => {
+    expect(errors).toContain('error line')
+  })
+  expect(logs).toContain('log line')
+  expect(logs).not.toContain('error line')
+})
+
 test.skipIf(unsupportedNodeVersion)('takes the client address from the first X-Forwarded-For entry', async () => {
   const handler = createHandler(path.join(fixturesDirectory, 'basic'))
 

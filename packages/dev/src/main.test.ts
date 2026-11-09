@@ -60,7 +60,7 @@ describe('Handling requests', () => {
   })
 
   describe('Netlify Server', () => {
-    test('is disabled unless explicitly enabled', async () => {
+    test('can be disabled', async () => {
       const fixture = new Fixture()
         .withFile(
           'netlify.toml',
@@ -79,6 +79,7 @@ describe('Handling requests', () => {
         projectRoot: directory,
         geolocation: { enabled: false },
         redirects: { enabled: false },
+        server: { enabled: false },
       })
       await dev.start()
 
@@ -92,7 +93,7 @@ describe('Handling requests', () => {
 
     // Netlify Server requires Node.js 24.
     test.skipIf(Number.parseInt(process.versions.node) < 24)(
-      'serves every path from the server, with static files taking precedence',
+      'serves every path from the server by default, with static files taking precedence',
       async () => {
         const fixture = new Fixture()
           .withFile(
@@ -111,7 +112,6 @@ describe('Handling requests', () => {
         const dev = new NetlifyDev({
           projectRoot: directory,
           geolocation: { enabled: false },
-          server: { enabled: true },
         })
         await dev.start()
 
@@ -145,7 +145,6 @@ describe('Handling requests', () => {
           edgeFunctions: { enabled: false },
           geolocation: { enabled: false },
           images: { enabled: false },
-          server: { enabled: true },
         })
         await dev.start()
 
