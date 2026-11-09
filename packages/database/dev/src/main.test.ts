@@ -1,8 +1,9 @@
 import { promises as fs } from 'node:fs'
+import { join } from 'node:path'
 
 import { Client, defaults as pgDefaults } from 'pg'
 import tmp from 'tmp-promise'
-import { test, expect, afterEach } from 'vitest'
+import { test, expect, afterEach, vi } from 'vitest'
 
 import { NetlifyDB } from './main.js'
 
@@ -98,6 +99,9 @@ test('Accepts PostgreSQL client connections', async () => {
 
   const result = await client.query('SELECT 1 as value')
   expect(result.rows).toHaveLength(1)
+
+  const version = await client.query<{ server_version: string }>('SHOW server_version')
+  expect(version.rows[0].server_version).toMatch(/^18\./)
 
   await client.end()
 })
@@ -219,6 +223,70 @@ test('Persists data to disk when directory is provided', async () => {
   expect(result.rows[0].message).toBe('Hello, persistence!')
 
   await client2.end()
+})
+
+test('Moves aside a data directory created by a different PostgreSQL version', async () => {
+  tmpDir = await tmp.dir()
+
+  // A `PG_VERSION` file without a cluster is enough for PGlite to refuse the
+  // directory, the same way it refuses one from another major version.
+  const directory = join(tmpDir.path, 'db')
+  await fs.mkdir(directory)
+  await fs.writeFile(join(directory, 'PG_VERSION'), '17\n')
+  await fs.writeFile(join(directory, 'marker'), 'old data')
+
+  const logger = vi.fn()
+  server = new NetlifyDB({ directory, logger })
+  const connectionString = await server.start()
+
+  const backupPath = `${directory}.pg17`
+  expect(await fs.readFile(join(backupPath, 'marker'), 'utf8')).toBe('old data')
+  expect(logger).toHaveBeenCalledWith(expect.stringContaining(backupPath))
+
+  const client = createClient(connectionString)
+
+  await client.connect()
+
+  const result = await client.query<{ value: number }>('SELECT 1 AS value')
+  expect(result.rows[0].value).toBe(1)
+})
+
+test('Leaves a data directory of the bundled PostgreSQL version alone when it fails to open', async () => {
+  tmpDir = await tmp.dir()
+
+  const directory = join(tmpDir.path, 'db')
+  await fs.mkdir(directory)
+  await fs.writeFile(join(directory, 'PG_VERSION'), '18\n')
+  await fs.writeFile(join(directory, 'marker'), 'corrupt data')
+
+  server = new NetlifyDB({ directory, logger: vi.fn() })
+
+  await expect(server.start()).rejects.toThrow()
+  expect(await fs.readFile(join(directory, 'marker'), 'utf8')).toBe('corrupt data')
+  expect(await fs.readdir(tmpDir.path)).toEqual(['db'])
+})
+
+test('Keeps an existing backup when moving aside a data directory', async () => {
+  tmpDir = await tmp.dir()
+
+  const directory = join(tmpDir.path, 'db')
+  await fs.mkdir(directory)
+  await fs.writeFile(join(directory, 'PG_VERSION'), '17\n')
+  await fs.writeFile(join(directory, 'marker'), 'newer data')
+
+  const existingBackupPath = `${directory}.pg17`
+  await fs.mkdir(existingBackupPath)
+  await fs.writeFile(join(existingBackupPath, 'marker'), 'older data')
+
+  server = new NetlifyDB({ directory, logger: vi.fn() })
+  await server.start()
+
+  expect(await fs.readFile(join(existingBackupPath, 'marker'), 'utf8')).toBe('older data')
+
+  const entries = await fs.readdir(tmpDir.path)
+  const backupName = entries.find((entry) => entry.startsWith('db.pg17-'))
+  expect(backupName).toMatch(/^db\.pg17-[\dT-]+Z$/)
+  expect(await fs.readFile(join(tmpDir.path, backupName ?? '', 'marker'), 'utf8')).toBe('newer data')
 })
 
 test('Uses in-memory storage when no directory is provided', async () => {
