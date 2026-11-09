@@ -83,7 +83,9 @@ export interface Features {
   }
 
   /**
-   * [Experimental] Configuration options for Netlify Server.
+   * Configuration options for Netlify Server.
+   *
+   * {@link} https://docs.netlify.com/build/server/
    */
   server?: {
     enabled?: boolean
@@ -264,7 +266,7 @@ export class NetlifyDev {
       headers: options.headers?.enabled !== false,
       images: options.images?.enabled !== false,
       redirects: options.redirects?.enabled !== false,
-      server: options.server?.enabled === true,
+      server: options.server?.enabled !== false,
       static: options.staticFiles?.enabled !== false,
     }
     this.#functionsServePath = path.join(projectRoot, '.netlify', 'functions-serve')
@@ -776,6 +778,12 @@ export class NetlifyDev {
     }
   }
 
+  /**
+   * Hands an HTTP upgrade request (e.g. a WebSocket handshake) to the Netlify
+   * Server process. Resolves `false` without touching the socket when there is
+   * no server to take it. Otherwise resolves `true`, and the socket is no
+   * longer the caller's, even if the server fails to take the connection.
+   */
   async handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): Promise<boolean> {
     if (!this.#serverHandler) {
       return false

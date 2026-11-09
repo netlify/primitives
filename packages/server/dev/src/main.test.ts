@@ -52,10 +52,16 @@ test('does not match when there is no server entrypoint', async () => {
   expect(await handler.match(new Request('http://localhost/'))).toBeUndefined()
 })
 
-test.runIf(unsupportedNodeVersion)('fails with a clear error on Node.js versions below 24', async () => {
-  const handler = createHandler(path.join(fixturesDirectory, 'basic'))
+test.runIf(unsupportedNodeVersion)('logs a clear error and does not match on Node.js versions below 24', async () => {
+  const errors: string[] = []
+  const handler = createHandler(path.join(fixturesDirectory, 'basic'), {
+    logger: { ...logger, error: (message?: unknown) => errors.push(String(message)) },
+  })
 
-  await expect(handler.match(new Request('http://localhost/'))).rejects.toThrow(/requires Node\.js 24 or above/)
+  expect(await handler.match(new Request('http://localhost/'))).toBeUndefined()
+  expect(await handler.match(new Request('http://localhost/again'))).toBeUndefined()
+  expect(errors).toHaveLength(1)
+  expect(errors[0]).toMatch(/requires Node\.js 24 or above/)
 })
 
 test.skipIf(unsupportedNodeVersion)(
@@ -99,6 +105,31 @@ test.skipIf(unsupportedNodeVersion)(
     expect(secondBody.pid).toBe(body.pid)
   },
 )
+
+test.skipIf(unsupportedNodeVersion)('logs the server process stderr as errors', async () => {
+  const errors: string[] = []
+  const logs: string[] = []
+  const handler = createHandler(path.join(fixturesDirectory, 'logs'), {
+    logger: {
+      error: (message?: unknown) => errors.push(String(message)),
+      log: (message?: unknown) => logs.push(String(message)),
+      warn: () => {},
+    },
+  })
+
+  const match = await handler.match(new Request('http://localhost/'))
+
+  assert(match)
+
+  const response = await match.handle(new Request('http://localhost/'))
+
+  expect(await response.text()).toBe('ok')
+  await vi.waitFor(() => {
+    expect(errors).toContain('error line')
+    expect(logs).toContain('log line')
+  })
+  expect(logs).not.toContain('error line')
+})
 
 test.skipIf(unsupportedNodeVersion)('takes the client address from the first X-Forwarded-For entry', async () => {
   const handler = createHandler(path.join(fixturesDirectory, 'basic'))
@@ -213,9 +244,7 @@ test.skipIf(unsupportedNodeVersion)('pipes WebSocket upgrades to the server proc
   })
 
   host.on('upgrade', (nodeRequest, socket, head) => {
-    handler.handleUpgrade(nodeRequest, socket, head).catch(() => {
-      socket.destroy()
-    })
+    void handler.handleUpgrade(nodeRequest, socket, head)
   })
 
   host.listen(0, '127.0.0.1')
@@ -247,4 +276,43 @@ test.skipIf(unsupportedNodeVersion)('pipes WebSocket upgrades to the server proc
   expect(await reply).toBe('echo:hello')
 
   ws.close()
+})
+
+test.skipIf(unsupportedNodeVersion)('answers an upgrade with a 502 when the server fails to start', async () => {
+  const errors: string[] = []
+  const handler = createHandler(path.join(fixturesDirectory, 'websocket'), {
+    logger: { ...logger, error: (message?: unknown) => errors.push(String(message)) },
+  })
+
+  vi.spyOn(handler as unknown as { ensureProcess: () => Promise<number> }, 'ensureProcess').mockRejectedValue(
+    new Error('Server process exited with code 1 before it was ready'),
+  )
+
+  const host: Server = createServer()
+  const handled = new Promise<boolean>((resolve) => {
+    host.once('upgrade', (nodeRequest, socket, head) => {
+      resolve(handler.handleUpgrade(nodeRequest, socket, head))
+    })
+  })
+
+  host.listen(0, '127.0.0.1')
+  await once(host, 'listening')
+  cleanupJobs.push(
+    () =>
+      new Promise<void>((resolve) => {
+        host.close(() => {
+          resolve()
+        })
+      }),
+  )
+
+  const { port } = host.address() as { port: number }
+  const ws = new WebSocket(`ws://127.0.0.1:${String(port)}/ws`)
+  const [, response] = (await once(ws, 'unexpected-response')) as [unknown, { statusCode: number }]
+
+  expect(response.statusCode).toBe(502)
+  expect(await handled).toBe(true)
+  expect(errors).toEqual([
+    'Failed to forward an upgrade request to the server: Server process exited with code 1 before it was ready',
+  ])
 })
