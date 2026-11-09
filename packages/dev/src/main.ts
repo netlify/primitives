@@ -778,6 +778,12 @@ export class NetlifyDev {
     }
   }
 
+  /**
+   * Hands an HTTP upgrade request (e.g. a WebSocket handshake) to the Netlify
+   * Server process. Resolves `false` without touching the socket when there is
+   * no server to take it. Otherwise resolves `true`, and the socket is no
+   * longer the caller's, even if the server fails to take the connection.
+   */
   async handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): Promise<boolean> {
     if (!this.#serverHandler) {
       return false

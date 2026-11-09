@@ -75,7 +75,9 @@ starts on the first request and restarts when a file in `netlify/server/` change
 its stderr to `logger.error`. Netlify Server requires Node.js 24 or above.
 
 `handle()` only takes `Request` objects, so WebSocket and other upgrade requests have to be passed to `handleUpgrade()`
-from your HTTP server's `upgrade` event. It returns `false` when there's no server to take the connection.
+from your HTTP server's `upgrade` event. It returns `false` without touching the socket when there's no server to take
+the connection, so you can pass it to another handler. Otherwise it returns `true` and handles the connection from then
+on, including answering with a 502 if the server fails to start.
 
 ```ts
 import { createServer } from 'node:http'
@@ -95,10 +97,13 @@ httpServer.on('upgrade', async (request, socket, head) => {
 
 `@netlify/dev` starts a local Postgres database, stored in `.netlify/db`, and sets `NETLIFY_DB_URL` so that
 `@netlify/database` connects to it. The `db` getter returns the running instance, which you can use to apply migrations
-or run queries from your own tooling. It's `undefined` when the feature is disabled or the database failed to start.
+or run queries from your own tooling. Paths passed to it are resolved against the working directory, not `projectRoot`
+(`site` in the example above). It's `undefined` when the feature is disabled or the database failed to start.
 
 ```ts
-await devServer.db?.applyMigrations('netlify/database/migrations')
+import path from 'node:path'
+
+await devServer.db?.applyMigrations(path.join('site', 'netlify/database/migrations'))
 
 const { rows } = await devServer.db!.query('SELECT * FROM posts')
 ```

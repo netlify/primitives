@@ -109,10 +109,14 @@ export class ServerHandler {
 
     const majorNodeVersion = Number.parseInt(process.versions.node)
 
+    // Other request handling, such as static files, must keep working, so the
+    // server is skipped rather than failing every request.
     if (majorNodeVersion < MINIMUM_NODE_MAJOR_VERSION) {
-      throw new Error(
-        `Netlify Server requires Node.js ${String(MINIMUM_NODE_MAJOR_VERSION)} or above. You are running ${process.versions.node}.`,
+      this.#logger.error(
+        `Netlify Server requires Node.js ${String(MINIMUM_NODE_MAJOR_VERSION)} or above. You are running ${process.versions.node}, so the server in ${SERVER_DIRECTORY} will not run.`,
       )
+
+      return undefined
     }
 
     return path.join(this.#serverDirectory, candidates[0])
@@ -212,6 +216,11 @@ export class ServerHandler {
   /**
    * Takes over an HTTP upgrade (e.g. a WebSocket handshake) by piping the raw
    * socket to the server process.
+   *
+   * Resolves `false` without touching the socket when there is no server, so
+   * the caller can pass it on. Otherwise resolves `true` and owns the socket
+   * from then on: if the server can't take the connection, the failure is
+   * logged and the client gets a 502. It never rejects.
    */
   async handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): Promise<boolean> {
     const entryPath = await this.getEntry().catch(() => undefined)
@@ -220,6 +229,22 @@ export class ServerHandler {
       return false
     }
 
+    try {
+      await this.pipeUpgrade(request, socket, head)
+    } catch (error) {
+      this.#logger.error(
+        `Failed to forward an upgrade request to the server: ${error instanceof Error ? error.message : String(error)}`,
+      )
+
+      if (!socket.destroyed && !socket.writableEnded) {
+        socket.end('HTTP/1.1 502 Bad Gateway\r\nConnection: close\r\nContent-Length: 0\r\n\r\n')
+      }
+    }
+
+    return true
+  }
+
+  private async pipeUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): Promise<void> {
     const port = await this.ensureProcess()
     const upstream = net.connect(port, '127.0.0.1')
 
@@ -257,8 +282,6 @@ export class ServerHandler {
 
     upstream.pipe(socket)
     socket.pipe(upstream)
-
-    return true
   }
 
   async stop(): Promise<void> {
