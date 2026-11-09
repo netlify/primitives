@@ -2,9 +2,9 @@ import { mkdir } from 'node:fs/promises'
 import { createServer as createNetServer, type AddressInfo, type Server, type Socket } from 'node:net'
 
 import { PGlite } from '@electric-sql/pglite'
-import type { ConnectionState, MessageResponse } from 'pg-gateway'
-import { fromNodeSocket } from 'pg-gateway/node'
 
+import { Backend } from './lib/backend.js'
+import { readServerParameters, serveConnection } from './lib/connection.js'
 import { broadcastNotifications } from './lib/notifications.js'
 import { applyMigrations, initializeTrackingTable } from './lib/migrations.js'
 import type { SQLExecutor } from './lib/sql-executor.js'
@@ -14,9 +14,9 @@ export type { SQLExecutor } from './lib/sql-executor.js'
 
 const DEFAULT_HOST = 'localhost'
 
-// pg-gateway rejects any startup message without a `user`, and `pg` only falls
-// back to `process.env.USER`, which Edge Functions isolates don't expose. The
-// server authenticates with `trust`, so the value is arbitrary.
+// `pg` only falls back to `process.env.USER` for the startup message's `user`,
+// which Edge Functions isolates don't expose. The server trusts every client,
+// so the value is arbitrary.
 const DEFAULT_USER = 'postgres'
 
 type Logger = (...message: unknown[]) => void
@@ -56,11 +56,14 @@ export async function resetDatabase(db: SQLExecutor): Promise<void> {
 }
 
 export class NetlifyDB implements SQLExecutor {
+  private backend?: Backend
   private db?: PGlite
   private directory?: string
   private logger: Logger
+  private nextProcessId = 1
   private port?: number
   private server?: Server
+  private serverParameters?: ReadonlyMap<string, string>
 
   // All active client sockets, tracked so notifications can be broadcast
   // and so they can be destroyed on stop().
@@ -84,6 +87,8 @@ export class NetlifyDB implements SQLExecutor {
 
     await initializeTrackingTable(this.db)
 
+    this.serverParameters = await readServerParameters(this.db)
+    this.backend = new Backend(this.db)
     this.unsubNotification = broadcastNotifications(this.db, this.connections)
 
     this.server = createNetServer((socket: Socket) => {
@@ -181,6 +186,11 @@ export class NetlifyDB implements SQLExecutor {
       })
     })
 
+    if (this.backend) {
+      await this.backend.close()
+      this.backend = undefined
+    }
+
     // Close PGLite to release internal handles (WASM runtime, etc.).
     if (this.db) {
       await this.db.close()
@@ -189,11 +199,11 @@ export class NetlifyDB implements SQLExecutor {
   }
 
   private handleConnection(socket: Socket): void {
-    if (!this.db) {
+    if (!this.backend || !this.serverParameters) {
+      socket.destroy()
+
       return
     }
-
-    const db = this.db
 
     this.connections.add(socket)
 
@@ -201,27 +211,17 @@ export class NetlifyDB implements SQLExecutor {
       this.connections.delete(socket)
     })
 
-    fromNodeSocket(socket, {
-      serverVersion: '16.3 (NetlifyDB/pglite)',
-      auth: {
-        method: 'trust',
-      },
-
-      async onMessage(data: Uint8Array, { isAuthenticated }: ConnectionState): Promise<MessageResponse> {
-        // Skip startup/handshake messages handled by pg-gateway, as PGLite
-        // doesn't expect them.
-        if (!isAuthenticated) {
+    serveConnection(socket, {
+      backend: this.backend,
+      processId: this.nextProcessId++,
+      serverParameters: this.serverParameters,
+      onError: (error) => {
+        if (error instanceof Error && 'code' in error && error.code === 'ECONNRESET') {
           return
         }
 
-        return db.execProtocolRaw(data)
+        this.logger('Unexpected connection error:', error)
       },
-    }).catch((error: unknown) => {
-      if (error instanceof Error && error.message.includes('ECONNRESET')) {
-        return
-      }
-
-      this.logger('Unexpected connection error:', error)
     })
   }
 }
