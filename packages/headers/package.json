@@ -1,6 +1,6 @@
 {
   "name": "@netlify/headers",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "TypeScript implementation of Netlify's headers engine",
   "type": "module",
   "engines": {
@@ -36,7 +36,7 @@
   },
   "author": "Netlify Inc.",
   "devDependencies": {
-    "@netlify/dev-utils": "^6.0.5",
+    "@netlify/dev-utils": "^6.1.0",
     "@netlify/test-utils": "*",
     "@types/node": "^22.0.0",
     "tsup": "^8.0.0"
