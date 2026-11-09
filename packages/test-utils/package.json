@@ -19,8 +19,7 @@
     "js-image-generator": "^1.0.4"
   },
   "devDependencies": {
-    "@types/node": "^18.19.110",
-    "typescript": "^5.8.3",
-    "vitest": "^3.0.0"
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.3"
   }
 }

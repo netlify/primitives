@@ -1,5 +1,10 @@
 # @netlify/dev
 
+[![@netlify/dev version](https://npmx.dev/api/registry/badge/version/@netlify/dev?color=28b5ac&name=true)](https://npmx.dev/package/@netlify/dev)
+[![license](https://npmx.dev/api/registry/badge/license/@netlify/dev?color=28b5ac)](https://npmx.dev/package/@netlify/dev)
+[![node](https://npmx.dev/api/registry/badge/engines/@netlify/dev?color=28b5ac)](https://npmx.dev/package/@netlify/dev)
+[![downloads/mo](https://npmx.dev/api/registry/badge/downloads/@netlify/dev?color=28b5ac)](https://npmx.dev/package/@netlify/dev)
+
 `@netlify/dev` is a local emulator for the Netlify production environment. While it can be used directly by advanced
 users, it is primarily designed as a foundational library for higher-level tools like the
 [Netlify CLI](https://docs.netlify.com/cli/get-started/) and the

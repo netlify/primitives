@@ -11,7 +11,7 @@
       }
     }
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Local dev emulation of Netlify Database",
   "files": [
     "dist/**/*.js",
@@ -51,8 +51,7 @@
     "@types/pg": "^8.11.0",
     "pg": "^8.11.0",
     "tmp-promise": "^3.0.3",
-    "tsup": "^8.0.2",
-    "vitest": "^3.0.0"
+    "tsup": "^8.0.2"
   },
   "engines": {
     "node": ">=22.12.0"

@@ -1,7 +1,9 @@
-[![Build](https://github.com/netlify/primitives/workflows/Build/badge.svg)](https://github.com/netlify/primitives/actions)
-[![Node](https://img.shields.io/node/v/@netlify/aws-lambda-compat.svg?logo=node.js)](https://www.npmjs.com/package/@netlify/aws-lambda-compat)
-
 # @netlify/aws-lambda-compat
+
+[![@netlify/aws-lambda-compat version](https://npmx.dev/api/registry/badge/version/@netlify/aws-lambda-compat?color=28b5ac&name=true)](https://npmx.dev/package/@netlify/aws-lambda-compat)
+[![license](https://npmx.dev/api/registry/badge/license/@netlify/aws-lambda-compat?color=28b5ac)](https://npmx.dev/package/@netlify/aws-lambda-compat)
+[![node](https://npmx.dev/api/registry/badge/engines/@netlify/aws-lambda-compat?color=28b5ac)](https://npmx.dev/package/@netlify/aws-lambda-compat)
+[![downloads/mo](https://npmx.dev/api/registry/badge/downloads/@netlify/aws-lambda-compat?color=28b5ac)](https://npmx.dev/package/@netlify/aws-lambda-compat)
 
 AWS Lambda compatibility wrapper for Netlify Functions. Lets you author Netlify Functions using the AWS Lambda handler
 signature.

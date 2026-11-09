@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.0.3](https://github.com/netlify/primitives/compare/database-v2.0.2...database-v2.0.3) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 3.0.0 to 3.0.1
+
+## [2.0.2](https://github.com/netlify/primitives/compare/database-v2.0.1...database-v2.0.2) (2026-11-05)
+
+
+### Bug Fixes
+
+* **database:** fix `node-postgres` warning ([#850](https://github.com/netlify/primitives/issues/850)) ([44b818b](https://github.com/netlify/primitives/commit/44b818b93376d2623457f654d76fb09a9418ca33))
+
 ## [2.0.1](https://github.com/netlify/primitives/compare/database-v2.0.0...database-v2.0.1) (2026-09-02)
 
 

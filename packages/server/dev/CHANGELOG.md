@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.6](https://github.com/netlify/primitives/compare/server-dev-v0.1.5...server-dev-v0.1.6) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.0.4 to 6.0.5
+
 ## [0.1.5](https://github.com/netlify/primitives/compare/server-dev-v0.1.4...server-dev-v0.1.5) (2026-10-27)
 
 

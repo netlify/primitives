@@ -11,7 +11,7 @@
       }
     }
   },
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Transparent PostgreSQL proxy for Netlify Database with dynamic provisioning",
   "files": [
     "dist/**/*.js",
@@ -47,10 +47,9 @@
     "pg": "^8.11.0"
   },
   "devDependencies": {
-    "@netlify/database-dev": "1.0.1",
+    "@netlify/database-dev": "1.0.2",
     "@types/pg": "^8.11.0",
-    "tsup": "^8.0.2",
-    "vitest": "^3.0.0"
+    "tsup": "^8.0.2"
   },
   "engines": {
     "node": ">=22.12.0"

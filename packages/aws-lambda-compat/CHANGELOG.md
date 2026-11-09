@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.0.4](https://github.com/netlify/primitives/compare/aws-lambda-compat-v2.0.3...aws-lambda-compat-v2.0.4) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/types bumped from 3.3.0 to 3.3.1
+
 ## [2.0.3](https://github.com/netlify/primitives/compare/aws-lambda-compat-v2.0.2...aws-lambda-compat-v2.0.3) (2026-10-20)
 
 

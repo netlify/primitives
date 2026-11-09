@@ -25,7 +25,7 @@
       }
     }
   },
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "TypeScript utilities for interacting with Netlify Functions",
   "files": [
     "dist/**/*.js",
@@ -42,7 +42,6 @@
     "prepack": "npm run build",
     "test": "run-s test:ci",
     "test:dev": "run-s build test:dev:*",
-    "test:dev:tsd": "tsd",
     "test:dev:vitest": "vitest",
     "test:ci": "run-s test:ci:*",
     "test:ci:vitest": "npm run build && vitest run",
@@ -53,9 +52,6 @@
       "test/unit/*.js"
     ],
     "verbose": true
-  },
-  "tsd": {
-    "directory": "test/types/"
   },
   "keywords": [],
   "license": "MIT",
@@ -72,15 +68,13 @@
     "test": "test"
   },
   "dependencies": {
-    "@netlify/cache": "4.2.0",
-    "@netlify/types": "3.3.0"
+    "@netlify/cache": "4.2.1",
+    "@netlify/types": "3.3.1"
   },
   "devDependencies": {
     "npm-run-all2": "^5.0.0",
     "semver": "^7.6.3",
-    "tsd": "^0.32.0",
-    "tsup": "^8.0.2",
-    "vitest": "^3.0.0"
+    "tsup": "^8.0.2"
   },
   "engines": {
     "node": ">=22.12.0"

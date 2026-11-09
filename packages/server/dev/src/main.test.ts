@@ -55,7 +55,7 @@ test('does not match when there is no server entrypoint', async () => {
 test.runIf(unsupportedNodeVersion)('fails with a clear error on Node.js versions below 24', async () => {
   const handler = createHandler(path.join(fixturesDirectory, 'basic'))
 
-  await expect(handler.match(new Request('http://localhost/'))).rejects.toThrowError(/requires Node\.js 24 or above/)
+  await expect(handler.match(new Request('http://localhost/'))).rejects.toThrow(/requires Node\.js 24 or above/)
 })
 
 test.skipIf(unsupportedNodeVersion)(
@@ -150,9 +150,7 @@ test.skipIf(unsupportedNodeVersion)('serves a TypeScript entry through native ty
 test('fails with a clear error when there are multiple entrypoints', async () => {
   const handler = createHandler(path.join(fixturesDirectory, 'multiple-entries'))
 
-  await expect(handler.match(new Request('http://localhost/'))).rejects.toThrowError(
-    /Found multiple server entrypoints/,
-  )
+  await expect(handler.match(new Request('http://localhost/'))).rejects.toThrow(/Found multiple server entrypoints/)
 })
 
 test.skipIf(unsupportedNodeVersion)('restarts the server process when the entrypoint changes', async () => {

@@ -9,5 +9,6 @@ describe('Netlify global type declaration regression test', () => {
     expectTypeOf<typeof Netlify>().toEqualTypeOf<NetlifyGlobal>()
     expectTypeOf<typeof Netlify>().toHaveProperty('env')
     expectTypeOf<typeof Netlify>().toHaveProperty('context')
+    expectTypeOf(Netlify).toExtend<{ env: unknown }>()
   })
 })

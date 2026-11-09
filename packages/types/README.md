@@ -1,6 +1,9 @@
 # @netlify/types
 
-[![npm version](https://img.shields.io/npm/v/@netlify/types.svg)](https://www.npmjs.com/package/@netlify/types)
+[![@netlify/types version](https://npmx.dev/api/registry/badge/version/@netlify/types?color=28b5ac&name=true)](https://npmx.dev/package/@netlify/types)
+[![license](https://npmx.dev/api/registry/badge/license/@netlify/types?color=28b5ac)](https://npmx.dev/package/@netlify/types)
+[![node](https://npmx.dev/api/registry/badge/engines/@netlify/types?color=28b5ac)](https://npmx.dev/package/@netlify/types)
+[![downloads/mo](https://npmx.dev/api/registry/badge/downloads/@netlify/types?color=28b5ac)](https://npmx.dev/package/@netlify/types)
 
 TypeScript types for Netlify platform primitives.
 

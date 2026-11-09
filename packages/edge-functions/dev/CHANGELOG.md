@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.0.7](https://github.com/netlify/primitives/compare/edge-functions-dev-v2.0.6...edge-functions-dev-v2.0.7) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docs:** add consistent readme to all packages ([#851](https://github.com/netlify/primitives/issues/851)) ([9103982](https://github.com/netlify/primitives/commit/9103982f89983c36f02557b0403bba98e6252d8e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.0.4 to 6.0.5
+    * @netlify/edge-functions bumped from 4.0.3 to 4.0.4
+    * @netlify/runtime-utils bumped from 3.0.0 to 3.0.1
+
+## [2.0.6](https://github.com/netlify/primitives/compare/edge-functions-dev-v2.0.5...edge-functions-dev-v2.0.6) (2026-11-05)
+
+
+### Bug Fixes
+
+* **deps:** update netlify packages ([#842](https://github.com/netlify/primitives/issues/842)) ([450cdb7](https://github.com/netlify/primitives/commit/450cdb76a192dccaf1b3af2833046db64e015a95))
+
 ## [2.0.5](https://github.com/netlify/primitives/compare/edge-functions-dev-v2.0.4...edge-functions-dev-v2.0.5) (2026-10-21)
 
 
