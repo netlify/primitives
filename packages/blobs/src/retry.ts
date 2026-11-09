@@ -27,7 +27,7 @@ export const fetchAndRetry = async (
     const isRetryable = res.status === 429 || res.status >= 500 || (getRetryUrl !== undefined && res.status === 403)
 
     if (attemptsLeft > 0 && isRetryable) {
-      await discardBody(res)
+      discardBody(res)
 
       const delay = getDelay(res.headers.get(RATE_LIMIT_HEADER))
       await sleep(delay)

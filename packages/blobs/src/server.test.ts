@@ -602,3 +602,76 @@ test('Deletes all blobs from a store', async () => {
   await server.stop()
   await fs.rm(directory.path, { force: true, recursive: true })
 })
+
+// https://github.com/netlify/primitives/issues/815
+test('Settles operations whose response was cloned by a `fetch` wrapper', async () => {
+  const directory = await tmp.dir()
+  const server = new BlobsServer({
+    directory: directory.path,
+    token,
+  })
+  const { port } = await server.start()
+
+  try {
+    // Like a wrapper that clones responses to cache or log them, and keeps the
+    // clone around without reading it.
+    const clones: Response[] = []
+    const cloningFetch: typeof globalThis.fetch = async (...args) => {
+      const res = await globalThis.fetch(...args)
+
+      clones.push(res.clone())
+
+      return res
+    }
+
+    const store = getStore({
+      edgeURL: `http://localhost:${port}`,
+      fetch: cloningFetch,
+      name: 'my-store',
+      token,
+      siteID,
+    })
+
+    const withTimeout = <T>(operation: string, promise: Promise<T>) => {
+      let timer: NodeJS.Timeout | undefined
+      const timeout = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error(`${operation} did not settle`))
+        }, 2000)
+      })
+
+      return Promise.race([promise, timeout]).finally(() => {
+        clearTimeout(timer)
+      })
+    }
+
+    const missingReads = {
+      'get (arrayBuffer)': () => store.get('missing', { type: 'arrayBuffer' }),
+      'get (blob)': () => store.get('missing', { type: 'blob' }),
+      'get (json)': () => store.get('missing', { type: 'json' }),
+      'get (stream)': () => store.get('missing', { type: 'stream' }),
+      'get (text)': () => store.get('missing', { type: 'text' }),
+      'getWithMetadata (arrayBuffer)': () => store.getWithMetadata('missing', { type: 'arrayBuffer' }),
+      'getWithMetadata (blob)': () => store.getWithMetadata('missing', { type: 'blob' }),
+      'getWithMetadata (json)': () => store.getWithMetadata('missing', { type: 'json' }),
+      'getWithMetadata (stream)': () => store.getWithMetadata('missing', { type: 'stream' }),
+      'getWithMetadata (text)': () => store.getWithMetadata('missing', { type: 'text' }),
+      getMetadata: () => store.getMetadata('missing'),
+    }
+
+    for (const [operation, read] of Object.entries(missingReads)) {
+      expect(await withTimeout(operation, read())).toBeNull()
+    }
+
+    await withTimeout('setJSON', store.setJSON('key', { value: 1 }))
+    expect(await withTimeout('get (json)', store.get('key', { type: 'json' }))).toEqual({ value: 1 })
+    await withTimeout('delete', store.delete('key'))
+    await withTimeout('delete, for a missing blob', store.delete('key'))
+    expect((await withTimeout('list', store.list())).blobs).toEqual([])
+
+    expect(clones.length).toBeGreaterThan(0)
+  } finally {
+    await server.stop()
+    await fs.rm(directory.path, { force: true, recursive: true })
+  }
+})
