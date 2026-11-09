@@ -11,7 +11,7 @@ users, it is primarily designed as a foundational library for higher-level tools
 [Netlify Vite Plugin](https://docs.netlify.com/integrations/vite/overview/).
 
 It provides a local request pipeline that mimics the Netlify platform’s request handling, including support for
-Functions, Edge Functions, Netlify Server, Blobs, Netlify Database, Static files, Redirects, and Image CDN.
+Functions, Edge Functions, Netlify Server, Blobs, Netlify Database, Static files, Redirects, AI Gateway, and Image CDN.
 
 ## 📦 Installation
 
