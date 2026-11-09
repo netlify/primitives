@@ -1,4 +1,4 @@
-import { describe, expectTypeOf, test } from 'vitest'
+import { assertType, describe, expectTypeOf, test } from 'vitest'
 
 import type { Config } from '../main.js'
 
@@ -26,5 +26,50 @@ describe('Config', () => {
     expectTypeOf({ path: '/x', background: true } as const).toExtend<Config>()
     expectTypeOf({ path: '/x', background: false } as const).toExtend<Config>()
     expectTypeOf({ path: '/x', background: true, vcpu: 1.5 } as const).toExtend<Config>()
+  })
+
+  test('accepts `access` with `path`', () => {
+    assertType<Config>({ path: '/x', access: 'public' })
+    assertType<Config>({ path: '/x/*', access: { '/x/hooks': 'public' } })
+  })
+
+  test('rejects `access` values other than `public`', () => {
+    expectTypeOf({ path: '/x', access: 'private' } as const).not.toExtend<Config>()
+    expectTypeOf({ path: '/x/*', access: { '/x/hooks': 'private' } } as const).not.toExtend<Config>()
+  })
+
+  test('rejects `access` paths without a leading slash', () => {
+    // @ts-expect-error paths must begin with a forward slash
+    assertType<Config>({ path: '/x/*', access: { 'x/hooks': 'public' } })
+  })
+
+  test('accepts `public` without `path`', () => {
+    assertType<Config>({ access: 'public' })
+  })
+
+  test('rejects the map form of `access` without `path`', () => {
+    // @ts-expect-error the map form needs `path`
+    assertType<Config>({ access: { '/x': 'public' } })
+    // @ts-expect-error the map form needs `path`
+    assertType<Config>({ excludedPath: '/x', access: { '/x': 'public' } })
+  })
+
+  test('rejects `method` and `excludedPath` with `access` without `path`', () => {
+    // @ts-expect-error `method` needs `path` when `access` is set
+    assertType<Config>({ access: 'public', method: 'POST' })
+    // @ts-expect-error `excludedPath` needs `path` when `access` is set
+    assertType<Config>({ access: 'public', excludedPath: '/x' })
+    expectTypeOf({ access: 'public', method: 'POST' } as const).not.toExtend<Config>()
+  })
+
+  test('accepts `method` and `excludedPath` with `path` or without `access`', () => {
+    assertType<Config>({ path: '/x/*', excludedPath: '/x/y', method: 'POST', access: 'public' })
+    assertType<Config>({ excludedPath: '/x', method: 'POST' })
+  })
+
+  test('rejects `access` on a scheduled function', () => {
+    // @ts-expect-error a scheduled function cannot set `access`
+    assertType<Config>({ schedule: '5 4 * * *', access: 'public' })
+    expectTypeOf({ schedule: '5 4 * * *', access: 'public' } as const).not.toExtend<Config>()
   })
 })
