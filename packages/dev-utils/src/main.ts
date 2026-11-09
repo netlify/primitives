@@ -1,5 +1,22 @@
 export { Reactive } from './lib/reactive.js'
-export { getAPIToken } from './lib/api-token.js'
+export {
+  LEGACY_STORAGE_ENV_VAR,
+  getAPIToken,
+  getLegacyAPIToken,
+  getLegacyConfigFilePath,
+  isLegacyAuthStorageForced,
+  readStoredAPIToken,
+  type StoredAPIToken,
+} from './lib/api-token.js'
+export {
+  deleteTokenFromKeychain,
+  getTokenFromKeychain,
+  readTokenFromKeychain,
+  storeTokenInKeychain,
+  type KeychainDeleteResult,
+  type KeychainReadResult,
+  type KeychainWriteResult,
+} from './lib/keychain.js'
 export { shouldBase64Encode } from './lib/base64.js'
 export { renderFunctionErrorPage } from './lib/errors.js'
 export { DevEvent, DevEventHandler } from './lib/event.js'
