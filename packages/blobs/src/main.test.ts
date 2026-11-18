@@ -4,7 +4,7 @@ import { env, version as nodeVersion } from 'node:process'
 import { MockFetch } from '@netlify/test-utils'
 import { base64Decode } from '@netlify/runtime-utils'
 import semver from 'semver'
-import { describe, test, expect, beforeAll, afterEach } from 'vitest'
+import { describe, test, expect, beforeAll, afterEach, vi } from 'vitest'
 
 import { base64Encode, streamToString } from '../test/util.js'
 
@@ -30,6 +30,7 @@ beforeAll(async () => {
 afterEach(() => {
   delete env.NETLIFY_BLOBS_CONTEXT
   delete globalThis.netlifyBlobsContext
+  vi.useRealTimers()
 })
 
 const deployID = '6527dfab35be400008332a1d'
@@ -1220,6 +1221,8 @@ describe('set', () => {
     })
 
     test('Retries failed operations', async () => {
+      vi.useFakeTimers()
+
       const getSignedUrl = () => ({
         headers: { authorization: `Bearer ${apiToken}` },
         response: new Response(JSON.stringify({ url: signedURL })),
@@ -1271,12 +1274,17 @@ describe('set', () => {
         siteID,
       })
 
-      await blobs.set(key, value)
+      const operation = blobs.set(key, value)
+
+      await vi.runAllTimersAsync()
+      await operation
 
       expect(mockStore.fulfilled).toBeTruthy()
     })
 
     test('Retries a 403 on the signed URL PUT by requesting a fresh one', async () => {
+      vi.useFakeTimers()
+
       const expiredError = `<?xml version="1.0" encoding="UTF-8"?>
 <Error><Code>AccessDenied</Code><Message>Request has expired</Message></Error>`
 
@@ -1315,7 +1323,10 @@ describe('set', () => {
         siteID,
       })
 
-      await blobs.set(key, value)
+      const operation = blobs.set(key, value)
+
+      await vi.runAllTimersAsync()
+      await operation
 
       expect(mockStore.fulfilled).toBeTruthy()
     })
@@ -1379,6 +1390,8 @@ describe('set', () => {
     })
 
     test('Retries failed operations', async () => {
+      vi.useFakeTimers()
+
       const mockStore = new MockFetch()
         .put({
           body: value,
@@ -1413,7 +1426,10 @@ describe('set', () => {
         siteID,
       })
 
-      await blobs.set(key, value)
+      const operation = blobs.set(key, value)
+
+      await vi.runAllTimersAsync()
+      await operation
 
       expect(mockStore.fulfilled).toBeTruthy()
     })
@@ -3114,13 +3130,18 @@ describe('Releases the body of responses it does not return', () => {
   })
 
   test('the requests it retries', async () => {
+    vi.useFakeTimers()
+
     const failed = new Response('response body', { status: 500 })
     const mockStore = new MockFetch()
       .get({ response: failed, url: blobURL })
       .get({ response: new Response(value), url: blobURL })
       .inject()
 
-    expect(await getEdgeStore().get(key)).toBe(value)
+    const operation = getEdgeStore().get(key)
+
+    await vi.runAllTimersAsync()
+    expect(await operation).toBe(value)
     expect(failed.bodyUsed).toBe(true)
     expect(mockStore.fulfilled).toBeTruthy()
   })
