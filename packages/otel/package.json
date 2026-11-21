@@ -126,7 +126,7 @@
   "author": "Netlify Inc.",
   "devDependencies": {
     "@netlify/dev-utils": "^6.1.0",
-    "msw": "^2.10.5",
+    "msw": "^3.0.0",
     "npm-run-all2": "^7.0.2",
     "tsup": "^8.0.0"
   },
