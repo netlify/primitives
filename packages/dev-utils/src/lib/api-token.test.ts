@@ -117,6 +117,13 @@ describe('getAPIToken', () => {
 
   test('uses NETLIFY_AUTH_TOKEN when nobody is logged in', async () => {
     await expect(getAPIToken({ [AUTH_TOKEN_ENV_VAR]: 'from-env' })).resolves.toBe('from-env')
+  })
+
+  test('does not read the keychain when NETLIFY_AUTH_TOKEN is set', async () => {
+    mocks.config = { userId: 'u1' }
+    mocks.keychainRead = { status: 'found', token: 'from-keychain' }
+
+    await expect(getAPIToken({ [AUTH_TOKEN_ENV_VAR]: 'from-env' })).resolves.toBe('from-env')
     expect(mocks.readTokenFromKeychain).not.toHaveBeenCalled()
   })
 
