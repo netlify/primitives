@@ -30,7 +30,7 @@ import { NetlifyDB } from '@netlify/database-dev'
 export { applyMigrations, initializeTrackingTable, resetDatabase } from '@netlify/database-dev'
 export type { SQLExecutor } from '@netlify/database-dev'
 
-import { InjectedEnvironmentVariable, injectEnvVariables } from './lib/env.js'
+import { InjectedEnvironmentVariable, injectEnvVariables, loadDotEnvFiles } from './lib/env.js'
 import { isDirectory, isFile } from './lib/fs.js'
 import { getNormalizedRequest, getNormalizedRequestFromNodeRequest } from './lib/reqres.js'
 import { generateRequestID } from './lib/request_id.js'
@@ -635,9 +635,16 @@ export class NetlifyDev {
 
     if (this.#features.environmentVariables) {
       // TODO: Use proper types for this.
+      const dotEnvFiles = await loadDotEnvFiles({
+        envFiles: config?.config.dev?.envFiles as string[] | undefined,
+        logger: this.#logger,
+        projectRoot: this.#projectRoot,
+      })
+
       envVariables = await injectEnvVariables({
         accountSlug: config?.siteInfo?.account_slug,
         baseVariables: config?.env || {},
+        dotEnvFiles,
         envAPI: runtime.env,
         netlifyAPI: config?.api,
         siteID,
