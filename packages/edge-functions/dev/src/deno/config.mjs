@@ -1,12 +1,17 @@
 // @ts-check
 
 /**
+ * @typedef {import('../shared/types.ts').SerializedError} SerializedError
  * @typedef {import('./workers/types.ts').ConfigRequestMessage} ConfigRequestMessage
  * @typedef {import('./workers/types.ts').Message} Message
  */
 
 /**
+ * Returns the configs of the functions that loaded, and an error for each
+ * function that did not load.
+ *
  * @param {Record<string, string>} functions
+ * @returns {Promise<{ configs: Record<string, object>, errors: Record<string, SerializedError> }>}
  */
 export function getConfigs(functions) {
   return new Promise((resolve, reject) => {
@@ -27,22 +32,17 @@ export function getConfigs(functions) {
       if (message.type === 'configResponse') {
         const { configs, errors } = message.data
 
+        /** @type {Record<string, SerializedError>} */
+        const functionErrors = {}
+
         for (const functionName in errors) {
-          const prefix = `Failed to parse edge function \`${functionName}\`:`
-          const error = new Error(`${prefix} ${errors[functionName].message}`)
-
-          if (errors[functionName].name) {
-            error.name = errors[functionName].name
+          functionErrors[functionName] = {
+            ...errors[functionName],
+            message: `Failed to parse edge function \`${functionName}\`: ${errors[functionName].message}`,
           }
-
-          error.stack = `${prefix} ${error.stack}`
-
-          reject(error)
-
-          return
         }
 
-        resolve(configs)
+        resolve({ configs, errors: functionErrors })
 
         return
       }

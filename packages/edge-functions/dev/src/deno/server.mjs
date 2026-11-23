@@ -46,12 +46,12 @@ export const serveLocal = ({ denoPort: port, requestTimeout }) => {
       functions = availableFunctions
 
       try {
-        const [configs, { dependencies, unwatchedFunctions }] = await Promise.all([
+        const [{ configs, errors }, { dependencies, unwatchedFunctions }] = await Promise.all([
           getConfigs(availableFunctions),
           getDependencies(availableFunctions),
         ])
 
-        return Response.json({ configs, dependencies, unwatchedFunctions })
+        return Response.json({ configs, dependencies, errors, unwatchedFunctions })
       } catch (error) {
         return getErrorResponse(error)
       }

@@ -434,12 +434,13 @@ describe('`EdgeFunctionsHandler`', () => {
       )
 
     const directory = await fixture.create()
+    const logger = { error: vi.fn(), log: vi.fn(), warn: vi.fn() }
     const handler = new EdgeFunctionsHandler({
       configDeclarations: [],
       directories: [path.resolve(directory, 'netlify/edge-functions')],
       env: {},
       geolocation,
-      logger: console,
+      logger,
       requestTimeout: 300,
       siteID: '123',
       siteName: 'test',
@@ -455,13 +456,12 @@ describe('`EdgeFunctionsHandler`', () => {
 
       const requestsBefore = configRequests()
 
-      // The request that waits gets an error after the time limit.
-      const req = new Request('https://site.netlify/slow')
-      const match = await handler.match(req)
-      expect(match).toBeTruthy()
-      const res = await match?.handle(req, serverAddress)
-      expect(res?.status).toBe(500)
-      expect(await res?.text()).toContain('Timed out after 300ms while reading the edge function configs')
+      // The request that waits stops waiting after the time limit. The handler
+      // logs the error and lets the request pass through.
+      expect(await handler.match(new Request('https://site.netlify/slow'))).toBeFalsy()
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Timed out after 300ms while reading the edge function configs'),
+      )
 
       // The next request starts a new extraction.
       await handler.match(new Request('https://site.netlify/slow'))
@@ -473,13 +473,19 @@ describe('`EdgeFunctionsHandler`', () => {
     }
   })
 
-  test('Throws an error when the edge function has unparseable code', async () => {
+  test('Skips an edge function that has unparseable code and logs its error once', async () => {
     const fixture = new Fixture()
       .withFile(
         'netlify.toml',
         `[build]
         publish = "public"
         `,
+      )
+      .withFile(
+        'netlify/edge-functions/echo.mjs',
+        `export default async () => new Response("Hello from edge function");
+
+        export const config = { path: "/echo" };`,
       )
       .withFile(
         'netlify/edge-functions/unparseable.mjs',
@@ -490,29 +496,45 @@ describe('`EdgeFunctionsHandler`', () => {
       )
 
     const directory = await fixture.create()
+    const logger = { error: vi.fn(), log: vi.fn(), warn: vi.fn() }
     const handler = new EdgeFunctionsHandler({
-      configDeclarations: [],
+      configDeclarations: [{ function: 'unparseable', path: '/declared-in-toml' }],
       directories: [path.resolve(directory, 'netlify/edge-functions')],
       env: {},
       geolocation,
-      logger: console,
+      logger,
       requestTimeout: 1_000,
       siteID: '123',
       siteName: 'test',
     })
 
-    const req = new Request('https://site.netlify/unparseable')
-    req.headers.set('x-nf-request-id', 'req-id')
+    try {
+      // The function that loaded still runs.
+      const echoReq = new Request('https://site.netlify/echo')
+      echoReq.headers.set('x-nf-request-id', 'req-id')
+      const echoMatch = await handler.match(echoReq)
+      expect(echoMatch).toBeTruthy()
+      const echoRes = await echoMatch?.handle(echoReq, serverAddress)
+      expect(await echoRes?.text()).toBe('Hello from edge function')
 
-    const match = await handler.match(req)
-    expect(match).toBeTruthy()
+      // Requests that no function matches pass through.
+      expect(await handler.match(new Request('https://site.netlify/styles.css'))).toBeFalsy()
+      expect(await handler.match(new Request('https://site.netlify/unparseable'))).toBeFalsy()
 
-    const res = await match?.handle(req, serverAddress)
+      // A request that `netlify.toml` routes to the broken function shows its error.
+      const declaredReq = new Request('https://site.netlify/declared-in-toml')
+      const declaredMatch = await handler.match(declaredReq)
+      expect(declaredMatch).toBeTruthy()
+      const declaredRes = await declaredMatch?.handle(declaredReq, serverAddress)
+      expect(declaredRes?.status).toBe(500)
+      expect(await declaredRes?.text()).toContain('Failed to parse edge function `unparseable`')
 
-    expect(res?.status).toBe(500)
-    expect(await res?.text()).toContain('Failed to parse edge function `unparseable`')
-
-    await fixture.destroy()
+      expect(logger.error).toHaveBeenCalledTimes(1)
+      expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Failed to parse edge function `unparseable`'))
+    } finally {
+      await handler.stop()
+      await fixture.destroy()
+    }
   })
 
   test('Aborts an invocation if the function takes too long to produce a response', async () => {
