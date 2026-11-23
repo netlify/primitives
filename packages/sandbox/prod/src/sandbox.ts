@@ -10,7 +10,10 @@ import type { SandboxPayload } from './types.js'
 const SANDBOX_API = '/.netlify/sandbox'
 
 export class Sandbox {
-  /** The sandbox's ID, which is its name when it was created with one. */
+  /**
+   * The sandbox's ID. A sandbox created with a name uses that name as its ID,
+   * and any other sandbox gets a generated one.
+   */
   readonly id: string
 
   /** The ID of the site the sandbox belongs to. */

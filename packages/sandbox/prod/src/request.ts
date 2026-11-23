@@ -10,9 +10,9 @@ export interface RequestOptions {
 export type SandboxRequest = <T>(path: string, options?: RequestOptions) => Promise<T>
 
 /**
- * Sends an authenticated JSON request. It resolves with the parsed body, or
- * with `undefined` for a response without one, and rejects with a
- * `SandboxError` for a response that isn't a success.
+ * Sends an authenticated JSON request and resolves with the parsed response
+ * body, or with `undefined` when the response has no body. Rejects with a
+ * `SandboxError` when the request fails.
  */
 export const sendJSON = async <T>(
   fetch: typeof globalThis.fetch,

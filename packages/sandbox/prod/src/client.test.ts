@@ -9,7 +9,7 @@ test('creates a sandbox through the site API', async () => {
   const sandbox = await client(fetch).create({ memory: 4096 })
   const call = callOf(fetch, 0)
 
-  expect(call.url).toBe(`https://api.netlify.com/api/v1/sites/${payload.site_id}/sandboxes`)
+  expect(call.url).toBe(`https://api.netlify.com/api/v1/sites/${payload.site_id}/sandbox`)
   expect(call.method).toBe('POST')
   expect(call.headers.authorization).toBe('Bearer token')
   expect(call.body).toStrictEqual({ memory_mb: 4096 })
@@ -108,7 +108,7 @@ test('takes the token and site from the environment', async () => {
 
   const call = callOf(fetch, 0)
 
-  expect(call.url).toBe(`https://api.example.com/api/v1/sites/${payload.site_id}/sandboxes`)
+  expect(call.url).toBe(`https://api.example.com/api/v1/sites/${payload.site_id}/sandbox`)
   expect(call.headers.authorization).toBe('Bearer edge-token')
 })
 

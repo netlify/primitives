@@ -25,7 +25,7 @@ test('takes a snapshot of a sandbox', async () => {
   const snapshot = await sandbox.snapshot()
   const call = callOf(fetch, 1)
 
-  expect(call.url).toBe(`${sitePath}/sandboxes/${payload.id}/snapshots`)
+  expect(call.url).toBe(`${sitePath}/sandbox/${payload.id}/snapshots`)
   expect(call.method).toBe('POST')
   expect(call.body).toStrictEqual({})
 
@@ -65,7 +65,7 @@ test('lists the snapshots of a site', async () => {
   const snapshots = await listSnapshots(options(fetch))
   const call = callOf(fetch, 0)
 
-  expect(call.url).toBe(`${sitePath}/sandbox_snapshots`)
+  expect(call.url).toBe(`${sitePath}/sandbox/snapshots`)
   expect(call.method).toBe('GET')
   expect(snapshots.map((snapshot) => snapshot.id)).toStrictEqual([snapshotPayload.id, 'snap_older'])
   expect(snapshots[1].expiresAt).toBeUndefined()
@@ -77,7 +77,7 @@ test('a snapshot deletes itself', async () => {
 
   await snapshot.delete()
 
-  expect(callOf(fetch, 1).url).toBe(`${sitePath}/sandbox_snapshots/${snapshotPayload.id}`)
+  expect(callOf(fetch, 1).url).toBe(`${sitePath}/sandbox/snapshots/${snapshotPayload.id}`)
   expect(callOf(fetch, 1).method).toBe('DELETE')
 })
 
@@ -88,6 +88,6 @@ test('deletes a snapshot by its ID', async () => {
 
   const call = callOf(fetch, 0)
 
-  expect(call.url).toBe(`${sitePath}/sandbox_snapshots/${snapshotPayload.id}`)
+  expect(call.url).toBe(`${sitePath}/sandbox/snapshots/${snapshotPayload.id}`)
   expect(call.method).toBe('DELETE')
 })

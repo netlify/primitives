@@ -103,7 +103,7 @@ export class Client {
 
   /** Creates a sandbox with a generated ID. */
   async create(options: CreateSandboxOptions = {}): Promise<Sandbox> {
-    const payload = await this.#request<SandboxPayload>('/sandboxes', {
+    const payload = await this.#request<SandboxPayload>('/sandbox', {
       body: createBody(options),
       signal: options.signal,
     })
@@ -116,7 +116,7 @@ export class Client {
    * exist.
    */
   async resolve(name: string, options: CreateSandboxOptions = {}): Promise<Sandbox> {
-    const payload = await this.#request<SandboxPayload>('/sandboxes', {
+    const payload = await this.#request<SandboxPayload>('/sandbox', {
       body: { name, ...createBody(options) },
       signal: options.signal,
     })
@@ -127,11 +127,11 @@ export class Client {
   }
 
   async delete(id: string, options: { signal?: AbortSignal } = {}): Promise<void> {
-    await this.#request(`/sandboxes/${id}`, { method: 'DELETE', signal: options.signal })
+    await this.#request(`/sandbox/${id}`, { method: 'DELETE', signal: options.signal })
   }
 
   async snapshot(id: string, options: SnapshotOptions = {}): Promise<Snapshot> {
-    const payload = await this.#request<SnapshotPayload>(`/sandboxes/${id}/snapshots`, {
+    const payload = await this.#request<SnapshotPayload>(`/sandbox/${id}/snapshots`, {
       body: { expires_after_seconds: options.expiresAfterSeconds },
       signal: options.signal,
     })
@@ -140,7 +140,7 @@ export class Client {
   }
 
   async listSnapshots(options: { signal?: AbortSignal } = {}): Promise<Snapshot[]> {
-    const payloads = await this.#request<SnapshotPayload[]>('/sandbox_snapshots', {
+    const payloads = await this.#request<SnapshotPayload[]>('/sandbox/snapshots', {
       method: 'GET',
       signal: options.signal,
     })
@@ -149,7 +149,7 @@ export class Client {
   }
 
   async deleteSnapshot(id: string, options: { signal?: AbortSignal } = {}): Promise<void> {
-    await this.#request(`/sandbox_snapshots/${id}`, { method: 'DELETE', signal: options.signal })
+    await this.#request(`/sandbox/snapshots/${id}`, { method: 'DELETE', signal: options.signal })
   }
 
   #request<T>(path: string, options: RequestOptions): Promise<T> {

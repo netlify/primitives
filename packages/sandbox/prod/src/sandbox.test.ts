@@ -11,7 +11,7 @@ test('deletes itself through the site API', async () => {
 
   const call = callOf(fetch, 1)
 
-  expect(call.url).toBe(`https://api.netlify.com/api/v1/sites/${payload.site_id}/sandboxes/${payload.id}`)
+  expect(call.url).toBe(`https://api.netlify.com/api/v1/sites/${payload.site_id}/sandbox/${payload.id}`)
   expect(call.method).toBe('DELETE')
 })
 

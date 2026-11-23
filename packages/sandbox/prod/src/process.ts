@@ -126,17 +126,17 @@ export class Process {
   async *output(options: PollOptions = {}): AsyncGenerator<OutputChunk, void, undefined> {
     const { intervalMs = 1000, signal } = options
 
-    for (;;) {
-      // A read that started after the exit has everything, so it is the last.
-      const exitedBeforeRead = this.exited
+    // A read that starts after the process has exited has everything, so it is
+    // the last one.
+    let isLastRead = false
+
+    while (!isLastRead) {
+      isLastRead = this.exited
+
       const chunk = await this.read({ signal })
 
       if (chunk.stdout || chunk.stderr) {
         yield chunk
-      }
-
-      if (exitedBeforeRead) {
-        return
       }
 
       if (!this.exited) {

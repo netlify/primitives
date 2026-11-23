@@ -61,7 +61,7 @@ describe('getSandbox', () => {
     await deleteSandbox('build', { fetch, siteID: payload.site_id, token: 'token' })
 
     expect(fetch).toHaveBeenCalledTimes(1)
-    expect(callOf(fetch, 0).url).toBe(`https://api.netlify.com/api/v1/sites/${payload.site_id}/sandboxes/build`)
+    expect(callOf(fetch, 0).url).toBe(`https://api.netlify.com/api/v1/sites/${payload.site_id}/sandbox/build`)
     expect(callOf(fetch, 0).method).toBe('DELETE')
   })
 
@@ -73,7 +73,7 @@ describe('getSandbox', () => {
 
     const { headers, url } = callOf(fetch, 0)
 
-    expect(url).toBe(`https://api.netlify.com/api/v1/sites/${payload.site_id}/sandboxes`)
+    expect(url).toBe(`https://api.netlify.com/api/v1/sites/${payload.site_id}/sandbox`)
     expect(headers.authorization).toBe('Bearer edge-token')
   })
 
