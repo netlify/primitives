@@ -57,17 +57,20 @@ export function getConfigs(functions) {
 /**
  * Returns the URLs of the local files that a set of functions import, the
  * functions included. If Deno cannot read the module graph of a function, the
- * result does not include the files of that function.
+ * name of that function is in `unwatchedFunctions`.
  *
  * @param {Record<string, string>} functions
- * @returns {Promise<string[]>}
+ * @returns {Promise<{ dependencies: string[], unwatchedFunctions: string[] }>}
  */
 export async function getDependencies(functions) {
   /** @type {Set<string>} */
   const dependencies = new Set()
 
+  /** @type {string[]} */
+  const unwatchedFunctions = []
+
   await Promise.all(
-    Object.values(functions).map(async (url) => {
+    Object.entries(functions).map(async ([name, url]) => {
       try {
         const command = new Deno.Command(Deno.execPath(), {
           args: ['info', '--json', '--no-lock', url],
@@ -77,6 +80,8 @@ export async function getDependencies(functions) {
         const { stdout, success } = await command.output()
 
         if (!success) {
+          unwatchedFunctions.push(name)
+
           return
         }
 
@@ -89,10 +94,10 @@ export async function getDependencies(functions) {
           }
         }
       } catch {
-        // The caller still watches the function directories.
+        unwatchedFunctions.push(name)
       }
     }),
   )
 
-  return [...dependencies]
+  return { dependencies: [...dependencies], unwatchedFunctions }
 }

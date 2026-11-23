@@ -82,6 +82,12 @@ export class EdgeFunctionsHandler {
    * while a function is broken.
    */
   private loggedConfigErrors = new Map<string, string>()
+
+  /**
+   * The functions whose imports we cannot watch, and for which we logged a
+   * warning.
+   */
+  private unwatchedFunctions = new Set<string>()
   private requestTimeout: number
   private siteID?: string
   private siteName?: string
@@ -135,18 +141,29 @@ export class EdgeFunctionsHandler {
     const data = (await res.json()) as unknown
 
     if (res.ok) {
-      const { configs, dependencies, errors } = data as {
+      const { configs, dependencies, errors, unwatchedFunctions } = data as {
         configs: Record<string, FunctionConfig>
         dependencies: string[]
         errors: Record<string, SerializedError>
+        unwatchedFunctions: string[]
       }
 
-      return { configs, dependencies: dependencies.map((url) => fileURLToPath(url)), errors }
+      return {
+        configs,
+        dependencies: dependencies.map((url) => fileURLToPath(url)),
+        errors,
+        unwatchedFunctions,
+      }
     }
 
     // The extraction failed as a whole, so we have no configs and no
     // function to blame.
-    return { configs: {}, dependencies: [], errors: { '': (data as { error: SerializedError }).error } }
+    return {
+      configs: {},
+      dependencies: [],
+      errors: { '': (data as { error: SerializedError }).error },
+      unwatchedFunctions: [],
+    }
   }
 
   /**
@@ -186,24 +203,59 @@ export class EdgeFunctionsHandler {
       entry = newEntry
       this.functionConfigs = newEntry
 
-      // An error can have a temporary cause, such as a remote import that is
-      // not available. Do not keep it, so that the next request tries again.
-      const clearOnError = () => {
+      const evict = () => {
         if (this.functionConfigs === newEntry) {
           this.functionConfigs = undefined
         }
       }
 
-      result.then(({ dependencies, errors }) => {
-        if (Object.keys(errors).length !== 0) {
-          clearOnError()
-        } else if (this.functionConfigs === newEntry) {
-          this.watchDependencies(dependencies)
-        }
-      }, clearOnError)
+      // An import that does not respond must not block all the requests that
+      // come later. After the time limit, the next request starts a new
+      // extraction. The requests that already wait for this one continue to
+      // wait.
+      const evictionTimer = setTimeout(evict, this.requestTimeout)
+      evictionTimer.unref()
+
+      // An error can have a temporary cause, such as a remote import that is
+      // not available. Do not keep it, so that the next request tries again.
+      result.then(
+        ({ dependencies, errors, unwatchedFunctions }) => {
+          clearTimeout(evictionTimer)
+
+          if (Object.keys(errors).length !== 0) {
+            evict()
+          } else if (this.functionConfigs === newEntry && !this.stopped) {
+            this.watchDependencies(dependencies)
+            this.warnUnwatchedFunctions(unwatchedFunctions)
+          }
+        },
+        () => {
+          clearTimeout(evictionTimer)
+          evict()
+        },
+      )
     }
 
     return entry.result
+  }
+
+  /**
+   * Logs a warning for each function whose imports we cannot watch. As in
+   * `netlify dev`, we continue without them: a change to a file that such a
+   * function imports from outside the edge function directories does not
+   * update its config.
+   */
+  private warnUnwatchedFunctions(names: string[]) {
+    for (const name of names) {
+      if (this.unwatchedFunctions.has(name)) {
+        continue
+      }
+
+      this.unwatchedFunctions.add(name)
+      this.logger.warn(
+        `Could not read the imports of edge function \`${name}\`. A change to a file that it imports from outside the edge functions directory will not update its config until you change the function.`,
+      )
+    }
   }
 
   private clearFunctionConfigs = () => {
