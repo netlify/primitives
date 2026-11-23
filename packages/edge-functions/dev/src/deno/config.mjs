@@ -25,6 +25,8 @@ export function getConfigs(functions) {
       const message = /** @type {Message} */ (e.data)
 
       if (message.type === 'configResponse') {
+        worker.terminate()
+
         const { configs, errors } = message.data
 
         for (const functionName in errors) {
@@ -49,6 +51,7 @@ export function getConfigs(functions) {
     }
 
     worker.onerror = (e) => {
+      worker.terminate()
       reject(e)
     }
   })
