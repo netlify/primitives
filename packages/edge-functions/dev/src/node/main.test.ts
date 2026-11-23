@@ -349,6 +349,67 @@ describe('`EdgeFunctionsHandler`', () => {
     }
   })
 
+  test('Extracts the function configs again when an imported module changes during the first extraction', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile('lib/path.mjs', `export const path = "/one";`)
+      .withFile(
+        'netlify/edge-functions/echo.mjs',
+        `import { path } from "../../lib/path.mjs";
+
+        await new Promise((resolve) => setTimeout(resolve, 1_000));
+
+        export default async () => new Response("Hello from edge function");
+
+        export const config = { path };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+
+    try {
+      const pending = handler.match(new Request('https://site.netlify/one'))
+
+      // Change the module after Deno read it, but before the extraction ends.
+      await vi.waitFor(
+        () => {
+          expect(fetchSpy.mock.calls.some(([, init]) => init?.method === 'NETLIFYCONFIG')).toBe(true)
+        },
+        { timeout: 5_000 },
+      )
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      await writeFile(path.resolve(directory, 'lib/path.mjs'), `export const path = "/two";`)
+
+      expect(await pending).toBeTruthy()
+
+      await vi.waitFor(
+        async () => {
+          expect(await handler.match(new Request('https://site.netlify/two'))).toBeTruthy()
+        },
+        { timeout: 5_000 },
+      )
+    } finally {
+      fetchSpy.mockRestore()
+      await handler.stop()
+      await fixture.destroy()
+    }
+  })
+
   test('Stops waiting for a config extraction that takes too long', async () => {
     const fixture = new Fixture()
       .withFile(

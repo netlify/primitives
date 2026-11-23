@@ -1,3 +1,4 @@
+import { stat } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
@@ -197,6 +198,7 @@ export class EdgeFunctionsHandler {
     let entry = this.functionConfigs
 
     if (entry?.key !== key) {
+      const startTime = Date.now()
       let evict = () => {}
 
       // An import that does not respond must not block requests without a
@@ -244,11 +246,35 @@ export class EdgeFunctionsHandler {
         } else if (this.functionConfigs === newEntry && !this.stopped) {
           this.watchDependencies(dependencies)
           this.warnUnwatchedFunctions(unwatchedFunctions)
+
+          // We did not watch the imports during their first extraction, so a
+          // change in that time cannot clear the cache. Find such changes from
+          // the modification times.
+          void this.changedSince(dependencies, startTime).then((changed) => {
+            if (changed) evict()
+          })
         }
       }, evict)
     }
 
     return entry.result
+  }
+
+  /**
+   * Returns true if one of the files changed at or after `time`, or if we
+   * cannot read the modification time of one of them.
+   */
+  private async changedSince(paths: string[], time: number) {
+    const changes = await Promise.all(
+      paths.map((file) =>
+        stat(file).then(
+          (stats) => stats.mtimeMs >= time,
+          () => true,
+        ),
+      ),
+    )
+
+    return changes.includes(true)
   }
 
   /**
