@@ -305,6 +305,50 @@ describe('`EdgeFunctionsHandler`', () => {
     }
   })
 
+  test('Extracts the function configs again when a module that a function imports changes', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile('lib/path.mjs', `export const path = "/one";`)
+      .withFile(
+        'netlify/edge-functions/echo.mjs',
+        `import { path } from "../../lib/path.mjs";
+
+        export default async () => new Response("Hello from edge function");
+
+        export const config = { path };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    try {
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeTruthy()
+
+      // The handler starts to watch the imported module after the extraction.
+      await vi.waitFor(async () => {
+        await writeFile(path.resolve(directory, 'lib/path.mjs'), `export const path = "/two";`)
+        expect(await handler.match(new Request('https://site.netlify/two'))).toBeTruthy()
+      })
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeFalsy()
+    } finally {
+      await handler.stop()
+      await fixture.destroy()
+    }
+  })
+
   test('Throws an error when the edge function has unparseable code', async () => {
     const fixture = new Fixture()
       .withFile(
