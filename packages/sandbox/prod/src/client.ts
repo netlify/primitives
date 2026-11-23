@@ -127,11 +127,11 @@ export class Client {
   }
 
   async delete(id: string, options: { signal?: AbortSignal } = {}): Promise<void> {
-    await this.#request(`/sandbox/${id}`, { method: 'DELETE', signal: options.signal })
+    await this.#request(`/sandbox/${encodeURIComponent(id)}`, { method: 'DELETE', signal: options.signal })
   }
 
   async snapshot(id: string, options: SnapshotOptions = {}): Promise<Snapshot> {
-    const payload = await this.#request<SnapshotPayload>(`/sandbox/${id}/snapshots`, {
+    const payload = await this.#request<SnapshotPayload>(`/sandbox/${encodeURIComponent(id)}/snapshots`, {
       body: { expires_after_seconds: options.expiresAfterSeconds },
       signal: options.signal,
     })
@@ -149,7 +149,7 @@ export class Client {
   }
 
   async deleteSnapshot(id: string, options: { signal?: AbortSignal } = {}): Promise<void> {
-    await this.#request(`/sandbox/snapshots/${id}`, { method: 'DELETE', signal: options.signal })
+    await this.#request(`/sandbox/snapshots/${encodeURIComponent(id)}`, { method: 'DELETE', signal: options.signal })
   }
 
   #request<T>(path: string, options: RequestOptions): Promise<T> {

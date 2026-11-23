@@ -35,9 +35,7 @@ export const sendJSON = async <T>(
     throw await errorFromResponse(method, url, response)
   }
 
-  if (response.status === 204) {
-    return undefined as T
-  }
+  const text = await response.text()
 
-  return (await response.json()) as T
+  return (text === '' ? undefined : JSON.parse(text)) as T
 }

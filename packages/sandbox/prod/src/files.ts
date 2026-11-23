@@ -25,7 +25,7 @@ const check = (action: string, path: string, result: CommandResult) => {
 
 export const createFiles = (commands: Commands): Files => ({
   async read(path, options = {}) {
-    const result = await commands.run(['cat', path], options)
+    const result = await commands.run(['cat', '--', path], options)
 
     check('read', path, result)
 
@@ -34,7 +34,7 @@ export const createFiles = (commands: Commands): Files => ({
 
   async write(path, contents, options = {}) {
     const result = await commands.run(
-      ['sh', '-c', 'mkdir -p "$(dirname "$2")" && printf %s "$1" | base64 -d > "$2"', 'sh', base64(contents), path],
+      ['sh', '-c', 'mkdir -p -- "$(dirname -- "$2")" && printf %s "$1" | base64 -d > "$2"', 'sh', base64(contents), path],
       options,
     )
 
@@ -42,7 +42,7 @@ export const createFiles = (commands: Commands): Files => ({
   },
 
   async list(path = '/', options = {}) {
-    const result = await commands.run(['ls', '-1A', path], options)
+    const result = await commands.run(['ls', '-1A', '--', path], options)
 
     check('list', path, result)
 

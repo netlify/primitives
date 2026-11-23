@@ -94,7 +94,7 @@ export class Process {
 
   /** Refreshes `exited` and `exitCode` from the sandbox. */
   async status(options: ProcessOptions = {}): Promise<this> {
-    const payload = await this.#request<ProcessPayload>(`/processes/${this.id}`, {
+    const payload = await this.#request<ProcessPayload>(`/processes/${encodeURIComponent(this.id)}`, {
       method: 'GET',
       signal: options.signal,
     })
@@ -105,7 +105,7 @@ export class Process {
   /** Reads whatever has been written since the cursor, and advances it. */
   async read(options: ProcessOptions = {}): Promise<OutputChunk> {
     const query = `stdout_since=${String(this.#stdoutOffset)}&stderr_since=${String(this.#stderrOffset)}`
-    const payload = await this.#request<OutputPayload>(`/processes/${this.id}/output?${query}`, {
+    const payload = await this.#request<OutputPayload>(`/processes/${encodeURIComponent(this.id)}/output?${query}`, {
       method: 'GET',
       signal: options.signal,
     })
@@ -135,7 +135,7 @@ export class Process {
 
       const chunk = await this.read({ signal })
 
-      if (chunk.stdout || chunk.stderr) {
+      if (chunk.stdout || chunk.stderr || chunk.truncated) {
         yield chunk
       }
 
@@ -165,7 +165,7 @@ export class Process {
 
   /** Stops the process and resolves once it is gone, not once asked. */
   async kill(options: ProcessOptions = {}): Promise<this> {
-    const payload = await this.#request<ProcessPayload>(`/processes/${this.id}`, {
+    const payload = await this.#request<ProcessPayload>(`/processes/${encodeURIComponent(this.id)}`, {
       method: 'DELETE',
       signal: options.signal,
     })
@@ -177,7 +177,7 @@ export class Process {
     this.argv = payload.argv ?? this.argv
     this.startedAt = payload.started_at === undefined ? this.startedAt : new Date(payload.started_at)
     this.exited = payload.exited ?? this.exited
-    this.exitCode = payload.exit_code
+    this.exitCode = payload.exit_code ?? this.exitCode
     this.error = payload.error
 
     return this
@@ -192,15 +192,16 @@ function sleep(ms: number, signal?: AbortSignal): Promise<void> {
       return
     }
 
-    const timer = setTimeout(resolve, ms)
+    const onAbort = () => {
+      clearTimeout(timer)
+      reject(signal?.reason as Error)
+    }
 
-    signal?.addEventListener(
-      'abort',
-      () => {
-        clearTimeout(timer)
-        reject(signal.reason as Error)
-      },
-      { once: true },
-    )
+    const timer = setTimeout(() => {
+      signal?.removeEventListener('abort', onAbort)
+      resolve()
+    }, ms)
+
+    signal?.addEventListener('abort', onAbort, { once: true })
   })
 }

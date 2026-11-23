@@ -1,4 +1,4 @@
-import { CommandError } from './error.js'
+import { CommandError, SandboxError } from './error.js'
 import { Process, type ProcessPayload } from './process.js'
 import type { SandboxRequest } from './request.js'
 
@@ -108,9 +108,39 @@ const quote = (value: ShellScalar) => `'${String(value).replaceAll("'", "'\\''")
 const quoteValue = (value: ShellValue) =>
   Array.isArray(value) ? value.map(quote).join(' ') : quote(value as ShellScalar)
 
+// assertUnquoted throws when a value would be interpolated inside quotes. We
+// wrap every value in single quotes, which only keeps it from being parsed
+// when the template hasn't already opened a quote around it.
+const assertUnquoted = (strings: TemplateStringsArray) => {
+  let quote: string | undefined
+
+  for (const part of strings.slice(0, -1)) {
+    for (let index = 0; index < part.length; index++) {
+      const char = part[index]
+
+      if (char === '\\' && quote !== "'") {
+        index++
+      } else if (quote === undefined && (char === "'" || char === '"')) {
+        quote = char
+      } else if (char === quote) {
+        quote = undefined
+      }
+    }
+
+    if (quote !== undefined) {
+      throw new SandboxError(
+        'invalid_request',
+        `a value can't be interpolated inside quotes, because it is quoted for you: remove the ${quote} around it`,
+      )
+    }
+  }
+}
+
 export const createShell =
   (commands: Commands): Shell =>
   async (strings, ...values) => {
+    assertUnquoted(strings)
+
     const command = strings.reduce((script, part, index) => script + quoteValue(values[index - 1]) + part)
     const result = await commands.run(command)
 
