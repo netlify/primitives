@@ -27,9 +27,12 @@
     "dev": "tsup-node --watch",
     "build": "tsup-node",
     "prepack": "npm run build",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "test:dev": "vitest",
     "publint": "npx -y publint --strict"
+  },
+  "dependencies": {
+    "@netlify/runtime-utils": "3.0.1"
   },
   "devDependencies": {
     "tsup": "^8.0.2"
