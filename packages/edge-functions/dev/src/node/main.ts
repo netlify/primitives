@@ -71,6 +71,13 @@ export class EdgeFunctionsHandler {
   private initialized: boolean
   private stopped: boolean
   private logger: Logger
+
+  /**
+   * The config errors that we logged, by function name. We log an error again
+   * only if it changes, because each request can extract the configs again
+   * while a function is broken.
+   */
+  private loggedConfigErrors = new Map<string, string>()
   private requestTimeout: number
   private siteID?: string
   private siteName?: string
@@ -127,10 +134,32 @@ export class EdgeFunctionsHandler {
     const data = (await res.json()) as unknown
 
     if (res.ok) {
-      return { configs: data as Record<string, FunctionConfig> }
+      return data as { configs: Record<string, FunctionConfig>; errors: Record<string, SerializedError> }
     }
 
-    return { error: (data as { error: SerializedError }).error }
+    // The extraction failed as a whole, so we have no configs and no
+    // function to blame.
+    return { configs: {}, errors: { '': (data as { error: SerializedError }).error } }
+  }
+
+  /**
+   * Logs each config error that we did not log before.
+   */
+  private logConfigErrors(errors: Record<string, SerializedError>) {
+    for (const name of this.loggedConfigErrors.keys()) {
+      if (!(name in errors)) {
+        this.loggedConfigErrors.delete(name)
+      }
+    }
+
+    for (const [name, error] of Object.entries(errors)) {
+      if (this.loggedConfigErrors.get(name) === error.message) {
+        continue
+      }
+
+      this.loggedConfigErrors.set(name, error.message)
+      this.logger.error(error.message)
+    }
   }
 
   /**
@@ -158,8 +187,8 @@ export class EdgeFunctionsHandler {
         }
       }
 
-      result.then(({ error }) => {
-        if (error) clearOnError()
+      result.then(({ errors }) => {
+        if (Object.keys(errors).length !== 0) clearOnError()
       }, clearOnError)
     }
 
@@ -294,14 +323,23 @@ export class EdgeFunctionsHandler {
     }
 
     const acceptsHTML = Boolean(request.headers.get('accept')?.includes('text/html'))
-    const { configs, error } = await this.getCachedFunctionConfigs(denoPort, functionsMap)
-    if (error) {
-      return { handle: () => this.renderError(JSON.stringify({ error }), acceptsHTML) }
-    }
+    const { configs, errors } = await this.getCachedFunctionConfigs(denoPort, functionsMap)
+
+    // A function that did not load must not stop the other functions, or the
+    // requests that no function matches. We log its error and continue
+    // without its in-source config.
+    this.logConfigErrors(errors)
 
     const { functionNames, invocationMetadata } = this.getFunctionsForRequest(request, functions, configs)
     if (functionNames.length === 0) {
       return
+    }
+
+    // A declaration in `netlify.toml` can route the request to a function that
+    // did not load. Show the error of that function.
+    const brokenFunction = functionNames.find((name) => name in errors)
+    if (brokenFunction) {
+      return { handle: () => this.renderError(JSON.stringify({ error: errors[brokenFunction] }), acceptsHTML) }
     }
 
     return {

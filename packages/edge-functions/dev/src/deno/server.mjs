@@ -46,9 +46,7 @@ export const serveLocal = ({ denoPort: port, requestTimeout }) => {
       functions = availableFunctions
 
       try {
-        const configs = await getConfigs(availableFunctions)
-
-        return Response.json(configs)
+        return Response.json(await getConfigs(availableFunctions))
       } catch (error) {
         return getErrorResponse(error)
       }
