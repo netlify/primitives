@@ -194,6 +194,15 @@ jobs:
             npm publish packages/static/ --provenance --access=public
           fi
       - if:
+          ${{ steps.release.outputs['packages/sandbox/prod--release_created'] || github.event_name ==
+          'workflow_dispatch' }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            npm publish packages/sandbox/prod/ --provenance --access=public || true
+          else
+            npm publish packages/sandbox/prod/ --provenance --access=public
+          fi
+      - if:
           ${{ steps.release.outputs['packages/server/dev--release_created'] || github.event_name == 'workflow_dispatch'
           }}
         run: |
