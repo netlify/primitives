@@ -349,7 +349,7 @@ describe('`EdgeFunctionsHandler`', () => {
     }
   })
 
-  test('Starts a new config extraction when the pending one takes too long', async () => {
+  test('Stops waiting for a config extraction that takes too long', async () => {
     const fixture = new Fixture()
       .withFile(
         'netlify.toml',
@@ -387,14 +387,17 @@ describe('`EdgeFunctionsHandler`', () => {
       await handler.match(new Request('https://site.netlify/other'))
 
       const requestsBefore = configRequests()
-      const first = handler.match(new Request('https://site.netlify/slow'))
 
-      await new Promise((resolve) => setTimeout(resolve, 600))
+      // The request that waits gets an error after the time limit.
+      const req = new Request('https://site.netlify/slow')
+      const match = await handler.match(req)
+      expect(match).toBeTruthy()
+      const res = await match?.handle(req, serverAddress)
+      expect(res?.status).toBe(500)
+      expect(await res?.text()).toContain('Timed out after 300ms while reading the edge function configs')
 
-      const second = handler.match(new Request('https://site.netlify/slow'))
-
-      expect(await first).toBeTruthy()
-      expect(await second).toBeTruthy()
+      // The next request starts a new extraction.
+      await handler.match(new Request('https://site.netlify/slow'))
       expect(configRequests() - requestsBefore).toBe(2)
     } finally {
       fetchSpy.mockRestore()
