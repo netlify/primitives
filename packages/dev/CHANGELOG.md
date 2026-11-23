@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.2.2](https://github.com/netlify/primitives/compare/dev-v5.2.1...dev-v5.2.2) (2026-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/edge-functions-dev bumped from 2.0.9 to 2.0.10
+
 ## [5.2.1](https://github.com/netlify/primitives/compare/dev-v5.2.0...dev-v5.2.1) (2026-11-23)
 
 
