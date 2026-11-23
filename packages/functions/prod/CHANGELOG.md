@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.1.2](https://github.com/netlify/primitives/compare/functions-v6.1.1...functions-v6.1.2) (2026-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/cache bumped from 4.2.1 to 4.2.2
+
 ## [6.1.1](https://github.com/netlify/primitives/compare/functions-v6.1.0...functions-v6.1.1) (2026-11-06)
 
 

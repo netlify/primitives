@@ -1,6 +1,6 @@
 {
   "name": "@netlify/sandbox",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "TypeScript client for Netlify Sandbox",
   "type": "module",
   "engines": {
@@ -32,7 +32,7 @@
     "publint": "npx -y publint --strict"
   },
   "dependencies": {
-    "@netlify/runtime-utils": "3.0.1"
+    "@netlify/runtime-utils": "3.1.0"
   },
   "devDependencies": {
     "tsup": "^8.0.2"

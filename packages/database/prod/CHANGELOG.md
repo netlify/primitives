@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.4](https://github.com/netlify/primitives/compare/database-v2.0.3...database-v2.0.4) (2026-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 3.0.1 to 3.1.0
+
 ## [2.0.3](https://github.com/netlify/primitives/compare/database-v2.0.2...database-v2.0.3) (2026-11-06)
 
 
