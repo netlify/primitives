@@ -145,3 +145,24 @@ test('picks up a token that changed since the last call', async () => {
   expect(callOf(fetch, 0).headers.authorization).toBe('Bearer first')
   expect(callOf(fetch, 1).headers.authorization).toBe('Bearer second')
 })
+
+// A name is one path segment, whatever it contains, so it can't address
+// another route or another site.
+test('encodes IDs in the path', async () => {
+  const fetch = mockFetch(new Response(null, { status: 204 }), new Response(null, { status: 204 }))
+  const client_ = client(fetch)
+
+  await client_.delete('../../other-site/sandbox/build')
+  await client_.deleteSnapshot('snap_1?x#y')
+
+  const sitePath = `https://api.netlify.com/api/v1/sites/${payload.site_id}`
+
+  expect(callOf(fetch, 0).url).toBe(`${sitePath}/sandbox/..%2F..%2Fother-site%2Fsandbox%2Fbuild`)
+  expect(callOf(fetch, 1).url).toBe(`${sitePath}/sandbox/snapshots/snap_1%3Fx%23y`)
+})
+
+test('resolves with undefined for a successful response without a body', async () => {
+  const fetch = mockFetch(new Response('', { status: 200 }))
+
+  await expect(client(fetch).delete('build')).resolves.toBeUndefined()
+})

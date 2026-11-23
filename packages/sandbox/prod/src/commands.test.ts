@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest'
 
-import { CommandError } from './error.js'
+import { CommandError, SandboxError } from './error.js'
+import type { Sandbox } from './sandbox.js'
 import { callOf, client, json, mockFetch, payload } from './test_helpers.js'
 
 test('runs a command against the sandbox hostname, carrying the token', async () => {
@@ -93,4 +94,29 @@ test('$ works when taken off the sandbox', async () => {
   await $`npm test`
 
   expect(callOf(fetch, 1).body).toStrictEqual({ argv: ['sh', '-c', 'npm test'] })
+})
+
+// Our quoting only holds outside quotes. Inside double quotes the shell still
+// expands `$(...)`, and inside single quotes ours would close the template's.
+test.each([
+  ['double', (value: string) => (sandbox: Sandbox) => sandbox.$`echo "${value}"`],
+  ['single', (value: string) => (sandbox: Sandbox) => sandbox.$`echo '${value}'`],
+  ['unclosed', (value: string) => (sandbox: Sandbox) => sandbox.$`echo "a" 'b ${value}`],
+])('$ refuses a value interpolated inside %s quotes', async (_, build) => {
+  const fetch = mockFetch(json(payload, 201))
+  const sandbox = await client(fetch).create()
+  const error = await build('$(id)')(sandbox).catch((err: unknown) => err)
+
+  expect(error).toBeInstanceOf(SandboxError)
+  expect((error as SandboxError).code).toBe('invalid_request')
+  expect(fetch).toHaveBeenCalledTimes(1)
+})
+
+test('$ allows quotes that are closed before a value', async () => {
+  const fetch = mockFetch(json(payload, 201), json({ exit_code: 0 }))
+  const sandbox = await client(fetch).create()
+
+  await sandbox.$`echo "it's" ${'x'} 'done'`
+
+  expect(callOf(fetch, 1).body.argv).toStrictEqual(['sh', '-c', `echo "it's" 'x' 'done'`])
 })

@@ -44,3 +44,22 @@ test('refuses to return part of a file the sandbox cut short', async () => {
   expect(error).toBeInstanceOf(SandboxError)
   expect((error as SandboxError).code).toBe('output_truncated')
 })
+
+// A path that starts with a hyphen has to stay a path, not become an option.
+test('keeps a path that starts with a hyphen from being read as an option', async () => {
+  const fetch = mockFetch(
+    json(payload, 201),
+    json({ exit_code: 0, stdout: 'x' }),
+    json({ exit_code: 0, stdout: 'a\n' }),
+    json({ exit_code: 0 }),
+  )
+  const sandbox = await client(fetch).create()
+
+  await sandbox.files.read('-n')
+  await sandbox.files.list('-l')
+  await sandbox.files.write('-f', 'x')
+
+  expect(callOf(fetch, 1).body.argv).toStrictEqual(['cat', '--', '-n'])
+  expect(callOf(fetch, 2).body.argv).toStrictEqual(['ls', '-1A', '--', '-l'])
+  expect((callOf(fetch, 3).body.argv as string[])[2]).toContain('dirname -- "$2"')
+})

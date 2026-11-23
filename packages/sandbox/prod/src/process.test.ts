@@ -1,4 +1,4 @@
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 
 import { getSandbox } from './get_sandbox.js'
 import { callOf, json, mockFetch, payload } from './test_helpers.js'
@@ -161,4 +161,62 @@ test('run is unchanged by any of this', async () => {
 
   expect(callOf(fetch, 1).url).toBe(`https://${payload.hostname}/.netlify/sandbox/commands`)
   expect(result.stdout).toBe('hi')
+})
+
+test('wait reports truncation from a chunk that carries no output', async () => {
+  const fetch = mockFetch(
+    json(payload, 201),
+    json(output({ truncated: true, process: finished })),
+    json(output({ process: finished })),
+  )
+  const sandbox = await getSandbox('build', { ...options, fetch })
+  const result = await sandbox.commands.get('p1').wait({ intervalMs: 0 })
+
+  expect(result.truncated).toBe(true)
+})
+
+test('keeps the exit code when a later response leaves it out', async () => {
+  const { exit_code: _, ...withoutExitCode } = { ...finished, exit_code: 3 }
+  const fetch = mockFetch(
+    json(payload, 201),
+    json({ ...finished, exit_code: 3 }),
+    json(output({ process: withoutExitCode })),
+    json(output({ process: withoutExitCode })),
+  )
+  const sandbox = await getSandbox('build', { ...options, fetch })
+  const process = sandbox.commands.get('p1')
+
+  await process.status()
+
+  const result = await process.wait({ intervalMs: 0 })
+
+  expect(result.exitCode).toBe(3)
+})
+
+test('encodes the process ID in the path', async () => {
+  const fetch = mockFetch(json(payload, 201), json(finished))
+  const sandbox = await getSandbox('build', { ...options, fetch })
+
+  await sandbox.commands.get('../commands?x').status()
+
+  expect(callOf(fetch, 1).url).toBe(`https://${payload.hostname}/.netlify/sandbox/processes/..%2Fcommands%3Fx`)
+})
+
+test('polling leaves no abort listeners behind', async () => {
+  const fetch = mockFetch(
+    json(payload, 201),
+    json(output({ stdout: 'a', stdout_offset: 1 })),
+    json(output({ stdout: 'b', stdout_offset: 2 })),
+    json(output({ process: finished })),
+    json(output({ process: finished })),
+  )
+  const sandbox = await getSandbox('build', { ...options, fetch })
+  const controller = new AbortController()
+  const added = vi.spyOn(controller.signal, 'addEventListener')
+  const removed = vi.spyOn(controller.signal, 'removeEventListener')
+
+  await sandbox.commands.get('p1').wait({ intervalMs: 0, signal: controller.signal })
+
+  expect(added).toHaveBeenCalled()
+  expect(removed).toHaveBeenCalledTimes(added.mock.calls.length)
 })

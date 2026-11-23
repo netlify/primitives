@@ -34,7 +34,14 @@ export const createFiles = (commands: Commands): Files => ({
 
   async write(path, contents, options = {}) {
     const result = await commands.run(
-      ['sh', '-c', 'mkdir -p -- "$(dirname -- "$2")" && printf %s "$1" | base64 -d > "$2"', 'sh', base64(contents), path],
+      [
+        'sh',
+        '-c',
+        'mkdir -p -- "$(dirname -- "$2")" && printf %s "$1" | base64 -d > "$2"',
+        'sh',
+        base64(contents),
+        path,
+      ],
       options,
     )
 

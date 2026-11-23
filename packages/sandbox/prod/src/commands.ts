@@ -130,7 +130,7 @@ const assertUnquoted = (strings: TemplateStringsArray) => {
     if (quote !== undefined) {
       throw new SandboxError(
         'invalid_request',
-        `a value can't be interpolated inside quotes, because it is quoted for you: remove the ${quote} around it`,
+        `a value can't be interpolated inside quotes. Values are quoted for you, so remove the ${quote} around it`,
       )
     }
   }
