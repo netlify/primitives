@@ -1,5 +1,6 @@
 export { Reactive } from './lib/reactive.js'
 export {
+  AUTH_TOKEN_ENV_VAR,
   LEGACY_STORAGE_ENV_VAR,
   getAPIToken,
   getLegacyAPIToken,

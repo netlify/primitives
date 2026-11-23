@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.0.7](https://github.com/netlify/primitives/compare/headers-v3.0.6...headers-v3.0.7) (2026-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @netlify/dev-utils bumped from ^6.1.0 to ^6.1.1
+
 ## [3.0.6](https://github.com/netlify/primitives/compare/headers-v3.0.5...headers-v3.0.6) (2026-11-09)
 
 

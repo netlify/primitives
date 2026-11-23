@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.1.1](https://github.com/netlify/primitives/compare/dev-utils-v6.1.0...dev-utils-v6.1.1) (2026-11-23)
+
+
+### Bug Fixes
+
+* **dev-utils:** read NETLIFY_AUTH_TOKEN in getAPIToken ([#861](https://github.com/netlify/primitives/issues/861)) ([21905c8](https://github.com/netlify/primitives/commit/21905c85087f2255c5b6c8cc54a9a3b43812b769))
+
 ## [6.1.0](https://github.com/netlify/primitives/compare/dev-utils-v6.0.5...dev-utils-v6.1.0) (2026-11-09)
 
 
