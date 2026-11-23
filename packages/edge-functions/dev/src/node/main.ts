@@ -30,8 +30,9 @@ interface EdgeFunctionsHandlerOptions {
   directories: string[]
   env: Record<string, string>
   /**
-   * Watches the edge function directories, so that we know when to extract
-   * the function configs again. If not set, the handler creates its own.
+   * Watches the edge function directories and the local files that the
+   * functions import, so that we know when to extract the function configs
+   * again. If not set, the handler creates its own.
    */
   fileWatcher?: FileWatcher
   geolocation: Geolocation
@@ -63,7 +64,10 @@ export class EdgeFunctionsHandler {
   private configDeclarations: Declaration[]
   private denoServerProcess?: ProcessRef
   private directories: string[]
+  private dependencies = new Set<string>()
+  private dependenciesWatch?: FileWatchSubscriptionHandle
   private directoriesWatch: FileWatchSubscriptionHandle
+  private fileWatcher: FileWatcher
   private functionConfigs?: { key: string; result: Promise<FunctionConfigsResult> }
   private ownFileWatcher?: FileWatcher
   private geolocation: Geolocation
@@ -86,21 +90,18 @@ export class EdgeFunctionsHandler {
     this.configDeclarations = options.configDeclarations
     this.directories = options.directories
 
-    const fileWatcher = options.fileWatcher ?? new FileWatcher()
+    this.fileWatcher = options.fileWatcher ?? new FileWatcher()
     if (!options.fileWatcher) {
-      this.ownFileWatcher = fileWatcher
+      this.ownFileWatcher = this.fileWatcher
     }
 
     // A change to any file in the edge function directories can change a
     // config, so the next request extracts the configs again.
-    const clearFunctionConfigs = () => {
-      this.functionConfigs = undefined
-    }
-    this.directoriesWatch = fileWatcher.subscribe({
+    this.directoriesWatch = this.fileWatcher.subscribe({
       paths: this.directories,
-      onAdd: clearFunctionConfigs,
-      onChange: clearFunctionConfigs,
-      onUnlink: clearFunctionConfigs,
+      onAdd: this.clearFunctionConfigs,
+      onChange: this.clearFunctionConfigs,
+      onUnlink: this.clearFunctionConfigs,
     })
     this.geolocation = options.geolocation
     this.initialization = this.initialize({
@@ -134,12 +135,18 @@ export class EdgeFunctionsHandler {
     const data = (await res.json()) as unknown
 
     if (res.ok) {
-      return data as { configs: Record<string, FunctionConfig>; errors: Record<string, SerializedError> }
+      const { configs, dependencies, errors } = data as {
+        configs: Record<string, FunctionConfig>
+        dependencies: string[]
+        errors: Record<string, SerializedError>
+      }
+
+      return { configs, dependencies: dependencies.map((url) => fileURLToPath(url)), errors }
     }
 
     // The extraction failed as a whole, so we have no configs and no
     // function to blame.
-    return { configs: {}, errors: { '': (data as { error: SerializedError }).error } }
+    return { configs: {}, dependencies: [], errors: { '': (data as { error: SerializedError }).error } }
   }
 
   /**
@@ -187,12 +194,50 @@ export class EdgeFunctionsHandler {
         }
       }
 
-      result.then(({ errors }) => {
-        if (Object.keys(errors).length !== 0) clearOnError()
+      result.then(({ dependencies, errors }) => {
+        if (Object.keys(errors).length !== 0) {
+          clearOnError()
+        } else if (this.functionConfigs === newEntry) {
+          this.watchDependencies(dependencies)
+        }
       }, clearOnError)
     }
 
     return entry.result
+  }
+
+  private clearFunctionConfigs = () => {
+    this.functionConfigs = undefined
+  }
+
+  /**
+   * Watches the files that the functions import, so that a change to a module
+   * outside the edge function directories also clears the cached configs.
+   */
+  private watchDependencies(paths: string[]) {
+    const dependencies = new Set(
+      paths.filter((dependency) =>
+        this.directories.every((directory) => path.relative(directory, dependency).startsWith('..')),
+      ),
+    )
+
+    if (
+      dependencies.size === this.dependencies.size &&
+      [...dependencies].every((dependency) => this.dependencies.has(dependency))
+    ) {
+      return
+    }
+
+    this.dependencies = dependencies
+    this.dependenciesWatch?.unsubscribe()
+    this.dependenciesWatch =
+      dependencies.size === 0
+        ? undefined
+        : this.fileWatcher.subscribe({
+            paths: [...dependencies],
+            onChange: this.clearFunctionConfigs,
+            onUnlink: this.clearFunctionConfigs,
+          })
   }
 
   /**
@@ -492,6 +537,7 @@ export class EdgeFunctionsHandler {
     this.stopped = true
 
     this.directoriesWatch.unsubscribe()
+    this.dependenciesWatch?.unsubscribe()
     await this.ownFileWatcher?.close()
 
     if (!this.denoServerProcess?.ps) {

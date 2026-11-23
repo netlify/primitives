@@ -6,7 +6,7 @@
 
 import { getErrorResponse } from './errors.mjs'
 
-import { getConfigs } from './config.mjs'
+import { getConfigs, getDependencies } from './config.mjs'
 import { invoke } from './invoke.mjs'
 
 /**
@@ -46,7 +46,12 @@ export const serveLocal = ({ denoPort: port, requestTimeout }) => {
       functions = availableFunctions
 
       try {
-        return Response.json(await getConfigs(availableFunctions))
+        const [{ configs, errors }, dependencies] = await Promise.all([
+          getConfigs(availableFunctions),
+          getDependencies(availableFunctions),
+        ])
+
+        return Response.json({ configs, dependencies, errors })
       } catch (error) {
         return getErrorResponse(error)
       }

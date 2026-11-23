@@ -53,3 +53,46 @@ export function getConfigs(functions) {
     }
   })
 }
+
+/**
+ * Returns the URLs of the local files that a set of functions import, the
+ * functions included. If Deno cannot read the module graph of a function, the
+ * result does not include the files of that function.
+ *
+ * @param {Record<string, string>} functions
+ * @returns {Promise<string[]>}
+ */
+export async function getDependencies(functions) {
+  /** @type {Set<string>} */
+  const dependencies = new Set()
+
+  await Promise.all(
+    Object.values(functions).map(async (url) => {
+      try {
+        const command = new Deno.Command(Deno.execPath(), {
+          args: ['info', '--json', '--no-lock', url],
+          stderr: 'null',
+          stdout: 'piped',
+        })
+        const { stdout, success } = await command.output()
+
+        if (!success) {
+          return
+        }
+
+        /** @type {{ modules: { specifier: string }[] }} */
+        const graph = JSON.parse(new TextDecoder().decode(stdout))
+
+        for (const { specifier } of graph.modules) {
+          if (specifier.startsWith('file:')) {
+            dependencies.add(specifier)
+          }
+        }
+      } catch {
+        // The caller still watches the function directories.
+      }
+    }),
+  )
+
+  return [...dependencies]
+}
