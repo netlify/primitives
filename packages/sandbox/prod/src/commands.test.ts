@@ -50,7 +50,7 @@ test('sends cwd and env with the command', async () => {
   expect(callOf(fetch, 1).body).toStrictEqual({ argv: ['sh', '-c', 'npm test'], dir: '/app', env: { CI: '1' } })
 })
 
-test('$ quotes what is interpolated, so the shell parses none of it', async () => {
+test('$ passes what is interpolated as arguments, so the shell parses none of it', async () => {
   const fetch = mockFetch(json(payload, 201), json({ exit_code: 0, stdout: 'done\n' }))
 
   const sandbox = await client(fetch).create()
@@ -60,7 +60,11 @@ test('$ quotes what is interpolated, so the shell parses none of it', async () =
   expect(callOf(fetch, 1).body.argv).toStrictEqual([
     'sh',
     '-c',
-    String.raw`git clone 'https://example.com/repo.git' 'my dir; rm -rf / '\''x'\''' --depth '1'`,
+    'git clone "${1}" "${2}" --depth "${3}"',
+    'sh',
+    'https://example.com/repo.git',
+    "my dir; rm -rf / 'x'",
+    '1',
   ])
   expect(result.stdout).toBe('done\n')
 })
@@ -71,7 +75,7 @@ test('$ turns an array into one argument per item', async () => {
   const sandbox = await client(fetch).create()
   await sandbox.$`npm install ${['left pad', 'react']}`
 
-  expect(callOf(fetch, 1).body.argv).toStrictEqual(['sh', '-c', `npm install 'left pad' 'react'`])
+  expect(callOf(fetch, 1).body.argv).toStrictEqual(['sh', '-c', 'npm install "${1}" "${2}"', 'sh', 'left pad', 'react'])
 })
 
 test('$ rejects with the output when the command exits with a non-zero code', async () => {
@@ -118,5 +122,35 @@ test('$ allows quotes that are closed before a value', async () => {
 
   await sandbox.$`echo "it's" ${'x'} 'done'`
 
-  expect(callOf(fetch, 1).body.argv).toStrictEqual(['sh', '-c', `echo "it's" 'x' 'done'`])
+  expect(callOf(fetch, 1).body.argv).toStrictEqual(['sh', '-c', `echo "it's" "\${1}" 'done'`, 'sh', 'x'])
+})
+
+test.each([
+  ['right after a backslash', (value: string) => (sandbox: Sandbox) => sandbox.$`echo \\${value}`],
+  ['in a here-document', (value: string) => (sandbox: Sandbox) => sandbox.$`cat <<EOF\n${value}\nEOF`],
+])('$ refuses a value %s', async (_, build) => {
+  const fetch = mockFetch(json(payload, 201))
+  const sandbox = await client(fetch).create()
+  const error = await build('$(id)')(sandbox).catch((err: unknown) => err)
+
+  expect(error).toBeInstanceOf(SandboxError)
+  expect((error as SandboxError).code).toBe('invalid_request')
+  expect(fetch).toHaveBeenCalledTimes(1)
+})
+
+test('$ allows a here-string and an escaped backslash before a value', async () => {
+  const fetch = mockFetch(json(payload, 201), json({ exit_code: 0 }))
+  const sandbox = await client(fetch).create()
+
+  await sandbox.$`cat <<< ${'x'} \\\\${'y'}`
+
+  expect(callOf(fetch, 1).body.argv).toStrictEqual(['sh', '-c', 'cat <<< "${1}" \\\\"${2}"', 'sh', 'x', 'y'])
+})
+
+test('$ shows the values in the error for a failed command', async () => {
+  const fetch = mockFetch(json(payload, 201), json({ exit_code: 1, stderr: 'nope' }))
+  const sandbox = await client(fetch).create()
+  const error = await sandbox.$`cat ${'my file'}`.catch((err: unknown) => err)
+
+  expect((error as CommandError).command).toBe("cat 'my file'")
 })

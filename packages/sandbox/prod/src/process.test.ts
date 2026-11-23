@@ -1,5 +1,6 @@
 import { expect, test, vi } from 'vitest'
 
+import { SandboxError } from './error.js'
 import { getSandbox } from './get_sandbox.js'
 import { callOf, json, mockFetch, payload } from './test_helpers.js'
 
@@ -219,4 +220,18 @@ test('polling leaves no abort listeners behind', async () => {
 
   expect(added).toHaveBeenCalled()
   expect(removed).toHaveBeenCalledTimes(added.mock.calls.length)
+})
+
+test('wait rejects for a process that ended without an exit code', async () => {
+  const failed = { ...running, exited: true, error: 'exec: "nope": executable file not found in $PATH' }
+  const fetch = mockFetch(json(payload, 201), json(output({ process: failed })), json(output({ process: failed })))
+  const sandbox = await getSandbox('build', { ...options, fetch })
+  const error = await sandbox.commands
+    .get('p1')
+    .wait({ intervalMs: 0 })
+    .catch((err: unknown) => err)
+
+  expect(error).toBeInstanceOf(SandboxError)
+  expect((error as SandboxError).code).toBe('command_failed')
+  expect((error as SandboxError).message).toContain('executable file not found')
 })

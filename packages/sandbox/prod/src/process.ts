@@ -1,4 +1,5 @@
 import type { CommandResult } from './commands.js'
+import { SandboxError } from './error.js'
 import type { SandboxRequest } from './request.js'
 
 export interface OutputChunk {
@@ -158,7 +159,15 @@ export class Process {
       result.truncated ||= chunk.truncated
     }
 
-    result.exitCode = this.exitCode ?? 0
+    // A process that never ran, or was cut short, has no exit code to return.
+    if (this.exitCode === undefined) {
+      throw new SandboxError(
+        'command_failed',
+        `process ${this.id} ended without an exit code${this.error ? `: ${this.error}` : ''}`,
+      )
+    }
+
+    result.exitCode = this.exitCode
 
     return result
   }

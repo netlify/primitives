@@ -108,44 +108,86 @@ const quote = (value: ShellScalar) => `'${String(value).replaceAll("'", "'\\''")
 const quoteValue = (value: ShellValue) =>
   Array.isArray(value) ? value.map(quote).join(' ') : quote(value as ShellScalar)
 
-// assertUnquoted throws when a value would be interpolated inside quotes. We
-// wrap every value in single quotes, which only keeps it from being parsed
-// when the template hasn't already opened a quote around it.
-const assertUnquoted = (strings: TemplateStringsArray) => {
+// assertInterpolable throws when the template has a value somewhere it can't
+// be passed as an argument of its own: inside quotes, right after a backslash,
+// or in a command that has a here-document.
+const assertInterpolable = (strings: TemplateStringsArray) => {
   let quote: string | undefined
+  let hasHereDocument = false
 
   for (const part of strings.slice(0, -1)) {
+    let isEscaped = false
+
     for (let index = 0; index < part.length; index++) {
       const char = part[index]
 
-      if (char === '\\' && quote !== "'") {
-        index++
+      if (isEscaped) {
+        isEscaped = false
+      } else if (char === '\\' && quote !== "'") {
+        isEscaped = true
       } else if (quote === undefined && (char === "'" || char === '"')) {
         quote = char
       } else if (char === quote) {
         quote = undefined
+      } else if (
+        quote === undefined &&
+        part.startsWith('<<', index) &&
+        part[index + 2] !== '<' &&
+        part[index - 1] !== '<'
+      ) {
+        hasHereDocument = true
       }
     }
 
     if (quote !== undefined) {
       throw new SandboxError(
         'invalid_request',
-        `a value can't be interpolated inside quotes. Values are quoted for you, so remove the ${quote} around it`,
+        `a value can't be interpolated inside quotes. Each value is passed as one argument, so remove the ${quote} around it`,
       )
     }
+
+    if (isEscaped) {
+      throw new SandboxError('invalid_request', "a value can't be interpolated right after a backslash")
+    }
+
+    if (hasHereDocument) {
+      throw new SandboxError('invalid_request', "a value can't be interpolated in a command that has a here-document")
+    }
   }
+}
+
+// buildScript turns a template into a script and the arguments to run it with.
+// Each value is a positional parameter, so the shell reads it as data and
+// never parses it.
+const buildScript = (strings: TemplateStringsArray, values: ShellValue[]) => {
+  const args: string[] = []
+
+  const script = strings.reduce((script, part, index) => {
+    const value = values[index - 1]
+    const items = Array.isArray(value) ? (value as readonly ShellScalar[]) : [value as ShellScalar]
+    const parameters = items.map((item) => `"\${${String(args.push(String(item)))}}"`)
+
+    return script + parameters.join(' ') + part
+  })
+
+  return { script, args }
 }
 
 export const createShell =
   (commands: Commands): Shell =>
   async (strings, ...values) => {
-    assertUnquoted(strings)
+    assertInterpolable(strings)
 
-    const command = strings.reduce((script, part, index) => script + quoteValue(values[index - 1]) + part)
-    const result = await commands.run(command)
+    const { script, args } = buildScript(strings, values)
+    const result = await commands.run(args.length === 0 ? script : ['sh', '-c', script, 'sh', ...args])
 
     if (result.exitCode !== 0) {
-      throw new CommandError(command, result)
+      // The error shows the command with its values in place, which is easier
+      // to read than the script with its parameters.
+      throw new CommandError(
+        strings.reduce((command, part, index) => command + quoteValue(values[index - 1]) + part),
+        result,
+      )
     }
 
     return result
