@@ -399,16 +399,22 @@ describe('`EdgeFunctionsHandler`', () => {
 
       await vi.waitFor(
         async () => {
-          expect(await handler.match(new Request('https://site.netlify/two'))).toBeTruthy()
+          const req = new Request('https://site.netlify/two')
+          req.headers.set('x-nf-request-id', 'req-id')
+          const match = await handler.match(req)
+          const res = await match?.handle(req, serverAddress)
+
+          expect(await res?.text()).toBe('Hello from edge function')
         },
         { timeout: 5_000 },
       )
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeFalsy()
     } finally {
       fetchSpy.mockRestore()
       await handler.stop()
       await fixture.destroy()
     }
-  })
+  }, 15_000)
 
   test('Stops waiting for a config extraction that takes too long', async () => {
     const fixture = new Fixture()
