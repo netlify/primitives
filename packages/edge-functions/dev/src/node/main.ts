@@ -197,43 +197,55 @@ export class EdgeFunctionsHandler {
     let entry = this.functionConfigs
 
     if (entry?.key !== key) {
-      const result = this.getFunctionConfigs(denoPort, functions)
+      let evict = () => {}
+
+      // An import that does not respond must not block requests without a
+      // limit. After the time limit, the requests that wait get an error, and
+      // the next request starts a new extraction.
+      const result = new Promise<FunctionConfigsResult>((resolve, reject) => {
+        const timer = setTimeout(() => {
+          evict()
+          resolve({
+            configs: {},
+            dependencies: [],
+            errors: {
+              '': {
+                message: `Timed out after ${this.requestTimeout.toString()}ms while reading the edge function configs`,
+                name: 'TimeoutError',
+              },
+            },
+            unwatchedFunctions: [],
+          })
+        }, this.requestTimeout)
+        timer.unref()
+
+        this.getFunctionConfigs(denoPort, functions)
+          .finally(() => {
+            clearTimeout(timer)
+          })
+          .then(resolve, reject)
+      })
       const newEntry = { key, result }
 
-      entry = newEntry
-      this.functionConfigs = newEntry
-
-      const evict = () => {
+      evict = () => {
         if (this.functionConfigs === newEntry) {
           this.functionConfigs = undefined
         }
       }
 
-      // An import that does not respond must not block all the requests that
-      // come later. After the time limit, the next request starts a new
-      // extraction. The requests that already wait for this one continue to
-      // wait.
-      const evictionTimer = setTimeout(evict, this.requestTimeout)
-      evictionTimer.unref()
+      entry = newEntry
+      this.functionConfigs = newEntry
 
       // An error can have a temporary cause, such as a remote import that is
       // not available. Do not keep it, so that the next request tries again.
-      result.then(
-        ({ dependencies, errors, unwatchedFunctions }) => {
-          clearTimeout(evictionTimer)
-
-          if (Object.keys(errors).length !== 0) {
-            evict()
-          } else if (this.functionConfigs === newEntry && !this.stopped) {
-            this.watchDependencies(dependencies)
-            this.warnUnwatchedFunctions(unwatchedFunctions)
-          }
-        },
-        () => {
-          clearTimeout(evictionTimer)
+      result.then(({ dependencies, errors, unwatchedFunctions }) => {
+        if (Object.keys(errors).length !== 0) {
           evict()
-        },
-      )
+        } else if (this.functionConfigs === newEntry && !this.stopped) {
+          this.watchDependencies(dependencies)
+          this.warnUnwatchedFunctions(unwatchedFunctions)
+        }
+      }, evict)
     }
 
     return entry.result
@@ -269,7 +281,12 @@ export class EdgeFunctionsHandler {
   private watchDependencies(paths: string[]) {
     const dependencies = new Set(
       paths.filter((dependency) =>
-        this.directories.every((directory) => path.relative(directory, dependency).startsWith('..')),
+        this.directories.every((directory) => {
+          const relativePath = path.relative(directory, dependency)
+
+          // On Windows, the path to a file on another drive is absolute.
+          return relativePath === '..' || relativePath.startsWith(`..${path.sep}`) || path.isAbsolute(relativePath)
+        }),
       ),
     )
 
