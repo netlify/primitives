@@ -349,6 +349,60 @@ describe('`EdgeFunctionsHandler`', () => {
     }
   })
 
+  test('Starts a new config extraction when the pending one takes too long', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/slow.mjs',
+        `await new Promise((resolve) => setTimeout(resolve, 1_000));
+
+        export default async () => new Response("Hello from edge function");
+
+        export const config = { path: "/slow" };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      requestTimeout: 300,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    const configRequests = () => fetchSpy.mock.calls.filter(([, init]) => init?.method === 'NETLIFYCONFIG').length
+
+    try {
+      // Wait for the Deno server to start, so that the time limit applies only
+      // to the extractions below.
+      await handler.match(new Request('https://site.netlify/other'))
+
+      const requestsBefore = configRequests()
+      const first = handler.match(new Request('https://site.netlify/slow'))
+
+      await new Promise((resolve) => setTimeout(resolve, 600))
+
+      const second = handler.match(new Request('https://site.netlify/slow'))
+
+      expect(await first).toBeTruthy()
+      expect(await second).toBeTruthy()
+      expect(configRequests() - requestsBefore).toBe(2)
+    } finally {
+      fetchSpy.mockRestore()
+      await handler.stop()
+      await fixture.destroy()
+    }
+  })
+
   test('Throws an error when the edge function has unparseable code', async () => {
     const fixture = new Fixture()
       .withFile(
