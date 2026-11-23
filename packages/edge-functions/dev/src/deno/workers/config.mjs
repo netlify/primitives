@@ -1,6 +1,10 @@
 // @ts-check
 /// <reference lib="deno.worker" />
 
+// Functions can use the `Netlify` global at the top level of their module, so
+// it must exist before we import them.
+import '../bootstrap.mjs'
+
 /**
  * @typedef {import('../../shared/types.ts').SerializedError} SerializedError
  * @typedef {import('./types.ts').ConfigResponseMessage} ConfigResponseMessage
