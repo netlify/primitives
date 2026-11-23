@@ -19,6 +19,7 @@
   "packages/redirects": "4.1.5",
   "packages/runtime": "5.0.15",
   "packages/runtime-utils": "3.0.1",
+  "packages/sandbox/prod": "0.0.0",
   "packages/server/dev": "0.1.9",
   "packages/server/prod": "0.1.6",
   "packages/static": "4.0.1",

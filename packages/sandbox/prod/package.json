@@ -1,0 +1,43 @@
+{
+  "name": "@netlify/sandbox",
+  "version": "0.0.0",
+  "description": "TypeScript client for Netlify Sandbox",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "main": "./dist/main.cjs",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/main.d.cts",
+        "default": "./dist/main.cjs"
+      },
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      }
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "dev": "tsup-node --watch",
+    "build": "tsup-node",
+    "prepack": "npm run build",
+    "test": "vitest run --passWithNoTests",
+    "test:dev": "vitest",
+    "publint": "npx -y publint --strict"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/netlify/primitives.git",
+    "directory": "packages/sandbox/prod"
+  },
+  "license": "MIT"
+}

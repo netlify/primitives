@@ -21,6 +21,7 @@
     "packages/images",
     "packages/redirects",
     "packages/runtime",
+    "packages/sandbox/prod",
     "packages/server/dev",
     "packages/server/prod",
     "packages/static",
