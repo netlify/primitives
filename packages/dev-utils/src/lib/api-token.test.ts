@@ -19,6 +19,7 @@ vi.mock('./keychain.js', () => ({
 }))
 
 import {
+  AUTH_TOKEN_ENV_VAR,
   LEGACY_STORAGE_ENV_VAR,
   getAPIToken,
   getLegacyAPIToken,
@@ -106,5 +107,22 @@ describe('getAPIToken', () => {
 
     mocks.keychainRead = { status: 'error', error: new Error('locked') }
     await expect(getAPIToken({})).resolves.toBeUndefined()
+  })
+
+  test('prefers NETLIFY_AUTH_TOKEN over a stored token', async () => {
+    mocks.config = { userId: 'u1', 'users.u1.auth.token': 'plain' }
+
+    await expect(getAPIToken({ [AUTH_TOKEN_ENV_VAR]: 'from-env' })).resolves.toBe('from-env')
+  })
+
+  test('uses NETLIFY_AUTH_TOKEN when nobody is logged in', async () => {
+    await expect(getAPIToken({ [AUTH_TOKEN_ENV_VAR]: 'from-env' })).resolves.toBe('from-env')
+    expect(mocks.readTokenFromKeychain).not.toHaveBeenCalled()
+  })
+
+  test.each(['', 'null'])('ignores NETLIFY_AUTH_TOKEN=%j', async (value) => {
+    mocks.config = { userId: 'u1', 'users.u1.auth.token': 'plain' }
+
+    await expect(getAPIToken({ [AUTH_TOKEN_ENV_VAR]: value })).resolves.toBe('plain')
   })
 })

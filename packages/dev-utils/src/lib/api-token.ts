@@ -46,7 +46,16 @@ export const readStoredAPIToken = async (env: NodeJS.ProcessEnv = process.env): 
   return result.status === 'error' ? { source: 'none', keychainError: result.error } : { source: 'none' }
 }
 
+export const AUTH_TOKEN_ENV_VAR = 'NETLIFY_AUTH_TOKEN' as const
+
+/**
+ * Matches the token order of the CLI: `NETLIFY_AUTH_TOKEN` wins over a stored token, so that CI can
+ * authenticate without `netlify login`. The CLI ignores the literal string `'null'`, and so do we.
+ */
 export const getAPIToken = async (env: NodeJS.ProcessEnv = process.env): Promise<string | undefined> => {
+  const envToken = env[AUTH_TOKEN_ENV_VAR]
+  if (envToken != null && envToken !== '' && envToken !== 'null') return envToken
+
   const stored = await readStoredAPIToken(env)
   return stored.source === 'none' ? undefined : stored.token
 }
