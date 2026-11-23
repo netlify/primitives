@@ -1,6 +1,7 @@
+import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-import { describe, expect, test, beforeAll, afterAll } from 'vitest'
+import { describe, expect, test, beforeAll, afterAll, vi } from 'vitest'
 
 import { HTTPServer } from '@netlify/dev-utils'
 import { Fixture } from '@netlify/test-utils'
@@ -248,6 +249,60 @@ describe('`EdgeFunctionsHandler`', () => {
     expect(await handler.match(req3)).toBeFalsy()
 
     await fixture.destroy()
+  })
+
+  test('Extracts the function configs again only when a function file changes', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/echo.mjs',
+        `export default async () => new Response("Hello from edge function");
+
+        export const config = { path: "/one" };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    const configRequests = () => fetchSpy.mock.calls.filter(([, init]) => init?.method === 'NETLIFYCONFIG').length
+
+    try {
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeTruthy()
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeTruthy()
+      expect(await handler.match(new Request('https://site.netlify/two'))).toBeFalsy()
+      expect(configRequests()).toBe(1)
+
+      await writeFile(
+        path.resolve(directory, 'netlify/edge-functions/echo.mjs'),
+        `export default async () => new Response("Hello from edge function");
+
+        export const config = { path: "/two" };`,
+      )
+
+      await vi.waitFor(async () => {
+        expect(await handler.match(new Request('https://site.netlify/two'))).toBeTruthy()
+      })
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeFalsy()
+      expect(configRequests()).toBeGreaterThan(1)
+    } finally {
+      fetchSpy.mockRestore()
+      await handler.stop()
+      await fixture.destroy()
+    }
   })
 
   test('Throws an error when the edge function has unparseable code', async () => {

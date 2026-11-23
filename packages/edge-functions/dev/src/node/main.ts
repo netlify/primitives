@@ -2,6 +2,8 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import {
+  FileWatcher,
+  type FileWatchSubscriptionHandle,
   type Logger,
   renderFunctionErrorPage,
   killProcess,
@@ -27,6 +29,11 @@ interface EdgeFunctionsHandlerOptions {
   configDeclarations: Declaration[]
   directories: string[]
   env: Record<string, string>
+  /**
+   * Watches the edge function directories, so that we know when to extract
+   * the function configs again. If not set, the handler creates its own.
+   */
+  fileWatcher?: FileWatcher
   geolocation: Geolocation
   logger: Logger
   requestTimeout?: number
@@ -50,10 +57,15 @@ const REQUEST_TIMEOUT = UPSTREAM_REQUEST_TIMEOUT - 1_000
 
 export type EdgeFunctionsMatch = Awaited<ReturnType<EdgeFunctionsHandler['getFunctionsForRequest']>>
 
+type FunctionConfigsResult = Awaited<ReturnType<EdgeFunctionsHandler['getFunctionConfigs']>>
+
 export class EdgeFunctionsHandler {
   private configDeclarations: Declaration[]
   private denoServerProcess?: ProcessRef
   private directories: string[]
+  private directoriesWatch: FileWatchSubscriptionHandle
+  private functionConfigs?: { key: string; result: Promise<FunctionConfigsResult> }
+  private ownFileWatcher?: FileWatcher
   private geolocation: Geolocation
   private initialization: ReturnType<typeof this.initialize>
   private initialized: boolean
@@ -66,6 +78,23 @@ export class EdgeFunctionsHandler {
   constructor(options: EdgeFunctionsHandlerOptions) {
     this.configDeclarations = options.configDeclarations
     this.directories = options.directories
+
+    const fileWatcher = options.fileWatcher ?? new FileWatcher()
+    if (!options.fileWatcher) {
+      this.ownFileWatcher = fileWatcher
+    }
+
+    // A change to any file in the edge function directories can change a
+    // config, so the next request extracts the configs again.
+    const clearFunctionConfigs = () => {
+      this.functionConfigs = undefined
+    }
+    this.directoriesWatch = fileWatcher.subscribe({
+      paths: this.directories,
+      onAdd: clearFunctionConfigs,
+      onChange: clearFunctionConfigs,
+      onUnlink: clearFunctionConfigs,
+    })
     this.geolocation = options.geolocation
     this.initialization = this.initialize({
       ...options.env,
@@ -102,6 +131,39 @@ export class EdgeFunctionsHandler {
     }
 
     return { error: (data as { error: SerializedError }).error }
+  }
+
+  /**
+   * Returns the configs for a set of edge functions. To extract the configs,
+   * Deno must import each function, which is slow. The dev server can get many
+   * requests for each page load, so we keep the result until a function file
+   * changes or the set of functions changes.
+   */
+  private getCachedFunctionConfigs(denoPort: number, functions: Record<string, string>) {
+    const key = JSON.stringify(functions)
+    let entry = this.functionConfigs
+
+    if (entry?.key !== key) {
+      const result = this.getFunctionConfigs(denoPort, functions)
+      const newEntry = { key, result }
+
+      entry = newEntry
+      this.functionConfigs = newEntry
+
+      // An error can have a temporary cause, such as a remote import that is
+      // not available. Do not keep it, so that the next request tries again.
+      const clearOnError = () => {
+        if (this.functionConfigs === newEntry) {
+          this.functionConfigs = undefined
+        }
+      }
+
+      result.then(({ error }) => {
+        if (error) clearOnError()
+      }, clearOnError)
+    }
+
+    return entry.result
   }
 
   /**
@@ -232,7 +294,7 @@ export class EdgeFunctionsHandler {
     }
 
     const acceptsHTML = Boolean(request.headers.get('accept')?.includes('text/html'))
-    const { configs, error } = await this.getFunctionConfigs(denoPort, functionsMap)
+    const { configs, error } = await this.getCachedFunctionConfigs(denoPort, functionsMap)
     if (error) {
       return { handle: () => this.renderError(JSON.stringify({ error }), acceptsHTML) }
     }
@@ -390,6 +452,10 @@ export class EdgeFunctionsHandler {
   async stop() {
     if (this.stopped) return
     this.stopped = true
+
+    this.directoriesWatch.unsubscribe()
+    await this.ownFileWatcher?.close()
+
     if (!this.denoServerProcess?.ps) {
       return
     }
