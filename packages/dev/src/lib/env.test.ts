@@ -1,7 +1,13 @@
 import { Fixture } from '@netlify/test-utils'
 import { describe, expect, test, vi } from 'vitest'
 
-import { applyDotEnvFiles, loadDotEnvFiles, type DotEnvFile, type EnvironmentVariable } from './env.js'
+import {
+  applyDotEnvFiles,
+  injectEnvVariables,
+  loadDotEnvFiles,
+  type DotEnvFile,
+  type EnvironmentVariable,
+} from './env.js'
 
 const getLogger = () => ({ error: vi.fn(), log: vi.fn(), warn: vi.fn() })
 
@@ -65,5 +71,29 @@ describe('applyDotEnvFiles', () => {
     expect(result.FROM_CONFIG).toStrictEqual({ sources: ['.env file', 'configFile'], value: 'from .env' })
     expect(result.INTERNAL).toStrictEqual({ sources: ['internal'], value: 'internal value' })
     expect(variables.FROM_CONFIG.value).toBe('from netlify.toml')
+  })
+})
+
+describe('injectEnvVariables', () => {
+  test('does not override a shell variable, also when its value is an empty string', async () => {
+    const shell = new Map([
+      ['EMPTY', ''],
+      ['SET', 'from shell'],
+    ])
+    const envAPI = {
+      delete: (key: string) => shell.delete(key),
+      get: (key: string) => shell.get(key),
+      has: (key: string) => Boolean(shell.get(key)),
+      set: (key: string, value: string) => shell.set(key, value),
+      toObject: () => Object.fromEntries(shell),
+    }
+
+    await injectEnvVariables({
+      baseVariables: {},
+      dotEnvFiles: [{ env: { EMPTY: 'from .env', NEW: 'from .env', SET: 'from .env' }, file: '.env' }],
+      envAPI,
+    })
+
+    expect(Object.fromEntries(shell)).toStrictEqual({ EMPTY: '', NEW: 'from .env', SET: 'from shell' })
   })
 })

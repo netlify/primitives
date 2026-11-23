@@ -172,7 +172,9 @@ export const injectEnvVariables = async ({
   // Inject env vars which come from multiple `source`s and have been collected from
   // `@netlify/config` and/or Envelope. These have not been populated on the actual env yet.
   for (const [key, variable] of Object.entries(variables)) {
-    const existsInProcess = envAPI.has(key)
+    // As in the CLI, a shell variable set to an empty string still takes
+    // precedence. `envAPI.has()` is false for an empty string.
+    const existsInProcess = envAPI.get(key) !== undefined
     const [usedSource, ...overriddenSources] = existsInProcess ? ['process', ...variable.sources] : variable.sources
     const isInternal = variable.sources.includes('internal')
     const result: InjectedEnvironmentVariable = {
