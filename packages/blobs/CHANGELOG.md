@@ -1,5 +1,15 @@
 # Changelog
 
+## [11.1.10](https://github.com/netlify/primitives/compare/blobs-v11.1.9...blobs-v11.1.10) (2026-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/dev-utils bumped from 6.1.0 to 6.1.1
+    * @netlify/otel bumped from ^7.0.8 to ^7.0.9
+
 ## [11.1.9](https://github.com/netlify/primitives/compare/blobs-v11.1.8...blobs-v11.1.9) (2026-11-09)
 
 
