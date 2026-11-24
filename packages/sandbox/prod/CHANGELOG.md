@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.2](https://github.com/netlify/primitives/compare/sandbox-v0.1.1...sandbox-v0.1.2) (2026-11-23)
+
+
+### Features
+
+* add Sandbox SDK ([#869](https://github.com/netlify/primitives/issues/869)) ([6a10e39](https://github.com/netlify/primitives/commit/6a10e3918292b22ff93b5b99bc319f47a4bd7aae))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 3.0.1 to 3.1.0
+
 ## [0.1.1](https://github.com/netlify/primitives/compare/sandbox-v0.1.0...sandbox-v0.1.1) (2026-11-23)
 
 
