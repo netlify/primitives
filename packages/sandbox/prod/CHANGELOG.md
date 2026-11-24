@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/netlify/primitives/compare/sandbox-v0.1.2...sandbox-v0.1.3) (2026-11-24)
+
+
+### Bug Fixes
+
+* **sandbox:** improve interpolation of `$` function ([#876](https://github.com/netlify/primitives/issues/876)) ([f1f7595](https://github.com/netlify/primitives/commit/f1f7595b48f70b5e6ee239db02ba956f6d660052))
+
 ## [0.1.2](https://github.com/netlify/primitives/compare/sandbox-v0.1.1...sandbox-v0.1.2) (2026-11-23)
 
 
