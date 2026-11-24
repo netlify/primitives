@@ -128,6 +128,8 @@ test('$ allows quotes that are closed before a value', async () => {
 test.each([
   ['right after a backslash', (value: string) => (sandbox: Sandbox) => sandbox.$`echo \\${value}`],
   ['in a here-document', (value: string) => (sandbox: Sandbox) => sandbox.$`cat <<EOF\n${value}\nEOF`],
+  ['in an arithmetic expansion', (value: string) => (sandbox: Sandbox) => sandbox.$`echo $(( ${value} + 1 ))`],
+  ['in a [[ ]] test', (value: string) => (sandbox: Sandbox) => sandbox.$`[[ ${value} -eq 1 ]]`],
 ])('$ refuses a value %s', async (_, build) => {
   const fetch = mockFetch(json(payload, 201))
   const sandbox = await client(fetch).create()
@@ -136,6 +138,15 @@ test.each([
   expect(error).toBeInstanceOf(SandboxError)
   expect((error as SandboxError).code).toBe('invalid_request')
   expect(fetch).toHaveBeenCalledTimes(1)
+})
+
+test('$ allows a value after an arithmetic expansion or a test has closed', async () => {
+  const fetch = mockFetch(json(payload, 201), json({ exit_code: 0 }))
+  const sandbox = await client(fetch).create()
+
+  await sandbox.$`[[ -d /app ]] && echo $((1 + 1)) ${'x'}`
+
+  expect(callOf(fetch, 1).body.argv).toStrictEqual(['sh', '-c', '[[ -d /app ]] && echo $((1 + 1)) "${1}"', 'sh', 'x'])
 })
 
 test('$ allows a here-string and an escaped backslash before a value', async () => {

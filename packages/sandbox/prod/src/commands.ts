@@ -110,10 +110,12 @@ const quoteValue = (value: ShellValue) =>
 
 // assertInterpolable throws when the template has a value somewhere it can't
 // be passed as an argument of its own: inside quotes, right after a backslash,
-// or in a command that has a here-document.
+// or in a command that has a here-document. It also refuses a value inside
+// `(( ))` or `[[ ]]`, where bash evaluates what a parameter holds.
 const assertInterpolable = (strings: TemplateStringsArray) => {
   let quote: string | undefined
   let hasHereDocument = false
+  let evaluationDepth = 0
 
   for (const part of strings.slice(0, -1)) {
     let isEscaped = false
@@ -136,6 +138,12 @@ const assertInterpolable = (strings: TemplateStringsArray) => {
         part[index - 1] !== '<'
       ) {
         hasHereDocument = true
+      } else if (quote === undefined && (part.startsWith('((', index) || part.startsWith('[[', index))) {
+        evaluationDepth++
+        index++
+      } else if (quote === undefined && (part.startsWith('))', index) || part.startsWith(']]', index))) {
+        evaluationDepth--
+        index++
       }
     }
 
@@ -148,6 +156,10 @@ const assertInterpolable = (strings: TemplateStringsArray) => {
 
     if (isEscaped) {
       throw new SandboxError('invalid_request', "a value can't be interpolated right after a backslash")
+    }
+
+    if (evaluationDepth > 0) {
+      throw new SandboxError('invalid_request', "a value can't be interpolated inside (( )) or [[ ]]")
     }
 
     if (hasHereDocument) {
