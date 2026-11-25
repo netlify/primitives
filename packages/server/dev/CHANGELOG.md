@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.10](https://github.com/netlify/primitives/compare/server-dev-v0.1.9...server-dev-v0.1.10) (2026-11-25)
+
+
+### Features
+
+* add server support to Frameworks API ([#878](https://github.com/netlify/primitives/issues/878)) ([d96f11e](https://github.com/netlify/primitives/commit/d96f11e4f6d0a0cafd20f135371b3d49d4175620))
+
 ## [0.1.9](https://github.com/netlify/primitives/compare/server-dev-v0.1.8...server-dev-v0.1.9) (2026-11-23)
 
 
