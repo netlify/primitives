@@ -7,7 +7,7 @@ export {
   SandboxError,
   type SandboxErrorCode,
 } from './error.js'
-export type { Files } from './files.js'
+export type { FileContents, FileEntry, Files, RemoveFileOptions, WriteFileOptions } from './files.js'
 export { createSandbox, deleteSandbox, getSandbox, type SandboxOptions } from './get_sandbox.js'
 export { type OutputChunk, type PollOptions, Process } from './process.js'
 export { Sandbox } from './sandbox.js'
