@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/netlify/primitives/compare/runtime-utils-v3.0.1...runtime-utils-v3.1.0) (2026-11-23)
+
+
+### Features
+
+* add Sandbox SDK ([#869](https://github.com/netlify/primitives/issues/869)) ([6a10e39](https://github.com/netlify/primitives/commit/6a10e3918292b22ff93b5b99bc319f47a4bd7aae))
+
 ## [3.0.1](https://github.com/netlify/primitives/compare/runtime-utils-v3.0.0...runtime-utils-v3.0.1) (2026-11-06)
 
 

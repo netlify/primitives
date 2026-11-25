@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "ESNext.Disposable", "DOM", "DOM.Iterable"],
+    "module": "esnext",
+    "rootDir": "./",
+    "outDir": "./dist",
+    "allowJs": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "sourceMap": false,
+    "removeComments": false,
+    "strict": true,
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"]
+}

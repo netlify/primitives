@@ -54,14 +54,16 @@ jobs:
         run: npm run build --workspaces=true
 
       # Publishing packages in topological order, as defined in `package.json`.
-      - if: ${{ steps.release.outputs['packages/types--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - name: Publish @netlify/types
+        if: ${{ steps.release.outputs['packages/types--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/types/ --provenance --access=public || true
           else
             npm publish packages/types/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/aws-lambda-compat
+        if:
           ${{ steps.release.outputs['packages/aws-lambda-compat--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |
@@ -70,7 +72,8 @@ jobs:
           else
             npm publish packages/aws-lambda-compat/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/dev-utils
+        if:
           ${{ steps.release.outputs['packages/dev-utils--release_created'] || github.event_name == 'workflow_dispatch'
           }}
         run: |
@@ -79,7 +82,8 @@ jobs:
           else
             npm publish packages/dev-utils/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/runtime-utils
+        if:
           ${{ steps.release.outputs['packages/runtime-utils--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |
@@ -88,28 +92,32 @@ jobs:
           else
             npm publish packages/runtime-utils/ --provenance --access=public
           fi
-      - if: ${{ steps.release.outputs['packages/otel--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - name: Publish @netlify/otel
+        if: ${{ steps.release.outputs['packages/otel--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/otel/ --provenance --access=public || true
           else
             npm publish packages/otel/ --provenance --access=public
           fi
-      - if: ${{ steps.release.outputs['packages/blobs--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - name: Publish @netlify/blobs
+        if: ${{ steps.release.outputs['packages/blobs--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/blobs/ --provenance --access=public || true
           else
             npm publish packages/blobs/ --provenance --access=public
           fi
-      - if: ${{ steps.release.outputs['packages/cache--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - name: Publish @netlify/cache
+        if: ${{ steps.release.outputs['packages/cache--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/cache/ --provenance --access=public || true
           else
             npm publish packages/cache/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/edge-functions
+        if:
           ${{ steps.release.outputs['packages/edge-functions/prod--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |
@@ -118,7 +126,8 @@ jobs:
           else
             npm publish packages/edge-functions/prod/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/edge-functions-dev
+        if:
           ${{ steps.release.outputs['packages/edge-functions/dev--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |
@@ -127,7 +136,8 @@ jobs:
           else
             npm publish packages/edge-functions/dev/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/functions
+        if:
           ${{ steps.release.outputs['packages/functions/prod--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |
@@ -136,7 +146,8 @@ jobs:
           else
             npm publish packages/functions/prod/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/functions-dev
+        if:
           ${{ steps.release.outputs['packages/functions/dev--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |
@@ -145,7 +156,8 @@ jobs:
           else
             npm publish packages/functions/dev/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/headers
+        if:
           ${{ steps.release.outputs['packages/headers--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -153,7 +165,8 @@ jobs:
           else
             npm publish packages/headers/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/identity
+        if:
           ${{ steps.release.outputs['packages/identity/prod--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |
@@ -162,14 +175,16 @@ jobs:
           else
             npm publish packages/identity/prod/ --provenance --access=public
           fi
-      - if: ${{ steps.release.outputs['packages/images--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - name: Publish @netlify/images
+        if: ${{ steps.release.outputs['packages/images--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/images/ --provenance --access=public || true
           else
             npm publish packages/images/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/redirects
+        if:
           ${{ steps.release.outputs['packages/redirects--release_created'] || github.event_name == 'workflow_dispatch'
           }}
         run: |
@@ -178,7 +193,8 @@ jobs:
           else
             npm publish packages/redirects/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/runtime
+        if:
           ${{ steps.release.outputs['packages/runtime--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -186,14 +202,26 @@ jobs:
           else
             npm publish packages/runtime/ --provenance --access=public
           fi
-      - if: ${{ steps.release.outputs['packages/static--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - name: Publish @netlify/static
+        if: ${{ steps.release.outputs['packages/static--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/static/ --provenance --access=public || true
           else
             npm publish packages/static/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/sandbox
+        if:
+          ${{ steps.release.outputs['packages/sandbox/prod--release_created'] || github.event_name ==
+          'workflow_dispatch' }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            npm publish packages/sandbox/prod/ --provenance --access=public --tag=beta || true
+          else
+            npm publish packages/sandbox/prod/ --provenance --access=public --tag=beta
+          fi
+      - name: Publish @netlify/server-dev
+        if:
           ${{ steps.release.outputs['packages/server/dev--release_created'] || github.event_name == 'workflow_dispatch'
           }}
         run: |
@@ -202,7 +230,8 @@ jobs:
           else
             npm publish packages/server/dev/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/server
+        if:
           ${{ steps.release.outputs['packages/server/prod--release_created'] || github.event_name == 'workflow_dispatch'
           }}
         run: |
@@ -211,21 +240,24 @@ jobs:
           else
             npm publish packages/server/prod/ --provenance --access=public
           fi
-      - if: ${{ steps.release.outputs['packages/dev--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - name: Publish @netlify/dev
+        if: ${{ steps.release.outputs['packages/dev--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/dev/ --provenance --access=public || true
           else
             npm publish packages/dev/ --provenance --access=public
           fi
-      - if: ${{ steps.release.outputs['packages/ai--release_created'] || github.event_name == 'workflow_dispatch' }}
+      - name: Publish @netlify/ai
+        if: ${{ steps.release.outputs['packages/ai--release_created'] || github.event_name == 'workflow_dispatch' }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             npm publish packages/ai/ --provenance --access=public || true
           else
             npm publish packages/ai/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/database
+        if:
           ${{ steps.release.outputs['packages/database/prod--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |
@@ -234,7 +266,8 @@ jobs:
           else
             npm publish packages/database/prod/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/database-proxy
+        if:
           ${{ steps.release.outputs['packages/database/proxy--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |
@@ -243,7 +276,8 @@ jobs:
           else
             npm publish packages/database/proxy/ --provenance --access=public
           fi
-      - if:
+      - name: Publish @netlify/database-dev
+        if:
           ${{ steps.release.outputs['packages/database/dev--release_created'] || github.event_name ==
           'workflow_dispatch' }}
         run: |

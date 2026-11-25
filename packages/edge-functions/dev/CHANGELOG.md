@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.11](https://github.com/netlify/primitives/compare/edge-functions-dev-v2.0.10...edge-functions-dev-v2.0.11) (2026-11-23)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @netlify/runtime-utils bumped from 3.0.1 to 3.1.0
+
+## [2.0.10](https://github.com/netlify/primitives/compare/edge-functions-dev-v2.0.9...edge-functions-dev-v2.0.10) (2026-11-23)
+
+
+### Bug Fixes
+
+* **edge-functions-dev:** define the Netlify global before config extraction ([#863](https://github.com/netlify/primitives/issues/863)) ([066d1ba](https://github.com/netlify/primitives/commit/066d1ba3ab8863d8af09a2bf74dc7e1e7ebd001f))
+* **edge-functions-dev:** terminate the config worker after it responds ([#864](https://github.com/netlify/primitives/issues/864)) ([f4f4045](https://github.com/netlify/primitives/commit/f4f404515c07318d21efca596eb34b54e91b7a96))
+
 ## [2.0.9](https://github.com/netlify/primitives/compare/edge-functions-dev-v2.0.8...edge-functions-dev-v2.0.9) (2026-11-23)
 
 

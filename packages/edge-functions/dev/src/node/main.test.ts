@@ -96,6 +96,49 @@ describe('`EdgeFunctionsHandler`', () => {
     await fixture.destroy()
   })
 
+  test('Runs an edge function that uses the `Netlify` global at the top level', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/echo.mjs',
+        `const VAR_1 = Netlify.env.get("VAR_1");
+
+        export default async () => Response.json({ VAR_1 });
+
+        export const config = { path: "/echo" };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {
+        VAR_1: 'value1',
+      },
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const req = new Request('https://site.netlify/echo')
+    req.headers.set('x-nf-request-id', 'req-id')
+
+    const match = await handler.match(req)
+    expect(match).toBeTruthy()
+
+    const res = await match?.handle(req, serverAddress)
+
+    expect(await res?.json()).toStrictEqual({ VAR_1: 'value1' })
+
+    await fixture.destroy()
+  })
+
   test('Runs an edge function with a passthrough call', async () => {
     const fixture = new Fixture()
       .withFile(
