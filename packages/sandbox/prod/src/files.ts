@@ -126,7 +126,14 @@ export const createFiles = (request: SandboxRawRequest): Files => {
     async stream(path, options = {}) {
       const response = await call('/files', { path }, { signal: options.signal })
 
-      return response.body ?? new ReadableStream<Uint8Array>({ start: (controller) => controller.close() })
+      return (
+        response.body ??
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.close()
+          },
+        })
+      )
     },
 
     async write(path, contents, options = {}) {
