@@ -308,12 +308,12 @@ test('Lists entries', async () => {
   const artists = await blobs.list({ directories: true })
 
   expect(artists.blobs).toEqual([])
-  expect(artists.directories).toEqual(['coldplay', 'phoenix'])
+  expect(artists.directories).toEqual(['coldplay/', 'phoenix/'])
 
   const coldplayAlbums = await blobs.list({ directories: true, prefix: 'coldplay/' })
 
   expect(coldplayAlbums.blobs).toEqual([])
-  expect(coldplayAlbums.directories).toEqual(['coldplay/a-rush-of-blood-to-the-head', 'coldplay/parachutes'])
+  expect(coldplayAlbums.directories).toEqual(['coldplay/a-rush-of-blood-to-the-head/', 'coldplay/parachutes/'])
 
   const parachutesSongs2 = await blobs.list({ directories: true, prefix: 'coldplay/parachutes/' })
 
@@ -601,4 +601,136 @@ test('Deletes all blobs from a store', async () => {
 
   await server.stop()
   await fs.rm(directory.path, { force: true, recursive: true })
+})
+
+const startServer = async () => {
+  const directory = await tmp.dir()
+  const server = new BlobsServer({ directory: directory.path, token })
+  const { port } = await server.start()
+  const options = { edgeURL: `http://localhost:${port}`, token, siteID }
+
+  return {
+    options,
+    port,
+    store: getStore({ ...options, name: 'my-store' }),
+    stop: async () => {
+      await server.stop()
+      await fs.rm(directory.path, { force: true, recursive: true })
+    },
+  }
+}
+
+test('Returns the ETag on reads and answers conditional reads', async () => {
+  const { stop, store } = await startServer()
+
+  const { etag } = await store.set('key', 'value')
+  expect(etag).toBeTruthy()
+
+  expect((await store.getMetadata('key'))?.etag).toBe(etag)
+  expect((await store.getWithMetadata('key'))?.etag).toBe(etag)
+
+  const fresh = await store.getWithMetadata('key', { etag })
+  expect(fresh?.data).toBe(null)
+  expect(fresh?.etag).toBe(etag)
+
+  const stale = await store.getWithMetadata('key', { etag: '"stale"' })
+  expect(stale?.data).toBe('value')
+
+  // As in production, the ETag is the MD5 of the content, so the same content keeps it.
+  expect(etag).toBe('"2063c1608d6e0baf80249c42e2be5804"')
+  expect((await store.set('key', 'value')).etag).toBe(etag)
+  expect((await store.set('key', 'other')).etag).not.toBe(etag)
+
+  await stop()
+})
+
+test('Treats a blob without metadata as present, and a write without metadata as clearing it', async () => {
+  const { port, stop, store } = await startServer()
+
+  // A write that carries no metadata header at all, as a client other than
+  // the SDK might send.
+  const res = await fetch(`http://localhost:${port}/${siteID}/site:my-store/plain`, {
+    body: 'value',
+    headers: { authorization: `Bearer ${token}` },
+    method: 'PUT',
+  })
+  expect(res.status).toBe(200)
+  expect(await store.getMetadata('plain', {})).not.toBe(null)
+
+  await store.set('key', 'value', { metadata: { name: 'Netlify' } })
+  await store.set('key', 'value')
+  expect((await store.getMetadata('key'))?.metadata).toEqual({})
+
+  await stop()
+})
+
+test('Refuses a write conditioned on the ETag of a missing key', async () => {
+  const { stop, store } = await startServer()
+
+  await expect(store.set('missing', 'value', { onlyIfMatch: '"some-etag"' })).rejects.toThrow(/404/)
+  expect(await store.get('missing')).toBe(null)
+
+  await stop()
+})
+
+test('Decodes keys once and lists them as written', async () => {
+  const { stop, store } = await startServer()
+  const keys = ['with space', 'ünïcödé', 'plus+sign', 'nested/with space']
+
+  for (const key of keys) {
+    await store.set(key, key)
+    expect(await store.get(key)).toBe(key)
+  }
+
+  const { blobs } = await store.list()
+  expect(blobs.map((blob) => blob.key)).toEqual(['nested/with space', 'plus+sign', 'with space', 'ünïcödé'])
+
+  // `%ce` decodes to a byte that is not valid UTF-8 on its own.
+  await expect(store.set('per%cent', 'value')).rejects.toThrow(/400/)
+
+  await stop()
+})
+
+test('Lists keys in byte order', async () => {
+  const { stop, store } = await startServer()
+
+  // `-` sorts before `/`, which a directory-by-directory walk gets wrong.
+  for (const key of ['c', 'a/z', 'a-b', 'B']) {
+    await store.set(key, key)
+  }
+
+  const { blobs } = await store.list()
+  expect(blobs.map((blob) => blob.key)).toEqual(['B', 'a-b', 'a/z', 'c'])
+
+  await stop()
+})
+
+test('Does not list stores without blobs', async () => {
+  const { options, stop } = await startServer()
+
+  const kept = getStore({ ...options, name: 'kept' })
+  const emptied = getStore({ ...options, name: 'emptied' })
+
+  await kept.set('key', 'value')
+  await emptied.set('nested/key', 'value')
+  await emptied.delete('nested/key')
+
+  expect((await listStores(options)).stores).toEqual(['kept'])
+
+  await stop()
+})
+
+test('Refuses paths that would leave the store', async () => {
+  const { port, stop } = await startServer()
+
+  for (const path of ['%2E%2E/%2E%2E/escape', 'a/%2E%2E%2F%2E%2E%2Fescape']) {
+    const res = await fetch(`http://localhost:${port}/${siteID}/site:my-store/${path}`, {
+      body: 'value',
+      headers: { authorization: `Bearer ${token}` },
+      method: 'PUT',
+    })
+    expect({ path, status: res.status }).toEqual({ path, status: 400 })
+  }
+
+  await stop()
 })

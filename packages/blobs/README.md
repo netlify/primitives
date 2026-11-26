@@ -361,7 +361,7 @@ const { blobs, directories } = await store.list({ directories: true })
 // [ { etag: "etag1", key: "pink-panther.jpg" } ]
 console.log(blobs)
 
-// [ "cats", "mice" ]
+// [ "cats/", "mice/" ]
 console.log(directories)
 ```
 
