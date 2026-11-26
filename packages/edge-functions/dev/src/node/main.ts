@@ -1,7 +1,10 @@
+import { stat } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import {
+  FileWatcher,
+  type FileWatchSubscriptionHandle,
   type Logger,
   renderFunctionErrorPage,
   killProcess,
@@ -27,6 +30,12 @@ interface EdgeFunctionsHandlerOptions {
   configDeclarations: Declaration[]
   directories: string[]
   env: Record<string, string>
+  /**
+   * Watches the edge function directories and the local files that the
+   * functions import, so that we know when to extract the function configs
+   * again. If not set, the handler creates its own.
+   */
+  fileWatcher?: FileWatcher
   geolocation: Geolocation
   logger: Logger
   requestTimeout?: number
@@ -50,15 +59,29 @@ const REQUEST_TIMEOUT = UPSTREAM_REQUEST_TIMEOUT - 1_000
 
 export type EdgeFunctionsMatch = Awaited<ReturnType<EdgeFunctionsHandler['getFunctionsForRequest']>>
 
+type FunctionConfigsResult = Awaited<ReturnType<EdgeFunctionsHandler['getFunctionConfigs']>>
+
 export class EdgeFunctionsHandler {
   private configDeclarations: Declaration[]
   private denoServerProcess?: ProcessRef
   private directories: string[]
+  private dependencies = new Set<string>()
+  private dependenciesWatch?: FileWatchSubscriptionHandle
+  private directoriesWatch: FileWatchSubscriptionHandle
+  private fileWatcher: FileWatcher
+  private functionConfigs?: { key: string; result: Promise<FunctionConfigsResult> }
+  private ownFileWatcher?: FileWatcher
   private geolocation: Geolocation
   private initialization: ReturnType<typeof this.initialize>
   private initialized: boolean
   private stopped: boolean
   private logger: Logger
+
+  /**
+   * The functions whose imports we cannot watch, and for which we logged a
+   * warning.
+   */
+  private unwatchedFunctions = new Set<string>()
   private requestTimeout: number
   private siteID?: string
   private siteName?: string
@@ -66,6 +89,20 @@ export class EdgeFunctionsHandler {
   constructor(options: EdgeFunctionsHandlerOptions) {
     this.configDeclarations = options.configDeclarations
     this.directories = options.directories
+
+    this.fileWatcher = options.fileWatcher ?? new FileWatcher()
+    if (!options.fileWatcher) {
+      this.ownFileWatcher = this.fileWatcher
+    }
+
+    // A change to any file in the edge function directories can change a
+    // config, so the next request extracts the configs again.
+    this.directoriesWatch = this.fileWatcher.subscribe({
+      paths: this.directories,
+      onAdd: this.clearFunctionConfigs,
+      onChange: this.clearFunctionConfigs,
+      onUnlink: this.clearFunctionConfigs,
+    })
     this.geolocation = options.geolocation
     this.initialization = this.initialize({
       ...options.env,
@@ -98,10 +135,159 @@ export class EdgeFunctionsHandler {
     const data = (await res.json()) as unknown
 
     if (res.ok) {
-      return { configs: data as Record<string, FunctionConfig> }
+      const { configs, dependencies, unwatchedFunctions } = data as {
+        configs: Record<string, FunctionConfig>
+        dependencies: string[]
+        unwatchedFunctions: string[]
+      }
+
+      return { configs, dependencies: dependencies.map((url) => fileURLToPath(url)), unwatchedFunctions }
     }
 
     return { error: (data as { error: SerializedError }).error }
+  }
+
+  /**
+   * Returns the configs for a set of edge functions. To extract the configs,
+   * Deno must import each function, which is slow. The dev server can get many
+   * requests for each page load, so we keep the result until a function file
+   * changes or the set of functions changes.
+   */
+  private getCachedFunctionConfigs(denoPort: number, functions: Record<string, string>) {
+    const key = JSON.stringify(functions)
+    let entry = this.functionConfigs
+
+    if (entry?.key !== key) {
+      const startTime = Date.now()
+      let evict = () => {}
+
+      // An import that does not respond must not block requests without a
+      // limit. After the time limit, the requests that wait get an error, and
+      // the next request starts a new extraction.
+      const result = new Promise<FunctionConfigsResult>((resolve, reject) => {
+        const timer = setTimeout(() => {
+          evict()
+          resolve({
+            error: {
+              message: `Timed out after ${this.requestTimeout.toString()}ms while reading the edge function configs`,
+              name: 'TimeoutError',
+            },
+          })
+        }, this.requestTimeout)
+        timer.unref()
+
+        this.getFunctionConfigs(denoPort, functions)
+          .finally(() => {
+            clearTimeout(timer)
+          })
+          .then(resolve, reject)
+      })
+      const newEntry = { key, result }
+
+      evict = () => {
+        if (this.functionConfigs === newEntry) {
+          this.functionConfigs = undefined
+        }
+      }
+
+      entry = newEntry
+      this.functionConfigs = newEntry
+
+      // An error can have a temporary cause, such as a remote import that is
+      // not available. Do not keep it, so that the next request tries again.
+      result.then(({ dependencies, error, unwatchedFunctions }) => {
+        if (error) {
+          evict()
+        } else if (dependencies && this.functionConfigs === newEntry && !this.stopped) {
+          this.watchDependencies(dependencies)
+          this.warnUnwatchedFunctions(unwatchedFunctions)
+
+          // We did not watch the imports during their first extraction, so a
+          // change in that time cannot clear the cache. Find such changes from
+          // the modification times.
+          void this.changedSince(dependencies, startTime).then((changed) => {
+            if (changed) evict()
+          })
+        }
+      }, evict)
+    }
+
+    return entry.result
+  }
+
+  /**
+   * Returns true if one of the files changed at or after `time`, or if we
+   * cannot read the modification time of one of them.
+   */
+  private async changedSince(paths: string[], time: number) {
+    const changes = await Promise.all(
+      paths.map((file) =>
+        stat(file).then(
+          (stats) => stats.mtimeMs >= time,
+          () => true,
+        ),
+      ),
+    )
+
+    return changes.includes(true)
+  }
+
+  /**
+   * Logs a warning for each function whose imports we cannot watch. As in
+   * `netlify dev`, we continue without them: a change to a file that such a
+   * function imports from outside the edge function directories does not
+   * update its config.
+   */
+  private warnUnwatchedFunctions(names: string[]) {
+    for (const name of names) {
+      if (this.unwatchedFunctions.has(name)) {
+        continue
+      }
+
+      this.unwatchedFunctions.add(name)
+      this.logger.warn(
+        `Could not read the imports of edge function \`${name}\`. A change to a file that it imports from outside the edge functions directory will not update its config until you change the function.`,
+      )
+    }
+  }
+
+  private clearFunctionConfigs = () => {
+    this.functionConfigs = undefined
+  }
+
+  /**
+   * Watches the files that the functions import, so that a change to a module
+   * outside the edge function directories also clears the cached configs.
+   */
+  private watchDependencies(paths: string[]) {
+    const dependencies = new Set(
+      paths.filter((dependency) =>
+        this.directories.every((directory) => {
+          const relativePath = path.relative(directory, dependency)
+
+          // On Windows, the path to a file on another drive is absolute.
+          return relativePath === '..' || relativePath.startsWith(`..${path.sep}`) || path.isAbsolute(relativePath)
+        }),
+      ),
+    )
+
+    if (
+      dependencies.size === this.dependencies.size &&
+      [...dependencies].every((dependency) => this.dependencies.has(dependency))
+    ) {
+      return
+    }
+
+    this.dependencies = dependencies
+    this.dependenciesWatch?.unsubscribe()
+    this.dependenciesWatch =
+      dependencies.size === 0
+        ? undefined
+        : this.fileWatcher.subscribe({
+            paths: [...dependencies],
+            onChange: this.clearFunctionConfigs,
+            onUnlink: this.clearFunctionConfigs,
+          })
   }
 
   /**
@@ -232,7 +418,7 @@ export class EdgeFunctionsHandler {
     }
 
     const acceptsHTML = Boolean(request.headers.get('accept')?.includes('text/html'))
-    const { configs, error } = await this.getFunctionConfigs(denoPort, functionsMap)
+    const { configs, error } = await this.getCachedFunctionConfigs(denoPort, functionsMap)
     if (error) {
       return { handle: () => this.renderError(JSON.stringify({ error }), acceptsHTML) }
     }
@@ -390,6 +576,11 @@ export class EdgeFunctionsHandler {
   async stop() {
     if (this.stopped) return
     this.stopped = true
+
+    this.directoriesWatch.unsubscribe()
+    this.dependenciesWatch?.unsubscribe()
+    await this.ownFileWatcher?.close()
+
     if (!this.denoServerProcess?.ps) {
       return
     }

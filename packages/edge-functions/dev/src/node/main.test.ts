@@ -1,6 +1,7 @@
+import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-import { describe, expect, test, beforeAll, afterAll } from 'vitest'
+import { describe, expect, test, beforeAll, afterAll, vi } from 'vitest'
 
 import { HTTPServer } from '@netlify/dev-utils'
 import { Fixture } from '@netlify/test-utils'
@@ -291,6 +292,228 @@ describe('`EdgeFunctionsHandler`', () => {
     expect(await handler.match(req3)).toBeFalsy()
 
     await fixture.destroy()
+  })
+
+  test('Extracts the function configs again only when a function file changes', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/echo.mjs',
+        `export default async () => new Response("Hello from edge function");
+
+        export const config = { path: "/one" };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    const configRequests = () => fetchSpy.mock.calls.filter(([, init]) => init?.method === 'NETLIFYCONFIG').length
+
+    try {
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeTruthy()
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeTruthy()
+      expect(await handler.match(new Request('https://site.netlify/two'))).toBeFalsy()
+      expect(configRequests()).toBe(1)
+
+      await writeFile(
+        path.resolve(directory, 'netlify/edge-functions/echo.mjs'),
+        `export default async () => new Response("Hello from edge function");
+
+        export const config = { path: "/two" };`,
+      )
+
+      await vi.waitFor(async () => {
+        expect(await handler.match(new Request('https://site.netlify/two'))).toBeTruthy()
+      })
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeFalsy()
+      expect(configRequests()).toBeGreaterThan(1)
+    } finally {
+      fetchSpy.mockRestore()
+      await handler.stop()
+      await fixture.destroy()
+    }
+  })
+
+  test('Extracts the function configs again when a module that a function imports changes', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile('lib/path.mjs', `export const path = "/one";`)
+      .withFile(
+        'netlify/edge-functions/echo.mjs',
+        `import { path } from "../../lib/path.mjs";
+
+        export default async () => new Response("Hello from edge function");
+
+        export const config = { path };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    try {
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeTruthy()
+
+      // The handler starts to watch the imported module after the extraction.
+      await vi.waitFor(async () => {
+        await writeFile(path.resolve(directory, 'lib/path.mjs'), `export const path = "/two";`)
+        expect(await handler.match(new Request('https://site.netlify/two'))).toBeTruthy()
+      })
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeFalsy()
+    } finally {
+      await handler.stop()
+      await fixture.destroy()
+    }
+  })
+
+  test('Extracts the function configs again when an imported module changes during the first extraction', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile('lib/path.mjs', `export const path = "/one";`)
+      .withFile(
+        'netlify/edge-functions/echo.mjs',
+        `import { path } from "../../lib/path.mjs";
+
+        await new Promise((resolve) => setTimeout(resolve, 1_000));
+
+        export default async () => new Response("Hello from edge function");
+
+        export const config = { path };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+
+    try {
+      const pending = handler.match(new Request('https://site.netlify/one'))
+
+      // Change the module after Deno read it, but before the extraction ends.
+      await vi.waitFor(
+        () => {
+          expect(fetchSpy.mock.calls.some(([, init]) => init?.method === 'NETLIFYCONFIG')).toBe(true)
+        },
+        { timeout: 5_000 },
+      )
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      await writeFile(path.resolve(directory, 'lib/path.mjs'), `export const path = "/two";`)
+
+      expect(await pending).toBeTruthy()
+
+      await vi.waitFor(
+        async () => {
+          const req = new Request('https://site.netlify/two')
+          req.headers.set('x-nf-request-id', 'req-id')
+          const match = await handler.match(req)
+          const res = await match?.handle(req, serverAddress)
+
+          expect(await res?.text()).toBe('Hello from edge function')
+        },
+        { timeout: 5_000 },
+      )
+      expect(await handler.match(new Request('https://site.netlify/one'))).toBeFalsy()
+    } finally {
+      fetchSpy.mockRestore()
+      await handler.stop()
+      await fixture.destroy()
+    }
+  }, 15_000)
+
+  test('Stops waiting for a config extraction that takes too long', async () => {
+    const fixture = new Fixture()
+      .withFile(
+        'netlify.toml',
+        `[build]
+        publish = "public"
+        `,
+      )
+      .withFile(
+        'netlify/edge-functions/slow.mjs',
+        `await new Promise((resolve) => setTimeout(resolve, 1_000));
+
+        export default async () => new Response("Hello from edge function");
+
+        export const config = { path: "/slow" };`,
+      )
+
+    const directory = await fixture.create()
+    const handler = new EdgeFunctionsHandler({
+      configDeclarations: [],
+      directories: [path.resolve(directory, 'netlify/edge-functions')],
+      env: {},
+      geolocation,
+      logger: console,
+      requestTimeout: 300,
+      siteID: '123',
+      siteName: 'test',
+    })
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    const configRequests = () => fetchSpy.mock.calls.filter(([, init]) => init?.method === 'NETLIFYCONFIG').length
+
+    try {
+      // Wait for the Deno server to start, so that the time limit applies only
+      // to the extractions below.
+      await handler.match(new Request('https://site.netlify/other'))
+
+      const requestsBefore = configRequests()
+
+      // The request that waits gets an error after the time limit.
+      const req = new Request('https://site.netlify/slow')
+      const match = await handler.match(req)
+      expect(match).toBeTruthy()
+      const res = await match?.handle(req, serverAddress)
+      expect(res?.status).toBe(500)
+      expect(await res?.text()).toContain('Timed out after 300ms while reading the edge function configs')
+
+      // The next request starts a new extraction.
+      await handler.match(new Request('https://site.netlify/slow'))
+      expect(configRequests() - requestsBefore).toBe(2)
+    } finally {
+      fetchSpy.mockRestore()
+      await handler.stop()
+      await fixture.destroy()
+    }
   })
 
   test('Throws an error when the edge function has unparseable code', async () => {

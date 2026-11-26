@@ -6,7 +6,7 @@
 
 import { getErrorResponse } from './errors.mjs'
 
-import { getConfigs } from './config.mjs'
+import { getConfigs, getDependencies } from './config.mjs'
 import { invoke } from './invoke.mjs'
 
 /**
@@ -46,20 +46,31 @@ export const serveLocal = ({ denoPort: port, requestTimeout }) => {
       functions = availableFunctions
 
       try {
-        const configs = await getConfigs(availableFunctions)
+        const [configs, { dependencies, unwatchedFunctions }] = await Promise.all([
+          getConfigs(availableFunctions),
+          getDependencies(availableFunctions),
+        ])
 
-        return Response.json(configs)
+        return Response.json({ configs, dependencies, unwatchedFunctions })
       } catch (error) {
         return getErrorResponse(error)
       }
     }
 
-    if (Object.keys(functions).length === 0) {
+    // Node sends the functions of the configs that it used to match the
+    // request. Use them, because a config request can change `functions` while
+    // Node still uses configs from an earlier request.
+    const functionsHeader = request.headers.get('x-nf-available-edge-functions')
+
+    /** @type {Record<string, string>} */
+    const requestFunctions = functionsHeader ? JSON.parse(functionsHeader) : functions
+
+    if (Object.keys(requestFunctions).length === 0) {
       return new Response(null, { status: 404 })
     }
 
     try {
-      return await invoke(request, functions, requestTimeout)
+      return await invoke(request, requestFunctions, requestTimeout)
     } catch (error) {
       return getErrorResponse(error)
     }
