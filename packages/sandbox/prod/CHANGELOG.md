@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/netlify/primitives/compare/sandbox-v0.1.4...sandbox-v0.1.5) (2026-11-26)
+
+
+### Features
+
+* **sandbox:** add command timeouts and `created` flag ([#884](https://github.com/netlify/primitives/issues/884)) ([69c2707](https://github.com/netlify/primitives/commit/69c2707250d84bf8440d835583fc381383888df1))
+
 ## [0.1.4](https://github.com/netlify/primitives/compare/sandbox-v0.1.3...sandbox-v0.1.4) (2026-11-26)
 
 
