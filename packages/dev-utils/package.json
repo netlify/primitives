@@ -51,7 +51,7 @@
     "@types/node": "^22.0.0",
     "@types/parse-gitignore": "^1.0.2",
     "execa": "^8.0.1",
-    "tsup": "^8.0.0"
+    "tsup": "^9.0.0"
   },
   "dependencies": {
     "@napi-rs/keyring": "^2.1.2",
