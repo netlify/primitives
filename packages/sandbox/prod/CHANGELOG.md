@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/netlify/primitives/compare/sandbox-v0.1.3...sandbox-v0.1.4) (2026-11-26)
+
+
+### Features
+
+* **sandbox:** use the files endpoints ([#880](https://github.com/netlify/primitives/issues/880)) ([ff96806](https://github.com/netlify/primitives/commit/ff9680691837b02cea967ca9b41bdebf5a7ecf22))
+
 ## [0.1.3](https://github.com/netlify/primitives/compare/sandbox-v0.1.2...sandbox-v0.1.3) (2026-11-24)
 
 
