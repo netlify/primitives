@@ -165,7 +165,7 @@ test('starts a process with a timeout and reports that it was killed at it', asy
   )
   const sandbox = await getSandbox('build', { ...options, fetch })
 
-  const process = await sandbox.commands.start(['npm', 'test'], { timeoutMs: 600_000 })
+  const process = await sandbox.commands.start(['npm', 'test'], { timeout: 600_000 })
   const result = await process.wait({ intervalMs: 0 })
 
   expect(callOf(fetch, 1).body.timeout_ms).toBe(600_000)

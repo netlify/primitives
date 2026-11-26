@@ -13,7 +13,7 @@ export interface RunOptions {
    * How long the command may run, in milliseconds. A command still running
    * after that is killed, and its exit code is 124.
    */
-  timeoutMs?: number
+  timeout?: number
 
   /** Cancels the request. */
   signal?: AbortSignal
@@ -35,7 +35,7 @@ export interface CommandResult {
    */
   truncated: boolean
 
-  /** The command was killed because it ran for longer than `timeoutMs`. */
+  /** The command was killed because it ran for longer than `timeout`. */
   timedOut: boolean
 }
 
@@ -111,7 +111,7 @@ function commandBody(argv: string[] | string, options: RunOptions) {
     argv: Array.isArray(argv) ? argv : ['sh', '-c', argv],
     env: options.env,
     dir: options.cwd,
-    timeout_ms: options.timeoutMs,
+    timeout_ms: options.timeout,
   }
 }
 

@@ -54,7 +54,7 @@ test('sends a timeout and reports a command that was killed at it', async () => 
   const fetch = mockFetch(json(payload, 201), json({ exit_code: 124, stdout: 'partial', timed_out: true }))
 
   const sandbox = await client(fetch).create()
-  const result = await sandbox.commands.run(['sleep', '60'], { timeoutMs: 5000 })
+  const result = await sandbox.commands.run(['sleep', '60'], { timeout: 5000 })
 
   expect(callOf(fetch, 1).body).toStrictEqual({ argv: ['sleep', '60'], timeout_ms: 5000 })
   expect(result).toStrictEqual({ exitCode: 124, stdout: 'partial', stderr: '', truncated: false, timedOut: true })
