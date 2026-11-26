@@ -17,6 +17,7 @@ export type SandboxErrorCode =
 interface SandboxErrorDetails {
   status?: number
   requestID?: string
+  cause?: unknown
 }
 
 export class SandboxError extends Error {
@@ -29,8 +30,8 @@ export class SandboxError extends Error {
   /** The ID of the failed request, to quote when asking for help. */
   readonly requestID: string | undefined
 
-  constructor(code: SandboxErrorCode, message: string, { status, requestID }: SandboxErrorDetails = {}) {
-    super(message)
+  constructor(code: SandboxErrorCode, message: string, { status, requestID, cause }: SandboxErrorDetails = {}) {
+    super(message, cause === undefined ? undefined : { cause })
 
     this.name = 'SandboxError'
     this.code = code
