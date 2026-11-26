@@ -15,7 +15,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "image-size": "^2.0.2",
+    "image-size": "^2.2.0",
     "js-image-generator": "^1.0.4"
   },
   "devDependencies": {
