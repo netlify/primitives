@@ -117,7 +117,7 @@ test('output yields chunks until the process exits, then reads once more', async
   const sandbox = await getSandbox('build', { ...options, fetch })
   const chunks: string[] = []
 
-  for await (const chunk of sandbox.commands.get('p1').output({ intervalMs: 0 })) {
+  for await (const chunk of sandbox.commands.get('p1').output({ interval: 0 })) {
     chunks.push(chunk.stdout)
   }
 
@@ -132,7 +132,7 @@ test('output stops when the signal aborts', async () => {
   const controller = new AbortController()
 
   const reading = (async () => {
-    for await (const _ of sandbox.commands.get('p1').output({ intervalMs: 50, signal: controller.signal })) {
+    for await (const _ of sandbox.commands.get('p1').output({ interval: 50, signal: controller.signal })) {
       controller.abort(new Error('enough'))
     }
   })()
@@ -150,9 +150,28 @@ test('wait resolves with the exit code and the output since the cursor', async (
   )
   const sandbox = await getSandbox('build', { ...options, fetch })
 
-  const result = await sandbox.commands.get('p1').wait({ intervalMs: 0 })
+  const result = await sandbox.commands.get('p1').wait({ interval: 0 })
 
-  expect(result).toStrictEqual({ exitCode: 2, stdout: 'ab', stderr: 'oops', truncated: false })
+  expect(result).toStrictEqual({ exitCode: 2, stdout: 'ab', stderr: 'oops', truncated: false, timedOut: false })
+})
+
+test('starts a process with a timeout and reports that it was killed at it', async () => {
+  const timedOut = { ...finished, exit_code: 124, timed_out: true }
+  const fetch = mockFetch(
+    json(payload, 201),
+    json(running),
+    json(output({ process: timedOut })),
+    json(output({ process: timedOut })),
+  )
+  const sandbox = await getSandbox('build', { ...options, fetch })
+
+  const process = await sandbox.commands.start(['npm', 'test'], { timeout: 600_000 })
+  const result = await process.wait({ interval: 0 })
+
+  expect(callOf(fetch, 1).body.timeout_ms).toBe(600_000)
+  expect(process.timedOut).toBe(true)
+  expect(result.exitCode).toBe(124)
+  expect(result.timedOut).toBe(true)
 })
 
 test('run is unchanged by any of this', async () => {
@@ -171,7 +190,7 @@ test('wait reports truncation from a chunk that carries no output', async () => 
     json(output({ process: finished })),
   )
   const sandbox = await getSandbox('build', { ...options, fetch })
-  const result = await sandbox.commands.get('p1').wait({ intervalMs: 0 })
+  const result = await sandbox.commands.get('p1').wait({ interval: 0 })
 
   expect(result.truncated).toBe(true)
 })
@@ -189,7 +208,7 @@ test('keeps the exit code when a later response leaves it out', async () => {
 
   await process.status()
 
-  const result = await process.wait({ intervalMs: 0 })
+  const result = await process.wait({ interval: 0 })
 
   expect(result.exitCode).toBe(3)
 })
@@ -216,7 +235,7 @@ test('polling leaves no abort listeners behind', async () => {
   const added = vi.spyOn(controller.signal, 'addEventListener')
   const removed = vi.spyOn(controller.signal, 'removeEventListener')
 
-  await sandbox.commands.get('p1').wait({ intervalMs: 0, signal: controller.signal })
+  await sandbox.commands.get('p1').wait({ interval: 0, signal: controller.signal })
 
   expect(added).toHaveBeenCalled()
   expect(removed).toHaveBeenCalledTimes(added.mock.calls.length)
@@ -228,7 +247,7 @@ test('wait rejects for a process that ended without an exit code', async () => {
   const sandbox = await getSandbox('build', { ...options, fetch })
   const error = await sandbox.commands
     .get('p1')
-    .wait({ intervalMs: 0 })
+    .wait({ interval: 0 })
     .catch((err: unknown) => err)
 
   expect(error).toBeInstanceOf(SandboxError)

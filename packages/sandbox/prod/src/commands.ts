@@ -9,6 +9,12 @@ export interface RunOptions {
   /** The directory to run the command in. */
   cwd?: string
 
+  /**
+   * How long the command may run, in milliseconds. A command still running
+   * after that is killed, and its exit code is 124.
+   */
+  timeout?: number
+
   /** Cancels the request. */
   signal?: AbortSignal
 }
@@ -23,8 +29,14 @@ export interface CommandResult {
   /** What the command wrote to standard error. */
   stderr: string
 
-  /** Output was dropped because the command produced more than the sandbox keeps. */
+  /**
+   * The command produced more output than the sandbox keeps, so the start of
+   * it was dropped.
+   */
   truncated: boolean
+
+  /** The command was killed because it ran for longer than `timeout`. */
+  timedOut: boolean
 }
 
 interface CommandPayload {
@@ -32,6 +44,7 @@ interface CommandPayload {
   stdout?: string
   stderr?: string
   truncated?: boolean
+  timed_out?: boolean
 }
 
 export interface Commands {
@@ -57,7 +70,7 @@ export interface Commands {
 export const createCommands = (request: SandboxRequest): Commands => ({
   async run(argv, options = {}) {
     const payload = await request<CommandPayload>('/commands', {
-      body: { argv: toArgv(argv), env: options.env, dir: options.cwd },
+      body: commandBody(argv, options),
       signal: options.signal,
     })
 
@@ -66,12 +79,13 @@ export const createCommands = (request: SandboxRequest): Commands => ({
       stdout: payload.stdout ?? '',
       stderr: payload.stderr ?? '',
       truncated: Boolean(payload.truncated),
+      timedOut: Boolean(payload.timed_out),
     }
   },
 
   async start(argv, options = {}) {
     const payload = await request<ProcessPayload>('/processes', {
-      body: { argv: toArgv(argv), env: options.env, dir: options.cwd },
+      body: commandBody(argv, options),
       signal: options.signal,
     })
 
@@ -92,8 +106,13 @@ export const createCommands = (request: SandboxRequest): Commands => ({
   },
 })
 
-function toArgv(argv: string[] | string): string[] {
-  return Array.isArray(argv) ? argv : ['sh', '-c', argv]
+function commandBody(argv: string[] | string, options: RunOptions) {
+  return {
+    argv: Array.isArray(argv) ? argv : ['sh', '-c', argv],
+    env: options.env,
+    dir: options.cwd,
+    timeout_ms: options.timeout,
+  }
 }
 
 type ShellScalar = string | number | boolean

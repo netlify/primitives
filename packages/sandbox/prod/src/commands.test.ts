@@ -15,7 +15,7 @@ test('runs a command against the sandbox hostname, carrying the token', async ()
   expect(call.body.argv).toStrictEqual(['echo', 'hello'])
   expect(call.headers.authorization).toBe('Bearer token')
 
-  expect(result).toStrictEqual({ exitCode: 0, stdout: 'hello\n', stderr: '', truncated: false })
+  expect(result).toStrictEqual({ exitCode: 0, stdout: 'hello\n', stderr: '', truncated: false, timedOut: false })
 })
 
 test('runs a string command through a shell', async () => {
@@ -48,6 +48,16 @@ test('sends cwd and env with the command', async () => {
   await sandbox.commands.run('npm test', { cwd: '/app', env: { CI: '1' } })
 
   expect(callOf(fetch, 1).body).toStrictEqual({ argv: ['sh', '-c', 'npm test'], dir: '/app', env: { CI: '1' } })
+})
+
+test('sends a timeout and reports a command that was killed at it', async () => {
+  const fetch = mockFetch(json(payload, 201), json({ exit_code: 124, stdout: 'partial', timed_out: true }))
+
+  const sandbox = await client(fetch).create()
+  const result = await sandbox.commands.run(['sleep', '60'], { timeout: 5000 })
+
+  expect(callOf(fetch, 1).body).toStrictEqual({ argv: ['sleep', '60'], timeout_ms: 5000 })
+  expect(result).toStrictEqual({ exitCode: 124, stdout: 'partial', stderr: '', truncated: false, timedOut: true })
 })
 
 test('$ passes what is interpolated as arguments, so the shell parses none of it', async () => {

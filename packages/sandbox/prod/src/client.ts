@@ -1,6 +1,6 @@
 import { getEnvironmentContext, type ResolveContext } from './environment.js'
 import { MissingSandboxEnvironmentError, SandboxConfigMismatchError } from './error.js'
-import { type RequestOptions, sendJSON } from './request.js'
+import { type RequestOptions, HTTP_CREATED, sendJSON } from './request.js'
 import { Sandbox } from './sandbox.js'
 import { sizeInMB, type Size } from './size.js'
 import { Snapshot } from './snapshot.js'
@@ -103,12 +103,9 @@ export class Client {
 
   /** Creates a sandbox with a generated ID. */
   async create(options: CreateSandboxOptions = {}): Promise<Sandbox> {
-    const payload = await this.#request<SandboxPayload>('/sandbox', {
-      body: createBody(options),
-      signal: options.signal,
-    })
+    const { body } = await this.#requestSandbox(createBody(options), options.signal)
 
-    return new Sandbox(payload, this.#fetch, this.#context, this)
+    return new Sandbox(body, true, this.#fetch, this.#context, this)
   }
 
   /**
@@ -116,14 +113,11 @@ export class Client {
    * exist.
    */
   async resolve(name: string, options: CreateSandboxOptions = {}): Promise<Sandbox> {
-    const payload = await this.#request<SandboxPayload>('/sandbox', {
-      body: { name, ...createBody(options) },
-      signal: options.signal,
-    })
+    const { body, status } = await this.#requestSandbox({ name, ...createBody(options) }, options.signal)
 
-    assertResourcesMatch(name, options, payload)
+    assertResourcesMatch(name, options, body)
 
-    return new Sandbox(payload, this.#fetch, this.#context, this)
+    return new Sandbox(body, status === HTTP_CREATED, this.#fetch, this.#context, this)
   }
 
   async delete(id: string, options: { signal?: AbortSignal } = {}): Promise<void> {
@@ -152,10 +146,21 @@ export class Client {
     await this.#request(`/sandbox/snapshots/${encodeURIComponent(id)}`, { method: 'DELETE', signal: options.signal })
   }
 
-  #request<T>(path: string, options: RequestOptions): Promise<T> {
+  // The API answers 201 for a sandbox it created and 200 for one that existed.
+  #requestSandbox(body: Record<string, unknown>, signal?: AbortSignal) {
     const { apiURL, siteID, token } = this.#context()
 
-    return sendJSON<T>(this.#fetch, `${apiURL}/api/v1/sites/${siteID}${path}`, token, options)
+    return sendJSON<SandboxPayload>(this.#fetch, `${apiURL}/api/v1/sites/${siteID}/sandbox`, token, {
+      body,
+      signal,
+    })
+  }
+
+  async #request<T>(path: string, options: RequestOptions): Promise<T> {
+    const { apiURL, siteID, token } = this.#context()
+    const { body } = await sendJSON<T>(this.#fetch, `${apiURL}/api/v1/sites/${siteID}${path}`, token, options)
+
+    return body
   }
 }
 

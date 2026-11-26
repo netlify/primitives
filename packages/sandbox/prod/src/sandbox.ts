@@ -2,7 +2,7 @@ import type { Client, SnapshotOptions } from './client.js'
 import { type Commands, type Shell, createCommands, createShell } from './commands.js'
 import type { ResolveContext } from './environment.js'
 import { createFiles, type Files } from './files.js'
-import { send, sendJSON } from './request.js'
+import { type RequestOptions, send, sendJSON } from './request.js'
 import type { Snapshot } from './snapshot.js'
 import type { SandboxPayload } from './types.js'
 
@@ -34,6 +34,12 @@ export class Sandbox {
   /** When the sandbox was created. */
   readonly createdAt: Date
 
+  /**
+   * Whether the call that returned this sandbox created it. It is `false` for
+   * a sandbox that `getSandbox` found by its name.
+   */
+  readonly created: boolean
+
   /** Runs commands and processes in the sandbox. */
   readonly commands: Commands
 
@@ -53,7 +59,13 @@ export class Sandbox {
 
   readonly #client: Client
 
-  constructor(payload: SandboxPayload, fetch: typeof globalThis.fetch, context: ResolveContext, client: Client) {
+  constructor(
+    payload: SandboxPayload,
+    created: boolean,
+    fetch: typeof globalThis.fetch,
+    context: ResolveContext,
+    client: Client,
+  ) {
     this.id = payload.id
     this.siteID = payload.site_id
     this.hostname = payload.hostname
@@ -61,6 +73,7 @@ export class Sandbox {
     this.vcpus = payload.vcpus
     this.diskSize = payload.disk_size_mb
     this.createdAt = new Date(payload.created_at)
+    this.created = created
 
     this.#client = client
 
@@ -68,7 +81,11 @@ export class Sandbox {
 
     // The token is read on every request, because the platform replaces it
     // between invocations.
-    this.commands = createCommands((path, options) => sendJSON(fetch, url(path), context().token, options))
+    this.commands = createCommands(async <T>(path: string, options?: RequestOptions) => {
+      const { body } = await sendJSON<T>(fetch, url(path), context().token, options)
+
+      return body
+    })
     this.files = createFiles((path, options) => send(fetch, url(path), context().token, options))
     this.$ = createShell(this.commands)
   }

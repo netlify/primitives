@@ -19,8 +19,8 @@ interface ProcessOptions {
 }
 
 export interface PollOptions extends ProcessOptions {
-  /** How long to wait between polls. Defaults to a second. */
-  intervalMs?: number
+  /** How long to wait between polls, in milliseconds. Defaults to a second. */
+  interval?: number
 }
 
 export interface ProcessPayload {
@@ -29,6 +29,7 @@ export interface ProcessPayload {
   started_at?: string
   exited?: boolean
   exit_code?: number
+  timed_out?: boolean
   ended_at?: string
   error?: string
 }
@@ -63,6 +64,9 @@ export class Process {
   /** The code the process exited with, once it has exited. */
   exitCode: number | undefined
 
+  /** Whether the process was killed because it ran for longer than its timeout. */
+  timedOut: boolean
+
   /** The error the sandbox reported for the process, if any. */
   error: string | undefined
 
@@ -75,6 +79,7 @@ export class Process {
 
     this.id = payload.id
     this.exited = false
+    this.timedOut = false
     this.#apply(payload)
 
     if (cursor !== undefined) {
@@ -125,7 +130,7 @@ export class Process {
    *     for await (const chunk of process.output()) console.log(chunk.stdout)
    */
   async *output(options: PollOptions = {}): AsyncGenerator<OutputChunk, void, undefined> {
-    const { intervalMs = 1000, signal } = options
+    const { interval = 1000, signal } = options
 
     // A read that starts after the process has exited has everything, so it is
     // the last one.
@@ -141,7 +146,7 @@ export class Process {
       }
 
       if (!this.exited) {
-        await sleep(intervalMs, signal)
+        await sleep(interval, signal)
       }
     }
   }
@@ -151,7 +156,7 @@ export class Process {
    * wrote from the cursor on. A non-zero exit is returned, not thrown.
    */
   async wait(options: PollOptions = {}): Promise<CommandResult> {
-    const result = { exitCode: 0, stdout: '', stderr: '', truncated: false }
+    const result = { exitCode: 0, stdout: '', stderr: '', truncated: false, timedOut: false }
 
     for await (const chunk of this.output(options)) {
       result.stdout += chunk.stdout
@@ -168,6 +173,7 @@ export class Process {
     }
 
     result.exitCode = this.exitCode
+    result.timedOut = this.timedOut
 
     return result
   }
@@ -187,6 +193,7 @@ export class Process {
     this.startedAt = payload.started_at === undefined ? this.startedAt : new Date(payload.started_at)
     this.exited = payload.exited ?? this.exited
     this.exitCode = payload.exit_code ?? this.exitCode
+    this.timedOut = payload.timed_out ?? this.timedOut
     this.error = payload.error
 
     return this
