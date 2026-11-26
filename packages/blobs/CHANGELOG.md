@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.1.12](https://github.com/netlify/primitives/compare/blobs-v11.1.11...blobs-v11.1.12) (2026-11-26)
+
+
+### Bug Fixes
+
+* **blobs:** make the local server behave like production ([#881](https://github.com/netlify/primitives/issues/881)) ([d9ee584](https://github.com/netlify/primitives/commit/d9ee58494776c6a49059bc8dc9e9ed4d8211b67b))
+
 ## [11.1.11](https://github.com/netlify/primitives/compare/blobs-v11.1.10...blobs-v11.1.11) (2026-11-23)
 
 
