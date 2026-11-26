@@ -1,4 +1,4 @@
-import { createHmac } from 'node:crypto'
+import { createHash, createHmac } from 'node:crypto'
 import { createReadStream, promises as fs } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 
@@ -210,33 +210,12 @@ export class BlobsServer {
 
     this.dispatchOnRequestEvent(Operation.GET, url)
 
-    const headers: Record<string, string> = {}
+    // The ETag and the body come from one read, so they describe the same
+    // content even when the blob is written at the same time.
+    let data: Buffer
 
     try {
-      const rawData = await fs.readFile(metadataPath, 'utf8')
-      const metadata = JSON.parse(rawData)
-      const encodedMetadata = encodeMetadata(metadata)
-
-      if (encodedMetadata) {
-        headers[METADATA_HEADER_INTERNAL] = encodedMetadata
-      }
-    } catch (error) {
-      if (!isNodeError(error) || error.code !== 'ENOENT') {
-        this.logDebug('Could not read metadata file:', error)
-      }
-    }
-
-    try {
-      const fileStream = createReadStream(dataPath)
-      const chunks: Buffer[] = []
-
-      for await (const chunk of fileStream) {
-        chunks.push(Buffer.from(chunk))
-      }
-
-      const buffer = Buffer.concat(chunks)
-
-      return new Response(buffer, { headers })
+      data = await fs.readFile(dataPath)
     } catch (error) {
       if (isNodeError(error) && (error.code === 'EISDIR' || error.code === 'ENOENT')) {
         return new Response(null, { status: 404 })
@@ -246,6 +225,14 @@ export class BlobsServer {
 
       return new Response(null, { status: 500 })
     }
+
+    const etag = `"${createHash('md5').update(data).digest('hex')}"`
+
+    if (BlobsServer.matchesETag(req.headers.get('if-none-match'), etag)) {
+      return new Response(null, { status: 304, headers: { etag } })
+    }
+
+    return new Response(new Uint8Array(data), { headers: { etag, ...(await this.readMetadataHeaders(metadataPath)) } })
   }
 
   private async head(req: Request): Promise<Response> {
@@ -256,25 +243,50 @@ export class BlobsServer {
       return new Response(null, { status: 400 })
     }
 
+    const etag = await BlobsServer.generateETag(dataPath)
+
+    if (!etag) {
+      return new Response(null, { status: 404 })
+    }
+
+    if (BlobsServer.matchesETag(req.headers.get('if-none-match'), etag)) {
+      return new Response(null, { status: 304, headers: { etag } })
+    }
+
+    return new Response(null, {
+      headers: { etag, ...(await this.readMetadataHeaders(metadataPath)) },
+    })
+  }
+
+  private async readMetadataHeaders(metadataPath: string): Promise<Record<string, string>> {
     try {
       const rawData = await fs.readFile(metadataPath, 'utf8')
-      const metadata = JSON.parse(rawData)
-      const encodedMetadata = encodeMetadata(metadata)
+      const encodedMetadata = encodeMetadata(JSON.parse(rawData))
 
-      return new Response(null, {
-        headers: {
-          [METADATA_HEADER_INTERNAL]: encodedMetadata ?? '',
-        },
-      })
+      return encodedMetadata ? { [METADATA_HEADER_INTERNAL]: encodedMetadata } : {}
     } catch (error) {
-      if (isNodeError(error) && (error.code === 'ENOENT' || error.code === 'ISDIR')) {
-        return new Response(null, { status: 404 })
+      if (!isNodeError(error) || error.code !== 'ENOENT') {
+        this.logDebug('Could not read metadata file:', error)
       }
 
-      this.logDebug('Could not read metadata file:', error)
-
-      return new Response(null, { status: 500 })
+      return {}
     }
+  }
+
+  /**
+   * Whether an `If-None-Match` header matches the current entity.
+   */
+  private static matchesETag(header: string | null, etag: string) {
+    if (!header) {
+      return false
+    }
+
+    if (header.trim() === '*') {
+      return true
+    }
+
+    // A tag is quoted and can hold a comma, so the list isn't split on commas.
+    return header.match(/"[^"]*"/g)?.includes(etag) ?? false
   }
 
   private async listBlobs(options: {
@@ -306,16 +318,34 @@ export class BlobsServer {
       }
     }
 
+    // Keys are listed in UTF-8 byte order, and directories keep their trailing
+    // slash, as in production.
+    result.blobs?.sort((a, b) => compareKeys(a.key, b.key))
+    result.directories?.sort(compareKeys)
+
     return Response.json(result)
   }
 
   private async listStores(rootPath: string, prefix: string): Promise<Response> {
     try {
       const allStores = await fs.readdir(rootPath)
-      const filteredStores = allStores.map(decodeName).filter((store) => store.startsWith(prefix))
+      const stores: string[] = []
 
-      return Response.json({ stores: filteredStores })
+      for (const entry of allStores) {
+        const store = decodeName(entry)
+
+        // A store is a prefix of its keys, so one without blobs does not exist.
+        if (store.startsWith(prefix) && (await BlobsServer.hasFiles(join(rootPath, entry)))) {
+          stores.push(store)
+        }
+      }
+
+      return Response.json({ stores: stores.sort(compareKeys) })
     } catch (error) {
+      if (isNodeError(error) && error.code === 'ENOENT') {
+        return Response.json({ stores: [] })
+      }
+
       this.logDebug('Could not list stores:', error)
 
       return new Response(null, { status: 500 })
@@ -361,7 +391,12 @@ export class BlobsServer {
         return new Response(null, { status: 412 })
       }
 
-      if (ifMatch && (!fileExists || ifMatch !== currentEtag)) {
+      // A write conditioned on the ETag of a missing key is a 404 in production.
+      if (ifMatch && !fileExists) {
+        return new Response(null, { status: 404 })
+      }
+
+      if (ifMatch && ifMatch !== currentEtag) {
         return new Response(null, { status: 412 })
       }
 
@@ -378,9 +413,12 @@ export class BlobsServer {
       await fs.writeFile(tempPath, Buffer.from(body))
       await fs.rename(tempPath, dataPath)
 
-      if (metadata) {
+      // A write replaces the whole object, metadata included.
+      if (metadata && Object.keys(metadata).length !== 0) {
         await fs.mkdir(dirname(metadataPath), { recursive: true })
         await fs.writeFile(metadataPath, JSON.stringify(metadata))
+      } else {
+        await fs.rm(metadataPath, { force: true })
       }
 
       const newEtag = await BlobsServer.generateETag(dataPath)
@@ -414,37 +452,76 @@ export class BlobsServer {
       parts = parts.slice(1)
     }
 
-    const [siteID, rawStoreName, ...rawKey] = parts
+    const [rawSiteID, rawStoreName, ...rawKey] = parts
 
-    if (!siteID) {
+    // The path is percent-decoded once, as in production, so a key is stored
+    // and listed as the string the client meant. A path that does not decode
+    // to valid UTF-8, or that would step out of its store, is refused.
+    const siteID = decodeSegment(rawSiteID)
+    const decodedStoreName = rawStoreName === undefined ? undefined : decodeSegment(rawStoreName)
+    const decodedKey = decodeSegment(rawKey.join('/'))
+
+    if (!siteID || decodedStoreName === null || decodedKey === null) {
       return {}
     }
 
-    const rootPath = resolve(this.directory, 'entries', siteID)
+    const keySegments = decodedKey === '' ? [] : decodedKey.split('/')
 
-    if (!rawStoreName) {
+    if ([siteID, decodedStoreName, ...keySegments].some((segment) => segment === '.' || segment === '..')) {
+      return {}
+    }
+
+    // A site ID and a store name are one segment each. Only a key has slashes.
+    if (siteID.includes('/') || decodedStoreName?.includes('/')) {
+      return {}
+    }
+
+    const rootPath = resolve(this.directory, 'entries', encodeName(siteID))
+
+    if (!decodedStoreName) {
       return { rootPath }
     }
 
-    const key = rawKey.map(encodeName)
+    const key = keySegments.map(encodeName)
 
-    const storeName = encodeName(rawStoreName)
+    const storeName = encodeName(decodedStoreName)
     const storePath = resolve(rootPath, storeName)
     const dataPath = resolve(storePath, ...key)
-    const metadataPath = resolve(this.directory, 'metadata', siteID, storeName, ...key)
+    const metadataPath = resolve(this.directory, 'metadata', encodeName(siteID), storeName, ...key)
 
     return { dataPath, key: key.join('/'), metadataPath, rootPath: storePath }
   }
 
   /**
-   * Helper method to generate an ETag for a file based on its path and last modified time.
+   * Returns a file's ETag as production computes it: the MD5 of the content,
+   * quoted. Writing the same content again keeps the ETag.
+   * An empty string means there is no such file.
    */
   private static async generateETag(filePath: string): Promise<string> {
     try {
       const stats = await fs.stat(filePath)
-      const hash = createHmac('sha256', stats.mtime.toISOString()).update(filePath).digest('hex')
 
-      return `"${hash}"`
+      if (!stats.isFile()) {
+        return ''
+      }
+
+      const cached = etagCache.get(filePath)
+
+      if (cached?.mtimeMs === stats.mtimeMs && cached.size === stats.size) {
+        return cached.etag
+      }
+
+      const hash = createHash('md5')
+
+      for await (const chunk of createReadStream(filePath)) {
+        hash.update(chunk as Buffer)
+      }
+
+      const etag = `"${hash.digest('hex')}"`
+
+      etagCache.set(filePath, { etag, mtimeMs: stats.mtimeMs, size: stats.size })
+
+      return etag
     } catch {
       return ''
     }
@@ -575,12 +652,9 @@ export class BlobsServer {
       const entryPath = join(path, entry)
       const stat = await fs.stat(entryPath)
 
-      let key = relative(rootPath, entryPath)
-
-      // Normalize keys to use `/` as delimiter regardless of OS.
-      if (sep !== '/') {
-        key = key.split(sep).join('/')
-      }
+      // Normalize keys to use `/` as delimiter regardless of OS, and undo the
+      // encoding that makes each segment a valid file name.
+      const key = relative(rootPath, entryPath).split(sep).map(decodeName).join('/')
 
       // To match the key against the prefix, we start by creating a "mask",
       // which consists of the subset of the key up to the length of the
@@ -615,7 +689,7 @@ export class BlobsServer {
       // key we're processing is `animals`, we don't want to push it to the
       // `directories` bucket. We want to traverse it.
       if (directories && key.startsWith(prefix)) {
-        result.directories?.push(key)
+        result.directories?.push(`${key}/`)
 
         continue
       }
@@ -623,6 +697,21 @@ export class BlobsServer {
       // Call this method recursively with the directory as the starting point.
       await BlobsServer.walk({ directories, path: entryPath, prefix, rootPath, result })
     }
+  }
+
+  /**
+   * Whether a directory holds at least one file, at any depth.
+   */
+  private static async hasFiles(path: string): Promise<boolean> {
+    const entries = await fs.readdir(path, { withFileTypes: true })
+
+    for (const entry of entries) {
+      if (entry.isFile() || (entry.isDirectory() && (await BlobsServer.hasFiles(join(path, entry.name))))) {
+        return true
+      }
+    }
+
+    return false
   }
 
   async start(): Promise<{ address: string; family: string; port: number }> {
@@ -644,5 +733,28 @@ export class BlobsServer {
 
   async stop() {
     return this.server?.stop()
+  }
+}
+
+/**
+ * ETags of files already hashed, valid while the file's size and modification
+ * time are unchanged.
+ */
+const etagCache = new Map<string, { etag: string; mtimeMs: number; size: number }>()
+
+/**
+ * Compares keys by their UTF-8 bytes, which is the order production lists them in.
+ */
+const compareKeys = (a: string, b: string) => Buffer.compare(Buffer.from(a), Buffer.from(b))
+
+/**
+ * Percent-decodes a path segment, or returns null when it does not decode to
+ * valid UTF-8.
+ */
+const decodeSegment = (segment: string) => {
+  try {
+    return decodeURIComponent(segment)
+  } catch {
+    return null
   }
 }
