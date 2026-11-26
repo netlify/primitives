@@ -19,8 +19,8 @@ interface ProcessOptions {
 }
 
 export interface PollOptions extends ProcessOptions {
-  /** How long to wait between polls. Defaults to a second. */
-  intervalMs?: number
+  /** How long to wait between polls, in milliseconds. Defaults to a second. */
+  interval?: number
 }
 
 export interface ProcessPayload {
@@ -130,7 +130,7 @@ export class Process {
    *     for await (const chunk of process.output()) console.log(chunk.stdout)
    */
   async *output(options: PollOptions = {}): AsyncGenerator<OutputChunk, void, undefined> {
-    const { intervalMs = 1000, signal } = options
+    const { interval = 1000, signal } = options
 
     // A read that starts after the process has exited has everything, so it is
     // the last one.
@@ -146,7 +146,7 @@ export class Process {
       }
 
       if (!this.exited) {
-        await sleep(intervalMs, signal)
+        await sleep(interval, signal)
       }
     }
   }
