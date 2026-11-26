@@ -2,7 +2,7 @@ import type { Client, SnapshotOptions } from './client.js'
 import { type Commands, type Shell, createCommands, createShell } from './commands.js'
 import type { ResolveContext } from './environment.js'
 import { createFiles, type Files } from './files.js'
-import { sendJSON } from './request.js'
+import { send, sendJSON } from './request.js'
 import type { Snapshot } from './snapshot.js'
 import type { SandboxPayload } from './types.js'
 
@@ -37,7 +37,7 @@ export class Sandbox {
   /** Runs commands and processes in the sandbox. */
   readonly commands: Commands
 
-  /** Reads and writes text files in the sandbox. */
+  /** Reads, writes, lists and removes files in the sandbox. */
   readonly files: Files
 
   /**
@@ -64,12 +64,12 @@ export class Sandbox {
 
     this.#client = client
 
+    const url = (path: string) => `https://${this.hostname}${SANDBOX_API}${path}`
+
     // The token is read on every request, because the platform replaces it
     // between invocations.
-    this.commands = createCommands((path, options) =>
-      sendJSON(fetch, `https://${this.hostname}${SANDBOX_API}${path}`, context().token, options),
-    )
-    this.files = createFiles(this.commands)
+    this.commands = createCommands((path, options) => sendJSON(fetch, url(path), context().token, options))
+    this.files = createFiles((path, options) => send(fetch, url(path), context().token, options))
     this.$ = createShell(this.commands)
   }
 
