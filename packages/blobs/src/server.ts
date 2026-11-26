@@ -210,29 +210,12 @@ export class BlobsServer {
 
     this.dispatchOnRequestEvent(Operation.GET, url)
 
-    const etag = await BlobsServer.generateETag(dataPath)
-
-    if (!etag) {
-      return new Response(null, { status: 404 })
-    }
-
-    if (BlobsServer.matchesETag(req.headers.get('if-none-match'), etag)) {
-      return new Response(null, { status: 304, headers: { etag } })
-    }
-
-    const headers: Record<string, string> = { etag, ...(await this.readMetadataHeaders(metadataPath)) }
+    // The ETag and the body come from one read, so they describe the same
+    // content even when the blob is written at the same time.
+    let data: Buffer
 
     try {
-      const fileStream = createReadStream(dataPath)
-      const chunks: Buffer[] = []
-
-      for await (const chunk of fileStream) {
-        chunks.push(Buffer.from(chunk))
-      }
-
-      const buffer = Buffer.concat(chunks)
-
-      return new Response(buffer, { headers })
+      data = await fs.readFile(dataPath)
     } catch (error) {
       if (isNodeError(error) && (error.code === 'EISDIR' || error.code === 'ENOENT')) {
         return new Response(null, { status: 404 })
@@ -242,6 +225,14 @@ export class BlobsServer {
 
       return new Response(null, { status: 500 })
     }
+
+    const etag = `"${createHash('md5').update(data).digest('hex')}"`
+
+    if (BlobsServer.matchesETag(req.headers.get('if-none-match'), etag)) {
+      return new Response(null, { status: 304, headers: { etag } })
+    }
+
+    return new Response(new Uint8Array(data), { headers: { etag, ...(await this.readMetadataHeaders(metadataPath)) } })
   }
 
   private async head(req: Request): Promise<Response> {
@@ -290,10 +281,12 @@ export class BlobsServer {
       return false
     }
 
-    return header
-      .split(',')
-      .map((tag) => tag.trim())
-      .some((tag) => tag === '*' || tag === etag)
+    if (header.trim() === '*') {
+      return true
+    }
+
+    // A tag is quoted and can hold a comma, so the list isn't split on commas.
+    return header.match(/"[^"]*"/g)?.includes(etag) ?? false
   }
 
   private async listBlobs(options: {
@@ -475,6 +468,11 @@ export class BlobsServer {
     const keySegments = decodedKey === '' ? [] : decodedKey.split('/')
 
     if ([siteID, decodedStoreName, ...keySegments].some((segment) => segment === '.' || segment === '..')) {
+      return {}
+    }
+
+    // A site ID and a store name are one segment each. Only a key has slashes.
+    if (siteID.includes('/') || decodedStoreName?.includes('/')) {
       return {}
     }
 

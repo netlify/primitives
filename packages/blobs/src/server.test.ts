@@ -621,7 +621,7 @@ const startServer = async () => {
 }
 
 test('Returns the ETag on reads and answers conditional reads', async () => {
-  const { stop, store } = await startServer()
+  const { port, stop, store } = await startServer()
 
   const { etag } = await store.set('key', 'value')
   expect(etag).toBeTruthy()
@@ -635,6 +635,19 @@ test('Returns the ETag on reads and answers conditional reads', async () => {
 
   const stale = await store.getWithMetadata('key', { etag: '"stale"' })
   expect(stale?.data).toBe('value')
+
+  const conditionalRead = async (ifNoneMatch: string) => {
+    const res = await fetch(`http://localhost:${port}/${siteID}/site:my-store/key`, {
+      headers: { authorization: `Bearer ${token}`, 'if-none-match': ifNoneMatch },
+    })
+
+    return res.status
+  }
+
+  expect(await conditionalRead(`"a,b", ${etag}`)).toBe(304)
+  expect(await conditionalRead('*')).toBe(304)
+  expect(await conditionalRead(`"with,${etag},inside"`)).toBe(200)
+  expect(await conditionalRead('"stale", *')).toBe(200)
 
   // As in production, the ETag is the MD5 of the content, so the same content keeps it.
   expect(etag).toBe('"2063c1608d6e0baf80249c42e2be5804"')
@@ -725,6 +738,16 @@ test('Refuses paths that would leave the store', async () => {
 
   for (const path of ['%2E%2E/%2E%2E/escape', 'a/%2E%2E%2F%2E%2E%2Fescape']) {
     const res = await fetch(`http://localhost:${port}/${siteID}/site:my-store/${path}`, {
+      body: 'value',
+      headers: { authorization: `Bearer ${token}` },
+      method: 'PUT',
+    })
+    expect({ path, status: res.status }).toEqual({ path, status: 400 })
+  }
+
+  // A site ID or a store name is one segment, so an encoded slash in it is refused.
+  for (const path of [`${siteID}/%2E%2E%2F%2E%2E%2Fescape/key`, `${siteID}%2F%2E%2E%2F%2E%2E/site:my-store/key`]) {
+    const res = await fetch(`http://localhost:${port}/${path}`, {
       body: 'value',
       headers: { authorization: `Bearer ${token}` },
       method: 'PUT',
