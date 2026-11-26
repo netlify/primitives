@@ -64,17 +64,19 @@ export const send = async (
   return response
 }
 
+export const HTTP_CREATED = 201
+
 /**
- * Sends an authenticated JSON request and resolves with the parsed response
- * body, or with `undefined` when the response has no body. Rejects with a
- * `SandboxError` when the request fails.
+ * Sends an authenticated JSON request and resolves with the response's status
+ * and its parsed body, which is `undefined` when the response has no body.
+ * Rejects with a `SandboxError` when the request fails.
  */
 export const sendJSON = async <T>(
   fetch: typeof globalThis.fetch,
   url: string,
   token: string,
   { body, method = 'POST', signal }: RequestOptions = {},
-): Promise<T> => {
+): Promise<{ status: number; body: T }> => {
   const response = await send(fetch, url, token, {
     method,
     headers: { accept: 'application/json', 'content-type': 'application/json' },
@@ -84,5 +86,5 @@ export const sendJSON = async <T>(
 
   const text = await response.text()
 
-  return (text === '' ? undefined : JSON.parse(text)) as T
+  return { status: response.status, body: (text === '' ? undefined : JSON.parse(text)) as T }
 }

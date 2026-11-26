@@ -19,6 +19,16 @@ describe('getSandbox', () => {
     expect(callOf(fetch, 0).body).toStrictEqual({ name: 'build' })
   })
 
+  test('says whether it created the sandbox', async () => {
+    const options = { siteID: payload.site_id, token: 'token' }
+
+    const created = await getSandbox('build', { ...options, fetch: mockFetch(json(payload, 201)) })
+    const existing = await getSandbox('build', { ...options, fetch: mockFetch(json(payload)) })
+
+    expect(created.created).toBe(true)
+    expect(existing.created).toBe(false)
+  })
+
   test('needs a name, and says what to call without one', async () => {
     const call = (getSandbox as unknown as () => Promise<unknown>)()
 
@@ -53,6 +63,7 @@ describe('getSandbox', () => {
 
     expect(callOf(fetch, 0).body).toStrictEqual({ vcpus: 2 })
     expect(sandbox.id).toBe(payload.id)
+    expect(sandbox.created).toBe(true)
   })
 
   test('deleteSandbox deletes by name without resolving the sandbox first', async () => {

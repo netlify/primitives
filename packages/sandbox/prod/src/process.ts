@@ -29,6 +29,7 @@ export interface ProcessPayload {
   started_at?: string
   exited?: boolean
   exit_code?: number
+  timed_out?: boolean
   ended_at?: string
   error?: string
 }
@@ -63,6 +64,9 @@ export class Process {
   /** The code the process exited with, once it has exited. */
   exitCode: number | undefined
 
+  /** Whether the process was killed because it ran for longer than its timeout. */
+  timedOut: boolean
+
   /** The error the sandbox reported for the process, if any. */
   error: string | undefined
 
@@ -75,6 +79,7 @@ export class Process {
 
     this.id = payload.id
     this.exited = false
+    this.timedOut = false
     this.#apply(payload)
 
     if (cursor !== undefined) {
@@ -151,7 +156,7 @@ export class Process {
    * wrote from the cursor on. A non-zero exit is returned, not thrown.
    */
   async wait(options: PollOptions = {}): Promise<CommandResult> {
-    const result = { exitCode: 0, stdout: '', stderr: '', truncated: false }
+    const result = { exitCode: 0, stdout: '', stderr: '', truncated: false, timedOut: false }
 
     for await (const chunk of this.output(options)) {
       result.stdout += chunk.stdout
@@ -168,6 +173,7 @@ export class Process {
     }
 
     result.exitCode = this.exitCode
+    result.timedOut = this.timedOut
 
     return result
   }
@@ -187,6 +193,7 @@ export class Process {
     this.startedAt = payload.started_at === undefined ? this.startedAt : new Date(payload.started_at)
     this.exited = payload.exited ?? this.exited
     this.exitCode = payload.exit_code ?? this.exitCode
+    this.timedOut = payload.timed_out ?? this.timedOut
     this.error = payload.error
 
     return this

@@ -152,7 +152,26 @@ test('wait resolves with the exit code and the output since the cursor', async (
 
   const result = await sandbox.commands.get('p1').wait({ intervalMs: 0 })
 
-  expect(result).toStrictEqual({ exitCode: 2, stdout: 'ab', stderr: 'oops', truncated: false })
+  expect(result).toStrictEqual({ exitCode: 2, stdout: 'ab', stderr: 'oops', truncated: false, timedOut: false })
+})
+
+test('starts a process with a timeout and reports that it was killed at it', async () => {
+  const timedOut = { ...finished, exit_code: 124, timed_out: true }
+  const fetch = mockFetch(
+    json(payload, 201),
+    json(running),
+    json(output({ process: timedOut })),
+    json(output({ process: timedOut })),
+  )
+  const sandbox = await getSandbox('build', { ...options, fetch })
+
+  const process = await sandbox.commands.start(['npm', 'test'], { timeoutMs: 600_000 })
+  const result = await process.wait({ intervalMs: 0 })
+
+  expect(callOf(fetch, 1).body.timeout_ms).toBe(600_000)
+  expect(process.timedOut).toBe(true)
+  expect(result.exitCode).toBe(124)
+  expect(result.timedOut).toBe(true)
 })
 
 test('run is unchanged by any of this', async () => {
