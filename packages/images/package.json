@@ -38,7 +38,7 @@
   "devDependencies": {
     "@netlify/dev-utils": "^6.1.1",
     "@netlify/test-utils": "*",
-    "tsup": "^8.5.0"
+    "tsup": "^9.0.0"
   },
   "dependencies": {
     "ipx": "^4.0.0"

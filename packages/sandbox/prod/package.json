@@ -35,7 +35,7 @@
     "@netlify/runtime-utils": "3.1.0"
   },
   "devDependencies": {
-    "tsup": "^8.0.2"
+    "tsup": "^9.0.0"
   },
   "repository": {
     "type": "git",
