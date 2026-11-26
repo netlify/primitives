@@ -101,8 +101,26 @@ describe('toUser', () => {
 })
 
 describe('getUser (server)', () => {
+  // The identity context's token is the operator token for admin calls (see
+  // admin.ts), not the user's JWT
+  const operatorToken = fakeJwt({ sub: 'operator', exp: 9999999999 })
+  const userJwt = fakeJwt({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'jane@example.com' })
+
+  const setServerCookies = (cookies: Record<string, string>) => {
+    globalThis.Netlify = {
+      context: {
+        cookies: {
+          get: (name: string) => cookies[name],
+          set: () => {},
+          delete: () => {},
+        },
+      },
+    } as unknown as typeof globalThis.Netlify
+  }
+
   afterEach(() => {
     delete globalThis.netlifyIdentityContext
+    delete (globalThis as Record<string, unknown>).Netlify
     resetTestGoTrueClient()
     vi.restoreAllMocks()
   })
@@ -131,15 +149,15 @@ describe('getUser (server)', () => {
     expect(user.name).toBe('Jane Doe')
   })
 
-  it('fetches full user from GoTrue when identity URL is available', async () => {
-    const token = fakeJwt({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'jane@example.com' })
+  it('fetches full user from GoTrue with the nf_jwt cookie, not the operator token', async () => {
     globalThis.netlifyIdentityContext = {
       url: 'https://example.com/.netlify/identity',
-      token,
+      token: operatorToken,
       user: { sub: '550e8400-e29b-41d4-a716-446655440000', email: 'jane@example.com' },
     }
+    setServerCookies({ nf_jwt: userJwt })
 
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(
         JSON.stringify({
           id: '550e8400-e29b-41d4-a716-446655440000',
@@ -156,6 +174,10 @@ describe('getUser (server)', () => {
 
     const user = await getUser()
     if (!user) throw new Error('expected user to not be null')
+    expect(fetchSpy).toHaveBeenCalledOnce()
+    const [url, init] = fetchSpy.mock.calls[0]
+    expect(url).toBe('https://example.com/.netlify/identity/user')
+    expect(new Headers(init?.headers).get('Authorization')).toBe(`Bearer ${userJwt}`)
     expect(user.id).toBe('550e8400-e29b-41d4-a716-446655440000')
     expect(user.confirmedAt).toBe('2026-01-01T00:00:00Z')
     expect(user.createdAt).toBe('2026-01-01T00:00:00Z')
@@ -163,11 +185,38 @@ describe('getUser (server)', () => {
     expect(user.roles).toEqual(['admin'])
   })
 
-  it('falls back to claims when GoTrue fetch fails', async () => {
-    const token = fakeJwt({ sub: '550e8400-e29b-41d4-a716-446655440000', email: 'jane@example.com' })
+  it('fetches full user with the nf_jwt cookie when the context has no verified user', async () => {
     globalThis.netlifyIdentityContext = {
       url: 'https://example.com/.netlify/identity',
-      token,
+      token: operatorToken,
+    }
+    setServerCookies({ nf_jwt: userJwt })
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          id: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'jane@example.com',
+          created_at: '2026-01-01T00:00:00Z',
+          app_metadata: { provider: 'email' },
+          user_metadata: {},
+        }),
+        { status: 200 },
+      ),
+    )
+
+    const user = await getUser()
+    if (!user) throw new Error('expected user to not be null')
+    expect(fetchSpy).toHaveBeenCalledOnce()
+    expect(new Headers(fetchSpy.mock.calls[0][1]?.headers).get('Authorization')).toBe(`Bearer ${userJwt}`)
+    expect(user.id).toBe('550e8400-e29b-41d4-a716-446655440000')
+    expect(user.createdAt).toBe('2026-01-01T00:00:00Z')
+  })
+
+  it('falls back to claims when GoTrue fetch fails', async () => {
+    globalThis.netlifyIdentityContext = {
+      url: 'https://example.com/.netlify/identity',
+      token: operatorToken,
       user: {
         sub: '550e8400-e29b-41d4-a716-446655440000',
         email: 'jane@example.com',
@@ -175,6 +224,7 @@ describe('getUser (server)', () => {
         user_metadata: { full_name: 'Jane Doe' },
       },
     }
+    setServerCookies({ nf_jwt: userJwt })
 
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('network error'))
 
@@ -186,6 +236,59 @@ describe('getUser (server)', () => {
     expect(user.role).toBeUndefined()
     expect(user.createdAt).toBeUndefined()
     expect(user.lastSignInAt).toBeUndefined()
+  })
+
+  it('falls back to claims when GoTrue rejects the nf_jwt cookie', async () => {
+    globalThis.netlifyIdentityContext = {
+      url: 'https://example.com/.netlify/identity',
+      token: operatorToken,
+      user: { sub: '550e8400-e29b-41d4-a716-446655440000', email: 'jane@example.com' },
+    }
+    setServerCookies({ nf_jwt: userJwt })
+
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ code: 401, msg: 'Invalid token: signature is invalid' }), { status: 401 }),
+    )
+
+    const user = await getUser()
+    if (!user) throw new Error('expected user to not be null')
+    expect(user.id).toBe('550e8400-e29b-41d4-a716-446655440000')
+    expect(user.createdAt).toBeUndefined()
+  })
+
+  it('does not call GoTrue with the operator token when there is no nf_jwt cookie', async () => {
+    // A request authenticated with an Authorization header: the platform
+    // verified the user, but the library has no user JWT to send.
+    globalThis.netlifyIdentityContext = {
+      url: 'https://example.com/.netlify/identity',
+      token: operatorToken,
+      user: { sub: '550e8400-e29b-41d4-a716-446655440000', email: 'jane@example.com' },
+    }
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('unexpected fetch'))
+
+    const user = await getUser()
+    if (!user) throw new Error('expected user to not be null')
+    expect(fetchSpy).not.toHaveBeenCalled()
+    expect(user.id).toBe('550e8400-e29b-41d4-a716-446655440000')
+    expect(user.email).toBe('jane@example.com')
+  })
+
+  it('returns the verified claims, not the cookie user, when they are different users', async () => {
+    globalThis.netlifyIdentityContext = {
+      url: 'https://example.com/.netlify/identity',
+      token: operatorToken,
+      user: { sub: '550e8400-e29b-41d4-a716-446655440000', email: 'jane@example.com' },
+    }
+    setServerCookies({ nf_jwt: fakeJwt({ sub: '7c9e6679-7425-40de-944b-e07fc1f90ae7', email: 'other@example.com' }) })
+
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('unexpected fetch'))
+
+    const user = await getUser()
+    if (!user) throw new Error('expected user to not be null')
+    expect(fetchSpy).not.toHaveBeenCalled()
+    expect(user.id).toBe('550e8400-e29b-41d4-a716-446655440000')
+    expect(user.email).toBe('jane@example.com')
   })
 
   it('handles user with missing metadata fields', async () => {
