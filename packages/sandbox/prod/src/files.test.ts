@@ -121,3 +121,32 @@ test.each([
   expect((error as SandboxError).status).toBe(status)
   expect((error as SandboxError).message).toContain('/work: is a directory')
 })
+
+test('rejects with a SandboxError when the request never gets an answer', async () => {
+  const fetch = mockFetch(json(payload, 201))
+  const sandbox = await client(fetch).create()
+  const failure = new TypeError('fetch failed')
+
+  fetch.mockRejectedValueOnce(failure)
+
+  const call = sandbox.files.read('notes.txt')
+
+  await expect(call).rejects.toBeInstanceOf(SandboxError)
+  await expect(call).rejects.toMatchObject({
+    code: 'unavailable',
+    message: `GET ${API}/files?path=notes.txt could not be sent: fetch failed`,
+    cause: failure,
+  })
+})
+
+test('rejects with the reason given when the caller aborts', async () => {
+  const fetch = mockFetch(json(payload, 201))
+  const sandbox = await client(fetch).create()
+  const controller = new AbortController()
+  const reason = new Error('changed my mind')
+
+  controller.abort(reason)
+  fetch.mockRejectedValueOnce(reason)
+
+  await expect(sandbox.files.read('notes.txt', { signal: controller.signal })).rejects.toBe(reason)
+})

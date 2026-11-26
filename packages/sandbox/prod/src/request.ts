@@ -1,4 +1,4 @@
-import { errorFromResponse } from './error.js'
+import { errorFromResponse, SandboxError } from './error.js'
 
 export interface RequestOptions {
   body?: unknown
@@ -42,7 +42,20 @@ export const send = async (
     init.duplex = 'half'
   }
 
-  const response = await fetch(url, init)
+  let response: Response
+
+  try {
+    response = await fetch(url, init)
+  } catch (error) {
+    // A request the caller aborted rejects with the reason they gave.
+    if (signal?.aborted) {
+      throw error
+    }
+
+    const reason = error instanceof Error ? error.message : String(error)
+
+    throw new SandboxError('unavailable', `${method} ${url} could not be sent: ${reason}`, { cause: error })
+  }
 
   if (!response.ok) {
     throw await errorFromResponse(method, url, response)
