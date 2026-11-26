@@ -938,7 +938,8 @@ describe('Handling requests', () => {
           `export default async (req, context) => Response.json({
              env: {
                WITH_DEV_OVERRIDE: Netlify.env.get("WITH_DEV_OVERRIDE"),
-               WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE")
+               WITHOUT_DEV_OVERRIDE: Netlify.env.get("WITHOUT_DEV_OVERRIDE"),
+               MY_DOTENV_TOKEN: Netlify.env.get("MY_DOTENV_TOKEN")
              },
              geo: context.geo,
              params: context.params,
@@ -950,6 +951,7 @@ describe('Handling requests', () => {
 
            export const config = { path: "/hello/:a/*" };`,
         )
+        .withFile('.env', 'MY_DOTENV_TOKEN=value from .env')
         .withStateFile({ siteId: 'site_id' })
       const directory = await fixture.create()
       const req = new Request('https://site.netlify/hello/one/two/three')
@@ -975,6 +977,7 @@ describe('Handling requests', () => {
           env: {
             WITH_DEV_OVERRIDE: 'value from dev context',
             WITHOUT_DEV_OVERRIDE: 'value from all context',
+            MY_DOTENV_TOKEN: 'value from .env',
           },
           geo: {
             city: 'San Francisco',
@@ -1058,6 +1061,9 @@ describe('Handling requests', () => {
              parentProcessEnv: {
                SOME_ZSH_THING_MAYBE: Netlify.env.get("SOME_ZSH_THING_MAYBE"),
              },
+             dotEnv: {
+               MY_DOTENV_TOKEN: Netlify.env.get("MY_DOTENV_TOKEN"),
+             },
              geo: context.geo,
              params: context.params,
              path: context.path,
@@ -1068,6 +1074,7 @@ describe('Handling requests', () => {
 
            export const config = { path: "/hello/terminate/*" };`,
         )
+        .withFile('.env', 'MY_DOTENV_TOKEN=value from .env')
         .withStateFile({ siteId: 'site_id' })
       const directory = await fixture.create()
 
@@ -1120,7 +1127,10 @@ describe('Handling requests', () => {
           parentProcessEnv: {
             // SOME_ZSH_THING_MAYBE is not present
           },
-          // TODO(serhalp): Implement and test support for `.env.*` files (exists in CLI)
+          // Env vars set in `.env` files are passed to EFs
+          dotEnv: {
+            MY_DOTENV_TOKEN: 'value from .env',
+          },
 
           geo: {
             city: 'San Francisco',

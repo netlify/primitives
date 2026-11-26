@@ -69,6 +69,7 @@
     "@netlify/runtime": "5.0.16",
     "@netlify/server-dev": "0.1.10",
     "@netlify/static": "4.0.1",
+    "dotenv": "^17.4.2",
     "ulid": "^3.0.0"
   }
 }

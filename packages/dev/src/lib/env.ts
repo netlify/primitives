@@ -1,7 +1,93 @@
-import type { NetlifyAPI } from '@netlify/api'
-import type { EnvironmentVariables } from '@netlify/types'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
 
-export type EnvironmentVariableSource = 'account' | 'addons' | 'configFile' | 'general' | 'internal' | 'ui'
+import type { NetlifyAPI } from '@netlify/api'
+import type { Logger } from '@netlify/dev-utils'
+import type { EnvironmentVariables } from '@netlify/types'
+import dotenv from 'dotenv'
+
+/**
+ * A variable from a `.env` file has the source `<file name> file`, for example `.env.local file`.
+ * The CLI uses the same names.
+ */
+type DotEnvFileSource = `${string} file`
+
+export type EnvironmentVariableSource =
+  | 'account'
+  | 'addons'
+  | 'configFile'
+  | 'general'
+  | 'internal'
+  | 'ui'
+  | DotEnvFileSource
+
+/**
+ * The `.env` files to read when `dev.envFiles` is not set, in order of precedence, highest first.
+ * This is the same list as in the CLI.
+ */
+export const DEFAULT_ENV_FILES = ['.env.development.local', '.env.local', '.env.development', '.env']
+
+export type DotEnvFile = {
+  env: Record<string, string>
+  file: string
+}
+
+/**
+ * Reads the `.env` files that exist in `projectRoot`. The result has the same order as `envFiles`,
+ * so the first file has the highest precedence. A file that does not exist is skipped.
+ */
+export const loadDotEnvFiles = async ({
+  envFiles = DEFAULT_ENV_FILES,
+  logger,
+  projectRoot,
+}: {
+  envFiles?: string[]
+  logger: Logger
+  projectRoot: string
+}): Promise<DotEnvFile[]> => {
+  const files = await Promise.all(
+    envFiles.map(async (file) => {
+      const filePath = path.resolve(projectRoot, file)
+
+      try {
+        return { env: dotenv.parse(await readFile(filePath, 'utf-8')), file }
+      } catch (error) {
+        const { code } = error as NodeJS.ErrnoException
+
+        if (code !== 'ENOENT' && code !== 'EISDIR') {
+          logger.warn(`Failed to read environment variables from ${filePath}: ${String(error)}`)
+        }
+      }
+    }),
+  )
+
+  return files.filter((file) => file !== undefined)
+}
+
+/**
+ * Adds the variables from `.env` files. As in the CLI, a `.env` file takes precedence over all other
+ * sources except internal variables, and the first file in `dotEnvFiles` takes precedence.
+ */
+export const applyDotEnvFiles = (
+  variables: Record<string, EnvironmentVariable>,
+  dotEnvFiles: DotEnvFile[],
+): Record<string, EnvironmentVariable> => {
+  const result = { ...variables }
+
+  for (const { env, file } of [...dotEnvFiles].reverse()) {
+    for (const [key, value] of Object.entries(env)) {
+      const existingSources = result[key]?.sources ?? []
+
+      if (existingSources.includes('internal')) {
+        continue
+      }
+
+      result[key] = { sources: [`${file} file`, ...existingSources], value }
+    }
+  }
+
+  return result
+}
 
 /**
  * Supported values for the user-provided env `context` option.
@@ -41,6 +127,7 @@ export type InjectedEnvironmentVariable = {
 interface InjectEnvironmentVariablesOptions {
   accountSlug?: string
   baseVariables: Record<string, EnvironmentVariable>
+  dotEnvFiles?: DotEnvFile[]
   envAPI: EnvironmentVariables
   netlifyAPI?: NetlifyAPI
   siteID?: string
@@ -61,6 +148,7 @@ export const injectEnvVariables = async ({
   accountSlug,
   // eslint-disable-next-line @typescript-eslint/no-useless-default-assignment
   baseVariables = {},
+  dotEnvFiles = [],
   envAPI,
   netlifyAPI,
   siteID,
@@ -78,10 +166,15 @@ export const injectEnvVariables = async ({
     })
   }
 
+  // This must come after `getEnvelopeEnv`, which keeps only the sources that it knows.
+  variables = applyDotEnvFiles(variables, dotEnvFiles)
+
   // Inject env vars which come from multiple `source`s and have been collected from
   // `@netlify/config` and/or Envelope. These have not been populated on the actual env yet.
   for (const [key, variable] of Object.entries(variables)) {
-    const existsInProcess = envAPI.has(key)
+    // As in the CLI, a shell variable set to an empty string still takes
+    // precedence. `envAPI.has()` is false for an empty string.
+    const existsInProcess = envAPI.get(key) !== undefined
     const [usedSource, ...overriddenSources] = existsInProcess ? ['process', ...variable.sources] : variable.sources
     const isInternal = variable.sources.includes('internal')
     const result: InjectedEnvironmentVariable = {
