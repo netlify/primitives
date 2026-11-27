@@ -19,6 +19,10 @@ const ENTRY_BASENAMES = new Set(['index.js', 'index.mjs', 'index.ts', 'index.mts
 
 const MINIMUM_NODE_MAJOR_VERSION = 24
 
+// How long after the first request to keep looking for a server that doesn't
+// exist yet, such as one a framework generates on startup.
+const ENTRY_RESCAN_WINDOW_MS = 30_000
+
 const UNLINKED_SITE_MOCK_ID = 'unlinked'
 
 // Headers about the upstream connection or body encoding, which don't apply
@@ -49,6 +53,7 @@ interface ServerHandlerOptions {
 export class ServerHandler {
   #accountID?: string
   #entryPromise?: Promise<string | undefined>
+  #firstLookupAt?: number
   #geolocation?: Geolocation
   #logger: Logger
   #process?: ServerProcess
@@ -64,6 +69,7 @@ export class ServerHandler {
 
     const restart = () => {
       this.#entryPromise = undefined
+      this.#firstLookupAt = undefined
 
       const runningProcess = this.#process
 
@@ -125,12 +131,12 @@ export class ServerHandler {
       )
     }
 
-    const entry = userEntry ?? frameworkEntry
+    return userEntry ?? frameworkEntry
+  }
 
-    if (!entry) {
-      return undefined
-    }
-
+  // Returns the absolute path of the entry, or `undefined` if the server can't
+  // run on this version of Node.js.
+  private resolveRunnableEntry(entry: string): string | undefined {
     const majorNodeVersion = Number.parseInt(process.versions.node)
 
     // Other request handling, such as static files, must keep working, so the
@@ -147,13 +153,42 @@ export class ServerHandler {
   }
 
   private getEntry(): Promise<string | undefined> {
-    this.#entryPromise ??= this.findEntry().catch((error: unknown) => {
-      this.#entryPromise = undefined
+    if (this.#entryPromise) {
+      return this.#entryPromise
+    }
 
-      throw error
-    })
+    const firstLookupAt = (this.#firstLookupAt ??= Date.now())
 
-    return this.#entryPromise
+    // A lookup only clears the cache if it still holds this lookup's promise,
+    // so a slow, stale lookup can't clear the result of a newer one.
+    const clearIfCurrent = () => {
+      if (this.#entryPromise === entryPromise) {
+        this.#entryPromise = undefined
+      }
+    }
+
+    const entryPromise = this.findEntry().then(
+      (entry) => {
+        if (entry) {
+          return this.resolveRunnableEntry(entry)
+        }
+
+        if (Date.now() - firstLookupAt < ENTRY_RESCAN_WINDOW_MS) {
+          clearIfCurrent()
+        }
+
+        return undefined
+      },
+      (error: unknown) => {
+        clearIfCurrent()
+
+        throw error
+      },
+    )
+
+    this.#entryPromise = entryPromise
+
+    return entryPromise
   }
 
   private async ensureProcess(): Promise<number> {
